@@ -48,7 +48,7 @@ Once an entire module is loaded the analysis phase will be run`that does semanti
 
 Quick overview of Qupla statements, in order of semantic analysis:
 
-import <module>
+import \<module\>
 
     Imports all entities from the external module named <module> into the current module
     <module> is the name of the folder that contains the imported module source files
@@ -59,33 +59,33 @@ import <module>
     takes precedence. Explicit entity name resolution can be achieved by explicityly providing
     the desired module name.
 
-type <typename> ...
+type \<typename\> ...
 
     Declares a type name for a trit vector of specific size and/or structure.
     Within a module all type names must be unique.
     
-lut <lutname> ...
+lut \<lutname\> ...
 
     Declares a LUT (Look-Up Table).
     Within a module all lut names must be unique.
     
-func <typename> <lutname> ...
+func \<typename\> \<funcname\> ...
 
-    Declares a fucntion.
+    Declares a function.
     Within a module all function names must be unique.
        
-template <templatename> ...
+template \<templatename\> ...
 
     Declares a template. A template is a group of types and functions that can be instantiated
     as a unit for different specific trit vector sizes.
     Within a module template names must be unique.
     
-use <templatename> ...
+use \<templatename\> ...
 
     Declares specific template instantiation(s). Will instantiate the given template for given
     specific trit vector sizes.
     
-eval <expression>
+eval \<expression\>
 
     Will execute <expression> and print the result at the console. Activated through -eval flag.
     This supports quick debugging of new Qupla code, especially while running the parser
@@ -94,7 +94,7 @@ eval <expression>
     for debugging purposes.
     See Examples/Factorial for examples of eval statements.
     
-test <value> = <expression>
+test \<value\> = \<expression\>
 
     Built-in unit tests for functions. Activated through -test flag
     Will execute <expression> and verify that the result equals <value>.
