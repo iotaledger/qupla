@@ -1,0 +1,12 @@
+// returns val
+
+// this function can be used to set a breakpoint in
+// the Qupla code. The Java debugger will break at the
+// corresponding Java code
+
+template breakFunc<T> func T break<T> (T val) {
+  return val
+}
+
+use breakFunc<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use breakFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>

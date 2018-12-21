@@ -1,0 +1,114 @@
+// ************* BINARY OPERATORS *************
+
+// LUT logic: binary NOT
+//            return !trit1
+lut not {
+  - = 1
+  1 = -
+}
+
+// LUT logic: binary AND
+//            return (trit1 & trit2)
+lut and {
+  -,- = -
+  -,1 = -
+  1,- = -
+  1,1 = 1
+}
+
+// LUT logic: binary AND
+//            return (trit1 & trit2 & trit3)
+lut and3 {
+  -,-,- = -
+  -,-,1 = -
+  -,1,- = -
+  -,1,1 = -
+  1,-,- = -
+  1,-,1 = -
+  1,1,- = -
+  1,1,1 = 1
+}
+
+// LUT logic: binary OR
+//            return (trit1 | trit2)
+lut or {
+  -,- = -
+  -,1 = 1
+  1,- = 1
+  1,1 = 1
+}
+
+// LUT logic: binary OR
+//            return (trit1 | trit2 | trit3)
+lut or3 {
+  -,-,- = -
+  -,-,1 = 1
+  -,1,- = 1
+  -,1,1 = 1
+  1,-,- = 1
+  1,-,1 = 1
+  1,1,- = 1
+  1,1,1 = 1
+}
+
+// LUT logic: binary XOR
+//            return (trit1 ^ trit2)
+lut xor {
+  -,- = -
+  -,1 = 1
+  1,- = 1
+  1,1 = -
+}
+
+// LUT logic: binary NAND
+//            return !(trit1 & trit2)
+lut nand {
+  -,- = 1
+  -,1 = 1
+  1,- = 1
+  1,1 = -
+}
+
+// LUT logic: binary NAND
+//            return !(trit1 & trit2 & trit3)
+lut nand3 {
+  -,-,- = 1
+  -,-,1 = 1
+  -,1,- = 1
+  -,1,1 = 1
+  1,-,- = 1
+  1,-,1 = 1
+  1,1,- = 1
+  1,1,1 = -
+}
+
+// LUT logic: binary NOR
+//            return !(trit1 | trit2)
+lut nor {
+  -,- = 1
+  -,1 = -
+  1,- = -
+  1,1 = -
+}
+
+// LUT logic: binary NOR
+//            return !(trit1 | trit2 | trit3)
+lut nor3 {
+  -,-,- = 1
+  -,-,1 = -
+  -,1,- = -
+  -,1,1 = -
+  1,-,- = -
+  1,-,1 = -
+  1,1,- = -
+  1,1,1 = -
+}
+
+// LUT logic: binary XNOR
+//            return !(trit1 ^ trit2)
+lut xnor {
+  -,- = 1
+  -,1 = -
+  1,- = -
+  1,1 = 1
+}

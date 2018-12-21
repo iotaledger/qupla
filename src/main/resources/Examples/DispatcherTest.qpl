@@ -1,0 +1,31 @@
+// tests Entity-Environment-Effect processing by the Qubic Dispatcher
+//
+// note that we have two environments: 'first' and 'second'
+
+// this function will be called from the top level
+// it affects environment 'first', which means that its result
+// will be posted as an affect to that environment
+func Int firstOne (Int val) {
+  affect first
+  return val
+}
+
+// this function joins environment 'first', which means it will get sent
+// the effects posted to this environment by firstOne() in the next wave
+// it also affects environment 'second', which means that its result
+// will be posted as an affect to that environment
+func Int nextOne (Int val) {
+  join first
+  affect second
+  return val
+}
+
+// finally, this function joins environment 'second',  which means it will get sent
+// the effects posted to this environment by nextOne() in the next wave
+// since it does not affect any environments processing will stop after this wave
+func Int lastOne (Int val) {
+  join second
+  return val
+}
+
+eval firstOne(123)

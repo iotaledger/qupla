@@ -1,0 +1,203 @@
+// returns lhs / rhs
+
+template divModFunc<T> {
+  type T2 [T * 2]
+  
+  // quotient truncated to nearest integer that is closest to zero
+  func T2 divMod<T> (T lhs, T rhs) {
+    absLhs = abs<T>(lhs)
+    absRhs = abs<T>(rhs)
+    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
+    quo = quorem[0 : T]
+    rem = quorem[T : T]
+
+    // truncate downward if rem < 0
+    fix = isNegative[sign<T>(rem)]
+    quo0 = fix ? decr<T>(quo) : quo
+    rem0 = fix ? add<T>(rem, absRhs) : rem
+
+    return fixSign<T>(lhs, rhs, quo0, rem0)
+  }
+
+  // quotient rounds up to closest higher integer
+  func T2 ceilDivMod<T> (T lhs, T rhs) {
+    absLhs = abs<T>(lhs)
+    absRhs = abs<T>(rhs)
+    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
+    quo = quorem[0 : T]
+    rem = quorem[T : T]
+
+    lhsSign = sign<T>(lhs)
+    rhsSign = sign<T>(rhs)
+    remSign = sign<T>(rem)
+
+    neg = xor[isNegative[lhsSign], isNegative[rhsSign]]
+    up = and[not[neg], isPositive[remSign]]
+    down = and[neg, isNegative[remSign]]
+    none = nor[up, down]
+
+    quo0 = nullify<T>(none, quo) | nullify<T>(up, incr<T>(quo)) | nullify<T>(down, decr<T>(quo))
+    rem0 = nullify<T>(none, rem) | nullify<T>(up, sub<T>(rem, absRhs)) | nullify<T>(down, add<T>(rem, absRhs))
+
+    return fixSign<T>(lhs, rhs, quo0, rem0)
+  }
+
+  // quotient rounds down to closest lower integer
+  func T2 floorDivMod<T> (T lhs, T rhs) {
+    absLhs = abs<T>(lhs)
+    absRhs = abs<T>(rhs)
+    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
+    quo = quorem[0 : T]
+    rem = quorem[T : T]
+
+    lhsSign = sign<T>(lhs)
+    rhsSign = sign<T>(rhs)
+    remSign = sign<T>(rem)
+
+    neg = xor[isNegative[lhsSign], isNegative[rhsSign]]
+    down = and[not[neg], isNegative[remSign]]
+    up = and[neg, isPositive[remSign]]
+    none = nor[up, down]
+
+    quo0 = nullify<T>(none, quo) | nullify<T>(up, incr<T>(quo)) | nullify<T>(down, decr<T>(quo))
+    rem0 = nullify<T>(none, rem) | nullify<T>(up, sub<T>(rem, absRhs)) | nullify<T>(down, add<T>(rem, absRhs))
+
+    return fixSign<T>(lhs, rhs, quo0, rem0)
+  }
+
+  // quotient rounds to the nearest integer
+  // randomly when exactly halfway between integers
+  func T2 roundDivMod<T> (T lhs, T rhs) {
+    absLhs = abs<T>(lhs)
+    absRhs = abs<T>(rhs)
+    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
+    quo = quorem[0 : T]
+    rem = quorem[T : T]
+
+    return fixSign<T>(lhs, rhs, quo, rem)
+  }
+
+  //  // algorithm for rounded integer division, assuming positive inputs
+  //  balanced int rem, quo /* the remainder and quotient, return values */
+  //  void div(balanced int dividend, balanced int divisor)
+  //  {
+  //    quo = dividend
+  //    rem = 0
+  //    for (i = 0 i < trits_per_word i++)
+  //    {
+  //      /* first shift rem-quo double register 1 trit left */
+  //      (rem, quo) = (rem, quo) <<3 1
+  //
+  //      /* second, compute one trit of quotient */
+  //      if (rem > 0)
+  //      {
+  //        balanced int low = rem - divisor
+  //        if ((-low < rem) || ((-low == rem) && (quo > 0)))
+  //        {
+  //          quo = quo + 1
+  //          rem = low
+  //        }
+  //      }
+  //      else if (rem < 0)
+  //      {
+  //        balanced int high = rem + divisor
+  //        if ((-high > rem) || ((-high == rem) && (quo < 0)))
+  //        {
+  //          quo = quo - 1
+  //          rem = high
+  //        }
+  //      }
+  //    }
+  //  }
+
+  func T2 roundDivModLoop<T> (T quo, T rem, T div, T shf) {
+    newShf = rshift<T>(shf)
+    nonzero = notZero[sign<T>(newShf)]
+
+    quorem = roundDivModPass<T>(quo, rem, div)
+
+    quo1 = nullify<T>(nonzero, quorem[0 : T])
+    rem1 = nullify<T>(nonzero, quorem[T : T])
+    div1 = nullify<T>(nonzero, div)
+    shf1 = nullify<T>(nonzero, newShf)
+
+    return nullify<T2>(not[nonzero], quorem) |
+           roundDivModLoop<T>(quo1, rem1, div1, shf1)
+  }
+
+  func T2 roundDivModPass<T> (T quo, T rem, T div) {
+    quorem = rshift<T2>(quo & rem)
+    quo0 = quorem[0 : T]
+    rem0 = quorem[T : T]
+    sign = sign<T>(rem0)
+
+    pos = isPositive[sign]
+    low = sub<T>(rem0, div)
+    neg1 = neg<T>(low)
+    cmp1 = cmp<T>(neg1, rem0)
+    test1 = and[pos, or[isLess[cmp1], and[isZero[cmp1], isPositive[sign<T>(quo0)]]]]
+    quorem1 = incr<T>(quo0) & low
+
+    neg = isNegative[sign]
+    high = add<T>(rem0, div)
+    neg2 = neg<T>(high)
+    cmp2 = cmp<T>(neg2, rem0)
+    test2 = and[neg, or[isGreater[cmp2], and[isEqual[cmp2], isNegative[sign<T>(quo0)]]]]
+    quorem2 = decr<T>(quo0) & high
+
+    return nullify<T2>(not[or[test1, test2]], quorem) |
+           nullify<T2>(test1, quorem1) |
+           nullify<T2>(test2, quorem2)
+  }
+
+  func T2 fixSign<T> (T lhs, T rhs, T quo, T rem) {
+    lhsSign = sign<T>(lhs)
+    rhsSign = sign<T>(rhs)
+
+    negRem = isNegative[lhsSign]
+    negQuo = xor[negRem, isNegative[rhsSign]]
+
+    quo1 = negQuo ? neg<T>(quo) : quo
+    rem1 = negRem ? neg<T>(rem) : rem
+
+    return quo1 & rem1
+  }
+}
+
+use divModFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+
+
+template divMod2Func<T> {
+  type T2 [T * 2]
+  type P [T / 2]
+ 
+  func T2 divMod<T> (T lhs, T rhs) {
+    remQuo = divMod<T + P>(lhs & as<P>(0), rhs & as<P>(0))
+    rem = remQuo[0 : T]
+    quo = remQuo[T + P : T]
+    return rem & quo
+  }
+
+  func T2 ceilDivMod<T> (T lhs, T rhs) {
+    remQuo = ceilDivMod<T + P>(lhs & as<P>(0), rhs & as<P>(0))
+    rem = remQuo[0 : T]
+    quo = remQuo[T + P : T]
+    return rem & quo
+  }
+
+  func T2 floorDivMod<T> (T lhs, T rhs) {
+    remQuo = floorDivMod<T + P>(lhs & as<P>(0), rhs & as<P>(0))
+    rem = remQuo[0 : T]
+    quo = remQuo[T + P : T]
+    return rem & quo
+  }
+
+  func T2 roundDivMod<T> (T lhs, T rhs) {
+    remQuo = roundDivMod<T + P>(lhs & as<P>(0), rhs & as<P>(0))
+    rem = remQuo[0 : T]
+    quo = remQuo[T + P : T]
+    return rem & quo
+  }
+}
+
+use divMod2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>

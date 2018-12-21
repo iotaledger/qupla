@@ -1,0 +1,48 @@
+// LUT logic: return the sum of a trit plus a carry as a single trit plus a new carry
+//            return (trit1 + carry), newcarry(trit1 + carry)
+lut halfAdd {
+  -,- = 1,- // -1 + -1 =  1, carry -1
+  -,0 = -,0 // -1 +  0 = -1, carry  0
+  -,1 = 0,0 // -1 +  1 =  0, carry  0
+  0,- = -,0 //  0 + -1 = -1, carry  0
+  0,0 = 0,0 //  0 +  0 =  0, carry  0
+  0,1 = 1,0 //  0 +  1 =  1, carry  0
+  1,- = 0,0 //  1 + -1 =  0, carry  0
+  1,0 = 1,0 //  1 +  0 =  1, carry  0
+  1,1 = -,1 //  1 +  1 = -1, carry  1
+}
+
+type TritCarry [Trit + Carry]
+
+// returns val + carry
+
+func TritCarry halfAdd<Trit> (Trit val, Carry carry) {
+  return halfAdd[val, carry]
+}
+
+template halfAddFunc<T> {
+  type P [T / 3]
+  type TCarry [T + Carry]
+
+  func TCarry halfAdd<T> (T val, Carry carry) {
+    add0 = halfAdd<P>(val[P * 0 : P], carry)
+    add1 = halfAdd<P>(val[P * 1 : P], add0[P])
+    add2 = halfAdd<P>(val[P * 2 : P], add1[P])
+    return add0[0 : P] & add1[0 : P] & add2
+  }
+}
+
+use halfAddFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+
+template halfAdd2Func<T> {
+  type P [T / 2]
+  type TCarry [T + Carry]
+
+  func TCarry halfAdd<T> (T val, Carry carry) {
+    add0 = halfAdd<P>(val[P * 0 : P], carry)
+    add1 = halfAdd<P>(val[P * 1 : P], add0[P])
+    return add0[0 : P] & add1
+  }
+}
+
+use halfAdd2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

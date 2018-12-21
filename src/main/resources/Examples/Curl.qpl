@@ -1,0 +1,815 @@
+type State [Hash3]
+
+// this is a function that takes a trit vector of State [729],
+// but we don't need to constantly repeat that size since we
+// already established the size at the top of the file
+
+// a function returns the value of its last statement,
+// which in this case is a concatenation (comma operator)
+// of the input state and the result of the transform() function
+
+// note that this function does not need curly braces around its single statement
+//      curly braces are only necessary when grouping multiple statements
+type State2 [State * 2]
+func State2 digest(State s) {
+  return s & transform(s, 81)
+}
+
+
+
+func State transform(State s, Tiny round) {
+  // assume subXxx() is a function that performs subtraction on
+  // trit vectors of size X and also returns a trit vector size X
+  roundMinusOne = decr<Tiny>(round)
+
+  // assume equalXxx() is a function that performs comparison on
+  // trit vectors of size X and returns a trit containing a binary
+  // boolean value of 0 (false) or 1 (true)
+  roundZero = equal<Tiny>(roundMinusOne, 0)
+
+  // calculate the new state for this round
+  newState = curlRound(s)
+  
+  // here comes the interesting part, we're going to use a merger operation,
+  // which is an operation that returns the single operand that is non-null
+  // note that a merger will fail when multiple operands are non-null
+
+  // this line will return newState when roundMinusOne was determined
+  // to be zero and null otherwise
+  stateOut = nullify<State>(roundZero, newState)
+
+  // this line will return newState when roundMinusOne was determined
+  // to be non-zero and null otherwise
+  stateNext = nullify<State>(not[roundZero], newState)
+
+  // this line will only return roundMinusone when it was non-zero
+  // and otherwise returns null
+  roundNext = nullify<Tiny>(not[roundZero], roundMinusOne)
+
+  // recursively call transform to execute the next round
+  // note that this will only execute if either of stateNext and roundNext
+  // are non-null, otherwise it will not execute and a null return value
+  // is assumed, so this is essentially a conditional execution
+  stateFinal = transform(stateNext, roundNext)
+
+  // merge the two branches by returning the one that is non-null
+  // so this is kind of an implied if-then-else, because it will
+  // either return stateOut or stateFinal
+  return stateOut | stateFinal
+}
+
+
+// now follows the actual implementation of a single Curl round
+
+// LUT logic: curl the 2 input trits onto an output trit
+lut curl {
+  -,- = 1
+  -,0 = 0
+  -,1 = -
+  0,- = 1
+  0,0 = -
+  0,1 = 0
+  1,- = -
+  1,0 = 1
+  1,1 = 0
+}
+
+// a very dumb and straightforward implementation that curls all 729 state trits
+func State curlRound(State s) {
+  // we use the curl LUT for each of the 729 individual pairs of trits,
+  // and concatenate the resulting trits into a 729 trit return value
+  return curl[s[  0], s[364]] &
+    curl[s[364], s[728]] &
+    curl[s[728], s[363]] &
+    curl[s[363], s[727]] &
+    curl[s[727], s[362]] &
+    curl[s[362], s[726]] &
+    curl[s[726], s[361]] &
+    curl[s[361], s[725]] &
+    curl[s[725], s[360]] &
+    curl[s[360], s[724]] &
+    curl[s[724], s[359]] &
+    curl[s[359], s[723]] &
+    curl[s[723], s[358]] &
+    curl[s[358], s[722]] &
+    curl[s[722], s[357]] &
+    curl[s[357], s[721]] &
+    curl[s[721], s[356]] &
+    curl[s[356], s[720]] &
+    curl[s[720], s[355]] &
+    curl[s[355], s[719]] &
+    curl[s[719], s[354]] &
+    curl[s[354], s[718]] &
+    curl[s[718], s[353]] &
+    curl[s[353], s[717]] &
+    curl[s[717], s[352]] &
+    curl[s[352], s[716]] &
+    curl[s[716], s[351]] &
+    curl[s[351], s[715]] &
+    curl[s[715], s[350]] &
+    curl[s[350], s[714]] &
+    curl[s[714], s[349]] &
+    curl[s[349], s[713]] &
+    curl[s[713], s[348]] &
+    curl[s[348], s[712]] &
+    curl[s[712], s[347]] &
+    curl[s[347], s[711]] &
+    curl[s[711], s[346]] &
+    curl[s[346], s[710]] &
+    curl[s[710], s[345]] &
+    curl[s[345], s[709]] &
+    curl[s[709], s[344]] &
+    curl[s[344], s[708]] &
+    curl[s[708], s[343]] &
+    curl[s[343], s[707]] &
+    curl[s[707], s[342]] &
+    curl[s[342], s[706]] &
+    curl[s[706], s[341]] &
+    curl[s[341], s[705]] &
+    curl[s[705], s[340]] &
+    curl[s[340], s[704]] &
+    curl[s[704], s[339]] &
+    curl[s[339], s[703]] &
+    curl[s[703], s[338]] &
+    curl[s[338], s[702]] &
+    curl[s[702], s[337]] &
+    curl[s[337], s[701]] &
+    curl[s[701], s[336]] &
+    curl[s[336], s[700]] &
+    curl[s[700], s[335]] &
+    curl[s[335], s[699]] &
+    curl[s[699], s[334]] &
+    curl[s[334], s[698]] &
+    curl[s[698], s[333]] &
+    curl[s[333], s[697]] &
+    curl[s[697], s[332]] &
+    curl[s[332], s[696]] &
+    curl[s[696], s[331]] &
+    curl[s[331], s[695]] &
+    curl[s[695], s[330]] &
+    curl[s[330], s[694]] &
+    curl[s[694], s[329]] &
+    curl[s[329], s[693]] &
+    curl[s[693], s[328]] &
+    curl[s[328], s[692]] &
+    curl[s[692], s[327]] &
+    curl[s[327], s[691]] &
+    curl[s[691], s[326]] &
+    curl[s[326], s[690]] &
+    curl[s[690], s[325]] &
+    curl[s[325], s[689]] &
+    curl[s[689], s[324]] &
+    curl[s[324], s[688]] &
+    curl[s[688], s[323]] &
+    curl[s[323], s[687]] &
+    curl[s[687], s[322]] &
+    curl[s[322], s[686]] &
+    curl[s[686], s[321]] &
+    curl[s[321], s[685]] &
+    curl[s[685], s[320]] &
+    curl[s[320], s[684]] &
+    curl[s[684], s[319]] &
+    curl[s[319], s[683]] &
+    curl[s[683], s[318]] &
+    curl[s[318], s[682]] &
+    curl[s[682], s[317]] &
+    curl[s[317], s[681]] &
+    curl[s[681], s[316]] &
+    curl[s[316], s[680]] &
+    curl[s[680], s[315]] &
+    curl[s[315], s[679]] &
+    curl[s[679], s[314]] &
+    curl[s[314], s[678]] &
+    curl[s[678], s[313]] &
+    curl[s[313], s[677]] &
+    curl[s[677], s[312]] &
+    curl[s[312], s[676]] &
+    curl[s[676], s[311]] &
+    curl[s[311], s[675]] &
+    curl[s[675], s[310]] &
+    curl[s[310], s[674]] &
+    curl[s[674], s[309]] &
+    curl[s[309], s[673]] &
+    curl[s[673], s[308]] &
+    curl[s[308], s[672]] &
+    curl[s[672], s[307]] &
+    curl[s[307], s[671]] &
+    curl[s[671], s[306]] &
+    curl[s[306], s[670]] &
+    curl[s[670], s[305]] &
+    curl[s[305], s[669]] &
+    curl[s[669], s[304]] &
+    curl[s[304], s[668]] &
+    curl[s[668], s[303]] &
+    curl[s[303], s[667]] &
+    curl[s[667], s[302]] &
+    curl[s[302], s[666]] &
+    curl[s[666], s[301]] &
+    curl[s[301], s[665]] &
+    curl[s[665], s[300]] &
+    curl[s[300], s[664]] &
+    curl[s[664], s[299]] &
+    curl[s[299], s[663]] &
+    curl[s[663], s[298]] &
+    curl[s[298], s[662]] &
+    curl[s[662], s[297]] &
+    curl[s[297], s[661]] &
+    curl[s[661], s[296]] &
+    curl[s[296], s[660]] &
+    curl[s[660], s[295]] &
+    curl[s[295], s[659]] &
+    curl[s[659], s[294]] &
+    curl[s[294], s[658]] &
+    curl[s[658], s[293]] &
+    curl[s[293], s[657]] &
+    curl[s[657], s[292]] &
+    curl[s[292], s[656]] &
+    curl[s[656], s[291]] &
+    curl[s[291], s[655]] &
+    curl[s[655], s[290]] &
+    curl[s[290], s[654]] &
+    curl[s[654], s[289]] &
+    curl[s[289], s[653]] &
+    curl[s[653], s[288]] &
+    curl[s[288], s[652]] &
+    curl[s[652], s[287]] &
+    curl[s[287], s[651]] &
+    curl[s[651], s[286]] &
+    curl[s[286], s[650]] &
+    curl[s[650], s[285]] &
+    curl[s[285], s[649]] &
+    curl[s[649], s[284]] &
+    curl[s[284], s[648]] &
+    curl[s[648], s[283]] &
+    curl[s[283], s[647]] &
+    curl[s[647], s[282]] &
+    curl[s[282], s[646]] &
+    curl[s[646], s[281]] &
+    curl[s[281], s[645]] &
+    curl[s[645], s[280]] &
+    curl[s[280], s[644]] &
+    curl[s[644], s[279]] &
+    curl[s[279], s[643]] &
+    curl[s[643], s[278]] &
+    curl[s[278], s[642]] &
+    curl[s[642], s[277]] &
+    curl[s[277], s[641]] &
+    curl[s[641], s[276]] &
+    curl[s[276], s[640]] &
+    curl[s[640], s[275]] &
+    curl[s[275], s[639]] &
+    curl[s[639], s[274]] &
+    curl[s[274], s[638]] &
+    curl[s[638], s[273]] &
+    curl[s[273], s[637]] &
+    curl[s[637], s[272]] &
+    curl[s[272], s[636]] &
+    curl[s[636], s[271]] &
+    curl[s[271], s[635]] &
+    curl[s[635], s[270]] &
+    curl[s[270], s[634]] &
+    curl[s[634], s[269]] &
+    curl[s[269], s[633]] &
+    curl[s[633], s[268]] &
+    curl[s[268], s[632]] &
+    curl[s[632], s[267]] &
+    curl[s[267], s[631]] &
+    curl[s[631], s[266]] &
+    curl[s[266], s[630]] &
+    curl[s[630], s[265]] &
+    curl[s[265], s[629]] &
+    curl[s[629], s[264]] &
+    curl[s[264], s[628]] &
+    curl[s[628], s[263]] &
+    curl[s[263], s[627]] &
+    curl[s[627], s[262]] &
+    curl[s[262], s[626]] &
+    curl[s[626], s[261]] &
+    curl[s[261], s[625]] &
+    curl[s[625], s[260]] &
+    curl[s[260], s[624]] &
+    curl[s[624], s[259]] &
+    curl[s[259], s[623]] &
+    curl[s[623], s[258]] &
+    curl[s[258], s[622]] &
+    curl[s[622], s[257]] &
+    curl[s[257], s[621]] &
+    curl[s[621], s[256]] &
+    curl[s[256], s[620]] &
+    curl[s[620], s[255]] &
+    curl[s[255], s[619]] &
+    curl[s[619], s[254]] &
+    curl[s[254], s[618]] &
+    curl[s[618], s[253]] &
+    curl[s[253], s[617]] &
+    curl[s[617], s[252]] &
+    curl[s[252], s[616]] &
+    curl[s[616], s[251]] &
+    curl[s[251], s[615]] &
+    curl[s[615], s[250]] &
+    curl[s[250], s[614]] &
+    curl[s[614], s[249]] &
+    curl[s[249], s[613]] &
+    curl[s[613], s[248]] &
+    curl[s[248], s[612]] &
+    curl[s[612], s[247]] &
+    curl[s[247], s[611]] &
+    curl[s[611], s[246]] &
+    curl[s[246], s[610]] &
+    curl[s[610], s[245]] &
+    curl[s[245], s[609]] &
+    curl[s[609], s[244]] &
+    curl[s[244], s[608]] &
+    curl[s[608], s[243]] &
+    curl[s[243], s[607]] &
+    curl[s[607], s[242]] &
+    curl[s[242], s[606]] &
+    curl[s[606], s[241]] &
+    curl[s[241], s[605]] &
+    curl[s[605], s[240]] &
+    curl[s[240], s[604]] &
+    curl[s[604], s[239]] &
+    curl[s[239], s[603]] &
+    curl[s[603], s[238]] &
+    curl[s[238], s[602]] &
+    curl[s[602], s[237]] &
+    curl[s[237], s[601]] &
+    curl[s[601], s[236]] &
+    curl[s[236], s[600]] &
+    curl[s[600], s[235]] &
+    curl[s[235], s[599]] &
+    curl[s[599], s[234]] &
+    curl[s[234], s[598]] &
+    curl[s[598], s[233]] &
+    curl[s[233], s[597]] &
+    curl[s[597], s[232]] &
+    curl[s[232], s[596]] &
+    curl[s[596], s[231]] &
+    curl[s[231], s[595]] &
+    curl[s[595], s[230]] &
+    curl[s[230], s[594]] &
+    curl[s[594], s[229]] &
+    curl[s[229], s[593]] &
+    curl[s[593], s[228]] &
+    curl[s[228], s[592]] &
+    curl[s[592], s[227]] &
+    curl[s[227], s[591]] &
+    curl[s[591], s[226]] &
+    curl[s[226], s[590]] &
+    curl[s[590], s[225]] &
+    curl[s[225], s[589]] &
+    curl[s[589], s[224]] &
+    curl[s[224], s[588]] &
+    curl[s[588], s[223]] &
+    curl[s[223], s[587]] &
+    curl[s[587], s[222]] &
+    curl[s[222], s[586]] &
+    curl[s[586], s[221]] &
+    curl[s[221], s[585]] &
+    curl[s[585], s[220]] &
+    curl[s[220], s[584]] &
+    curl[s[584], s[219]] &
+    curl[s[219], s[583]] &
+    curl[s[583], s[218]] &
+    curl[s[218], s[582]] &
+    curl[s[582], s[217]] &
+    curl[s[217], s[581]] &
+    curl[s[581], s[216]] &
+    curl[s[216], s[580]] &
+    curl[s[580], s[215]] &
+    curl[s[215], s[579]] &
+    curl[s[579], s[214]] &
+    curl[s[214], s[578]] &
+    curl[s[578], s[213]] &
+    curl[s[213], s[577]] &
+    curl[s[577], s[212]] &
+    curl[s[212], s[576]] &
+    curl[s[576], s[211]] &
+    curl[s[211], s[575]] &
+    curl[s[575], s[210]] &
+    curl[s[210], s[574]] &
+    curl[s[574], s[209]] &
+    curl[s[209], s[573]] &
+    curl[s[573], s[208]] &
+    curl[s[208], s[572]] &
+    curl[s[572], s[207]] &
+    curl[s[207], s[571]] &
+    curl[s[571], s[206]] &
+    curl[s[206], s[570]] &
+    curl[s[570], s[205]] &
+    curl[s[205], s[569]] &
+    curl[s[569], s[204]] &
+    curl[s[204], s[568]] &
+    curl[s[568], s[203]] &
+    curl[s[203], s[567]] &
+    curl[s[567], s[202]] &
+    curl[s[202], s[566]] &
+    curl[s[566], s[201]] &
+    curl[s[201], s[565]] &
+    curl[s[565], s[200]] &
+    curl[s[200], s[564]] &
+    curl[s[564], s[199]] &
+    curl[s[199], s[563]] &
+    curl[s[563], s[198]] &
+    curl[s[198], s[562]] &
+    curl[s[562], s[197]] &
+    curl[s[197], s[561]] &
+    curl[s[561], s[196]] &
+    curl[s[196], s[560]] &
+    curl[s[560], s[195]] &
+    curl[s[195], s[559]] &
+    curl[s[559], s[194]] &
+    curl[s[194], s[558]] &
+    curl[s[558], s[193]] &
+    curl[s[193], s[557]] &
+    curl[s[557], s[192]] &
+    curl[s[192], s[556]] &
+    curl[s[556], s[191]] &
+    curl[s[191], s[555]] &
+    curl[s[555], s[190]] &
+    curl[s[190], s[554]] &
+    curl[s[554], s[189]] &
+    curl[s[189], s[553]] &
+    curl[s[553], s[188]] &
+    curl[s[188], s[552]] &
+    curl[s[552], s[187]] &
+    curl[s[187], s[551]] &
+    curl[s[551], s[186]] &
+    curl[s[186], s[550]] &
+    curl[s[550], s[185]] &
+    curl[s[185], s[549]] &
+    curl[s[549], s[184]] &
+    curl[s[184], s[548]] &
+    curl[s[548], s[183]] &
+    curl[s[183], s[547]] &
+    curl[s[547], s[182]] &
+    curl[s[182], s[546]] &
+    curl[s[546], s[181]] &
+    curl[s[181], s[545]] &
+    curl[s[545], s[180]] &
+    curl[s[180], s[544]] &
+    curl[s[544], s[179]] &
+    curl[s[179], s[543]] &
+    curl[s[543], s[178]] &
+    curl[s[178], s[542]] &
+    curl[s[542], s[177]] &
+    curl[s[177], s[541]] &
+    curl[s[541], s[176]] &
+    curl[s[176], s[540]] &
+    curl[s[540], s[175]] &
+    curl[s[175], s[539]] &
+    curl[s[539], s[174]] &
+    curl[s[174], s[538]] &
+    curl[s[538], s[173]] &
+    curl[s[173], s[537]] &
+    curl[s[537], s[172]] &
+    curl[s[172], s[536]] &
+    curl[s[536], s[171]] &
+    curl[s[171], s[535]] &
+    curl[s[535], s[170]] &
+    curl[s[170], s[534]] &
+    curl[s[534], s[169]] &
+    curl[s[169], s[533]] &
+    curl[s[533], s[168]] &
+    curl[s[168], s[532]] &
+    curl[s[532], s[167]] &
+    curl[s[167], s[531]] &
+    curl[s[531], s[166]] &
+    curl[s[166], s[530]] &
+    curl[s[530], s[165]] &
+    curl[s[165], s[529]] &
+    curl[s[529], s[164]] &
+    curl[s[164], s[528]] &
+    curl[s[528], s[163]] &
+    curl[s[163], s[527]] &
+    curl[s[527], s[162]] &
+    curl[s[162], s[526]] &
+    curl[s[526], s[161]] &
+    curl[s[161], s[525]] &
+    curl[s[525], s[160]] &
+    curl[s[160], s[524]] &
+    curl[s[524], s[159]] &
+    curl[s[159], s[523]] &
+    curl[s[523], s[158]] &
+    curl[s[158], s[522]] &
+    curl[s[522], s[157]] &
+    curl[s[157], s[521]] &
+    curl[s[521], s[156]] &
+    curl[s[156], s[520]] &
+    curl[s[520], s[155]] &
+    curl[s[155], s[519]] &
+    curl[s[519], s[154]] &
+    curl[s[154], s[518]] &
+    curl[s[518], s[153]] &
+    curl[s[153], s[517]] &
+    curl[s[517], s[152]] &
+    curl[s[152], s[516]] &
+    curl[s[516], s[151]] &
+    curl[s[151], s[515]] &
+    curl[s[515], s[150]] &
+    curl[s[150], s[514]] &
+    curl[s[514], s[149]] &
+    curl[s[149], s[513]] &
+    curl[s[513], s[148]] &
+    curl[s[148], s[512]] &
+    curl[s[512], s[147]] &
+    curl[s[147], s[511]] &
+    curl[s[511], s[146]] &
+    curl[s[146], s[510]] &
+    curl[s[510], s[145]] &
+    curl[s[145], s[509]] &
+    curl[s[509], s[144]] &
+    curl[s[144], s[508]] &
+    curl[s[508], s[143]] &
+    curl[s[143], s[507]] &
+    curl[s[507], s[142]] &
+    curl[s[142], s[506]] &
+    curl[s[506], s[141]] &
+    curl[s[141], s[505]] &
+    curl[s[505], s[140]] &
+    curl[s[140], s[504]] &
+    curl[s[504], s[139]] &
+    curl[s[139], s[503]] &
+    curl[s[503], s[138]] &
+    curl[s[138], s[502]] &
+    curl[s[502], s[137]] &
+    curl[s[137], s[501]] &
+    curl[s[501], s[136]] &
+    curl[s[136], s[500]] &
+    curl[s[500], s[135]] &
+    curl[s[135], s[499]] &
+    curl[s[499], s[134]] &
+    curl[s[134], s[498]] &
+    curl[s[498], s[133]] &
+    curl[s[133], s[497]] &
+    curl[s[497], s[132]] &
+    curl[s[132], s[496]] &
+    curl[s[496], s[131]] &
+    curl[s[131], s[495]] &
+    curl[s[495], s[130]] &
+    curl[s[130], s[494]] &
+    curl[s[494], s[129]] &
+    curl[s[129], s[493]] &
+    curl[s[493], s[128]] &
+    curl[s[128], s[492]] &
+    curl[s[492], s[127]] &
+    curl[s[127], s[491]] &
+    curl[s[491], s[126]] &
+    curl[s[126], s[490]] &
+    curl[s[490], s[125]] &
+    curl[s[125], s[489]] &
+    curl[s[489], s[124]] &
+    curl[s[124], s[488]] &
+    curl[s[488], s[123]] &
+    curl[s[123], s[487]] &
+    curl[s[487], s[122]] &
+    curl[s[122], s[486]] &
+    curl[s[486], s[121]] &
+    curl[s[121], s[485]] &
+    curl[s[485], s[120]] &
+    curl[s[120], s[484]] &
+    curl[s[484], s[119]] &
+    curl[s[119], s[483]] &
+    curl[s[483], s[118]] &
+    curl[s[118], s[482]] &
+    curl[s[482], s[117]] &
+    curl[s[117], s[481]] &
+    curl[s[481], s[116]] &
+    curl[s[116], s[480]] &
+    curl[s[480], s[115]] &
+    curl[s[115], s[479]] &
+    curl[s[479], s[114]] &
+    curl[s[114], s[478]] &
+    curl[s[478], s[113]] &
+    curl[s[113], s[477]] &
+    curl[s[477], s[112]] &
+    curl[s[112], s[476]] &
+    curl[s[476], s[111]] &
+    curl[s[111], s[475]] &
+    curl[s[475], s[110]] &
+    curl[s[110], s[474]] &
+    curl[s[474], s[109]] &
+    curl[s[109], s[473]] &
+    curl[s[473], s[108]] &
+    curl[s[108], s[472]] &
+    curl[s[472], s[107]] &
+    curl[s[107], s[471]] &
+    curl[s[471], s[106]] &
+    curl[s[106], s[470]] &
+    curl[s[470], s[105]] &
+    curl[s[105], s[469]] &
+    curl[s[469], s[104]] &
+    curl[s[104], s[468]] &
+    curl[s[468], s[103]] &
+    curl[s[103], s[467]] &
+    curl[s[467], s[102]] &
+    curl[s[102], s[466]] &
+    curl[s[466], s[101]] &
+    curl[s[101], s[465]] &
+    curl[s[465], s[100]] &
+    curl[s[100], s[464]] &
+    curl[s[464], s[ 99]] &
+    curl[s[ 99], s[463]] &
+    curl[s[463], s[ 98]] &
+    curl[s[98], s[462]] &
+    curl[s[462], s[ 97]] &
+    curl[s[ 97], s[461]] &
+    curl[s[461], s[ 96]] &
+    curl[s[ 96], s[460]] &
+    curl[s[460], s[ 95]] &
+    curl[s[ 95], s[459]] &
+    curl[s[459], s[ 94]] &
+    curl[s[ 94], s[458]] &
+    curl[s[458], s[ 93]] &
+    curl[s[ 93], s[457]] &
+    curl[s[457], s[ 92]] &
+    curl[s[ 92], s[456]] &
+    curl[s[456], s[ 91]] &
+    curl[s[ 91], s[455]] &
+    curl[s[455], s[ 90]] &
+    curl[s[ 90], s[454]] &
+    curl[s[454], s[ 89]] &
+    curl[s[ 89], s[453]] &
+    curl[s[453], s[ 88]] &
+    curl[s[ 88], s[452]] &
+    curl[s[452], s[ 87]] &
+    curl[s[ 87], s[451]] &
+    curl[s[451], s[ 86]] &
+    curl[s[ 86], s[450]] &
+    curl[s[450], s[ 85]] &
+    curl[s[ 85], s[449]] &
+    curl[s[449], s[ 84]] &
+    curl[s[ 84], s[448]] &
+    curl[s[448], s[ 83]] &
+    curl[s[ 83], s[447]] &
+    curl[s[447], s[ 82]] &
+    curl[s[ 82], s[446]] &
+    curl[s[446], s[ 81]] &
+    curl[s[ 81], s[445]] &
+    curl[s[445], s[ 80]] &
+    curl[s[ 80], s[444]] &
+    curl[s[444], s[ 79]] &
+    curl[s[ 79], s[443]] &
+    curl[s[443], s[ 78]] &
+    curl[s[ 78], s[442]] &
+    curl[s[442], s[ 77]] &
+    curl[s[ 77], s[441]] &
+    curl[s[441], s[ 76]] &
+    curl[s[ 76], s[440]] &
+    curl[s[440], s[ 75]] &
+    curl[s[ 75], s[439]] &
+    curl[s[439], s[ 74]] &
+    curl[s[ 74], s[438]] &
+    curl[s[438], s[ 73]] &
+    curl[s[ 73], s[437]] &
+    curl[s[437], s[ 72]] &
+    curl[s[ 72], s[436]] &
+    curl[s[436], s[ 71]] &
+    curl[s[ 71], s[435]] &
+    curl[s[435], s[ 70]] &
+    curl[s[ 70], s[434]] &
+    curl[s[434], s[ 69]] &
+    curl[s[ 69], s[433]] &
+    curl[s[433], s[ 68]] &
+    curl[s[ 68], s[432]] &
+    curl[s[432], s[ 67]] &
+    curl[s[ 67], s[431]] &
+    curl[s[431], s[ 66]] &
+    curl[s[ 66], s[430]] &
+    curl[s[430], s[ 65]] &
+    curl[s[ 65], s[429]] &
+    curl[s[429], s[ 64]] &
+    curl[s[ 64], s[428]] &
+    curl[s[428], s[ 63]] &
+    curl[s[ 63], s[427]] &
+    curl[s[427], s[ 62]] &
+    curl[s[ 62], s[426]] &
+    curl[s[426], s[ 61]] &
+    curl[s[ 61], s[425]] &
+    curl[s[425], s[ 60]] &
+    curl[s[ 60], s[424]] &
+    curl[s[424], s[ 59]] &
+    curl[s[ 59], s[423]] &
+    curl[s[423], s[ 58]] &
+    curl[s[ 58], s[422]] &
+    curl[s[422], s[ 57]] &
+    curl[s[ 57], s[421]] &
+    curl[s[421], s[ 56]] &
+    curl[s[ 56], s[420]] &
+    curl[s[420], s[ 55]] &
+    curl[s[ 55], s[419]] &
+    curl[s[419], s[ 54]] &
+    curl[s[ 54], s[418]] &
+    curl[s[418], s[ 53]] &
+    curl[s[ 53], s[417]] &
+    curl[s[417], s[ 52]] &
+    curl[s[ 52], s[416]] &
+    curl[s[416], s[ 51]] &
+    curl[s[ 51], s[415]] &
+    curl[s[415], s[ 50]] &
+    curl[s[ 50], s[414]] &
+    curl[s[414], s[ 49]] &
+    curl[s[ 49], s[413]] &
+    curl[s[413], s[ 48]] &
+    curl[s[ 48], s[412]] &
+    curl[s[412], s[ 47]] &
+    curl[s[ 47], s[411]] &
+    curl[s[411], s[ 46]] &
+    curl[s[ 46], s[410]] &
+    curl[s[410], s[ 45]] &
+    curl[s[ 45], s[409]] &
+    curl[s[409], s[ 44]] &
+    curl[s[ 44], s[408]] &
+    curl[s[408], s[ 43]] &
+    curl[s[ 43], s[407]] &
+    curl[s[407], s[ 42]] &
+    curl[s[ 42], s[406]] &
+    curl[s[406], s[ 41]] &
+    curl[s[ 41], s[405]] &
+    curl[s[405], s[ 40]] &
+    curl[s[ 40], s[404]] &
+    curl[s[404], s[ 39]] &
+    curl[s[ 39], s[403]] &
+    curl[s[403], s[ 38]] &
+    curl[s[ 38], s[402]] &
+    curl[s[402], s[ 37]] &
+    curl[s[ 37], s[401]] &
+    curl[s[401], s[ 36]] &
+    curl[s[ 36], s[400]] &
+    curl[s[400], s[ 35]] &
+    curl[s[ 35], s[399]] &
+    curl[s[399], s[ 34]] &
+    curl[s[ 34], s[398]] &
+    curl[s[398], s[ 33]] &
+    curl[s[ 33], s[397]] &
+    curl[s[397], s[ 32]] &
+    curl[s[ 32], s[396]] &
+    curl[s[396], s[ 31]] &
+    curl[s[ 31], s[395]] &
+    curl[s[395], s[ 30]] &
+    curl[s[ 30], s[394]] &
+    curl[s[394], s[ 29]] &
+    curl[s[ 29], s[393]] &
+    curl[s[393], s[ 28]] &
+    curl[s[ 28], s[392]] &
+    curl[s[392], s[ 27]] &
+    curl[s[ 27], s[391]] &
+    curl[s[391], s[ 26]] &
+    curl[s[ 26], s[390]] &
+    curl[s[390], s[ 25]] &
+    curl[s[ 25], s[389]] &
+    curl[s[389], s[ 24]] &
+    curl[s[ 24], s[388]] &
+    curl[s[388], s[ 23]] &
+    curl[s[ 23], s[387]] &
+    curl[s[387], s[ 22]] &
+    curl[s[ 22], s[386]] &
+    curl[s[386], s[ 21]] &
+    curl[s[ 21], s[385]] &
+    curl[s[385], s[ 20]] &
+    curl[s[ 20], s[384]] &
+    curl[s[384], s[ 19]] &
+    curl[s[ 19], s[383]] &
+    curl[s[383], s[ 18]] &
+    curl[s[ 18], s[382]] &
+    curl[s[382], s[ 17]] &
+    curl[s[ 17], s[381]] &
+    curl[s[381], s[ 16]] &
+    curl[s[ 16], s[380]] &
+    curl[s[380], s[ 15]] &
+    curl[s[ 15], s[379]] &
+    curl[s[379], s[ 14]] &
+    curl[s[ 14], s[378]] &
+    curl[s[378], s[ 13]] &
+    curl[s[ 13], s[377]] &
+    curl[s[377], s[ 12]] &
+    curl[s[ 12], s[376]] &
+    curl[s[376], s[ 11]] &
+    curl[s[ 11], s[375]] &
+    curl[s[375], s[ 10]] &
+    curl[s[ 10], s[374]] &
+    curl[s[374], s[  9]] &
+    curl[s[  9], s[373]] &
+    curl[s[373], s[  8]] &
+    curl[s[  8], s[372]] &
+    curl[s[372], s[  7]] &
+    curl[s[  7], s[371]] &
+    curl[s[371], s[  6]] &
+    curl[s[  6], s[370]] &
+    curl[s[370], s[  5]] &
+    curl[s[  5], s[369]] &
+    curl[s[369], s[  4]] &
+    curl[s[  4], s[368]] &
+    curl[s[368], s[  3]] &
+    curl[s[  3], s[367]] &
+    curl[s[367], s[  2]] &
+    curl[s[  2], s[366]] &
+    curl[s[366], s[  1]] &
+    curl[s[  1], s[365]] &
+    curl[s[365], s[  0]]
+}
+
+// test statements
+
+// do an 81-round Curl hash on 123456
+eval transform(123456, 81)

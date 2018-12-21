@@ -1,0 +1,87 @@
+qupla::= (quplaStmt)*
+
+quplaStmt ::= importStmt | typeStmt | lutStmt | funcStmt | evalStmt | testStmt | templateStmt | useStmt
+
+
+importStmt ::= 'import' moduleName
+
+typeStmt ::= 'type' typeName (typeSize | ('{' (fieldName typeSize)+ '}') | entityAlias)
+
+lutStmt ::= 'lut' lutName (('{' (tritList '=' tritList)+ '}') | entityAlias)
+
+funcStmt ::= 'func' ((funcSignature funcBody) | entityAlias)
+
+evalStmt ::= 'eval' funcExpr
+
+testStmt ::= 'test' valueExpr '=' funcExpr
+
+templateStmt ::= 'template' templateName '<' (placeHolderTypeName (',' placeHolderTypeName)*) '>' (funcStmt | templateBody)
+
+templateBody ::= '{' typeStmt* funcStmt+ '}'
+
+useStmt ::= 'use' templateName typeInstantiation (',' typeInstantiation)*
+
+typeInstantiation ::= '<' (typeName (',' typeName)*) '>'
+
+
+entityAlias ::= entityName '@' moduleName
+
+
+funcSignature ::= typeName funcName ('<' typeName (',' typeName)* '>')? '(' (funcParam (',' funcParam)*) ')'
+
+funcParam ::= typeName paramName
+
+funcBody ::= '{' envExpr stateExpr* assignExpr* returnExpr '}'
+
+envExpr ::= joinExpr* affectExpr*
+
+joinExpr ::= 'join' environmentName ('limit' number)?
+
+affectExpr ::= 'affect' environmentName ('delay' number)?
+
+stateExpr ::= 'state' typeName varName
+
+assignExpr ::= varName '=' condExpr
+
+returnExpr ::= 'return' condExpr
+
+condExpr ::= mergeExpr ('?' mergeExpr ':' condExpr)*
+
+mergeExpr ::= concatExpr ('|' concatExpr)*
+
+concatExpr ::= postfixExpr ('&' postfixExpr)*
+
+postfixExpr ::= valueExpr | typeExpr | funcExpr | lutExpr | sliceExpr | ('(' mergeExpr ')')
+
+valueExpr ::= trit | integer | float
+
+typeExpr ::= typeName '{' (fieldName '=' mergeExpr)+ '}'
+
+funcExpr ::= funcName ('<' constExpr(',' constExpr)*  '>')? '(' (mergeExpr (',' mergeExpr)*) ')'
+
+lutExpr ::= lutName '[' (mergeExpr (',' mergeExpr)*) ']'
+
+sliceExpr ::= (varName | paramName) ('.' fieldName)* ('[' constExpr (':' constExpr)? ']')?
+
+
+constExpr ::= constTerm ([-+] constTerm)*
+
+constTerm ::= constFactor ([*/%] constFactor)*
+
+constFactor ::= number | typeName | ('-' constFactor) | ('(' constExpr ')')
+
+
+typeSize ::= '[' constExpr ']'
+
+tritList ::= trit (',' trit)*
+
+
+trit ::= [-01]
+
+name ::= [a-zA-Z_][0-9a-zA-Z_]*
+
+number ::= [0-9]+
+
+integer ::= '-'? number
+
+float ::= '-'? number '.' number

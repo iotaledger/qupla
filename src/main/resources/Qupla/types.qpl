@@ -1,0 +1,61 @@
+// define some standard trit lengths we will use in our examples
+// note that you can define the optimal trit size for any type's
+// range to reduce energy requirements accordingly, but for
+// simplicity we'll only define power-of-3 sized types for now
+
+type Trit [1]           // -1 to +1
+type Tryte [3]          // -13 to +13
+type Tiny [9]           // -9,841 to +9,841
+type Int [27]           // -3,812,798,742,493 to +3,812,798,742,493
+type Huge [81]          // -/+ 221,713,244,121,518,884,974,124,815,309,574,946,401
+type Hash [243]         // standard 81 trytes hash value
+type Hash3 [3 * Hash]
+type Hash9 [9 * Hash]
+type Signature [27 * Hash]
+
+// double-width integer types for use in mul/div/mod operations
+type Trit2 [Trit * 2]   // -/+ 4
+type Tryte2 [Tryte * 2] // -/+ 364
+type Tiny2 [Tiny * 2]   // -/+ 193,710,244
+type Tiny4 [Tiny * 4]   // -/+ 75,047,317,648,499,560
+type Int2 [Int * 2]     // -/+ 29,074,868,501,520,029,845,195,084
+type Int4 [Int * 4]
+type Huge2 [Huge * 2]
+type Hash2 [Hash * 2]
+
+// define a convenience type to make code more readable
+// should always be a binary boolean value - (false) or 1 (true)
+// should never be null or assume the value 0
+// (note: this convention is not enforced by Qupla)
+type Bool [Trit]
+
+type Carry [Trit]
+
+// here's how to define a named structured trit vector
+// it consists of the concatenation of all sub-vectors
+// its total size is the sum of all sub-vector sizes
+// note that structures themselves can contain structures
+
+// attachment sub-structure layout
+type Attachment {
+  timestamp [Int]
+  timestampLowerBound [Int]
+  timestampUpperBound [Int]
+}
+
+// sample future IOTA transaction layout
+type Transaction {
+  signature [Signature]
+  extraDataDigest [Hash]
+  address [Hash]
+  value [Huge]
+  issuanceTimestamp [Int]
+  timelockLowerBound [Int]
+  timelockUpperBound [Int]
+  bundle [Huge]
+  trunk [Hash]
+  branch [Hash]
+  tag [Huge]
+  attachment [Attachment]
+  nonce [Huge]
+}

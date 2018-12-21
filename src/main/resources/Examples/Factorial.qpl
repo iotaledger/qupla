@@ -1,0 +1,44 @@
+// returns the n-th factorial number
+// Java equivalent:
+// return (n == 0) ? 1 : (n * factorial(n - 1))
+
+// data point: the maximum value for n! which still fits
+// in a Huge integer is 33: 8683317618811886495518194401280000000
+// in a Hash integer is 78: 11324281178206297831457521158732046228731749579488251990048962825668835325234200766245086213177344000000000000000000
+
+template factorialFunc<T> func T factorial<T> (T n) {
+  isZero = isZero[sign<T>(n)]
+
+  returnOne = nullify<T>(isZero, 1)
+
+  altN = nullify<T>(not[isZero], n)
+  nMin1 = decr<T>(altN)
+  nMin1Factorial = factorial<T>(nMin1)
+  returnFactorial = mul<T>(altN, nMin1Factorial)
+
+  return returnOne | returnFactorial
+}
+
+use factorialFunc<Tiny>, <Int>, <Huge>
+
+// example of how to create a larger mul func on the fly
+use mulFunc<Hash>
+use factorialFunc<Hash>
+
+// unit test statements
+
+test 1 = factorial<Tiny>(0)
+test 1 = factorial<Tiny>(1)
+test 2 = factorial<Tiny>(2)
+test 6 = factorial<Tiny>(3)
+test 24 = factorial<Tiny>(4)
+test 120 = factorial<Tiny>(5)
+test 720 = factorial<Tiny>(6)
+test 8683317618811886495518194401280000000 = factorial<Huge>(33)
+test 8683317618811886495518194401280000000 = factorial<Hash>(33)
+
+// highest possible input value that still fits in a Hash result is 78
+eval factorial<Hash>(78)
+
+// see what happens when it won't fit
+eval factorial<Hash>(79)

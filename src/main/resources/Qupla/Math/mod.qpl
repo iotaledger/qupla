@@ -1,0 +1,25 @@
+// returns lhs % rhs
+
+template modFunc<T> {
+  func T mod<T> (T lhs, T rhs) {
+    ret = divMod<T>(lhs, rhs)
+    return ret[T : T]
+  }
+
+  func T ceilMod<T> (T lhs, T rhs) {
+    ret = ceilDivMod<T>(lhs, rhs)
+    return ret[T : T]
+  }
+
+  func T floorMod<T> (T lhs, T rhs) {
+    ret = floorDivMod<T>(lhs, rhs)
+    return ret[T : T]
+  }
+
+  func T roundMod<T> (T lhs, T rhs) {
+    ret = roundDivMod<T>(lhs, rhs)
+    return ret[T : T]
+  }
+}
+
+use modFunc<Tryte>, <Tiny>, <Int>, <Huge>

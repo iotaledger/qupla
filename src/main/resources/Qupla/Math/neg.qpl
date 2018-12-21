@@ -1,0 +1,38 @@
+// LUT logic: return -trit1
+lut neg {
+  - = 1
+  0 = 0
+  1 = -
+}
+
+// note that making an entire trit-vector's value negative
+// can be done by simply negating every trit in the vector
+
+// returns -val
+
+func Trit neg<Trit> (Trit val) {
+  return neg[val]
+}
+
+template negFunc<T> {
+  type P [T / 3]
+
+  func T neg<T> (T val) {
+    return neg<P>(val[P * 0 : P]) &
+           neg<P>(val[P * 1 : P]) &
+           neg<P>(val[P * 2 : P])
+  }
+}
+
+use negFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+
+template neg2Func<T> {
+  type P [T / 2]
+
+  func T neg<T> (T val) {
+    return neg<P>(val[P * 0 : P]) &
+           neg<P>(val[P * 1 : P])
+  }
+}
+
+use neg2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

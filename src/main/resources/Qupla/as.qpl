@@ -1,0 +1,13 @@
+// returns val
+
+// this function can be used as a cast operator
+// for constants to cast them to specific size
+// it can be handy in this case for example:
+// return f(a) & as<Tryte>(0) & f(b)
+
+template asFunc<T> func T as<T> (T val) {
+  return val
+}
+
+use asFunc<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use asFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

@@ -1,0 +1,8 @@
+// returns lhs < rhs ? lhs : rhs
+
+template minFunc<T> func T min<T> (T lhs, T rhs) {
+  return isLess[cmp<T>(lhs, rhs)] ? lhs : rhs
+}
+
+use minFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use minFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

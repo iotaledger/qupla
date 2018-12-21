@@ -1,0 +1,15 @@
+// returns (val1 == val2) ? val1 :
+//         (val2 == val3) ? val2 :
+//         (val3 == val1) ? val3 : null
+
+// determine quorum result
+
+template quorumFunc<T> func T quorum<T>(T val1, T val2, T val3) {
+  equal1 = equal<T>(val1, val2)
+  equal2 = and[not[equal1], equal<T>(val2, val3)]
+  equal3 = and[not[equal2], equal<T>(val3, val1)]
+  return nullify<T>(equal1, val1) | nullify<T>(equal2, val2) | nullify<T>(equal3, val3)
+}
+
+use quorumFunc<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use quorumFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

@@ -1,0 +1,109 @@
+// implements a simple key/value storage
+// needs to be wrapped in an entity function and accessed through
+// sending effects to work correctly
+
+template mapFunc<K, V>
+{
+  type Traversal {
+    cmd [Trit]
+    key [K]
+    value [V]
+  }
+
+  func V map<K, V> (Trit cmd, K key, V value) {
+    param = Traversal {
+      cmd = cmd
+      key = key
+      value = value
+    }
+    return traverse<K, V>(param)
+  }
+  
+  func V as<K, V> (V val) {
+  return val
+}
+
+  func Traversal nullify<K, V> (Bool t, Traversal param) {
+    return Traversal {
+      cmd = nullify<Trit>(t, param.cmd)
+      key = nullify<K>(t, param.key)
+      value = nullify<V>(t, param.value)
+    }
+  }
+
+  func V traverse<K, V> (Traversal param) {
+    // note that for readability we should probably split this function
+    // into two functions, one for the case where we call leaf() and one
+    // for the case where we do the traverse() and determine nextParam,
+    // but that would effectively double the length of the recursive call
+    // path, so for storage efficiency reasons we keep them together as one
+
+    keyZero = isZero[sign<K>(param.key)]
+
+    // note that once our optimization for conditional expressions
+    // back-pushes nullify() we will not need the next line any more
+    altParam = nullify<K, V>(not[keyZero], param)
+    keyTrit = altParam.key[0]
+    nextParam = Traversal {
+      cmd = altParam.cmd
+      key = lshift<K>(altParam.key)
+      value = altParam.value
+    }
+
+    keyTritIs1  = isOne[keyTrit]
+    keyTritIs0 = isZero[keyTrit]
+    return keyZero ? leaf<K, V>(param) :
+             keyTritIs1 ? traverse<K, V>(nextParam) :
+               keyTritIs0 ? traverse<K, V>(nextParam) :
+                 traverse<K, V>(nextParam)
+  }
+
+  func V leaf<K, V> (Traversal param) {
+    state V value
+
+    oldValue = value
+
+    get = isZero[param.cmd]
+    set = isOne[param.cmd]
+    value = get ? oldValue : set ? param.value : as<K, V>(0)
+
+    return oldValue
+  }
+
+//  func V traverse<K, V> (Traversal param) {
+//    keyZero = isZero[sign<K>(param.key)]
+//
+//    leafParam = nullify<K, V>(keyZero, param)
+//    branchLeaf = leaf<K, V>(leafParam)
+//
+//    altParam = nullify<K, V>(not[keyZero], param)
+//    keyTrit = altParam.key[0]
+//    nextParam = Traversal {
+//      cmd = altParam.cmd
+//      key = lshift<K>(altParam.key)
+//      value = altParam.value
+//    }
+//
+//    paramOne  = nullify<K, V>(isOne[keyTrit], nextParam)
+//    paramZero = nullify<K, V>(isZero[keyTrit], nextParam)
+//    paramMin  = nullify<K, V>(isMin[keyTrit], nextParam)
+//
+//    branchOne  = traverse<K, V>(paramOne)
+//    branchZero = traverse<K, V>(paramZero)
+//    branchMin  = traverse<K, V>(paramMin)
+//
+//    return branchLeaf | branchOne | branchZero | branchMin
+//  }
+//
+//  func V leaf<K, V> (Traversal param) {
+//    state value [V]
+//    oldValue = value
+//
+//    set    = nullify<V>(isOne[param.cmd], param.value)
+//    get    = nullify<V>(isZero[param.cmd], oldValue)
+//    remove = nullify<V>(isMin[param.cmd], 0)
+//    value = set | get | remove
+//
+//    return oldValue
+//  }
+}

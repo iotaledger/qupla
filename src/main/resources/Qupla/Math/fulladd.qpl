@@ -1,0 +1,65 @@
+// LUT logic: return the sum of two trits plus a carry as a single trit plus a new carry
+//            return (trit1 + trit2 + carry), newcarry(trit1 + trit2 + carry)
+lut fullAdd {
+  -,-,- = 0,-
+  -,-,0 = 1,-
+  -,-,1 = -,0
+  -,0,- = 1,-
+  -,0,0 = -,0
+  -,0,1 = 0,0
+  -,1,- = -,0
+  -,1,0 = 0,0
+  -,1,1 = 1,0
+  0,-,- = 1,-
+  0,-,0 = -,0
+  0,-,1 = 0,0
+  0,0,- = -,0
+  0,0,0 = 0,0
+  0,0,1 = 1,0
+  0,1,- = 0,0
+  0,1,0 = 1,0
+  0,1,1 = -,1
+  1,-,- = -,0
+  1,-,0 = 0,0
+  1,-,1 = 1,0
+  1,0,- = 0,0
+  1,0,0 = 1,0
+  1,0,1 = -,1
+  1,1,- = 1,0
+  1,1,0 = -,1
+  1,1,1 = 0,1
+}
+
+
+// returns lhs + rhs + carry
+
+func TritCarry fullAdd<Trit> (Trit lhs, Trit rhs, Carry carry) {
+  return fullAdd[lhs, rhs, carry]
+}
+
+template fullAddFunc<T> {
+  type P [T / 3]
+  type TCarry [T + Carry]
+
+  func TCarry fullAdd<T> (T lhs, T rhs, Carry carry) {
+    add0 = fullAdd<P>(lhs[P * 0 : P], rhs[P * 0 : P], carry)
+    add1 = fullAdd<P>(lhs[P * 1 : P], rhs[P * 1 : P], add0[P])
+    add2 = fullAdd<P>(lhs[P * 2 : P], rhs[P * 2 : P], add1[P])
+    return add0[0 : P] & add1[0 : P] & add2
+  }
+}
+
+use fullAddFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+
+template fullAdd2Func<T> {
+  type P [T / 2]
+  type TCarry [T + Carry]
+
+  func TCarry fullAdd<T> (T lhs, T rhs, Carry carry) {
+    add0 = fullAdd<P>(lhs[P * 0 : P], rhs[P * 0 : P], carry)
+    add1 = fullAdd<P>(lhs[P * 1 : P], rhs[P * 1 : P], add0[P])
+    return add0[0 : P] & add1
+  }
+}
+
+use fullAdd2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

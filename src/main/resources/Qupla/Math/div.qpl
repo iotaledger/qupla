@@ -1,0 +1,28 @@
+// returns lhs / rhs
+
+template divFunc<T> {
+  func T div<T> (T lhs, T rhs) {
+    ret = divMod<T>(lhs, rhs)
+    return ret[0 : T]
+  }
+
+  func T ceilDiv<T> (T lhs, T rhs) {
+    ret = ceilDivMod<T>(lhs, rhs)
+    return ret[0 : T]
+  }
+
+  func T floorDiv<T> (T lhs, T rhs) {
+    ret = floorDivMod<T>(lhs, rhs)
+    return ret[0 : T]
+  }
+
+  func T roundDiv<T> (T lhs, T rhs) {
+    ret = roundDivMod<T>(lhs, rhs)
+    return ret[0 : T]
+  }
+}
+
+use divFunc<Tryte>, <Tiny>, <Int>, <Huge>
+use divFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int4>, <Int2>, <Huge2>
+
+use divFunc<Hash> // needed for fixed.abra

@@ -1,0 +1,34 @@
+// return val << 1
+
+template lshiftFunc<T> func T lshift<T> (T val) {
+  return val[1 : T - 1] & 0
+}
+
+use lshiftFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use lshiftFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>
+
+
+// ************* WORK IN PROGRESS, attempt at creating lshiftN(val, n)
+template lshiftNFunc<T> {
+  func T lshiftN<T> (T val, Tiny n) {
+    nmin9 = sub<Tiny>(n, 9)
+    sign = sign<Tiny>(nmin9)
+    neg = isNegative[sign]
+    pos = notNegative[sign]
+    return lshiftNpart2<T>(nullify<T>(pos, val), nullify<Tiny>(pos, n)) |
+           lshiftN9<T>(nullify<T>(neg, val), nullify<Tiny>(neg, nmin9), nullify<Trit>(neg, sign))
+  }
+
+  func T lshiftNpart2<T> (T val, Tiny n) {
+    return lshift<T>(val)
+  }
+
+  func T lshiftN9<T> (T val, Tiny n, Trit sign) {
+    lshift9 = val[9 : T - 9] & as<9>(0)
+    pos = isPositive[sign]
+    return nullify<T>(isZero[sign], lshift9) |
+           lshiftN<T>(nullify<T>(pos, lshift9), nullify<Tiny>(pos, n))
+  }
+}
+
+use lshiftNFunc<Int>, <Huge>, <Hash>

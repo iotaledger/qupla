@@ -1,0 +1,62 @@
+// LUT logic: return the sign of a 3-trit value with least significant trit first
+//            return sign(trit1, trit2, trit3)
+// note that the sign of a trit *is* the trit, so we start at Tryte instead
+lut sign {
+  -,-,- = -
+  0,-,- = -
+  1,-,- = -
+  -,0,- = -
+  0,0,- = -
+  1,0,- = -
+  -,1,- = -
+  0,1,- = -
+  1,1,- = -
+  -,-,0 = -
+  0,-,0 = -
+  1,-,0 = -
+  -,0,0 = -
+  0,0,0 = 0
+  1,0,0 = 1
+  -,1,0 = 1
+  0,1,0 = 1
+  1,1,0 = 1
+  -,-,1 = 1
+  0,-,1 = 1
+  1,-,1 = 1
+  -,0,1 = 1
+  0,0,1 = 1
+  1,0,1 = 1
+  -,1,1 = 1
+  0,1,1 = 1
+  1,1,1 = 1
+}
+
+// returns (val < 0) ? - : (val > 0) : 1 : 0
+
+func Trit sign<Trit> (Trit val) {
+  return val
+}
+
+template signFunc<T> {
+  type P [T / 3]
+
+  func Trit sign<T> (T val) {
+    return sign[sign<P>(val[P * 0 : P]),
+                sign<P>(val[P * 1 : P]),
+                sign<P>(val[P * 2 : P])]
+  }
+}
+
+use signFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+
+template sign2Func<T> {
+  type P [T / 2]
+
+  func Trit sign<T> (T val) {
+    return sign[sign<P>(val[P * 0 : P]),
+                sign<P>(val[P * 1 : P]),
+                0]
+  }
+}
+
+use sign2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

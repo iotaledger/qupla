@@ -1,0 +1,57 @@
+// LUT logic: return (trit1 == 1) ? trit2 : null
+lut nullify {
+  1,- = -
+  1,0 = 0
+  1,1 = 1
+}
+
+// construct functions for all predefined types that perform
+// a similar task to the nullify LUT for those larger types
+// note that we have defined each successive type a factor 3 times bigger
+// which means we can easily define each successive type in terms of three previous ones
+
+// every nullify<T> function returns <val> when <t> equals 1 (true), and null otherwise
+
+// note that it may seem wasteful to define it this way, but when mapped to FPGA
+// these can be translated into parallel circuitry that executes them simultaneously.
+// for other architectures, Qupla will allow the Qupla functions to be replaced with
+// a dll function that uses optimal architecture-specific instructions.
+// we expect a library of common functions to be developed over time
+
+// returns  t ? val : null
+
+func Trit nullify<Trit> (Bool t, Trit val) {
+  return nullify[t, val]
+}
+
+template nullifyFunc<T> {
+ type P [T / 3]
+
+  func T nullify<T> (Bool t, T val) {
+    return nullify<P>(t, val[P * 0 : P]) &
+           nullify<P>(t, val[P * 1 : P]) &
+           nullify<P>(t, val[P * 2 : P])
+  }
+}
+
+use nullifyFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>, <Hash3>, <Hash9>, <Signature>
+
+template nullify2Func<T> {
+  type P [T / 2]
+
+  func T nullify<T> (Bool t, T val) {
+    return nullify<P>(t, val[P * 0 : P]) &
+           nullify<P>(t, val[P * 1 : P])
+  }
+}
+
+use nullify2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>
+
+func Transaction nullify<Transaction>(Bool t, Transaction val) {
+  // transaction size is signature + 6 hashes
+  // note: we could of course nullify each separate field instead
+  //       but I am lazy :-P
+  return nullify<Signature>(t, val.signature) &
+         nullify<Hash3>(t, val[Signature + Hash3 * 0 : Hash3]) &
+         nullify<Hash3>(t, val[Signature + Hash3 * 1 : Hash3])
+}

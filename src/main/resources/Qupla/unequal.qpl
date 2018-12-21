@@ -1,0 +1,41 @@
+// LUT logic: return (Bool) (trit1 != trit2)
+lut unequal {
+  -,- = -
+  -,0 = 1
+  -,1 = 1
+  0,- = 1
+  0,0 = -
+  0,1 = 1
+  1,- = 1
+  1,0 = 1
+  1,1 = -
+}
+
+// returns (Bool) (lhs != rhs)
+
+func Bool unequal<Trit>(Trit lhs, Trit rhs) {
+  return unequal[lhs, rhs]
+}
+
+template unequalFunc<T> {
+  type P [T / 3]
+
+  func Bool unequal<T>(T lhs, T rhs) {
+    return or3[unequal<P>(lhs[P * 0 : P], rhs[P * 0 : P]),
+               unequal<P>(lhs[P * 1 : P], rhs[P * 1 : P]),
+               unequal<P>(lhs[P * 2 : P], rhs[P * 2 : P])]
+  }
+}
+
+use unequalFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+
+template unequal2Func<T> {
+  type P [T / 2]
+
+  func Bool unequal<T>(T lhs, T rhs) {
+    return or[unequal<P>(lhs[P * 0 : P], rhs[P * 0 : P]),
+              unequal<P>(lhs[P * 1 : P], rhs[P * 1 : P])]
+  }
+}
+
+use unequal2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

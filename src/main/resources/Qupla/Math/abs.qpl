@@ -1,0 +1,8 @@
+// returns val < 0 ? -val : val
+
+template absFunc<T> func T abs<T> (T val) {
+  return isNegative[sign<T>(val)] ? neg<T>(val) : val
+}
+
+use absFunc<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use absFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

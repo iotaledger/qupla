@@ -1,0 +1,18 @@
+// returns lhs * rhs
+
+template mulFunc<T> func T mul<T> (T lhs, T rhs) {
+  // use full multiplier but don't return the overflow
+  product = fullMul<T>(lhs, rhs)
+  return product[0 : T]
+}
+
+use mulFunc<Tryte>, <Tiny>, <Int>, <Huge>
+use mulFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+
+
+// test statements
+
+test   200 = mul<Int>(10, 20)
+test -1200 = mul<Int>(-30, 40)
+test -3000 = mul<Int>(50, -60)
+test  5600 = mul<Int>(-70, -80)
