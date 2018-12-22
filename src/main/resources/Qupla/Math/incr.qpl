@@ -1,9 +1,9 @@
 // returns val + 1
 
-template incrFunc<T> func T incr<T> (T val) {
+template incr<T> func T incr<T> (T val) {
   halfSum = halfAdd<T>(val, 1)
   return halfSum[0 : T]
 }
 
-use incrFunc<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use incrFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use incr<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use incr<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

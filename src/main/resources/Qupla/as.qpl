@@ -7,9 +7,9 @@
 // note: as<T>(0) will be more efficiently encoded as all<T>(0)
 //       the latter uses only a single trit to encode the constant
 
-template asFunc<T> func T as<T> (T val) {
+template as<T> func T as<T> (T val) {
   return val
 }
 
-use asFunc<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use asFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use as<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use as<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

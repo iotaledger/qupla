@@ -8,11 +8,11 @@
 // trit column negated which ends up in more efficient code
 // because we don't have to do the negate before adding
 
-template subFunc<T> func T sub<T> (T lhs, T rhs) {
+template sub<T> func T sub<T> (T lhs, T rhs) {
   // use full adder but don't return the carry trit
   sum = fullAdd<T>(lhs, neg<T>(rhs), 0)
   return sum[0 : T]
 }
 
-use subFunc<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use subFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use sub<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use sub<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

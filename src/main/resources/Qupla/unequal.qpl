@@ -17,7 +17,7 @@ func Bool unequal<Trit>(Trit lhs, Trit rhs) {
   return unequal[lhs, rhs]
 }
 
-template unequalFunc<T> {
+template unequal<T> {
   type P [T / 3]
 
   func Bool unequal<T>(T lhs, T rhs) {
@@ -27,9 +27,9 @@ template unequalFunc<T> {
   }
 }
 
-use unequalFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use unequal<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
-template unequal2Func<T> {
+template unequal2<T> {
   type P [T / 2]
 
   func Bool unequal<T>(T lhs, T rhs) {
@@ -38,4 +38,4 @@ template unequal2Func<T> {
   }
 }
 
-use unequal2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use unequal2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

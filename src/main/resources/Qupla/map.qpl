@@ -2,7 +2,7 @@
 // needs to be wrapped in an entity function and accessed through
 // sending effects to work correctly
 
-template mapFunc<K, V>
+template map<K, V>
 {
   type Traversal {
     cmd [Trit]

@@ -20,9 +20,9 @@ type HugeFloat {
   exponent [Tiny2]  // -/+ 3^193,710,244
 }
 
-use asFunc<TinyFloat>, <Float>, <Double>, <HugeFloat>
+use as<TinyFloat>, <Float>, <Double>, <HugeFloat>
 
-template floatFunc<M, E> {
+template float<M, E> {
   type F {
     mantissa [M]
     exponent [E]
@@ -199,5 +199,5 @@ template floatFunc<M, E> {
   }
 }
 
-use printFunc<TinyFloat>, <Float>, <Double>, <HugeFloat>
-use floatFunc<Tiny, Tryte>, <Tiny2, Tryte2>, <Tiny4, Tiny>, <Int2, Tiny2>
+use print<TinyFloat>, <Float>, <Double>, <HugeFloat>
+use float<Tiny, Tryte>, <Tiny2, Tryte2>, <Tiny4, Tiny>, <Int2, Tiny2>

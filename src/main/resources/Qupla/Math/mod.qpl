@@ -1,6 +1,6 @@
 // returns lhs % rhs
 
-template modFunc<T> {
+template mod<T> {
   func T mod<T> (T lhs, T rhs) {
     ret = divMod<T>(lhs, rhs)
     return ret[T : T]
@@ -22,4 +22,4 @@ template modFunc<T> {
   }
 }
 
-use modFunc<Tryte>, <Tiny>, <Int>, <Huge>
+use mod<Tryte>, <Tiny>, <Int>, <Huge>

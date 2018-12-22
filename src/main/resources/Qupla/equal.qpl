@@ -74,7 +74,7 @@ func Bool equal<Trit>(Trit lhs, Trit rhs) {
   return equal[lhs, rhs]
 }
 
-template equalFunc<T> {
+template equal<T> {
   type P [T / 3]
 
   func Bool equal<T>(T lhs, T rhs) {
@@ -85,10 +85,10 @@ template equalFunc<T> {
   }
 }
 
-use equalFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use equal<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 
-template equal2Func<T> {
+template equal2<T> {
   type P [T / 2]
 
   func Bool equal<T>(T lhs, T rhs) {
@@ -98,7 +98,7 @@ template equal2Func<T> {
   }
 }
 
-use equal2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use equal2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
 
 // test statements
 
