@@ -138,9 +138,11 @@ use fullMulFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 template fullMul2Func<T> {
   type T2 [T * 2]
   type P [T / 2]
+  type P3 [P * 3]
 
   func T2 fullMul<T> (T lhs, T rhs) {
-    product = fullMul<T + P>(lhs & as<P>(0), rhs & as<P>(0))
+    zero = all<P>(0)
+    product = fullMul<P3>(lhs & zero, rhs & zero)
     return product[0 : T2]
   }
 }

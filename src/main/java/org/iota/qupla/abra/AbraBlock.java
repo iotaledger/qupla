@@ -29,7 +29,7 @@ public abstract class AbraBlock
   {
     code();
     abra.putInt(tritCode.bufferOffset);
-    abra.putTrits(new String(tritCode.buffer));
+    abra.putTrits(new String(tritCode.buffer, 0, tritCode.bufferOffset));
   }
 
   @Override
