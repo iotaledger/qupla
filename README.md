@@ -111,8 +111,7 @@ More documentation will follow
 
 
 Wishlist for changes to the language:
-* Templates always use { and } (no special case for single functions any more)
-* Implement entity aliases for type/lut/func
+* Implement entity aliases for type/lut
 * Nullify operator (would make code a lot more readable)
 * Arithmetic operators (same)
 * Automatic detection of type specifiers on function calls (same)
