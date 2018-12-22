@@ -45,19 +45,23 @@ assignExpr ::= varName '=' condExpr
 
 returnExpr ::= 'return' condExpr
 
-condExpr ::= mergeExpr ('?' mergeExpr ':' condExpr)*
+condExpr ::= mergeExpr ('?' trueBranch ':' falseBranch)?
+
+trueBranch ::= mergeExpr
+
+falseBranch ::= 'null' | condExpr
 
 mergeExpr ::= concatExpr ('|' concatExpr)*
 
 concatExpr ::= postfixExpr ('&' postfixExpr)*
 
-postfixExpr ::= valueExpr | typeExpr | funcExpr | lutExpr | sliceExpr | ('(' mergeExpr ')')
+postfixExpr ::= valueExpr | typeExpr | funcExpr | lutExpr | sliceExpr | ('(' condExpr ')')
 
 valueExpr ::= trit | integer | float
 
-typeExpr ::= typeName '{' (fieldName '=' mergeExpr)+ '}'
+typeExpr ::= typeName '{' (fieldName '=' condExpr)+ '}'
 
-funcExpr ::= funcName ('<' constExpr(',' constExpr)*  '>')? '(' (mergeExpr (',' mergeExpr)*) ')'
+funcExpr ::= funcName ('<' typeName(',' typeName)*  '>')? '(' (condExpr (',' condExpr)*) ')'
 
 lutExpr ::= lutName '[' (mergeExpr (',' mergeExpr)*) ']'
 

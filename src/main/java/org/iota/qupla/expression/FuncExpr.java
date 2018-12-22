@@ -49,13 +49,13 @@ public class FuncExpr extends BaseExpr
 
     expect(tokenizer, Token.TOK_FUNC_OPEN, "'('");
 
-    args.add(new MergeExpr(tokenizer).optimize());
+    args.add(new CondExpr(tokenizer).optimize());
 
     while (tokenizer.tokenId() == Token.TOK_COMMA)
     {
       tokenizer.nextToken();
 
-      args.add(new MergeExpr(tokenizer).optimize());
+      args.add(new CondExpr(tokenizer).optimize());
     }
 
     expect(tokenizer, Token.TOK_FUNC_CLOSE, "')'");

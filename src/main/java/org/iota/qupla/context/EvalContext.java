@@ -175,7 +175,7 @@ public class EvalContext extends CodeContext
       return;
     }
 
-    if (trit == '-')
+    if (conditional.falseBranch != null && trit == '-')
     {
       conditional.falseBranch.eval(this);
       return;

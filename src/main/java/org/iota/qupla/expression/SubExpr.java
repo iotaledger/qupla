@@ -16,7 +16,7 @@ public class SubExpr extends BaseSubExpr
   {
     super(tokenizer);
 
-    expr = new MergeExpr(tokenizer).optimize();
+    expr = new CondExpr(tokenizer).optimize();
 
     expect(tokenizer, Token.TOK_FUNC_CLOSE, "')'");
   }

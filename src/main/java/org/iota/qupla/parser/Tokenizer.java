@@ -207,6 +207,7 @@ public class Tokenizer
     addToken(Token.TOK_JOIN, "join");
     addToken(Token.TOK_LIMIT, "limit");
     addToken(Token.TOK_LUT, "lut");
+    addToken(Token.TOK_NULL, "null");
     addToken(Token.TOK_RETURN, "return");
     addToken(Token.TOK_STATE, "state");
     addToken(Token.TOK_TEMPLATE, "template");

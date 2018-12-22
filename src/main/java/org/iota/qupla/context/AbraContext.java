@@ -126,6 +126,11 @@ public class AbraContext extends CodeContext
     trueResult.branch(this); //TODO if missing add it
     addSite(trueResult);
 
+    if (conditional.falseBranch == null)
+    {
+      return;
+    }
+
     conditional.falseBranch.eval(this);
     final AbraSite falseBranch = lastSite;
 
@@ -364,8 +369,8 @@ public class AbraContext extends CodeContext
   @Override
   public void finished()
   {
-    abra.append(this);
     abra.code();
+    abra.append(this);
 
     try
     {

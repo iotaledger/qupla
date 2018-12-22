@@ -30,7 +30,8 @@ public class Token
   public static final int TOK_MOD = TOK_MINUS + 1;
   public static final int TOK_MUL = TOK_MOD + 1;
   public static final int TOK_NAME = TOK_MUL + 1;
-  public static final int TOK_NUMBER = TOK_NAME + 1;
+  public static final int TOK_NULL = TOK_NAME + 1;
+  public static final int TOK_NUMBER = TOK_NULL + 1;
   public static final int TOK_PLUS = TOK_NUMBER + 1;
   public static final int TOK_QUESTION = TOK_PLUS + 1;
   public static final int TOK_RETURN = TOK_QUESTION + 1;

@@ -142,10 +142,18 @@ public class FpgaContext extends CodeContext
   @Override
   public void evalConditional(final CondExpr conditional)
   {
+    //TODO proper handling of nullify when condition not in [1, -]
     conditional.condition.eval(this);
-    append(" == 2'b01 ? ");
+    append(" == ");
+    tritVector("1").append(" ? ");
     conditional.trueBranch.eval(this);
     append(" : ");
+    if (conditional.falseBranch == null)
+    {
+      tritVector(new TritVector(conditional.size).trits);
+      return;
+    }
+
     conditional.falseBranch.eval(this);
   }
 
@@ -269,15 +277,12 @@ public class FpgaContext extends CodeContext
 
     for (final LutEntry entry : lut.entries)
     {
-      tritVector(entry.inputs);
-      append(": z <= ");
-      tritVector(entry.outputs);
-      append(";").newline();
+      tritVector(entry.inputs).append(": z <= ");
+      tritVector(entry.outputs).append(";").newline();
     }
 
     append("default: z <= ");
-    tritVector(lut.undefined.trits);
-    append(";").newline();
+    tritVector(lut.undefined.trits).append(";").newline();
     append("endcase").newline().undent();
 
     append("endmodule").newline().newline();
@@ -386,7 +391,6 @@ public class FpgaContext extends CodeContext
     }
 
     log(text + vector + " : " + expr);
-
   }
 
   public void log(final String text)
@@ -397,7 +401,7 @@ public class FpgaContext extends CodeContext
     }
   }
 
-  private void tritVector(final String trits)
+  private CodeContext tritVector(final String trits)
   {
     final int size = trits.length() * 2;
     append(size + "'b");
@@ -419,6 +423,8 @@ public class FpgaContext extends CodeContext
         break;
       }
     }
+
+    return this;
   }
 }
 
