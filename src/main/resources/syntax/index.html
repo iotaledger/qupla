@@ -248,11 +248,11 @@
             
             <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcStmt">funcStmt:</a></p><img border="0" src="diagram/funcStmt.png" height="81" width="373" usemap="#funcStmt.map"><map name="funcStmt.map"><area shape="rect" coords="117,1,225,33" href="#funcSignature" title="funcSignature"><area shape="rect" coords="245,1,323,33" href="#funcBody" title="funcBody"><area shape="rect" coords="117,45,203,77" href="#entityAlias" title="entityAlias"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcStmt">funcStmt:</a></p><img border="0" src="diagram/funcStmt.png" height="37" width="333" usemap="#funcStmt.map"><map name="funcStmt.map"><area shape="rect" coords="97,1,205,33" href="#funcSignature" title="funcSignature"><area shape="rect" coords="225,1,303,33" href="#funcBody" title="funcBody"></map><p>
          
          <div class="ebnf">
             
-            <pre><a href="#funcStmt" title="funcStmt" shape="rect">funcStmt</a> ::= 'func' ( <a href="#funcSignature" title="funcSignature" shape="rect">funcSignature</a> <a href="#funcBody" title="funcBody" shape="rect">funcBody</a> | <a href="#entityAlias" title="entityAlias" shape="rect">entityAlias</a> )</pre>
+            <pre><a href="#funcStmt" title="funcStmt" shape="rect">funcStmt</a> ::= 'func' <a href="#funcSignature" title="funcSignature" shape="rect">funcSignature</a> <a href="#funcBody" title="funcBody" shape="rect">funcBody</a></pre>
             </div>
          </p>
       
@@ -263,8 +263,6 @@
             <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
             
             <li><a href="#templateBody" title="templateBody">templateBody</a></li>
-            
-            <li><a href="#templateStmt" title="templateStmt">templateStmt</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="evalStmt">evalStmt:</a></p><img border="0" src="diagram/evalStmt.png" height="37" width="201" usemap="#evalStmt.map"><map name="evalStmt.map"><area shape="rect" coords="97,1,171,33" href="#funcExpr" title="funcExpr"></map><p>
          
@@ -294,12 +292,12 @@
             
             <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="templateStmt">templateStmt:</a></p><img border="0" src="diagram/templateStmt.png" height="125" width="763" usemap="#templateStmt.map"><map name="templateStmt.map"><area shape="rect" coords="129,45,243,77" href="#templateName" title="templateName"><area shape="rect" coords="333,45,495,77" href="#placeHolderTypeName" title="placeHolderTypeName"><area shape="rect" coords="605,45,681,77" href="#funcStmt" title="funcStmt"><area shape="rect" coords="605,89,713,121" href="#templateBody" title="templateBody"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="templateStmt">templateStmt:</a></p><img border="0" src="diagram/templateStmt.png" height="81" width="723" usemap="#templateStmt.map"><map name="templateStmt.map"><area shape="rect" coords="129,45,243,77" href="#templateName" title="templateName"><area shape="rect" coords="333,45,495,77" href="#placeHolderTypeName" title="placeHolderTypeName"><area shape="rect" coords="585,45,693,77" href="#templateBody" title="templateBody"></map><p>
          
          <div class="ebnf">
             
             <pre><a href="#templateStmt" title="templateStmt" shape="rect">templateStmt</a>
-         ::= 'template' <a href="#templateName" title="templateName" shape="rect">templateName</a> '&lt;' <a href="#placeHolderTypeName" title="placeHolderTypeName" shape="rect">placeHolderTypeName</a> ( ',' <a href="#placeHolderTypeName" title="placeHolderTypeName" shape="rect">placeHolderTypeName</a> )* '&gt;' ( <a href="#funcStmt" title="funcStmt" shape="rect">funcStmt</a> | <a href="#templateBody" title="templateBody" shape="rect">templateBody</a> )</pre>
+         ::= 'template' <a href="#templateName" title="templateName" shape="rect">templateName</a> '&lt;' <a href="#placeHolderTypeName" title="placeHolderTypeName" shape="rect">placeHolderTypeName</a> ( ',' <a href="#placeHolderTypeName" title="placeHolderTypeName" shape="rect">placeHolderTypeName</a> )* '&gt;' <a href="#templateBody" title="templateBody" shape="rect">templateBody</a></pre>
             </div>
          </p>
       
@@ -353,20 +351,18 @@
             
             <li><a href="#useStmt" title="useStmt">useStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="entityAlias">entityAlias:</a></p><img border="0" src="diagram/entityAlias.png" height="37" width="327" usemap="#entityAlias.map"><map name="entityAlias.map"><area shape="rect" coords="29,1,121,33" href="#entityName" title="entityName"><area shape="rect" coords="193,1,297,33" href="#moduleName" title="moduleName"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="entityAlias">entityAlias:</a></p><img border="0" src="diagram/entityAlias.png" height="37" width="377" usemap="#entityAlias.map"><map name="entityAlias.map"><area shape="rect" coords="79,1,171,33" href="#entityName" title="entityName"><area shape="rect" coords="243,1,347,33" href="#moduleName" title="moduleName"></map><p>
          
          <div class="ebnf">
             
             <pre><a href="#entityAlias" title="entityAlias" shape="rect">entityAlias</a>
-         ::= <a href="#entityName" title="entityName" shape="rect">entityName</a> '@' <a href="#moduleName" title="moduleName" shape="rect">moduleName</a></pre>
+         ::= '=' <a href="#entityName" title="entityName" shape="rect">entityName</a> '@' <a href="#moduleName" title="moduleName" shape="rect">moduleName</a></pre>
             </div>
          </p>
       
       <p>referenced by:
          
          <ul>
-            
-            <li><a href="#funcStmt" title="funcStmt">funcStmt</a></li>
             
             <li><a href="#lutStmt" title="lutStmt">lutStmt</a></li>
             

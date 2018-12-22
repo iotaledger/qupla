@@ -1,7 +1,9 @@
 // returns lhs < rhs ? lhs : rhs
 
-template min<T> func T min<T> (T lhs, T rhs) {
-  return isLess[cmp<T>(lhs, rhs)] ? lhs : rhs
+template min<T> {
+  func T min<T> (T lhs, T rhs) {
+    return isLess[cmp<T>(lhs, rhs)] ? lhs : rhs
+  }
 }
 
 use min<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>

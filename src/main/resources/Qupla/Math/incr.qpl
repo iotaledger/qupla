@@ -1,8 +1,10 @@
 // returns val + 1
 
-template incr<T> func T incr<T> (T val) {
-  halfSum = halfAdd<T>(val, 1)
-  return halfSum[0 : T]
+template incr<T> {
+  func T incr<T> (T val) {
+    halfSum = halfAdd<T>(val, 1)
+    return halfSum[0 : T]
+  }
 }
 
 use incr<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>

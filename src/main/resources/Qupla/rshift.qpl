@@ -1,7 +1,9 @@
 // returns val >> 1
 
-template rshift<T> func T rshift<T> (T val) {
-  return 0 & val[0 : T - 1]
+template rshift<T> {
+  func T rshift<T> (T val) {
+    return 0 & val[0 : T - 1]
+  }
 }
 
 use rshift<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>

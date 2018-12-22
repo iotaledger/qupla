@@ -1,11 +1,15 @@
 // returns val
 
-// this function can be used to set a breakpoint in
-// the Qupla code. The Java debugger will break at the
-// corresponding Java code
+// this function can be used to set a breakpoint in the Qupla code.
+// the interpreter will intecept usage of break to achieve this
+// You can set a breakpoint in the Java debugger at the corresponding
+// location in EvalContext.interceptCall
 
-template break<T> func T break<T> (T val) {
-  return val
+
+template break<T> {
+  func T break<T> (T val) {
+    return val
+  }
 }
 
 use break<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>

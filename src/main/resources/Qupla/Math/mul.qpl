@@ -1,9 +1,11 @@
 // returns lhs * rhs
 
-template mul<T> func T mul<T> (T lhs, T rhs) {
-  // use full multiplier but don't return the overflow
-  product = fullMul<T>(lhs, rhs)
-  return product[0 : T]
+template mul<T> {
+  func T mul<T> (T lhs, T rhs) {
+    // use full multiplier but don't return the overflow
+    product = fullMul<T>(lhs, rhs)
+    return product[0 : T]
+  }
 }
 
 use mul<Tryte>, <Tiny>, <Int>, <Huge>

@@ -1,7 +1,9 @@
 // returns val < 0 ? -val : val
 
-template abs<T> func T abs<T> (T val) {
-  return isNegative[sign<T>(val)] ? neg<T>(val) : val
+template abs<T> {
+  func T abs<T> (T val) {
+    return isNegative[sign<T>(val)] ? neg<T>(val) : val
+  }
 }
 
 use abs<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>

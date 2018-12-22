@@ -1,7 +1,9 @@
 // returns lhs > rhs ? lhs : rhs
 
-template max<T> func T max<T> (T lhs, T rhs) {
-  return isGreater[cmp<T>(lhs, rhs)] ? lhs : rhs
+template max<T> {
+  func T max<T> (T lhs, T rhs) {
+    return isGreater[cmp<T>(lhs, rhs)] ? lhs : rhs
+  }
 }
 
 use max<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>

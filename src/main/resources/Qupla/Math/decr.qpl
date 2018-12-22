@@ -1,8 +1,10 @@
 // returns val - 1
 
-template decr<T> func T decr<T> (T val) {
-  halfSum = halfAdd<T>(val, -)
-  return halfSum[0 : T]
+template decr<T> {
+  func T decr<T> (T val) {
+    halfSum = halfAdd<T>(val, -)
+    return halfSum[0 : T]
+  }
 }
 
 use decr<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
