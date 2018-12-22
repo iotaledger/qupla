@@ -500,11 +500,11 @@
             
             <li><a href="#funcBody" title="funcBody">funcBody</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="condExpr">condExpr:</a></p><img border="0" src="diagram/condExpr.png" height="69" width="523" usemap="#condExpr.map"><map name="condExpr.map"><area shape="rect" coords="29,17,117,49" href="#mergeExpr" title="mergeExpr"><area shape="rect" coords="223,17,311,49" href="#mergeExpr" title="mergeExpr"><area shape="rect" coords="375,17,453,49" href="#condExpr" title="condExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="condExpr">condExpr:</a></p><img border="0" src="diagram/condExpr.png" height="69" width="501" usemap="#condExpr.map"><map name="condExpr.map"><area shape="rect" coords="29,1,117,33" href="#mergeExpr" title="mergeExpr"><area shape="rect" coords="203,33,293,65" href="#trueBranch" title="trueBranch"><area shape="rect" coords="357,33,451,65" href="#falseBranch" title="falseBranch"></map><p>
          
          <div class="ebnf">
             
-            <pre><a href="#condExpr" title="condExpr" shape="rect">condExpr</a> ::= <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> ( '?' <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> ':' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a> )*</pre>
+            <pre><a href="#condExpr" title="condExpr" shape="rect">condExpr</a> ::= <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> ( '?' <a href="#trueBranch" title="trueBranch" shape="rect">trueBranch</a> ':' <a href="#falseBranch" title="falseBranch" shape="rect">falseBranch</a> )?</pre>
             </div>
          </p>
       
@@ -514,9 +514,46 @@
             
             <li><a href="#assignExpr" title="assignExpr">assignExpr</a></li>
             
-            <li><a href="#condExpr" title="condExpr">condExpr</a></li>
+            <li><a href="#falseBranch" title="falseBranch">falseBranch</a></li>
+            
+            <li><a href="#funcExpr" title="funcExpr">funcExpr</a></li>
+            
+            <li><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></li>
             
             <li><a href="#returnExpr" title="returnExpr">returnExpr</a></li>
+            
+            <li><a href="#typeExpr" title="typeExpr">typeExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="trueBranch">trueBranch:</a></p><img border="0" src="diagram/trueBranch.png" height="37" width="147" usemap="#trueBranch.map"><map name="trueBranch.map"><area shape="rect" coords="29,1,117,33" href="#mergeExpr" title="mergeExpr"></map><p>
+         
+         <div class="ebnf">
+            
+            <pre><a href="#trueBranch" title="trueBranch" shape="rect">trueBranch</a>
+         ::= <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a></pre>
+            </div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#condExpr" title="condExpr">condExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="falseBranch">falseBranch:</a></p><img border="0" src="diagram/falseBranch.png" height="81" width="177" usemap="#falseBranch.map"><map name="falseBranch.map"><area shape="rect" coords="49,45,127,77" href="#condExpr" title="condExpr"></map><p>
+         
+         <div class="ebnf">
+            
+            <pre><a href="#falseBranch" title="falseBranch" shape="rect">falseBranch</a>
+         ::= 'null'
+           | <a href="#condExpr" title="condExpr" shape="rect">condExpr</a></pre>
+            </div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#condExpr" title="condExpr">condExpr</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="mergeExpr">mergeExpr:</a></p><img border="0" src="diagram/mergeExpr.png" height="81" width="189" usemap="#mergeExpr.map"><map name="mergeExpr.map"><area shape="rect" coords="49,45,139,77" href="#concatExpr" title="concatExpr"></map><p>
          
@@ -533,13 +570,9 @@
             
             <li><a href="#condExpr" title="condExpr">condExpr</a></li>
             
-            <li><a href="#funcExpr" title="funcExpr">funcExpr</a></li>
-            
             <li><a href="#lutExpr" title="lutExpr">lutExpr</a></li>
             
-            <li><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></li>
-            
-            <li><a href="#typeExpr" title="typeExpr">typeExpr</a></li>
+            <li><a href="#trueBranch" title="trueBranch">trueBranch</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="concatExpr">concatExpr:</a></p><img border="0" src="diagram/concatExpr.png" height="81" width="189" usemap="#concatExpr.map"><map name="concatExpr.map"><area shape="rect" coords="49,45,139,77" href="#postfixExpr" title="postfixExpr"></map><p>
          
@@ -556,7 +589,7 @@
             
             <li><a href="#mergeExpr" title="mergeExpr">mergeExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="postfixExpr">postfixExpr:</a></p><img border="0" src="diagram/postfixExpr.png" height="257" width="279" usemap="#postfixExpr.map"><map name="postfixExpr.map"><area shape="rect" coords="49,1,131,33" href="#valueExpr" title="valueExpr"><area shape="rect" coords="49,45,125,77" href="#typeExpr" title="typeExpr"><area shape="rect" coords="49,89,123,121" href="#funcExpr" title="funcExpr"><area shape="rect" coords="49,133,113,165" href="#lutExpr" title="lutExpr"><area shape="rect" coords="49,177,125,209" href="#sliceExpr" title="sliceExpr"><area shape="rect" coords="95,221,183,253" href="#mergeExpr" title="mergeExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="postfixExpr">postfixExpr:</a></p><img border="0" src="diagram/postfixExpr.png" height="257" width="269" usemap="#postfixExpr.map"><map name="postfixExpr.map"><area shape="rect" coords="49,1,131,33" href="#valueExpr" title="valueExpr"><area shape="rect" coords="49,45,125,77" href="#typeExpr" title="typeExpr"><area shape="rect" coords="49,89,123,121" href="#funcExpr" title="funcExpr"><area shape="rect" coords="49,133,113,165" href="#lutExpr" title="lutExpr"><area shape="rect" coords="49,177,125,209" href="#sliceExpr" title="sliceExpr"><area shape="rect" coords="95,221,173,253" href="#condExpr" title="condExpr"></map><p>
          
          <div class="ebnf">
             
@@ -566,7 +599,7 @@
            | <a href="#funcExpr" title="funcExpr" shape="rect">funcExpr</a>
            | <a href="#lutExpr" title="lutExpr" shape="rect">lutExpr</a>
            | <a href="#sliceExpr" title="sliceExpr" shape="rect">sliceExpr</a>
-           | '(' <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> ')'</pre>
+           | '(' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a> ')'</pre>
             </div>
          </p>
       
@@ -595,11 +628,11 @@
             
             <li><a href="#testStmt" title="testStmt">testStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="typeExpr">typeExpr:</a></p><img border="0" src="diagram/typeExpr.png" height="53" width="539" usemap="#typeExpr.map"><map name="typeExpr.map"><area shape="rect" coords="29,17,113,49" href="#typeName" title="typeName"><area shape="rect" coords="201,17,283,49" href="#fieldName" title="fieldName"><area shape="rect" coords="353,17,441,49" href="#mergeExpr" title="mergeExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="typeExpr">typeExpr:</a></p><img border="0" src="diagram/typeExpr.png" height="53" width="529" usemap="#typeExpr.map"><map name="typeExpr.map"><area shape="rect" coords="29,17,113,49" href="#typeName" title="typeName"><area shape="rect" coords="201,17,283,49" href="#fieldName" title="fieldName"><area shape="rect" coords="353,17,431,49" href="#condExpr" title="condExpr"></map><p>
          
          <div class="ebnf">
             
-            <pre><a href="#typeExpr" title="typeExpr" shape="rect">typeExpr</a> ::= <a href="#typeName" title="typeName" shape="rect">typeName</a> '{' ( <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> '=' <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> )+ '}'</pre>
+            <pre><a href="#typeExpr" title="typeExpr" shape="rect">typeExpr</a> ::= <a href="#typeName" title="typeName" shape="rect">typeName</a> '{' ( <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> '=' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a> )+ '}'</pre>
             </div>
          </p>
       
@@ -609,11 +642,11 @@
             
             <li><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcExpr">funcExpr:</a></p><img border="0" src="diagram/funcExpr.png" height="97" width="663" usemap="#funcExpr.map"><map name="funcExpr.map"><area shape="rect" coords="29,45,111,77" href="#funcName" title="funcName"><area shape="rect" coords="221,45,303,77" href="#constExpr" title="constExpr"><area shape="rect" coords="479,45,567,77" href="#mergeExpr" title="mergeExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcExpr">funcExpr:</a></p><img border="0" src="diagram/funcExpr.png" height="97" width="655" usemap="#funcExpr.map"><map name="funcExpr.map"><area shape="rect" coords="29,45,111,77" href="#funcName" title="funcName"><area shape="rect" coords="221,45,305,77" href="#typeName" title="typeName"><area shape="rect" coords="481,45,559,77" href="#condExpr" title="condExpr"></map><p>
          
          <div class="ebnf">
             
-            <pre><a href="#funcExpr" title="funcExpr" shape="rect">funcExpr</a> ::= <a href="#funcName" title="funcName" shape="rect">funcName</a> ( '&lt;' <a href="#constExpr" title="constExpr" shape="rect">constExpr</a> ( ',' <a href="#constExpr" title="constExpr" shape="rect">constExpr</a> )* '&gt;' )? '(' <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> ( ',' <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> )* ')'</pre>
+            <pre><a href="#funcExpr" title="funcExpr" shape="rect">funcExpr</a> ::= <a href="#funcName" title="funcName" shape="rect">funcName</a> ( '&lt;' <a href="#typeName" title="typeName" shape="rect">typeName</a> ( ',' <a href="#typeName" title="typeName" shape="rect">typeName</a> )* '&gt;' )? '(' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a> ( ',' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a> )* ')'</pre>
             </div>
          </p>
       
@@ -670,8 +703,6 @@
          <ul>
             
             <li><a href="#constFactor" title="constFactor">constFactor</a></li>
-            
-            <li><a href="#funcExpr" title="funcExpr">funcExpr</a></li>
             
             <li><a href="#sliceExpr" title="sliceExpr">sliceExpr</a></li>
             

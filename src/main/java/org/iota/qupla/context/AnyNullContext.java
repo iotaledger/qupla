@@ -64,12 +64,10 @@ public class AnyNullContext extends CodeContext
 
     // if either expression is non-null the result is non-null
     conditional.trueBranch.eval(this);
-    if (!isNull)
+    if (isNull && conditional.falseBranch != null)
     {
-      return;
+      conditional.falseBranch.eval(this);
     }
-
-    conditional.falseBranch.eval(this);
   }
 
   @Override

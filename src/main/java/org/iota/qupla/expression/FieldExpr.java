@@ -21,7 +21,7 @@ public class FieldExpr extends BaseSubExpr
 
     expect(tokenizer, Token.TOK_EQUAL, "'='");
 
-    expr = new MergeExpr(tokenizer).optimize();
+    expr = new CondExpr(tokenizer).optimize();
   }
 
   @Override

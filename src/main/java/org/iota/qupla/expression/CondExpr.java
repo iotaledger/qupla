@@ -35,6 +35,12 @@ public class CondExpr extends BaseExpr
 
       expect(tokenizer, Token.TOK_COLON, "':'");
 
+      if (tokenizer.tokenId() == Token.TOK_NULL)
+      {
+        tokenizer.nextToken();
+        return;
+      }
+
       falseBranch = new CondExpr(tokenizer).optimize();
     }
   }
@@ -63,12 +69,15 @@ public class CondExpr extends BaseExpr
     constTypeInfo = saved;
     trueBranch.analyze();
 
-    constTypeInfo = saved;
-    falseBranch.analyze();
-
-    if (trueBranch.size != falseBranch.size)
+    if (falseBranch != null)
     {
-      falseBranch.error("Conditional branches size mismatch");
+      constTypeInfo = saved;
+      falseBranch.analyze();
+
+      if (trueBranch.size != falseBranch.size)
+      {
+        falseBranch.error("Conditional branches size mismatch");
+      }
     }
 
     size = trueBranch.size;
@@ -82,7 +91,13 @@ public class CondExpr extends BaseExpr
 
     if (trueBranch != null)
     {
-      append(" ? ").append(trueBranch).append(" : ").append(falseBranch);
+      append(" ? ").append(trueBranch).append(" : ");
+      if (falseBranch == null)
+      {
+        return append("null");
+      }
+
+      append(falseBranch);
     }
 
     return this;
