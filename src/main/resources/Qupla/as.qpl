@@ -3,7 +3,9 @@
 // this function can be used as a cast operator
 // for constants to cast them to specific size
 // it can be handy in this case for example:
-// return f(a) & as<Tryte>(0) & f(b)
+// return f(a) & as<Tryte>(12) & f(b)
+// note: as<T>(0) will be more efficiently encoded as all<T>(0)
+//       the latter uses only a single trit to encode the constant
 
 template asFunc<T> func T as<T> (T val) {
   return val

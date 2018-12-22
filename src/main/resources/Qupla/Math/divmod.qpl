@@ -170,32 +170,37 @@ use divModFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 template divMod2Func<T> {
   type T2 [T * 2]
   type P [T / 2]
- 
+  type P3 [P * 3]
+
   func T2 divMod<T> (T lhs, T rhs) {
-    remQuo = divMod<T + P>(lhs & as<P>(0), rhs & as<P>(0))
+    zero = all<P>(0)
+    remQuo = divMod<P3>(lhs & zero, rhs & zero)
     rem = remQuo[0 : T]
-    quo = remQuo[T + P : T]
+    quo = remQuo[P3 : T]
     return rem & quo
   }
 
   func T2 ceilDivMod<T> (T lhs, T rhs) {
-    remQuo = ceilDivMod<T + P>(lhs & as<P>(0), rhs & as<P>(0))
+    zero = all<P>(0)
+    remQuo = ceilDivMod<P3>(lhs & zero, rhs & zero)
     rem = remQuo[0 : T]
-    quo = remQuo[T + P : T]
+    quo = remQuo[P3 : T]
     return rem & quo
   }
 
   func T2 floorDivMod<T> (T lhs, T rhs) {
-    remQuo = floorDivMod<T + P>(lhs & as<P>(0), rhs & as<P>(0))
+    zero = all<P>(0)
+    remQuo = floorDivMod<P3>(lhs & zero, rhs & zero)
     rem = remQuo[0 : T]
-    quo = remQuo[T + P : T]
+    quo = remQuo[P3 : T]
     return rem & quo
   }
 
   func T2 roundDivMod<T> (T lhs, T rhs) {
-    remQuo = roundDivMod<T + P>(lhs & as<P>(0), rhs & as<P>(0))
+    zero = all<P>(0)
+    remQuo = roundDivMod<P3>(lhs & zero, rhs & zero)
     rem = remQuo[0 : T]
-    quo = remQuo[T + P : T]
+    quo = remQuo[P3 : T]
     return rem & quo
   }
 }

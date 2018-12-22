@@ -29,7 +29,7 @@ func State transform(State s, Tiny round) {
 
   // calculate the new state for this round
   newState = curlRound(s)
-  
+
   // here comes the interesting part, we're going to use a merger operation,
   // which is an operation that returns the single operand that is non-null
   // note that a merger will fail when multiple operands are non-null

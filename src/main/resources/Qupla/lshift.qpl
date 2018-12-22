@@ -24,7 +24,7 @@ template lshiftNFunc<T> {
   }
 
   func T lshiftN9<T> (T val, Tiny n, Trit sign) {
-    lshift9 = val[9 : T - 9] & as<9>(0)
+    lshift9 = val[Tiny : T - Tiny] & all<Tiny>(0)
     pos = isPositive[sign]
     return nullify<T>(isZero[sign], lshift9) |
            lshiftN<T>(nullify<T>(pos, lshift9), nullify<Tiny>(pos, n))

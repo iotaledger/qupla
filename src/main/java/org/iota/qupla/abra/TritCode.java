@@ -5,7 +5,8 @@ import org.iota.qupla.helper.TritVector;
 
 public class TritCode
 {
-  public char[] buffer = new char[0];
+  public static final int[] sizes = new int[300];
+  public char[] buffer = new char[32];
   public int bufferOffset;
 
   public int getInt(final int size)
@@ -61,31 +62,52 @@ public class TritCode
 
   public TritCode putInt(final int value)
   {
-    // sizes[value < 0 ? 299 : value < 298 ? value : 298]++;
+    sizes[value < 0 ? 299 : value < 298 ? value : 298]++;
 
-    if (value >= 0)
+    if (true)
     {
-      if (value < 2)
+      // binary coded trit value
+      int v = value;
+
+      //      if (v != 0)
+      //      {
+      //        // slightly better encoding because powers of 2 are now encoded with 1 trit less
+      //        v--;
+      //        putTrit((v & 1) == 0 ? '-' : '1');
+      //        for (v >>= 1; v != 0; v >>= 1)
+      //        {
+      //          putTrit((v & 1) == 0 ? '-' : '1');
+      //        }
+      //      }
+
+      for (; v != 0; v >>= 1)
       {
-        return putTrit(value == 0 ? '0' : '1');
+        putTrit((v & 1) == 0 ? '-' : '1');
       }
 
-      if (value == 2)
-      {
-        return putTrits("-0");
-      }
+      return putTrit('0');
+    }
 
-      if (value < 30)
+    // most-used trit value
+    if (value < 2)
+    {
+      return putTrit(value == 0 ? '0' : '1');
+    }
+
+    putTrit('-');
+
+    int v = value >> 1;
+    if (v != 0)
+    {
+      v--;
+      putTrit((v & 1) == 0 ? '-' : '1');
+      for (v >>= 1; v != 0; v >>= 1)
       {
-        // 3-trit value
-        return putTrits("-1").putInt(value - 3 - 13, 3);
+        putTrit((v & 1) == 0 ? '-' : '1');
       }
     }
 
-    // encode as minimum required trits length/value
-    final TritVector tmp = new TritVector();
-    tmp.fromLong(value);
-    return putTrits("--").putInt(tmp.trits.length()).putTrits(tmp.trits);
+    return putTrit('0');
   }
 
   public TritCode putInt(final int value, final int size)
@@ -124,9 +146,9 @@ public class TritCode
       return this;
     }
 
-    // expand buffer by 10K chars and try again
+    // double buffer size and try again
     final char[] old = buffer;
-    buffer = new char[old.length + 10000];
+    buffer = new char[old.length * 2];
     System.arraycopy(old, 0, buffer, 0, bufferOffset);
     return putTrits(trits);
   }
@@ -134,7 +156,7 @@ public class TritCode
   @Override
   public String toString()
   {
-    final int charsLeft = buffer.length - bufferOffset;
-    return new String(buffer, bufferOffset, charsLeft > 40 ? 40 : charsLeft);
+    final int start = bufferOffset > 40 ? bufferOffset - 40 : 0;
+    return bufferOffset + " " + new String(buffer, start, bufferOffset - start);
   }
 }

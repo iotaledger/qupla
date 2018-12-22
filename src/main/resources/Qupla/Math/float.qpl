@@ -28,6 +28,7 @@ template floatFunc<M, E> {
     exponent [E]
   }
   type M2 [M * 2]
+  type M3 [M * 3]
 
   func F floatAdd<M, E> (F lhs, F rhs) {
     // compare exponents, make sure to add smaller exponent value to larger exponent value
@@ -128,8 +129,8 @@ template floatFunc<M, E> {
   }
 
   func F floatDivNonZero<M, E> (F lhs, F rhs) {
-    zero = as<M>(0)
-    quotient = div<M * 3>(zero & zero & lhs.mantissa, rhs.mantissa & zero & zero)
+    zero = all<M>(0)
+    quotient = div<M3>(zero & zero & lhs.mantissa, rhs.mantissa & zero & zero)
     sum = sub<E>(lhs.exponent, rhs.exponent)
     isNormalized = isZero[quotient[M * 2]]
 

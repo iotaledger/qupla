@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.iota.qupla.context.CodeContext;
 import org.iota.qupla.expression.base.BaseExpr;
-import org.iota.qupla.expression.constant.ConstExpr;
+import org.iota.qupla.expression.constant.ConstTypeName;
 import org.iota.qupla.parser.Token;
 import org.iota.qupla.parser.Tokenizer;
 import org.iota.qupla.statement.FuncStmt;
@@ -36,12 +36,12 @@ public class FuncExpr extends BaseExpr
     {
       tokenizer.nextToken();
 
-      funcTypes.add(new ConstExpr(tokenizer));
+      funcTypes.add(new ConstTypeName(tokenizer));
       while (tokenizer.tokenId() == Token.TOK_COMMA)
       {
         tokenizer.nextToken();
 
-        funcTypes.add(new ConstExpr(tokenizer));
+        funcTypes.add(new ConstTypeName(tokenizer));
       }
 
       expect(tokenizer, Token.TOK_TEMPL_CLOSE, "'>'");

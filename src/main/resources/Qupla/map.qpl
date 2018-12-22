@@ -19,9 +19,9 @@ template mapFunc<K, V>
     return traverse<K, V>(param)
   }
   
-  func V as<K, V> (V val) {
-  return val
-}
+  func V all<K, V> (Trit val) {
+    return all<V>(val)
+  }
 
   func Traversal nullify<K, V> (Bool t, Traversal param) {
     return Traversal {
@@ -65,7 +65,7 @@ template mapFunc<K, V>
 
     get = isZero[param.cmd]
     set = isOne[param.cmd]
-    value = get ? oldValue : set ? param.value : as<K, V>(0)
+    value = get ? oldValue : set ? param.value : all<K, V>(0)
 
     return oldValue
   }

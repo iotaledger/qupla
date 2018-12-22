@@ -119,6 +119,7 @@ public class AbraContext extends CodeContext
 
     // create a site for nullify<size>(trueConditon, trueBranch)
     final AbraSiteKnot trueResult = new AbraSiteKnot();
+    trueResult.size = conditional.size;
     trueResult.inputs.add(trueCondition);
     trueResult.inputs.add(trueBranch);
     trueResult.name = "nullify$" + conditional.size;
@@ -130,6 +131,7 @@ public class AbraContext extends CodeContext
 
     // create a site for not[trueConditon]
     final AbraSiteKnot falseCondition = new AbraSiteKnot();
+    falseCondition.size = 1;
     falseCondition.inputs.add(trueCondition);
     falseCondition.name = "not$0";
     falseCondition.lut(this); //TODO if missing add it
@@ -137,6 +139,7 @@ public class AbraContext extends CodeContext
 
     // create a site for nullify<size>(falseConditon, falseBranch)
     final AbraSiteKnot falseResult = new AbraSiteKnot();
+    falseResult.size = conditional.size;
     falseResult.inputs.add(falseCondition);
     falseResult.inputs.add(falseBranch);
     falseResult.name = "nullify$" + conditional.size;
@@ -145,6 +148,7 @@ public class AbraContext extends CodeContext
 
     // create a site for trueResult | falseResult
     final AbraSiteMerge merge = new AbraSiteMerge();
+    merge.size = conditional.size;
     merge.inputs.add(trueResult);
     merge.inputs.add(falseResult);
     addSite(merge);
@@ -361,6 +365,7 @@ public class AbraContext extends CodeContext
   public void finished()
   {
     abra.append(this);
+    abra.code();
 
     try
     {

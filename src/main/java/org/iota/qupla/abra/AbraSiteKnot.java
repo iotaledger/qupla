@@ -73,15 +73,12 @@ public class AbraSiteKnot extends AbraSite
 
     final AbraSiteParam targetSite = new AbraSiteParam();
     targetSite.size = size;
-    targetSite.index = branch.inputs.size();
-    targetSite.name = "P" + targetSite.index;
+    targetSite.name = "P" + branch.inputs.size();
     branch.inputs.add(targetSite);
 
     final AbraSiteMerge merge = new AbraSiteMerge();
-    merge.inputs.add(targetSite);
     merge.size = size;
-    merge.index = branch.inputs.size();
-    branch.sites.add(merge);
+    merge.inputs.add(targetSite);
     branch.outputs.add(merge);
 
     context.abra.branches.add(branch);
@@ -121,31 +118,26 @@ public class AbraSiteKnot extends AbraSite
     {
       final AbraSiteParam site = new AbraSiteParam();
       site.size = start;
-      site.index = branch.inputs.size();
-      site.name = "P" + site.index;
+      site.name = "P" + branch.inputs.size();
       branch.inputs.add(site);
     }
 
     final AbraSiteParam targetSite = new AbraSiteParam();
     targetSite.size = size;
-    targetSite.index = branch.inputs.size();
-    targetSite.name = "P" + targetSite.index;
+    targetSite.name = "P" + branch.inputs.size();
     branch.inputs.add(targetSite);
 
     if (start + size < inputSize)
     {
       final AbraSiteParam site = new AbraSiteParam();
       site.size = inputSize - start - size;
-      site.index = branch.inputs.size();
-      site.name = "P" + site.index;
+      site.name = "P" + branch.inputs.size();
       branch.inputs.add(site);
     }
 
     final AbraSiteMerge merge = new AbraSiteMerge();
-    merge.inputs.add(targetSite);
     merge.size = size;
-    merge.index = branch.inputs.size();
-    branch.sites.add(merge);
+    merge.inputs.add(targetSite);
     branch.outputs.add(merge);
 
     context.abra.branches.add(branch);
@@ -165,13 +157,12 @@ public class AbraSiteKnot extends AbraSite
 
     // create branch that has 1 input of 1 trit
     final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = branchName;
     branch.size = size;
+    branch.name = branchName;
 
     final AbraSiteParam param = new AbraSiteParam();
-    param.index = 0;
-    param.name = "dummy";
     param.size = 1;
+    param.name = "dummy";
     branch.inputs.add(param);
 
     final AbraSiteKnot siteMin = vectorTritLut(context, branch, "constMin$0");
@@ -179,7 +170,6 @@ public class AbraSiteKnot extends AbraSite
     final AbraSiteKnot siteZero = vectorTritLut(context, branch, "constZero$0");
 
     final AbraSiteKnot constant = new AbraSiteKnot();
-    constant.index = 4;
     constant.size = branch.size;
     for (int i = 0; i < branch.size; i++)
     {
@@ -188,7 +178,6 @@ public class AbraSiteKnot extends AbraSite
     }
 
     constant.concat(context);
-    branch.sites.add(constant);
     branch.outputs.add(constant);
 
     context.abra.branches.add(branch);
@@ -198,11 +187,14 @@ public class AbraSiteKnot extends AbraSite
 
   public AbraSiteKnot vectorTritLut(final AbraContext context, final AbraBlockBranch branch, final String lutName)
   {
+    final AbraSite input = branch.inputs.get(0);
+
     final AbraSiteKnot site = new AbraSiteKnot();
-    site.index = branch.sites.size() + 1;
+    site.size = 3;
     site.name = lutName;
-    site.size = 1;
-    site.inputs.add(branch.inputs.get(0));
+    site.inputs.add(input);
+    site.inputs.add(input);
+    site.inputs.add(input);
     site.lut(context);
     branch.sites.add(site);
     return site;
