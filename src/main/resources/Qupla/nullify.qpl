@@ -24,7 +24,7 @@ func Trit nullify<Trit> (Bool t, Trit val) {
   return nullify[t, val]
 }
 
-template nullifyFunc<T> {
+template nullify<T> {
  type P [T / 3]
 
   func T nullify<T> (Bool t, T val) {
@@ -34,9 +34,9 @@ template nullifyFunc<T> {
   }
 }
 
-use nullifyFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>, <Hash3>, <Hash9>, <Signature>
+use nullify<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>, <Hash3>, <Hash9>, <Signature>
 
-template nullify2Func<T> {
+template nullify2<T> {
   type P [T / 2]
 
   func T nullify<T> (Bool t, T val) {
@@ -45,7 +45,7 @@ template nullify2Func<T> {
   }
 }
 
-use nullify2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>
+use nullify2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>
 
 func Transaction nullify<Transaction>(Bool t, Transaction val) {
   // transaction size is signature + 6 hashes

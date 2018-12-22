@@ -46,13 +46,7 @@ public class TemplateStmt extends BaseExpr
 
     expect(tokenizer, Token.TOK_TEMPL_CLOSE, "',' or '>'");
 
-    if (tokenizer.tokenId() == Token.TOK_FUNC)
-    {
-      funcs.add(new FuncStmt(tokenizer));
-      return;
-    }
-
-    expect(tokenizer, Token.TOK_GROUP_OPEN, "func or '{'");
+    expect(tokenizer, Token.TOK_GROUP_OPEN, "'{'");
 
     while (tokenizer.tokenId() == Token.TOK_TYPE)
     {
@@ -79,10 +73,6 @@ public class TemplateStmt extends BaseExpr
   public BaseExpr append()
   {
     appendSignature();
-    if (funcs.size() == 1 && types.size() == 0)
-    {
-      return append(funcs.get(0));
-    }
 
     append("{").newline().indent();
 

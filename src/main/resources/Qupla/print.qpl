@@ -1,10 +1,13 @@
 // returns val
 
 // this function can be used to print a value to the console
+// the interpreter will intecept usage of print to achieve this
 
-template printFunc<T> func T print<T> (T val) {
-  return val
+template print<T> {
+  func T print<T> (T val) {
+    return val
+  }
 }
 
-use printFunc<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use printFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>
+use print<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use print<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>

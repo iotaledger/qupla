@@ -14,7 +14,7 @@ func Trit neg<Trit> (Trit val) {
   return neg[val]
 }
 
-template negFunc<T> {
+template neg<T> {
   type P [T / 3]
 
   func T neg<T> (T val) {
@@ -24,9 +24,9 @@ template negFunc<T> {
   }
 }
 
-use negFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use neg<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
-template neg2Func<T> {
+template neg2<T> {
   type P [T / 2]
 
   func T neg<T> (T val) {
@@ -35,4 +35,4 @@ template neg2Func<T> {
   }
 }
 
-use neg2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use neg2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

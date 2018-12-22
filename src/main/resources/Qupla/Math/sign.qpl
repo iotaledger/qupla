@@ -37,7 +37,7 @@ func Trit sign<Trit> (Trit val) {
   return val
 }
 
-template signFunc<T> {
+template sign<T> {
   type P [T / 3]
 
   func Trit sign<T> (T val) {
@@ -47,9 +47,9 @@ template signFunc<T> {
   }
 }
 
-use signFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use sign<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
-template sign2Func<T> {
+template sign2<T> {
   type P [T / 2]
 
   func Trit sign<T> (T val) {
@@ -59,4 +59,4 @@ template sign2Func<T> {
   }
 }
 
-use sign2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use sign2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

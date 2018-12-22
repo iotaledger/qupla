@@ -9,13 +9,13 @@ typeStmt ::= 'type' typeName (typeSize | ('{' (fieldName typeSize)+ '}') | entit
 
 lutStmt ::= 'lut' lutName (('{' (tritList '=' tritList)+ '}') | entityAlias)
 
-funcStmt ::= 'func' ((funcSignature funcBody) | entityAlias)
+funcStmt ::= 'func' funcSignature funcBody
 
 evalStmt ::= 'eval' funcExpr
 
 testStmt ::= 'test' valueExpr '=' funcExpr
 
-templateStmt ::= 'template' templateName '<' (placeHolderTypeName (',' placeHolderTypeName)*) '>' (funcStmt | templateBody)
+templateStmt ::= 'template' templateName '<' (placeHolderTypeName (',' placeHolderTypeName)*) '>' templateBody
 
 templateBody ::= '{' typeStmt* funcStmt+ '}'
 
@@ -24,7 +24,7 @@ useStmt ::= 'use' templateName typeInstantiation (',' typeInstantiation)*
 typeInstantiation ::= '<' (typeName (',' typeName)*) '>'
 
 
-entityAlias ::= entityName '@' moduleName
+entityAlias ::= '=' entityName '@' moduleName
 
 
 funcSignature ::= typeName funcName ('<' typeName (',' typeName)* '>')? '(' (funcParam (',' funcParam)*) ')'

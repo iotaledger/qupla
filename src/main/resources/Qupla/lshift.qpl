@@ -1,15 +1,17 @@
 // return val << 1
 
-template lshiftFunc<T> func T lshift<T> (T val) {
-  return val[1 : T - 1] & 0
+template lshift<T> {
+  func T lshift<T> (T val) {
+    return val[1 : T - 1] & 0
+  }
 }
 
-use lshiftFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use lshiftFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>
+use lshift<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use lshift<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>
 
 
 // ************* WORK IN PROGRESS, attempt at creating lshiftN(val, n)
-template lshiftNFunc<T> {
+template lshiftN<T> {
   func T lshiftN<T> (T val, Tiny n) {
     nmin9 = sub<Tiny>(n, 9)
     sign = sign<Tiny>(nmin9)
@@ -31,4 +33,4 @@ template lshiftNFunc<T> {
   }
 }
 
-use lshiftNFunc<Int>, <Huge>, <Hash>
+use lshiftN<Int>, <Huge>, <Hash>

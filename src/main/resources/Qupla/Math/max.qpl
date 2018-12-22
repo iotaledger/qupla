@@ -1,8 +1,10 @@
 // returns lhs > rhs ? lhs : rhs
 
-template maxFunc<T> func T max<T> (T lhs, T rhs) {
-  return isGreater[cmp<T>(lhs, rhs)] ? lhs : rhs
+template max<T> {
+  func T max<T> (T lhs, T rhs) {
+    return isGreater[cmp<T>(lhs, rhs)] ? lhs : rhs
+  }
 }
 
-use maxFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use maxFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use max<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use max<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

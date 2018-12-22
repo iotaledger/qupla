@@ -1,6 +1,6 @@
 // returns lhs / rhs
 
-template divFunc<T> {
+template div<T> {
   func T div<T> (T lhs, T rhs) {
     ret = divMod<T>(lhs, rhs)
     return ret[0 : T]
@@ -22,7 +22,7 @@ template divFunc<T> {
   }
 }
 
-use divFunc<Tryte>, <Tiny>, <Int>, <Huge>
-use divFunc<Tryte2>, <Tiny2>, <Tiny4>, <Int4>, <Int2>, <Huge2>
+use div<Tryte>, <Tiny>, <Int>, <Huge>
+use div<Tryte2>, <Tiny2>, <Tiny4>, <Int4>, <Int2>, <Huge2>
 
-use divFunc<Hash> // needed for fixed.abra
+use div<Hash> // needed for fixed.abra

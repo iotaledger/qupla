@@ -1,6 +1,6 @@
 // returns lhs / rhs
 
-template divModFunc<T> {
+template divMod<T> {
   type T2 [T * 2]
   
   // quotient truncated to nearest integer that is closest to zero
@@ -164,10 +164,10 @@ template divModFunc<T> {
   }
 }
 
-use divModFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use divMod<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 
-template divMod2Func<T> {
+template divMod2<T> {
   type T2 [T * 2]
   type P [T / 2]
   type P3 [P * 3]
@@ -205,4 +205,4 @@ template divMod2Func<T> {
   }
 }
 
-use divMod2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>
+use divMod2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>

@@ -7,7 +7,7 @@ func Trit all<Trit> (Trit val) {
   return val
 }
 
-template allFunc<T> {
+template all<T> {
   type P [T / 3]
 
   func T all<T>(Trit val) {
@@ -15,9 +15,9 @@ template allFunc<T> {
 }
 }
 
-use allFunc<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>, <Hash3>, <Hash9>, <Signature>
+use all<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>, <Hash3>, <Hash9>, <Signature>
 
-template all2Func<T> {
+template all2<T> {
   type P [T / 2]
 
   func T all<T>(Trit val) {
@@ -25,7 +25,7 @@ template all2Func<T> {
 }
 }
 
-use all2Func<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use all2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
 
 func Transaction all<Transaction>(Trit val) {
   // transaction size is signature + 6 hashes
