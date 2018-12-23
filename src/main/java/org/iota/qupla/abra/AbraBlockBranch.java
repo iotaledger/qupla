@@ -13,6 +13,15 @@ public class AbraBlockBranch extends AbraBlock
   public ArrayList<AbraSite> sites = new ArrayList<>();
   public int size;
 
+  public AbraSiteParam addInputParam(final int inputSize)
+  {
+    final AbraSiteParam inputSite = new AbraSiteParam();
+    inputSite.size = inputSize;
+    inputSite.name = "P" + inputs.size();
+    inputs.add(inputSite);
+    return inputSite;
+  }
+
   @Override
   public CodeContext append(final CodeContext context)
   {

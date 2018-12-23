@@ -10,9 +10,9 @@ template factorial<T> {
   func T factorial<T> (T n) {
     isZero = isZero[sign<T>(n)]
 
-    returnOne = nullify<T>(isZero, 1)
+    returnOne = isZero ? as<T>(1) : null
 
-    altN = nullify<T>(not[isZero], n)
+    altN = not[isZero] ? n : null
     nMin1 = decr<T>(altN)
     nMin1Factorial = factorial<T>(nMin1)
     returnFactorial = mul<T>(altN, nMin1Factorial)

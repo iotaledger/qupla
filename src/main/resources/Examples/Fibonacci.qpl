@@ -15,12 +15,12 @@ func FibInt fibonacci (FibInt n) {
   retN = isLess[cmp<FibInt>(n, 2)]
 
   // recursion case
-  altN = nullify<FibInt>(not[retN], n)
+  altN = not[retN] ? n : null
   nMin1 = decr<FibInt>(altN)
   nMin2 = decr<FibInt>(nMin1)
   nextFib = add<FibInt>(fibonacci(nMin1), fibonacci(nMin2))
 
-  return nullify<FibInt>(retN, n) | nextFib
+  return (retN ? n : null) | nextFib
 }
 
 // returns the n-th Fibonacci number,
@@ -34,12 +34,12 @@ func FibInt fibonacci2 (FibInt n) {
   retFib = notLess[cmp<FibInt>(n, 2)]
 
   // recursion case
-  altN = nullify<FibInt>(retFib, n)
+  altN = retFib ? n : null
   nMin2 = sub<FibInt>(altN, 2)
-  fib0 = nullify<FibInt>(retFib, 0)
-  fib1 = nullify<FibInt>(retFib, 1)
+  fib0 = retFib ? as<FibInt>(0) : null
+  fib1 = retFib ? as<FibInt>(1) : null
 
-  return nullify<FibInt>(not[retFib], n) | fibPart2(nMin2, fib0, fib1)
+  return (not[retFib] ? n : null) | fibPart2(nMin2, fib0, fib1)
 }
 
 // helper function
@@ -54,12 +54,12 @@ func FibInt fibPart2 (FibInt n, FibInt fib0, FibInt fib1) {
   fib2 = add<FibInt>(fib0, fib1)
 
   // recursion case
-  altN = nullify<FibInt>(retFib, n)
+  altN = retFib ? n : null
   nMin1 = decr<FibInt>(altN)
-  newFib0 = nullify<FibInt>(retFib, fib1)
-  newFib1 = nullify<FibInt>(retFib, fib2)
+  newFib0 = retFib ? fib1 : null
+  newFib1 = retFib ? fib2 : null
 
-  return nullify<FibInt>(not[retFib], fib2) | fibPart2(nMin1, newFib0, newFib1)
+  return (not[retFib] ? fib2 : null) | fibPart2(nMin1, newFib0, newFib1)
 }
 
 // test statements

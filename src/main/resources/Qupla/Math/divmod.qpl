@@ -36,8 +36,15 @@ template divMod<T> {
     down = and[neg, isNegative[remSign]]
     none = nor[up, down]
 
-    quo0 = nullify<T>(none, quo) | nullify<T>(up, incr<T>(quo)) | nullify<T>(down, decr<T>(quo))
-    rem0 = nullify<T>(none, rem) | nullify<T>(up, sub<T>(rem, absRhs)) | nullify<T>(down, add<T>(rem, absRhs))
+    quoN0 = none ? quo : null
+    quoN1 = incr<T>(up ? quo : null)
+    quoN2 = decr<T>(down ? quo : null)
+    quo0 = quoN0 | quoN1 | quoN2
+    
+    remN0 = none ? rem : null
+    remN1 = sub<T>(up ? rem : null, absRhs)
+    remN2 = add<T>(down ? rem : null, absRhs)
+    rem0 = remN0 | remN1 | remN2
 
     return fixSign<T>(lhs, rhs, quo0, rem0)
   }
@@ -59,8 +66,15 @@ template divMod<T> {
     up = and[neg, isPositive[remSign]]
     none = nor[up, down]
 
-    quo0 = nullify<T>(none, quo) | nullify<T>(up, incr<T>(quo)) | nullify<T>(down, decr<T>(quo))
-    rem0 = nullify<T>(none, rem) | nullify<T>(up, sub<T>(rem, absRhs)) | nullify<T>(down, add<T>(rem, absRhs))
+    quoN0 = none ? quo : null
+    quoN1 = incr<T>(up ? quo : null)
+    quoN2 = decr<T>(down ? quo : null)
+    quo0 = quoN0 | quoN1 | quoN2
+
+    remN0 = none ? rem : null
+    remN1 = sub<T>(up ? rem : null, absRhs)
+    remN2 = add<T>(down ? rem : null, absRhs)
+    rem0 = remN0 | remN1 | remN2
 
     return fixSign<T>(lhs, rhs, quo0, rem0)
   }
@@ -112,17 +126,14 @@ template divMod<T> {
 
   func T2 roundDivModLoop<T> (T quo, T rem, T div, T shf) {
     newShf = rshift<T>(shf)
-    nonzero = notZero[sign<T>(newShf)]
+    zero = isZero[sign<T>(newShf)]
 
     quorem = roundDivModPass<T>(quo, rem, div)
 
-    quo1 = nullify<T>(nonzero, quorem[0 : T])
-    rem1 = nullify<T>(nonzero, quorem[T : T])
-    div1 = nullify<T>(nonzero, div)
-    shf1 = nullify<T>(nonzero, newShf)
+    quo1 = quorem[0 : T]
+    rem1 = quorem[T : T]
 
-    return nullify<T2>(not[nonzero], quorem) |
-           roundDivModLoop<T>(quo1, rem1, div1, shf1)
+    return zero ? quorem : roundDivModLoop<T>(quo1, rem1, div, newShf)
   }
 
   func T2 roundDivModPass<T> (T quo, T rem, T div) {
@@ -145,9 +156,7 @@ template divMod<T> {
     test2 = and[neg, or[isGreater[cmp2], and[isEqual[cmp2], isNegative[sign<T>(quo0)]]]]
     quorem2 = decr<T>(quo0) & high
 
-    return nullify<T2>(not[or[test1, test2]], quorem) |
-           nullify<T2>(test1, quorem1) |
-           nullify<T2>(test2, quorem2)
+    return test1 ? quorem1 : test2 ? quorem2 : quorem
   }
 
   func T2 fixSign<T> (T lhs, T rhs, T quo, T rem) {
@@ -173,7 +182,7 @@ template divMod2<T> {
   type P3 [P * 3]
 
   func T2 divMod<T> (T lhs, T rhs) {
-    zero = all<P>(0)
+    zero = as<P>(0)
     remQuo = divMod<P3>(lhs & zero, rhs & zero)
     rem = remQuo[0 : T]
     quo = remQuo[P3 : T]
@@ -181,7 +190,7 @@ template divMod2<T> {
   }
 
   func T2 ceilDivMod<T> (T lhs, T rhs) {
-    zero = all<P>(0)
+    zero = as<P>(0)
     remQuo = ceilDivMod<P3>(lhs & zero, rhs & zero)
     rem = remQuo[0 : T]
     quo = remQuo[P3 : T]
@@ -189,7 +198,7 @@ template divMod2<T> {
   }
 
   func T2 floorDivMod<T> (T lhs, T rhs) {
-    zero = all<P>(0)
+    zero = as<P>(0)
     remQuo = floorDivMod<P3>(lhs & zero, rhs & zero)
     rem = remQuo[0 : T]
     quo = remQuo[P3 : T]
@@ -197,7 +206,7 @@ template divMod2<T> {
   }
 
   func T2 roundDivMod<T> (T lhs, T rhs) {
-    zero = all<P>(0)
+    zero = as<P>(0)
     remQuo = roundDivMod<P3>(lhs & zero, rhs & zero)
     rem = remQuo[0 : T]
     quo = remQuo[P3 : T]

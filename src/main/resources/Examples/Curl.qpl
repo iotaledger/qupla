@@ -36,15 +36,15 @@ func State transform(State s, Tiny round) {
 
   // this line will return newState when roundMinusOne was determined
   // to be zero and null otherwise
-  stateOut = nullify<State>(roundZero, newState)
+  stateOut = roundZero ? newState : null
 
   // this line will return newState when roundMinusOne was determined
   // to be non-zero and null otherwise
-  stateNext = nullify<State>(not[roundZero], newState)
+  stateNext = not[roundZero] ? newState : null
 
   // this line will only return roundMinusone when it was non-zero
   // and otherwise returns null
-  roundNext = nullify<Tiny>(not[roundZero], roundMinusOne)
+  roundNext = not[roundZero] ? roundMinusOne : null
 
   // recursively call transform to execute the next round
   // note that this will only execute if either of stateNext and roundNext

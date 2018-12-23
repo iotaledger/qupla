@@ -18,18 +18,6 @@ template map<K, V>
     }
     return traverse<K, V>(param)
   }
-  
-  func V all<K, V> (Trit val) {
-    return all<V>(val)
-  }
-
-  func Traversal nullify<K, V> (Bool t, Traversal param) {
-    return Traversal {
-      cmd = nullify<Trit>(t, param.cmd)
-      key = nullify<K>(t, param.key)
-      value = nullify<V>(t, param.value)
-    }
-  }
 
   func V traverse<K, V> (Traversal param) {
     // note that for readability we should probably split this function
@@ -42,7 +30,8 @@ template map<K, V>
 
     // note that once our optimization for conditional expressions
     // back-pushes nullify() we will not need the next line any more
-    altParam = nullify<K, V>(not[keyZero], param)
+    altParam = not[keyZero] ? param : null
+
     keyTrit = altParam.key[0]
     nextParam = Traversal {
       cmd = altParam.cmd
@@ -65,7 +54,7 @@ template map<K, V>
 
     get = isZero[param.cmd]
     set = isOne[param.cmd]
-    value = get ? oldValue : set ? param.value : all<K, V>(0)
+    value = get ? oldValue : set ? param.value : as<V>(0)
 
     return oldValue
   }
@@ -73,10 +62,10 @@ template map<K, V>
 //  func V traverse<K, V> (Traversal param) {
 //    keyZero = isZero[sign<K>(param.key)]
 //
-//    leafParam = nullify<K, V>(keyZero, param)
+//    leafParam = keyZero ? param : null
 //    branchLeaf = leaf<K, V>(leafParam)
 //
-//    altParam = nullify<K, V>(not[keyZero], param)
+//    altParam = not[keyZero] ? param : null
 //    keyTrit = altParam.key[0]
 //    nextParam = Traversal {
 //      cmd = altParam.cmd
@@ -84,9 +73,9 @@ template map<K, V>
 //      value = altParam.value
 //    }
 //
-//    paramOne  = nullify<K, V>(isOne[keyTrit], nextParam)
-//    paramZero = nullify<K, V>(isZero[keyTrit], nextParam)
-//    paramMin  = nullify<K, V>(isMin[keyTrit], nextParam)
+//    paramOne  = isOne[keyTrit] ? nextParam : null
+//    paramZero = isZero[keyTrit] ? nextParam : null
+//    paramMin  = isMin[keyTrit] ? nextParam : null
 //
 //    branchOne  = traverse<K, V>(paramOne)
 //    branchZero = traverse<K, V>(paramZero)
@@ -99,9 +88,9 @@ template map<K, V>
 //    state value [V]
 //    oldValue = value
 //
-//    set    = nullify<V>(isOne[param.cmd], param.value)
-//    get    = nullify<V>(isZero[param.cmd], oldValue)
-//    remove = nullify<V>(isMin[param.cmd], 0)
+//    set    = isOne[param.cmd] ? param.value : null
+//    get    = isZero[param.cmd] ? oldValue : null
+//    remove = isMin[param.cmd] ? 0 : null
 //    value = set | get | remove
 //
 //    return oldValue

@@ -112,18 +112,17 @@ public class AbraContext extends CodeContext
       return;
     }
 
-    final AbraSite trueCondition = lastSite;
+    final AbraSite condition = lastSite;
 
     conditional.trueBranch.eval(this);
     final AbraSite trueBranch = lastSite;
 
-    // create a site for nullify<size>(trueConditon, trueBranch)
+    // create a site for nullifyTrue<size>(conditon, trueBranch)
     final AbraSiteKnot trueResult = new AbraSiteKnot();
     trueResult.size = conditional.size;
-    trueResult.inputs.add(trueCondition);
+    trueResult.inputs.add(condition);
     trueResult.inputs.add(trueBranch);
-    trueResult.name = "nullify$" + conditional.size;
-    trueResult.branch(this); //TODO if missing add it
+    trueResult.nullifyTrue(this);
     addSite(trueResult);
 
     if (conditional.falseBranch == null)
@@ -134,21 +133,12 @@ public class AbraContext extends CodeContext
     conditional.falseBranch.eval(this);
     final AbraSite falseBranch = lastSite;
 
-    // create a site for not[trueConditon]
-    final AbraSiteKnot falseCondition = new AbraSiteKnot();
-    falseCondition.size = 1;
-    falseCondition.inputs.add(trueCondition);
-    falseCondition.name = "not$0";
-    falseCondition.lut(this); //TODO if missing add it
-    addSite(falseCondition);
-
-    // create a site for nullify<size>(falseConditon, falseBranch)
+    // create a site for nullifyFalse<size>(conditon, falseBranch)
     final AbraSiteKnot falseResult = new AbraSiteKnot();
     falseResult.size = conditional.size;
-    falseResult.inputs.add(falseCondition);
+    falseResult.inputs.add(condition);
     falseResult.inputs.add(falseBranch);
-    falseResult.name = "nullify$" + conditional.size;
-    falseResult.branch(this); //TODO if missing add it
+    falseResult.nullifyFalse(this);
     addSite(falseResult);
 
     // create a site for trueResult | falseResult
@@ -339,7 +329,7 @@ public class AbraContext extends CodeContext
     site.from(slice);
     site.inputs.add(lastSite);
 
-    site.slice(this, slice.start);
+    site.slice(this, lastSite.size, slice.start);
 
     addSite(site);
   }

@@ -246,17 +246,7 @@ public class EvalContext extends CodeContext
     stack.setSize(newStackFrame);
     callNr--;
 
-    if (usePrint && call.name.startsWith("print$"))
-    {
-      final BaseExpr arg = call.args.get(0);
-      BaseExpr.logLine("" + arg.typeInfo.display(value));
-    }
-
-    if (useBreak && call.name.startsWith("break$"))
-    {
-      final BaseExpr arg = call.args.get(0);
-      BaseExpr.logLine("" + arg.typeInfo.display(value));
-    }
+    interceptCall(call);
   }
 
   @Override
@@ -360,6 +350,21 @@ public class EvalContext extends CodeContext
     value = integer.vector;
   }
 
+  private void interceptCall(final FuncExpr call)
+  {
+    if (usePrint && call.name.startsWith("print$"))
+    {
+      final BaseExpr arg = call.args.get(0);
+      BaseExpr.logLine("" + arg.typeInfo.display(value));
+    }
+
+    if (useBreak && call.name.startsWith("break$"))
+    {
+      final BaseExpr arg = call.args.get(0);
+      BaseExpr.logLine("" + arg.typeInfo.display(value));
+    }
+  }
+
   public void log(final String text, final TritVector vector, final BaseExpr expr)
   {
     if (!allowLog)
@@ -383,7 +388,6 @@ public class EvalContext extends CodeContext
   private boolean pushArguments(final FuncExpr call)
   {
     int valueTrits = 0;
-    boolean first = call.func.nullify;
     for (int i = 0; i < call.args.size(); i++)
     {
       final BaseExpr arg = call.args.get(i);
@@ -394,13 +398,6 @@ public class EvalContext extends CodeContext
         return true;
       }
 
-      if (first && value.trits.charAt(0) != '1')
-      {
-        // short-circuit nullify()
-        return true;
-      }
-
-      first = false;
       valueTrits += value.valueTrits;
       if (varNamesOnStack)
       {

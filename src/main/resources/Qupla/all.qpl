@@ -27,13 +27,6 @@ template all2<T> {
 
 use all2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
 
-func Transaction all<Transaction>(Trit val) {
-  // transaction size is signature + 6 hashes
-  // note: we could of course nullify each separate field instead
-  //       but I am lazy :-P
-  return all<Signature>(val) & all<Hash3>(val) & all<Hash3>(val)
-}
-
 test 1 = all<Trit>(1)
 test 13 = all<Tryte>(1)
 test 9841 = all<Tiny>(1)

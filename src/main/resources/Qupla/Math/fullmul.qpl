@@ -141,7 +141,7 @@ template fullMul2<T> {
   type P3 [P * 3]
 
   func T2 fullMul<T> (T lhs, T rhs) {
-    zero = all<P>(0)
+    zero = as<P>(0)
     product = fullMul<P3>(lhs & zero, rhs & zero)
     return product[0 : T2]
   }

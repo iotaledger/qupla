@@ -61,10 +61,10 @@ public class ExecStmt extends BaseExpr
   {
     if (expected == null)
     {
-      return append("//= ").append(expr);
+      return append("eval ").append(expr);
     }
 
-    return append("//? ").append(expected).append(" = ").append(expr);
+    return append("test ").append(expected).append(" = ").append(expr);
   }
 
   @Override

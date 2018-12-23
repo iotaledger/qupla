@@ -24,6 +24,11 @@ public class AbraBlockLut extends AbraBlock
   @Override
   public void code()
   {
+    if (tritCode.bufferOffset > 0)
+    {
+      return;
+    }
+
     // initialize with 27 null trits
     final char[] lookup = new TritVector(27).trits.toCharArray();
 
