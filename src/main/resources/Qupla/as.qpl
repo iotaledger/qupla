@@ -13,5 +13,5 @@ template as<T> {
   }
 }
 
-use as<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
+use as<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>, <Transaction>
 use as<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

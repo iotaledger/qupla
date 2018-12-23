@@ -22,7 +22,6 @@ public class FuncStmt extends BaseExpr
   public final ArrayList<BaseExpr> envExprs = new ArrayList<>();
   public final ArrayList<BaseExpr> funcTypes = new ArrayList<>();
   public TritVector nullReturn;
-  public boolean nullify;
   public final ArrayList<BaseExpr> params = new ArrayList<>();
   public BaseExpr returnExpr;
   public BaseExpr returnType;
@@ -43,7 +42,6 @@ public class FuncStmt extends BaseExpr
     super(copy);
 
     anyNull = copy.anyNull;
-    nullify = copy.nullify;
     returnType = clone(copy.returnType);
     cloneArray(funcTypes, copy.funcTypes);
     cloneArray(params, copy.params);
@@ -63,7 +61,6 @@ public class FuncStmt extends BaseExpr
 
     final Token funcName = expect(tokenizer, Token.TOK_NAME, "function name");
     name = funcName.text;
-    nullify = name.equals("nullify");
 
     if (tokenizer.tokenId() == Token.TOK_TEMPL_OPEN)
     {
@@ -269,7 +266,6 @@ public class FuncStmt extends BaseExpr
     stackIndex = copy.stackIndex;
     typeInfo = copy.typeInfo;
     anyNull = copy.anyNull;
-    nullify = copy.nullify;
     use = copy.use;
     useIndex = copy.useIndex;
     returnType = clone(copy.returnType);

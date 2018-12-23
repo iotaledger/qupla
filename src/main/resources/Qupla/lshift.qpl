@@ -17,8 +17,8 @@ template lshiftN<T> {
     sign = sign<Tiny>(nmin9)
     neg = isNegative[sign]
     pos = notNegative[sign]
-    return lshiftNpart2<T>(nullify<T>(pos, val), nullify<Tiny>(pos, n)) |
-           lshiftN9<T>(nullify<T>(neg, val), nullify<Tiny>(neg, nmin9), nullify<Trit>(neg, sign))
+    return lshiftNpart2<T>(pos ? val : null, pos ? n : null) |
+           lshiftN9<T>(neg ? val : null, neg ? nmin9 : null, neg ? sign : null)
   }
 
   func T lshiftNpart2<T> (T val, Tiny n) {
@@ -26,10 +26,10 @@ template lshiftN<T> {
   }
 
   func T lshiftN9<T> (T val, Tiny n, Trit sign) {
-    lshift9 = val[Tiny : T - Tiny] & all<Tiny>(0)
+    lshift9 = val[Tiny : T - Tiny] & as<Tiny>(0)
     pos = isPositive[sign]
-    return nullify<T>(isZero[sign], lshift9) |
-           lshiftN<T>(nullify<T>(pos, lshift9), nullify<Tiny>(pos, n))
+    return (isZero[sign] ? lshift9 : null) |
+           lshiftN<T>(pos ? lshift9 : null, pos ? n : null)
   }
 }
 

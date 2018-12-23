@@ -235,7 +235,7 @@ public class Qupla
     }
 
     mSec = System.currentTimeMillis() - mSec;
-    log("All evals: " + mSec + " ms");
+    log("All evals: " + mSec + " ms\n");
   }
 
   private static void runFpgaGenerator()
@@ -249,7 +249,7 @@ public class Qupla
 
   private static void runTest(final ExecStmt exec)
   {
-    log("Test: " + exec.toString());
+    log("Test: " + exec.expected + " = " + exec.expr);
 
     long mSec = System.currentTimeMillis();
     final EvalContext context = new EvalContext();
@@ -281,7 +281,7 @@ public class Qupla
     }
 
     mSec = System.currentTimeMillis() - mSec;
-    log("All tests: " + mSec + " ms");
+    log("All tests: " + mSec + " ms\n");
   }
 
   private static void runTreeViewer()

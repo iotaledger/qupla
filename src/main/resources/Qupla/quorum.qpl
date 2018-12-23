@@ -9,7 +9,7 @@ template quorum<T> {
     equal1 = equal<T>(val1, val2)
     equal2 = and[not[equal1], equal<T>(val2, val3)]
     equal3 = and[not[equal2], equal<T>(val3, val1)]
-    return nullify<T>(equal1, val1) | nullify<T>(equal2, val2) | nullify<T>(equal3, val3)
+    return (equal1 ? val1 : null) | (equal2 ? val2 : null) | (equal3 ? val3 : null)
   }
 }
 

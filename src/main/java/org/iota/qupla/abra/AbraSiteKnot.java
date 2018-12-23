@@ -3,15 +3,18 @@ package org.iota.qupla.abra;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.iota.qupla.abra.funcs.ConcatManager;
+import org.iota.qupla.abra.funcs.NullifyManager;
+import org.iota.qupla.abra.funcs.SliceManager;
 import org.iota.qupla.context.AbraContext;
 import org.iota.qupla.context.CodeContext;
 
 public class AbraSiteKnot extends AbraSite
 {
-  public static int concatReuse;
-  public static HashMap<String, AbraBlockBranch> concats = new HashMap<>();
-  public static int sliceReuse;
-  public static HashMap<String, AbraBlockBranch> slicers = new HashMap<>();
+  public static ConcatManager concats = new ConcatManager();
+  public static NullifyManager nullifyFalse = new NullifyManager(false);
+  public static NullifyManager nullifyTrue = new NullifyManager(true);
+  public static SliceManager slicers = new SliceManager();
   public static int vectorReuse;
   public static HashMap<String, AbraBlockBranch> vectors = new HashMap<>();
   public AbraBlock block;
@@ -58,32 +61,7 @@ public class AbraSiteKnot extends AbraSite
 
   public void concat(final AbraContext context)
   {
-    final String branchName = "$concat$" + size;
-    block = concats.get(branchName);
-    if (block != null)
-    {
-      concatReuse++;
-      return;
-    }
-
-    // generate block that does concatenation
-    final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = branchName;
-    branch.size = size;
-
-    final AbraSiteParam targetSite = new AbraSiteParam();
-    targetSite.size = size;
-    targetSite.name = "P" + branch.inputs.size();
-    branch.inputs.add(targetSite);
-
-    final AbraSiteMerge merge = new AbraSiteMerge();
-    merge.size = size;
-    merge.inputs.add(targetSite);
-    branch.outputs.add(merge);
-
-    context.abra.branches.add(branch);
-    concats.put(branchName, branch);
-    block = branch;
+    block = concats.find(context, size);
   }
 
   public void lut(final AbraContext context)
@@ -98,51 +76,19 @@ public class AbraSiteKnot extends AbraSite
     }
   }
 
-  public void slice(final AbraContext context, final int start)
+  public void nullifyFalse(final AbraContext context)
   {
-    final int inputSize = inputs.get(0).size;
-    final String branchName = "$slice$" + inputSize + "$" + start + "$" + size;
-    block = slicers.get(branchName);
-    if (block != null)
-    {
-      sliceReuse++;
-      return;
-    }
+    block = nullifyFalse.find(context, size);
+  }
 
-    // generate block that does slicing
-    final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = branchName;
-    branch.size = size;
+  public void nullifyTrue(final AbraContext context)
+  {
+    block = nullifyTrue.find(context, size);
+  }
 
-    if (start > 0)
-    {
-      final AbraSiteParam site = new AbraSiteParam();
-      site.size = start;
-      site.name = "P" + branch.inputs.size();
-      branch.inputs.add(site);
-    }
-
-    final AbraSiteParam targetSite = new AbraSiteParam();
-    targetSite.size = size;
-    targetSite.name = "P" + branch.inputs.size();
-    branch.inputs.add(targetSite);
-
-    if (start + size < inputSize)
-    {
-      final AbraSiteParam site = new AbraSiteParam();
-      site.size = inputSize - start - size;
-      site.name = "P" + branch.inputs.size();
-      branch.inputs.add(site);
-    }
-
-    final AbraSiteMerge merge = new AbraSiteMerge();
-    merge.size = size;
-    merge.inputs.add(targetSite);
-    branch.outputs.add(merge);
-
-    context.abra.branches.add(branch);
-    slicers.put(branchName, branch);
-    block = branch;
+  public void slice(final AbraContext context, final int inputSize, final int start)
+  {
+    block = slicers.find(context, inputSize, start, size);
   }
 
   public void vector(final AbraContext context, final String trits)
