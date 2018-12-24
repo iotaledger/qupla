@@ -84,10 +84,7 @@ template float<M, E> {
 
     // if zero then return all zero
     zero = isZero[sign<M>(val.mantissa)]
-    retZero = zero ? as<F>(0) : null
-
-    val0 = not[zero] ? val : null
-    return ret0 | retZero | floatAddNormalize<M, E>(val0)
+    return ret0 | (zero ? 0 : floatAddNormalize<M, E>(val))
   }
 
   func F floatAddNormalize<M, E> (F val) {

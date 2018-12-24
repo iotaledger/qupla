@@ -1,9 +1,9 @@
 package org.iota.qupla.abra;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.iota.qupla.abra.funcs.ConcatManager;
+import org.iota.qupla.abra.funcs.ConstManager;
 import org.iota.qupla.abra.funcs.NullifyManager;
 import org.iota.qupla.abra.funcs.SliceManager;
 import org.iota.qupla.context.AbraContext;
@@ -12,11 +12,11 @@ import org.iota.qupla.context.CodeContext;
 public class AbraSiteKnot extends AbraSite
 {
   public static ConcatManager concats = new ConcatManager();
+  public static ConstManager constants = new ConstManager();
   public static NullifyManager nullifyFalse = new NullifyManager(false);
   public static NullifyManager nullifyTrue = new NullifyManager(true);
   public static SliceManager slicers = new SliceManager();
-  public static int vectorReuse;
-  public static HashMap<String, AbraBlockBranch> vectors = new HashMap<>();
+
   public AbraBlock block;
   public ArrayList<AbraSite> inputs = new ArrayList<>();
 
@@ -88,61 +88,17 @@ public class AbraSiteKnot extends AbraSite
 
   public void slice(final AbraContext context, final int inputSize, final int start)
   {
-    block = slicers.find(context, inputSize, start, size);
+    if (start == 0)
+    {
+      block = concats.find(context, size);
+      return;
+    }
+
+    block = slicers.find(context, size, start);
   }
 
   public void vector(final AbraContext context, final String trits)
   {
-    final String branchName = "const$" + size + "$" + name;
-    block = vectors.get(branchName);
-    if (block != null)
-    {
-      vectorReuse++;
-      return;
-    }
-
-    // create branch that has 1 input of 1 trit
-    final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.size = size;
-    branch.name = branchName;
-
-    final AbraSiteParam param = new AbraSiteParam();
-    param.size = 1;
-    param.name = "dummy";
-    branch.inputs.add(param);
-
-    final AbraSiteKnot siteMin = vectorTritLut(context, branch, "constMin$0");
-    final AbraSiteKnot siteOne = vectorTritLut(context, branch, "constOne$0");
-    final AbraSiteKnot siteZero = vectorTritLut(context, branch, "constZero$0");
-
-    final AbraSiteKnot constant = new AbraSiteKnot();
-    constant.size = branch.size;
-    for (int i = 0; i < branch.size; i++)
-    {
-      final char c = trits.charAt(i);
-      constant.inputs.add(c == '0' ? siteZero : c == '1' ? siteOne : siteMin);
-    }
-
-    constant.concat(context);
-    branch.outputs.add(constant);
-
-    context.abra.branches.add(branch);
-    vectors.put(branchName, branch);
-    block = branch;
-  }
-
-  public AbraSiteKnot vectorTritLut(final AbraContext context, final AbraBlockBranch branch, final String lutName)
-  {
-    final AbraSite input = branch.inputs.get(0);
-
-    final AbraSiteKnot site = new AbraSiteKnot();
-    site.size = 3;
-    site.name = lutName;
-    site.inputs.add(input);
-    site.inputs.add(input);
-    site.inputs.add(input);
-    site.lut(context);
-    branch.sites.add(site);
-    return site;
+    block = constants.find(context, trits);
   }
 }

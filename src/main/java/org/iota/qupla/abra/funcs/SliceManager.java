@@ -7,7 +7,6 @@ import org.iota.qupla.context.AbraContext;
 
 public class SliceManager extends AbraFuncManager
 {
-  public int length;
   public int start;
 
   public SliceManager()
@@ -25,12 +24,7 @@ public class SliceManager extends AbraFuncManager
       branch.addInputParam(start);
     }
 
-    final AbraSiteParam inputSite = branch.addInputParam(length);
-
-    if (size - start - length > 0)
-    {
-      branch.addInputParam(size - start - length);
-    }
+    final AbraSiteParam inputSite = branch.addInputParam(size);
 
     final AbraSiteMerge merge = new AbraSiteMerge();
     merge.size = size;
@@ -38,13 +32,12 @@ public class SliceManager extends AbraFuncManager
     branch.outputs.add(merge);
   }
 
-  public AbraBlockBranch find(final AbraContext context, final int size, final int start, final int length)
+  public AbraBlockBranch find(final AbraContext context, final int size, final int start)
   {
     this.context = context;
     this.size = size;
     this.start = start;
-    this.length = length;
-    name = "$" + funcName + "$" + size + "$" + start + "$" + length;
+    name = "$" + funcName + "$" + size + "@" + start;
     return findInstance();
   }
 }
