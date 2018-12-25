@@ -83,6 +83,17 @@ public class AbraContext extends CodeContext
   {
     assign.expr.eval(this);
     stack.push(lastSite);
+
+    if (assign.stateIndex != 0)
+    {
+      // move last site to latches
+      branch.sites.remove(branch.sites.size() - 1);
+      branch.latches.add(lastSite);
+
+      // forward placeholder state site to actual state site
+      final AbraSiteState state = (AbraSiteState) stack.get(assign.stateIndex);
+      state.latch = lastSite;
+    }
   }
 
   @Override
@@ -97,7 +108,6 @@ public class AbraContext extends CodeContext
     }
 
     site.concat(this);
-
     addSite(site);
   }
 
@@ -116,48 +126,44 @@ public class AbraContext extends CodeContext
 
     conditional.trueBranch.eval(this);
     final AbraSite trueBranch = lastSite;
+    trueBranch.nullifyTrue = condition;
 
-    // create a site for nullifyTrue<size>(conditon, trueBranch)
-    final AbraSiteKnot trueResult = new AbraSiteKnot();
-    trueResult.size = conditional.size;
-    trueResult.inputs.add(condition);
-    trueResult.inputs.add(trueBranch);
-    trueResult.nullifyTrue(this);
-    addSite(trueResult);
+    //    // create a site for nullifyTrue<size>(conditon, trueBranch)
+    //    final AbraSiteKnot trueResult = new AbraSiteKnot();
+    //    trueResult.size = conditional.size;
+    //    trueResult.inputs.add(condition);
+    //    trueResult.inputs.add(trueBranch);
+    //    trueResult.nullifyTrue(this);
+    //    addSite(trueResult);
 
-    if (conditional.falseBranch == null)
-    {
-      return;
-    }
-
-    conditional.falseBranch.eval(this);
-    final AbraSite falseBranch = lastSite;
-
-    // create a site for nullifyFalse<size>(conditon, falseBranch)
-    final AbraSiteKnot falseResult = new AbraSiteKnot();
-    falseResult.size = conditional.size;
-    falseResult.inputs.add(condition);
-    falseResult.inputs.add(falseBranch);
-    falseResult.nullifyFalse(this);
-    addSite(falseResult);
-
-    // create a site for trueResult | falseResult
+    // create a site for trueBranch ( | falseBranch)
     final AbraSiteMerge merge = new AbraSiteMerge();
     merge.size = conditional.size;
-    merge.inputs.add(trueResult);
-    merge.inputs.add(falseResult);
+    merge.inputs.add(trueBranch);
+
+    if (conditional.falseBranch != null)
+    {
+      conditional.falseBranch.eval(this);
+      final AbraSite falseBranch = lastSite;
+      falseBranch.nullifyFalse = condition;
+
+      //      // create a site for nullifyFalse<size>(conditon, falseBranch)
+      //      final AbraSiteKnot falseResult = new AbraSiteKnot();
+      //      falseResult.size = conditional.size;
+      //      falseResult.inputs.add(condition);
+      //      falseResult.inputs.add(falseBranch);
+      //      falseResult.nullifyFalse(this);
+      //      addSite(falseResult);
+
+      merge.inputs.add(falseBranch);
+    }
+
     addSite(merge);
   }
 
   @Override
   public void evalFuncBody(final FuncStmt func)
   {
-    if (func.name.startsWith("as$") || func.name.startsWith("break$") || func.name.startsWith("print$"))
-    {
-      // no-op: parameter is returned as is
-      return;
-    }
-
     stack.clear();
 
     branch = abra.branches.get(bodies++);
@@ -195,17 +201,6 @@ public class AbraContext extends CodeContext
   @Override
   public void evalFuncCall(final FuncExpr call)
   {
-    if (call.name.startsWith("as$") || call.name.startsWith("break$") || call.name.startsWith("print$"))
-    {
-      // no-op: single parameter is returned as is
-      for (final BaseExpr arg : call.args)
-      {
-        arg.eval(this);
-      }
-
-      return;
-    }
-
     final AbraSiteKnot site = new AbraSiteKnot();
     site.from(call);
 
@@ -216,19 +211,12 @@ public class AbraContext extends CodeContext
     }
 
     site.branch(this);
-
     addSite(site);
   }
 
   @Override
   public void evalFuncSignature(final FuncStmt func)
   {
-    if (func.name.startsWith("as$") || func.name.startsWith("break$") || func.name.startsWith("print$"))
-    {
-      // no-op: parameter is returned as is
-      return;
-    }
-
     branch = new AbraBlockBranch();
     branch.origin = func;
     branch.name = func.name;
@@ -261,26 +249,27 @@ public class AbraContext extends CodeContext
     }
 
     final AbraSiteKnot concat = new AbraSiteKnot();
-
     for (int i = 0; i < lookup.size; i++)
     {
       final AbraSiteKnot site = new AbraSiteKnot();
       site.from(lookup);
       site.name += "$" + i;
       site.inputs.addAll(args.inputs);
+      while (site.inputs.size() < 3)
+      {
+        site.inputs.add(site.inputs.get(0));
+      }
 
       site.lut(this);
+      addSite(site);
 
       concat.size += site.size;
       concat.inputs.add(site);
-
-      addSite(site);
     }
 
     if (concat.inputs.size() > 1)
     {
       concat.concat(this);
-
       addSite(concat);
     }
   }
@@ -309,34 +298,30 @@ public class AbraContext extends CodeContext
   @Override
   public void evalSlice(final SliceExpr slice)
   {
-    lastSite = stack.get(slice.stackIndex);
+    final AbraSite varSite = stack.get(slice.stackIndex);
 
     if (slice.startOffset == null && slice.fields.size() == 0)
     {
-      if (stmt == slice || (stmt instanceof AssignExpr && ((AssignExpr) stmt).expr == slice))
-      {
-        final AbraSiteMerge site = new AbraSiteMerge();
-        site.from(slice);
-        site.inputs.add(lastSite);
-
-        addSite(site);
-      }
-
+      // entire variable, use single-input merge
+      final AbraSiteMerge site = new AbraSiteMerge();
+      site.from(slice);
+      site.inputs.add(varSite);
+      addSite(site);
       return;
     }
 
+    // slice of variable, use correct slice function
     final AbraSiteKnot site = new AbraSiteKnot();
     site.from(slice);
-    site.inputs.add(lastSite);
-
-    site.slice(this, lastSite.size, slice.start);
-
+    site.inputs.add(varSite);
+    site.slice(this, varSite.size, slice.start);
     addSite(site);
   }
 
   @Override
   public void evalState(final StateExpr state)
   {
+    // create placeholder for latch
     final AbraSiteState site = new AbraSiteState();
     site.from(state);
 
@@ -350,15 +335,14 @@ public class AbraContext extends CodeContext
     final AbraSiteKnot site = new AbraSiteKnot();
     site.from(integer);
     site.inputs.add(branch.inputs.get(0));
-
     site.vector(this, integer.vector.trits);
-
     addSite(site);
   }
 
   @Override
   public void finished()
   {
+    abra.optimize(this);
     abra.code();
     abra.append(this);
 

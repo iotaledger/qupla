@@ -52,8 +52,9 @@ template map<K, V>
 
     oldValue = value
 
-    get = isZero[param.cmd]
-    set = isOne[param.cmd]
+    cmd = param.cmd
+    get = isZero[cmd]
+    set = isOne[cmd]
     value = get ? oldValue : set ? param.value : 0
 
     return oldValue

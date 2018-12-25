@@ -1,7 +1,5 @@
 package org.iota.qupla.abra;
 
-import java.util.ArrayList;
-
 import org.iota.qupla.abra.funcs.ConcatManager;
 import org.iota.qupla.abra.funcs.ConstManager;
 import org.iota.qupla.abra.funcs.NullifyManager;
@@ -9,7 +7,7 @@ import org.iota.qupla.abra.funcs.SliceManager;
 import org.iota.qupla.context.AbraContext;
 import org.iota.qupla.context.CodeContext;
 
-public class AbraSiteKnot extends AbraSite
+public class AbraSiteKnot extends AbraSiteMerge
 {
   public static ConcatManager concats = new ConcatManager();
   public static ConstManager constants = new ConstManager();
@@ -18,20 +16,17 @@ public class AbraSiteKnot extends AbraSite
   public static SliceManager slicers = new SliceManager();
 
   public AbraBlock block;
-  public ArrayList<AbraSite> inputs = new ArrayList<>();
+
+  public AbraSiteKnot()
+  {
+    type = "knot";
+    typeTrit = '-';
+  }
 
   @Override
   public CodeContext append(final CodeContext context)
   {
-    super.append(context).append("knot(");
-    boolean first = true;
-    for (AbraSite input : inputs)
-    {
-      context.append(first ? "" : ", ").append("" + refer(input.index));
-      first = false;
-    }
-
-    return context.append(") " + block);
+    return super.append(context).append(" " + block);
   }
 
   public void branch(final AbraContext context)
@@ -49,12 +44,7 @@ public class AbraSiteKnot extends AbraSite
   @Override
   public void code(final TritCode tritCode)
   {
-    tritCode.putTrit('-');
-    tritCode.putInt(inputs.size());
-    for (final AbraSite input : inputs)
-    {
-      tritCode.putInt(refer(input.index));
-    }
+    super.code(tritCode);
 
     tritCode.putInt(block.index);
   }
@@ -76,14 +66,10 @@ public class AbraSiteKnot extends AbraSite
     }
   }
 
-  public void nullifyFalse(final AbraContext context)
+  public void nullify(final AbraContext context, final boolean trueFalse)
   {
-    block = nullifyFalse.find(context, size);
-  }
-
-  public void nullifyTrue(final AbraContext context)
-  {
-    block = nullifyTrue.find(context, size);
+    final NullifyManager nullify = trueFalse ? nullifyTrue : nullifyFalse;
+    block = nullify.find(context, size);
   }
 
   public void slice(final AbraContext context, final int inputSize, final int start)

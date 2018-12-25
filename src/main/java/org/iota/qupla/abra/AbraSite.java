@@ -7,7 +7,10 @@ public class AbraSite
 {
   public int index;
   public String name;
+  public AbraSite nullifyFalse;
+  public AbraSite nullifyTrue;
   public BaseExpr origin;
+  public int references;
   public int size;
   public BaseExpr stmt;
   public String type;
@@ -18,7 +21,10 @@ public class AbraSite
     {
       context.newline().append("" + stmt).newline();
     }
-    return context.append("// " + type + " site " + index + ": ");
+
+    context.append("// " + index + " ");
+    context.append(nullifyTrue != null ? "T" + nullifyTrue.index : nullifyFalse != null ? "F" + nullifyFalse.index : " ");
+    return context.append(" " + references + " " + type + " site: ");
   }
 
   public void code(final TritCode tritCode)
@@ -30,6 +36,23 @@ public class AbraSite
     origin = expr;
     name = expr.name;
     size = expr.size;
+  }
+
+  public void markReferences()
+  {
+    if (nullifyFalse != null)
+    {
+      nullifyFalse.references++;
+    }
+
+    if (nullifyTrue != null)
+    {
+      nullifyTrue.references++;
+    }
+  }
+
+  public void optimizeNullify()
+  {
   }
 
   public int refer(final int site)

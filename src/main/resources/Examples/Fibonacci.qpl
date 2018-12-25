@@ -16,7 +16,7 @@ func FibInt fibonacci (FibInt n) {
 
   // recursion case
   nMin1 = decr<FibInt>(n)
-  nMin2 = decr<FibInt>(nMin1)
+  nMin2 = sub<FibInt>(n, 2)
   return retN ? n : add<FibInt>(fibonacci(nMin1), fibonacci(nMin2))
 }
 
@@ -40,9 +40,7 @@ func FibInt fibonacci2 (FibInt n) {
 func FibInt fibPart2 (FibInt n, FibInt fib0, FibInt fib1) {
   // check if n equals 0, which means return fib2, otherwise recurse
   retFib2 = isZero[sign<FibInt>(n)]
-
   fib2 = add<FibInt>(fib0, fib1)
-
   return retFib2 ? fib2 : fibPart2(decr<FibInt>(n), fib1, fib2)
 }
 
