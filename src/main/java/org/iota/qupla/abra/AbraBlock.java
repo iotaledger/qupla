@@ -1,5 +1,6 @@
 package org.iota.qupla.abra;
 
+import org.iota.qupla.context.AbraContext;
 import org.iota.qupla.context.CodeContext;
 import org.iota.qupla.expression.base.BaseExpr;
 
@@ -30,6 +31,14 @@ public abstract class AbraBlock
     code();
     abra.putInt(tritCode.bufferOffset);
     abra.putTrits(new String(tritCode.buffer, 0, tritCode.bufferOffset));
+  }
+
+  public void markReferences()
+  {
+  }
+
+  public void optimize(final AbraContext context)
+  {
   }
 
   @Override

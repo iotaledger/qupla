@@ -58,6 +58,12 @@ public class AssignExpr extends BaseExpr
   public void analyze()
   {
     constTypeInfo = null;
+    if (stateIndex != 0)
+    {
+      final BaseExpr stateVar = scope.get(stateIndex);
+      constTypeInfo = stateVar.typeInfo;
+    }
+
     expr.analyze();
     if (size != 0 && size != expr.size)
     {

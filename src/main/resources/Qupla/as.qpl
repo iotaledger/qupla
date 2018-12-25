@@ -4,8 +4,6 @@
 // for constants to cast them to specific size
 // it can be handy in this case for example:
 // return f(a) & as<Tryte>(12) & f(b)
-// note: as<T>(0) will be more efficiently encoded as all<T>(0)
-//       the latter uses only a single trit to encode the constant
 
 template as<T> {
   func T as<T> (T val) {
@@ -13,5 +11,5 @@ template as<T> {
   }
 }
 
-use as<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>, <Transaction>
+use as<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 use as<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

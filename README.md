@@ -112,7 +112,6 @@ More documentation will follow
 
 Wishlist for changes to the language:
 * Implement entity aliases for type/lut
-* Nullify operator (would make code a lot more readable)
 * Arithmetic operators (same)
 * Automatic detection of type specifiers on function calls (same)
 * Type slice operator. Instead of var\[Tryte * n : Tryte\] we could maybe use var@Tryte\[n\].

@@ -5,6 +5,7 @@ import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.statement.LutStmt;
 import org.iota.qupla.statement.helper.LutEntry;
 
+//TODO merge identical LUTs
 public class AbraBlockLut extends AbraBlock
 {
   public static final int[] powers = {

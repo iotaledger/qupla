@@ -15,7 +15,7 @@ template all<T> {
 }
 }
 
-use all<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>, <Hash3>, <Hash9>, <Signature>
+use all<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 template all2<T> {
   type P [T / 2]
