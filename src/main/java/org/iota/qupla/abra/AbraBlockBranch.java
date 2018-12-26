@@ -2,6 +2,15 @@ package org.iota.qupla.abra;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.abra.optimizers.ConcatenatedOutputOptimizer;
+import org.iota.qupla.abra.optimizers.ConcatenationOptimizer;
+import org.iota.qupla.abra.optimizers.EmptyFunctionOptimizer;
+import org.iota.qupla.abra.optimizers.MultiLutOptimizer;
+import org.iota.qupla.abra.optimizers.NullifyInserter;
+import org.iota.qupla.abra.optimizers.NullifyOptimizer;
+import org.iota.qupla.abra.optimizers.SingleInputMergeOptimizer;
+import org.iota.qupla.abra.optimizers.SlicedInputOptimizer;
+import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
 import org.iota.qupla.context.AbraContext;
 import org.iota.qupla.context.CodeContext;
 
@@ -58,24 +67,6 @@ public class AbraBlockBranch extends AbraBlock
     putSites(latches);
   }
 
-  private void insertNullify(final AbraContext context, final int where, final AbraSite condition, final boolean trueFalse)
-  {
-    final AbraSite site = sites.get(where);
-
-    // create a site for nullifyFalse<site.size>(conditon, falseBranch)
-    final AbraSiteKnot nullify = new AbraSiteKnot();
-    nullify.size = site.size;
-    nullify.inputs.add(condition);
-    condition.references++;
-    nullify.inputs.add(site);
-    site.references++;
-    nullify.nullify(context, trueFalse);
-
-    replaceSite(site, nullify);
-
-    sites.add(where + 1, nullify);
-  }
-
   @Override
   public void markReferences()
   {
@@ -114,85 +105,37 @@ public class AbraBlockBranch extends AbraBlock
   public void optimize(final AbraContext context)
   {
     // first move the nullifies up the chain as far as possible
-    for (final AbraSite site : sites)
-    {
-      site.optimizeNullify();
-    }
+    new NullifyOptimizer(context, this).run();
 
-    // then insert nullify operations and rewire accordingly
-    for (int i = 0; i < sites.size(); i++)
-    {
-      final AbraSite site = sites.get(i);
-      if (site.nullifyFalse != null)
-      {
-        insertNullify(context, i, site.nullifyFalse, false);
-        continue;
-      }
+    // then insert actual nullify operations and rewire accordingly
+    new NullifyInserter(context, this).run();
 
-      if (site.nullifyTrue != null)
-      {
-        insertNullify(context, i, site.nullifyTrue, true);
-      }
-    }
-
-    // now bypass superfluous single-input merges
-    for (final AbraSite site : sites)
-    {
-      if (site.getClass() == AbraSiteMerge.class)
-      {
-        final AbraSiteMerge merge = (AbraSiteMerge) site;
-        if (merge.references > 0 && merge.inputs.size() == 1)
-        {
-          replaceSite(merge, merge.inputs.get(0));
-        }
-      }
-    }
+    // run set of actual optimizations
+    optimizePass(context);
 
     // and finally remove all unreferenced sites
-    for (int i = sites.size() - 1; i >= 0; i--)
-    {
-      final AbraSite site = sites.get(i);
-      if (site.references == 0)
-      {
-        if (site instanceof AbraSiteMerge)
-        {
-          final AbraSiteMerge merge = (AbraSiteMerge) site;
-          for (final AbraSite input : merge.inputs)
-          {
-            input.references--;
-          }
-        }
+    new UnreferencedSiteRemover(context, this).run();
+  }
 
-        if (site.nullifyFalse != null)
-        {
-          site.nullifyFalse.references--;
-        }
+  private void optimizePass(final AbraContext context)
+  {
+    // pre-slice inputs that will be sliced later on
+    new SlicedInputOptimizer(context, this).run();
 
-        if (site.nullifyTrue != null)
-        {
-          site.nullifyTrue.references--;
-        }
+    // replace concatenation knot that is passed as input to a knot
+    new ConcatenationOptimizer(context, this).run();
 
-        sites.remove(i);
-        if (site.stmt != null)
-        {
-          if (i < sites.size())
-          {
-            if (sites.get(i).stmt == null)
-            {
-              sites.get(i).stmt = site.stmt;
-            }
-          }
-          else
-          {
-            if (outputs.get(0).stmt == null)
-            {
-              outputs.get(0).stmt = site.stmt;
-            }
-          }
-        }
-      }
-    }
+    // disable all function calls that do nothing
+    new EmptyFunctionOptimizer(context, this).run();
+
+    // bypass superfluous single-input merges
+    new SingleInputMergeOptimizer(context, this).run();
+
+    // if possible, replace lut calling lut with a single lut that does it all
+    new MultiLutOptimizer(context, this).run();
+
+    // move concatenated sites from body to outputs
+    new ConcatenatedOutputOptimizer(context, this).run();
   }
 
   private void putSites(final ArrayList<? extends AbraSite> sites)
@@ -200,47 +143,6 @@ public class AbraBlockBranch extends AbraBlock
     for (final AbraSite site : sites)
     {
       site.code(tritCode);
-    }
-  }
-
-  private void replaceSite(final AbraSite site, final AbraSite replacement)
-  {
-    replaceSite(site, replacement, sites);
-    replaceSite(site, replacement, outputs);
-    replaceSite(site, replacement, latches);
-  }
-
-  private void replaceSite(final AbraSite target, final AbraSite replacement, final ArrayList<? extends AbraSite> sites)
-  {
-    for (final AbraSite next : sites)
-    {
-      if (next instanceof AbraSiteMerge)
-      {
-        final AbraSiteMerge merge = (AbraSiteMerge) next;
-        for (int i = 0; i < merge.inputs.size(); i++)
-        {
-          if (merge.inputs.get(i) == target)
-          {
-            target.references--;
-            replacement.references++;
-            merge.inputs.set(i, replacement);
-          }
-        }
-      }
-
-      if (next.nullifyFalse == target)
-      {
-        target.references--;
-        replacement.references++;
-        next.nullifyFalse = replacement;
-      }
-
-      if (next.nullifyTrue == target)
-      {
-        target.references--;
-        replacement.references++;
-        next.nullifyTrue = replacement;
-      }
     }
   }
 

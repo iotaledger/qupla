@@ -19,7 +19,9 @@ public class AbraBlockLut extends AbraBlock
   @Override
   public CodeContext append(final CodeContext context)
   {
-    return super.append(context).append("  ").append(new String(tritCode.buffer, 0, 27));
+    context.append("// lut block " + index);
+    context.append(" // " + new String(tritCode.buffer, 0, 27));
+    return context.append(" // " + name + type()).newline();
   }
 
   @Override
@@ -40,9 +42,9 @@ public class AbraBlockLut extends AbraBlock
       int index = 0;
       for (int i = 0; i < entry.inputs.length(); i++)
       {
-        final char c = entry.inputs.charAt(i);
-        final int v = c == '-' ? 0 : c == '0' ? 1 : 2;
-        index += v * powers[i];
+        final char trit = entry.inputs.charAt(i);
+        final int val = trit == '-' ? 0 : trit == '0' ? 1 : 2;
+        index += val * powers[i];
       }
 
       // set corresponding character

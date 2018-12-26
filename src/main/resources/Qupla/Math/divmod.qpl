@@ -140,20 +140,23 @@ template divMod<T> {
     quorem = rshift<T2>(quo & rem)
     quo0 = quorem[0 : T]
     rem0 = quorem[T : T]
-    sign = sign<T>(rem0)
+    remSign = sign<T>(rem0)
+    quoSign = sign<T>(quo0)
 
-    pos = isPositive[sign]
     low = sub<T>(rem0, div)
     neg1 = neg<T>(low)
     cmp1 = cmp<T>(neg1, rem0)
-    test1 = and[pos, or[isLess[cmp1], and[isZero[cmp1], isPositive[sign<T>(quo0)]]]]
+    posRem = isPositive[remSign]
+    posQuo = isPositive[quoSign]
+    test1 = and[posRem, or[isLess[cmp1], and[isZero[cmp1], posQuo]]]
     quorem1 = incr<T>(quo0) & low
 
-    neg = isNegative[sign]
     high = add<T>(rem0, div)
     neg2 = neg<T>(high)
     cmp2 = cmp<T>(neg2, rem0)
-    test2 = and[neg, or[isGreater[cmp2], and[isEqual[cmp2], isNegative[sign<T>(quo0)]]]]
+    negRem = isNegative[remSign]
+    negQuo = isNegative[quoSign]
+    test2 = and[negRem, or[isGreater[cmp2], and[isEqual[cmp2], negQuo]]]
     quorem2 = decr<T>(quo0) & high
 
     return test1 ? quorem1 : test2 ? quorem2 : quorem

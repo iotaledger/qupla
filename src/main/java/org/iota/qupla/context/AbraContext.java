@@ -16,6 +16,7 @@ import org.iota.qupla.abra.AbraSiteMerge;
 import org.iota.qupla.abra.AbraSiteParam;
 import org.iota.qupla.abra.AbraSiteState;
 import org.iota.qupla.expression.AssignExpr;
+import org.iota.qupla.expression.ConcatExpr;
 import org.iota.qupla.expression.CondExpr;
 import org.iota.qupla.expression.FuncExpr;
 import org.iota.qupla.expression.IntegerExpr;
@@ -104,7 +105,14 @@ public class AbraContext extends CodeContext
     {
       expr.eval(this);
       site.size += expr.size;
-      site.inputs.add(lastSite);
+      if (expr instanceof ConcatExpr)
+      {
+        site.inputs.addAll(((AbraSiteKnot) lastSite).inputs);
+      }
+      else
+      {
+        site.inputs.add(lastSite);
+      }
     }
 
     site.concat(this);
@@ -126,15 +134,10 @@ public class AbraContext extends CodeContext
 
     conditional.trueBranch.eval(this);
     final AbraSite trueBranch = lastSite;
-    trueBranch.nullifyTrue = condition;
 
-    //    // create a site for nullifyTrue<size>(conditon, trueBranch)
-    //    final AbraSiteKnot trueResult = new AbraSiteKnot();
-    //    trueResult.size = conditional.size;
-    //    trueResult.inputs.add(condition);
-    //    trueResult.inputs.add(trueBranch);
-    //    trueResult.nullifyTrue(this);
-    //    addSite(trueResult);
+    // note that actual insertion of nullifyTrue(condition, ...)
+    // is done after nullify position has been optimized
+    trueBranch.nullifyTrue = condition;
 
     // create a site for trueBranch ( | falseBranch)
     final AbraSiteMerge merge = new AbraSiteMerge();
@@ -145,15 +148,10 @@ public class AbraContext extends CodeContext
     {
       conditional.falseBranch.eval(this);
       final AbraSite falseBranch = lastSite;
-      falseBranch.nullifyFalse = condition;
 
-      //      // create a site for nullifyFalse<size>(conditon, falseBranch)
-      //      final AbraSiteKnot falseResult = new AbraSiteKnot();
-      //      falseResult.size = conditional.size;
-      //      falseResult.inputs.add(condition);
-      //      falseResult.inputs.add(falseBranch);
-      //      falseResult.nullifyFalse(this);
-      //      addSite(falseResult);
+      // note that actual insertion of nullifyFalse(condition, ...)
+      // is done after nullify position has been optimized
+      falseBranch.nullifyFalse = condition;
 
       merge.inputs.add(falseBranch);
     }
@@ -287,10 +285,24 @@ public class AbraContext extends CodeContext
     site.from(merge);
 
     merge.lhs.eval(this);
-    site.inputs.add(lastSite);
+    if (merge.lhs instanceof MergeExpr)
+    {
+      site.inputs.addAll(((AbraSiteMerge) lastSite).inputs);
+    }
+    else
+    {
+      site.inputs.add(lastSite);
+    }
 
     merge.rhs.eval(this);
-    site.inputs.add(lastSite);
+    if (merge.rhs instanceof MergeExpr)
+    {
+      site.inputs.addAll(((AbraSiteMerge) lastSite).inputs);
+    }
+    else
+    {
+      site.inputs.add(lastSite);
+    }
 
     addSite(site);
   }
