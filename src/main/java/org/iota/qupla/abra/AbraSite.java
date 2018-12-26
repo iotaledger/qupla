@@ -51,10 +51,6 @@ public class AbraSite
     }
   }
 
-  public void optimizeNullify()
-  {
-  }
-
   public int refer(final int site)
   {
     //    if (site < index)
