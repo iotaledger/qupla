@@ -47,48 +47,49 @@ public class FpgaContext extends CodeContext
   private void addMergeFuncs()
   {
     newline().append("x reg [0:0];").newline();
-    newline().append("module Qupla_merge(").newline().indent();
-    append("input wire [1:0] input1").newline();
-    append("input wire [1:0] input2").newline();
-    append("output reg [1:0] output1").newline();
+    newline().append("function [1:0] Qupla_merge(").newline().indent();
+    append("  input [1:0] input1").newline();
+    append(", input [1:0] input2").newline();
     append(");").newline();
-    append("always @ (input1, input2)").newline();
+    append("begin").newline().indent();
     append("case ({input1, input2})").newline();
-    append("4'b0000: output1 <= 2'b00;").newline();
-    append("4'b0001: output1 <= 2'b01;").newline();
-    append("4'b0010: output1 <= 2'b10;").newline();
-    append("4'b0011: output1 <= 2'b11;").newline();
-    append("4'b0100: output1 <= 2'b01;").newline();
-    append("4'b1000: output1 <= 2'b10;").newline();
-    append("4'b1100: output1 <= 2'b11;").newline();
-    append("4'b0101: output1 <= 2'b01;").newline();
-    append("4'b1010: output1 <= 2'b10;").newline();
-    append("4'b1111: output1 <= 2'b11;").newline();
-    append("default: x <= 1;").newline();
+    append("4'b0000: Qupla_merge = 2'b00;").newline();
+    append("4'b0001: Qupla_merge = 2'b01;").newline();
+    append("4'b0010: Qupla_merge = 2'b10;").newline();
+    append("4'b0011: Qupla_merge = 2'b11;").newline();
+    append("4'b0100: Qupla_merge = 2'b01;").newline();
+    append("4'b1000: Qupla_merge = 2'b10;").newline();
+    append("4'b1100: Qupla_merge = 2'b11;").newline();
+    append("4'b0101: Qupla_merge = 2'b01;").newline();
+    append("4'b1010: Qupla_merge = 2'b10;").newline();
+    append("4'b1111: Qupla_merge = 2'b11;").newline();
+    append("default: Qupla_merge = 2'b00;").newline();
+    append("         x <= 1;").newline();
     append("endcase").newline().undent();
-    append("endmodule").newline();
+    append("end").newline().undent();
+    append("endfunction").newline();
 
     for (final Integer size : mergefuncs)
     {
-      newline().append("module Qupla_merge_" + size + "(").newline().indent();
-      append("input wire [" + (size * 2 - 1) + ":0] input1").newline();
-      append("input wire [" + (size * 2 - 1) + ":0] input2").newline();
-      append("output reg [" + (size * 2 - 1) + ":0] output1").newline();
+      final String funcName = "Qupla_merge_" + size;
+      newline().append("function [" + (size * 2 - 1) + ":0] ").append(funcName).append("(").newline().indent();
+      append("  input [" + (size * 2 - 1) + ":0] input1").newline();
+      append(", input [" + (size * 2 - 1) + ":0] input2").newline();
       append(");").newline();
-      append("always @ (input1, input2)").newline();
       append("begin").newline().indent();
+      append(funcName).append(" = {").newline().indent();
       boolean first = true;
       for (int i = 0; i < size; i++)
       {
         final int from = i * 2 + 1;
         final int to = i * 2;
-        append(first ? "output1 <= { " : "           : ").append("Qupla_merge(input1[" + from + ":" + to + "], input2[" + from + ":" + to + "])").newline();
+        append(first ? "" : ": ").append("Qupla_merge(input1[" + from + ":" + to + "], input2[" + from + ":" + to + "])").newline();
         first = false;
       }
-
-      append("           };").newline().undent();
+      undent();
+      append("};").newline().undent();
       append("end").newline().undent();
-      append("endmodule").newline();
+      append("endfunction").newline();
     }
   }
 
@@ -114,7 +115,7 @@ public class FpgaContext extends CodeContext
   @Override
   public void evalAssign(final AssignExpr assign)
   {
-    append(assign.name).append(" <= ");
+    append(assign.name).append(" = ");
     assign.expr.eval(this);
   }
 
@@ -162,16 +163,18 @@ public class FpgaContext extends CodeContext
   {
     newline();
 
-    append("module ").append(func.name.replace('$', '_')).append("(").newline().indent();
+    final String funcName = func.name.replace('$', '_');
+    append("function [" + (func.size * 2 - 1) + ":0] ").append(funcName).append("(").newline().indent();
 
+    boolean first = true;
     for (final BaseExpr param : func.params)
     {
-      append("input wire [" + (param.size * 2 - 1) + ":0] ").append(param.name).append(", ").newline();
+      append(first ? "  " : ", ");
+      first = false;
+      append("input [" + (param.size * 2 - 1) + ":0] ").append(param.name).newline();
     }
 
-    append("output reg [" + (func.size * 2 - 1) + ":0] ").append(func.name.replace('$', '_')).append("_out);").newline();
-
-    newline();
+    append(");").newline();
 
     for (final BaseExpr assignExpr : func.assignExprs)
     {
@@ -183,22 +186,7 @@ public class FpgaContext extends CodeContext
       newline();
     }
 
-    append("always @(");
-    boolean first = true;
-    for (final BaseExpr param : func.params)
-    {
-      append(first ? "" : ", ").append(param.name);
-      first = false;
-    }
-
-    append(")").newline();
-
-    if (func.assignExprs.size() != 0)
-    {
-      append("begin").newline();
-    }
-
-    indent();
+    append("begin").newline().indent();
 
     for (final BaseExpr assignExpr : func.assignExprs)
     {
@@ -206,17 +194,12 @@ public class FpgaContext extends CodeContext
       append(";").newline();
     }
 
-    append(func.name.replace('$', '_')).append("_out <= ");
+    append(funcName).append(" = ");
     func.returnExpr.eval(this);
     append(";").newline().undent();
 
-    if (func.assignExprs.size() != 0)
-    {
-      append("end").newline();
-    }
-
-    undent();
-    append("endmodule").newline();
+    append("end").newline().undent();
+    append("endfunction").newline();
   }
 
   @Override
@@ -244,26 +227,19 @@ public class FpgaContext extends CodeContext
   @Override
   public void evalLutDefinition(final LutStmt lut)
   {
-    // generate the actual lookup table by loading the LUT config RAM?
-    append("module ").append(lut.name.replace('$', '_')).append("_lut(").newline().indent();
-    for (int i = 0; i < lut.inputSize; i++)
-    {
-      append("input wire [1:0] ").append("p" + i).append(", ").newline();
-    }
+    final String lutName = lut.name.replace('$', '_') + "_lut";
+    append("function [" + (lut.size * 2 - 1) + ":0] ").append(lutName).append("(").newline().indent();
 
-    append("output reg [" + (lut.size * 2 - 1) + ":0] ").append("z);").newline();
-
-    newline();
-
-    append("always @(");
     boolean first = true;
     for (int i = 0; i < lut.inputSize; i++)
     {
-      append(first ? "" : ", ").append("p" + i);
+      append(first ? "  " : ", ");
       first = false;
+      append("input [1:0] ").append("p" + i).newline();
     }
+    append(");").newline();
 
-    append(")").newline();
+    append("begin").newline().indent();
 
     append("case ({");
     first = true;
@@ -277,15 +253,16 @@ public class FpgaContext extends CodeContext
 
     for (final LutEntry entry : lut.entries)
     {
-      tritVector(entry.inputs).append(": z <= ");
+      tritVector(entry.inputs).append(": ").append(lutName).append(" = ");
       tritVector(entry.outputs).append(";").newline();
     }
 
-    append("default: z <= ");
+    append("default: ").append(lutName).append(" = ");
     tritVector(lut.undefined.trits).append(";").newline();
     append("endcase").newline().undent();
 
-    append("endmodule").newline().newline();
+    append("end").newline().undent();
+    append("endfunction").newline().newline();
   }
 
   @Override

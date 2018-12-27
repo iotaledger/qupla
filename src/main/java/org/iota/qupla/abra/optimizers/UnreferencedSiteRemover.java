@@ -14,22 +14,24 @@ public class UnreferencedSiteRemover extends BaseOptimizer
     reverse = true;
   }
 
-  private void moveSiteStmtToNextSite(final BaseExpr stmt)
+  private boolean moveSiteStmtToNextSite(final BaseExpr stmt)
   {
     if (stmt == null)
     {
-      return;
+      return true;
     }
 
-    if (index < branch.sites.size())
+    if (index + 1 < branch.sites.size())
     {
       // attach statement to next body site
-      final AbraSite nextSite = branch.sites.get(index);
+      final AbraSite nextSite = branch.sites.get(index + 1);
       if (nextSite.stmt == null) //TODO
       {
         nextSite.stmt = stmt;
+        return true;
       }
-      return;
+
+      return false;
     }
 
     // attach statement to first output site
@@ -37,22 +39,35 @@ public class UnreferencedSiteRemover extends BaseOptimizer
     if (nextSite.stmt == null) //TODO
     {
       nextSite.stmt = stmt;
+      return true;
     }
+
+    return false;
   }
 
   @Override
   protected void processSite(final AbraSiteMerge site)
   {
-    if (site.references != 0)
+    if (site.references != 0 || site.hasNullifier())
     {
       return;
     }
 
     updateReferenceCounts(site);
 
-    branch.sites.remove(index);
+    if (moveSiteStmtToNextSite(site.stmt))
+    {
+      branch.sites.remove(index);
+    }
+  }
 
-    moveSiteStmtToNextSite(site.stmt);
+  @Override
+  public void run()
+  {
+    for (index = branch.sites.size() - 1; index >= 0; index--)
+    {
+      processSite((AbraSiteMerge) branch.sites.get(index));
+    }
   }
 
   private void updateReferenceCounts(final AbraSiteMerge site)
@@ -62,14 +77,18 @@ public class UnreferencedSiteRemover extends BaseOptimizer
       input.references--;
     }
 
+    site.inputs.clear();
+
     if (site.nullifyFalse != null)
     {
       site.nullifyFalse.references--;
+      site.nullifyFalse = null;
     }
 
     if (site.nullifyTrue != null)
     {
       site.nullifyTrue.references--;
+      site.nullifyTrue = null;
     }
   }
 }

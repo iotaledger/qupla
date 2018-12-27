@@ -1,7 +1,6 @@
 package org.iota.qupla.abra.funcs;
 
 import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraBlockLut;
 import org.iota.qupla.abra.AbraSiteKnot;
 import org.iota.qupla.abra.AbraSiteParam;
 
@@ -52,10 +51,7 @@ public class ConstZeroManager extends AbraFuncManager
   @Override
   protected void generateLut()
   {
-    lut = new AbraBlockLut();
-    lut.name = "$" + funcName + "$";
-    lut.tritCode.putTrits("000000000000000000000000000");
-    context.abra.luts.add(lut);
+    lut = context.abra.addLut("$constZero$", "000000000000000000000000000");
   }
 
   protected void generateLutFunc(final int inputSize)

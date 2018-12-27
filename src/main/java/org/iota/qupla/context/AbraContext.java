@@ -90,6 +90,7 @@ public class AbraContext extends CodeContext
       // move last site to latches
       branch.sites.remove(branch.sites.size() - 1);
       branch.latches.add(lastSite);
+      lastSite.isLatch = true;
 
       // forward placeholder state site to actual state site
       final AbraSiteState state = (AbraSiteState) stack.get(assign.stateIndex);
@@ -178,6 +179,7 @@ public class AbraContext extends CodeContext
     {
       stateExpr.eval(this);
       branch.latches.add(lastSite);
+      lastSite.isLatch = true;
     }
 
     for (final BaseExpr assignExpr : func.assignExprs)
@@ -219,7 +221,7 @@ public class AbraContext extends CodeContext
     branch.origin = func;
     branch.name = func.name;
     branch.size = func.size;
-    abra.branches.add(branch);
+    abra.addBranch(branch);
   }
 
   @Override
@@ -232,7 +234,7 @@ public class AbraContext extends CodeContext
       block.origin = lut;
       block.name = lut.name + "$" + i;
       block.tritNr = i;
-      abra.luts.add(block);
+      abra.addLut(block);
     }
   }
 

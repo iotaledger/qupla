@@ -14,7 +14,7 @@ public class SingleInputMergeOptimizer extends BaseOptimizer
   @Override
   protected void processMerge(final AbraSiteMerge merge)
   {
-    if (merge.references > 0 && merge.inputs.size() == 1)
+    if (merge.inputs.size() == 1)
     {
       // this leaves <merge> unreferenced
       replaceSite(merge, merge.inputs.get(0));

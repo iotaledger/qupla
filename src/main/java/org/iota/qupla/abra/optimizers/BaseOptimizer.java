@@ -24,6 +24,11 @@ public class BaseOptimizer
   private void process()
   {
     final AbraSite site = branch.sites.get(index);
+    if (site.references == 0)
+    {
+      return;
+    }
+
     if (site.getClass() == AbraSiteMerge.class)
     {
       processMerge((AbraSiteMerge) site);
@@ -51,6 +56,12 @@ public class BaseOptimizer
 
   protected void replaceSite(final AbraSite site, final AbraSite replacement)
   {
+    if (site.hasNullifier())
+    {
+      // extra precaution not to lose info
+      return;
+    }
+
     replaceSite(site, replacement, branch.sites);
     replaceSite(site, replacement, branch.outputs);
     replaceSite(site, replacement, branch.latches);

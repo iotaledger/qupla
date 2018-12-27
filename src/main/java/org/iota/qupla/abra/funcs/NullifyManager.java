@@ -1,7 +1,6 @@
 package org.iota.qupla.abra.funcs;
 
 import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraBlockLut;
 import org.iota.qupla.abra.AbraSiteKnot;
 import org.iota.qupla.abra.AbraSiteParam;
 
@@ -59,10 +58,7 @@ public class NullifyManager extends AbraFuncManager
   {
     final String trueTrits = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
     final String falseTrits = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
-    lut = new AbraBlockLut();
-    lut.name = "$" + funcName + "$";
-    lut.tritCode.putTrits(trueFalse ? trueTrits : falseTrits);
-    context.abra.luts.add(lut);
+    lut = context.abra.addLut("$" + funcName + "$", trueFalse ? trueTrits : falseTrits);
   }
 
   @Override

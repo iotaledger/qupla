@@ -110,10 +110,22 @@ public class AbraBlockBranch extends AbraBlock
     // then insert actual nullify operations and rewire accordingly
     new NullifyInserter(context, this).run();
 
-    // run set of actual optimizations
+    // remove some obvious nonsense before doing more complex analysis
+    optimizeCleanup(context);
+
+    // run the set of actual optimizations
     optimizePass(context);
 
-    // and finally remove all unreferenced sites
+    // and finally one last cleanup
+    optimizeCleanup(context);
+  }
+
+  private void optimizeCleanup(final AbraContext context)
+  {
+    // bypass superfluous single-input merges
+    new SingleInputMergeOptimizer(context, this).run();
+
+    // and remove all unreferenced sites
     new UnreferencedSiteRemover(context, this).run();
   }
 
@@ -127,9 +139,6 @@ public class AbraBlockBranch extends AbraBlock
 
     // disable all function calls that do nothing
     new EmptyFunctionOptimizer(context, this).run();
-
-    // bypass superfluous single-input merges
-    new SingleInputMergeOptimizer(context, this).run();
 
     // if possible, replace lut calling lut with a single lut that does it all
     new MultiLutOptimizer(context, this).run();
