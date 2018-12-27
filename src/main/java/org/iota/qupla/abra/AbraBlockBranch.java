@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.iota.qupla.abra.optimizers.ConcatenatedOutputOptimizer;
 import org.iota.qupla.abra.optimizers.ConcatenationOptimizer;
 import org.iota.qupla.abra.optimizers.EmptyFunctionOptimizer;
+import org.iota.qupla.abra.optimizers.LutFunctionWrapperOptimizer;
 import org.iota.qupla.abra.optimizers.MultiLutOptimizer;
 import org.iota.qupla.abra.optimizers.NullifyInserter;
 import org.iota.qupla.abra.optimizers.NullifyOptimizer;
@@ -131,14 +132,17 @@ public class AbraBlockBranch extends AbraBlock
 
   private void optimizePass(final AbraContext context)
   {
+    // bypass all function calls that do nothing
+    new EmptyFunctionOptimizer(context, this).run();
+
+    // replace lut wrapper function with direct lut operations
+    new LutFunctionWrapperOptimizer(context, this).run();
+
     // pre-slice inputs that will be sliced later on
     new SlicedInputOptimizer(context, this).run();
 
     // replace concatenation knot that is passed as input to a knot
     new ConcatenationOptimizer(context, this).run();
-
-    // disable all function calls that do nothing
-    new EmptyFunctionOptimizer(context, this).run();
 
     // if possible, replace lut calling lut with a single lut that does it all
     new MultiLutOptimizer(context, this).run();
