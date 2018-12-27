@@ -40,6 +40,16 @@ Example of Java compilation and running Qupla on Windows command line after extr
 
 
 
+Example of Java compilation and running Qupla on Mac command line after extracting sources into $HOME/Qupla folder:
+
+    cd $HOME/Qupla
+    mkdir build
+    javac -d $HOME/Qupla/build org/iota/qupla/Qupla.java
+    cd $HOME/Qupla/qupla/src/main/resources
+    java -classpath $HOME/Qupla/build org.iota.qupla.Qupla Examples "fibonacci(10)"
+
+
+
 Qupla statements are grouped in logical source files within a folder whose name specifies the module name these source files belong to.
 Within a module folder all Qupla source files are first parsed and loaded recursively into one big code tree.
 The parse phase will only do lexical parsing and syntax checks.
