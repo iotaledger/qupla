@@ -10,20 +10,36 @@ public class NullifyOptimizer extends BaseOptimizer
   public NullifyOptimizer(final AbraContext context, final AbraBlockBranch branch)
   {
     super(context, branch);
+    reverse = true;
   }
 
   @Override
   protected void processSite(final AbraSiteMerge site)
   {
+    if (index == 0 || !site.hasNullifier())
+    {
+      // no need to move it up the chain anyway
+      return;
+    }
+
     // check if all inputs have only a single reference
     for (final AbraSite input : site.inputs)
     {
-      if (input.nullifyFalse != null || input.nullifyTrue != null)
+      if (input.isLatch)
+      {
+        // don't fuck around with latches
+        return;
+      }
+
+      if (input.hasNullifier())
       {
         // cannot force a nullify on something that already has one
         return;
       }
 
+      //TODO when at least one input has a single reference
+      //     insert knots for the inputs that have >1 references
+      //     and then move the nullifies there to avoid calling the knot
       if (input.references != 1 || !(input instanceof AbraSiteMerge))
       {
         // cannot force nullify on something referenced from somewhere else
@@ -32,6 +48,14 @@ public class NullifyOptimizer extends BaseOptimizer
       }
     }
 
+    // first move those inputs to the nullify point
+    for (final AbraSite input : site.inputs)
+    {
+      branch.sites.remove(input);
+    }
+
+    branch.sites.addAll(index - site.inputs.size(), site.inputs);
+
     // move nullifyFalse up the chain??
     if (site.nullifyFalse != null)
     {
@@ -39,7 +63,6 @@ public class NullifyOptimizer extends BaseOptimizer
       {
         input.nullifyFalse = site.nullifyFalse;
         site.nullifyFalse.references++;
-        processSite((AbraSiteMerge) input);
       }
 
       site.nullifyFalse.references--;
@@ -49,16 +72,18 @@ public class NullifyOptimizer extends BaseOptimizer
     // move nullifyTrue up the chain??
     if (site.nullifyTrue != null)
     {
-      site.nullifyTrue.references--;
       for (final AbraSite input : site.inputs)
       {
         input.nullifyTrue = site.nullifyTrue;
         site.nullifyTrue.references++;
-        processSite((AbraSiteMerge) input);
       }
 
       site.nullifyTrue.references--;
       site.nullifyTrue = null;
     }
+
+    // this could have freed up another optimization possibility,
+    // so we restart the optimization from the end
+    index = branch.sites.size();
   }
 }

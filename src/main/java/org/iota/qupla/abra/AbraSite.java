@@ -6,6 +6,7 @@ import org.iota.qupla.expression.base.BaseExpr;
 public class AbraSite
 {
   public int index;
+  public boolean isLatch;
   public String name;
   public AbraSite nullifyFalse;
   public AbraSite nullifyTrue;
@@ -36,6 +37,11 @@ public class AbraSite
     origin = expr;
     name = expr.name;
     size = expr.size;
+  }
+
+  public boolean hasNullifier()
+  {
+    return nullifyFalse != null || nullifyTrue != null;
   }
 
   public void markReferences()

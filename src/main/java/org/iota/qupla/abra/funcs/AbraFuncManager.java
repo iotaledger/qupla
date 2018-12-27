@@ -160,7 +160,7 @@ public class AbraFuncManager
     instances.put(branch.name, branch);
     sorted.add(branch.size);
     Collections.sort(sorted);
-    context.abra.branches.add(branch);
+    context.abra.addBranch(branch);
     return branch;
   }
 }

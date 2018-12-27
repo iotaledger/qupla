@@ -3,6 +3,7 @@ package org.iota.qupla.abra.optimizers;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.iota.qupla.abra.AbraBlock;
 import org.iota.qupla.abra.AbraBlockBranch;
 import org.iota.qupla.abra.AbraBlockLut;
 import org.iota.qupla.abra.AbraSite;
@@ -20,7 +21,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     reverse = true;
   }
 
-  private void generateLookupTable(final AbraBlockLut combined, final AbraSiteKnot master, final AbraSiteKnot slave, final ArrayList<AbraSite> inputs)
+  private AbraBlock generateLookupTable(final AbraSiteKnot master, final AbraSiteKnot slave, final ArrayList<AbraSite> inputs)
   {
     // initialize lookup tables if necessary
     master.block.code();
@@ -52,11 +53,28 @@ public class MultiLutOptimizer extends BaseOptimizer
     }
 
     // repeat the entries across the entire table if necessary
-    final String trits = new String(lookup, 0, maxValue);
-    for (int offset = 0; offset < 27; offset += trits.length())
+    for (int offset = maxValue; offset < 27; offset += maxValue)
     {
-      combined.tritCode.putTrits(trits);
+      for (int i = 0; i < maxValue; i++)
+      {
+        lookup[offset + i] = lookup[i];
+      }
     }
+
+    final String trits = new String(lookup, 0, 27);
+
+    final AbraSiteKnot tmp = new AbraSiteKnot();
+    tmp.name = "$lut$" + trits.replace('-', 'T').replace('@', 'N');
+    tmp.lut(context);
+
+    // already exists?
+    if (tmp.block != null)
+    {
+      return tmp.block;
+    }
+
+    // new LUT, create it
+    return context.abra.addLut(tmp.name, trits);
   }
 
   private char lookupTrit(final AbraSiteKnot lut)
@@ -77,18 +95,14 @@ public class MultiLutOptimizer extends BaseOptimizer
   {
     final ArrayList<AbraSite> inputs = new ArrayList<>();
 
-    String name = master.block.name;
     // gather all unique master inputs (omit slave)
     for (final AbraSite input : master.inputs)
     {
-      name += "_";
       if (input != slave && !inputs.contains(input))
       {
         inputs.add(input);
         continue;
       }
-
-      name += slave.block.name;
     }
 
     // gather all unique slave inputs
@@ -106,21 +120,9 @@ public class MultiLutOptimizer extends BaseOptimizer
       return false;
     }
 
-    AbraSiteKnot tmp = new AbraSiteKnot();
-    tmp.name = name;
-    tmp.lut(context);
-
-    if (tmp.block == null)
-    {
-      // create new lookup table for combined LUT
-      final AbraBlockLut combined = new AbraBlockLut();
-      combined.name = name;
-      generateLookupTable(combined, master, slave, inputs);
-      context.abra.luts.add(combined);
-      tmp.block = combined;
-    }
-
-    master.block = tmp.block;
+    //TODO update block references (not just here)
+    // get lookup table for combined LUT
+    master.block = generateLookupTable(master, slave, inputs);
 
     // LUTs always need 3 inputs
     while (inputs.size() < 3)
@@ -128,7 +130,7 @@ public class MultiLutOptimizer extends BaseOptimizer
       inputs.add(inputs.get(0));
     }
 
-    // update master with new lookup table and inputs
+    // update master with new inputs
     for (int i = 0; i < 3; i++)
     {
       master.inputs.get(i).references--;
@@ -156,8 +158,9 @@ public class MultiLutOptimizer extends BaseOptimizer
         final AbraSiteKnot inputKnot = (AbraSiteKnot) input;
         if (inputKnot.block instanceof AbraBlockLut && mergeLuts(knot, inputKnot))
         {
-          // could be that more inputs are LUTs
-          processKnot(knot);
+          // this could have freed up another optimization possibility,
+          // so we restart the optimization from the end
+          index = branch.sites.size();
           return;
         }
       }

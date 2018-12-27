@@ -29,16 +29,8 @@ public class ConstManager extends AbraFuncManager
     }
 
     constZero = zeroManager.lut;
-
-    constOne = new AbraBlockLut();
-    constOne.name = "$constOne$";
-    constOne.tritCode.putTrits("111111111111111111111111111");
-    context.abra.luts.add(constOne);
-
-    constMin = new AbraBlockLut();
-    constMin.name = "$constMin$";
-    constMin.tritCode.putTrits("---------------------------");
-    context.abra.luts.add(constMin);
+    constOne = context.abra.addLut("$constOne$", "111111111111111111111111111");
+    constMin = context.abra.addLut("$constMin$", "---------------------------");
   }
 
   @Override

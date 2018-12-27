@@ -21,14 +21,15 @@ public class NullifyInserter extends BaseOptimizer
     final AbraSiteKnot nullify = new AbraSiteKnot();
     nullify.size = site.size;
     nullify.inputs.add(condition);
-    condition.references++;
-    nullify.inputs.add(site);
-    site.references++;
     nullify.nullify(context, trueFalse);
 
-    replaceSite(site, nullify);
-
+    site.nullifyFalse = null;
+    site.nullifyTrue = null;
     branch.sites.add(index + 1, nullify);
+
+    replaceSite(site, nullify);
+    nullify.inputs.add(site);
+    site.references++;
   }
 
   @Override

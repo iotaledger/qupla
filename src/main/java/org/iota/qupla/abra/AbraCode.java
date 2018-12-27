@@ -9,13 +9,40 @@ public class AbraCode
 {
   public TritCode abra = new TritCode();
   public int blockNr;
+  public ArrayList<AbraBlock> blocks = new ArrayList<>();
   public ArrayList<AbraBlockBranch> branches = new ArrayList<>();
   public ArrayList<AbraBlockImport> imports = new ArrayList<>();
   public ArrayList<AbraBlockLut> luts = new ArrayList<>();
 
+  public void addBranch(final AbraBlockBranch branch)
+  {
+    branches.add(branch);
+    blocks.add(branch);
+  }
+
+  public void addLut(final AbraBlockLut lut)
+  {
+    luts.add(lut);
+    blocks.add(lut);
+  }
+
+  public AbraBlockLut addLut(final String name, final String trits)
+  {
+    final AbraBlockLut lut = new AbraBlockLut();
+    lut.name = name;
+    lut.tritCode.putTrits(trits);
+    addLut(lut);
+    return lut;
+  }
+
   public void append(final CodeContext context)
   {
-    numberBlocks();
+    // numberBlocks();
+    // temporarily use a different numbering order
+    // this makes it easier to compare optimization pass outputs
+    // because the block numbers aren't constantly changed
+    blockNr = 0;
+    numberBlocks(blocks);
 
     appendBlocks(context, imports);
     appendBlocks(context, luts);

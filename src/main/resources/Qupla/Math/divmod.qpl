@@ -149,7 +149,6 @@ template divMod<T> {
     posRem = isPositive[remSign]
     posQuo = isPositive[quoSign]
     test1 = and[posRem, or[isLess[cmp1], and[isZero[cmp1], posQuo]]]
-    quorem1 = incr<T>(quo0) & low
 
     high = add<T>(rem0, div)
     neg2 = neg<T>(high)
@@ -157,8 +156,9 @@ template divMod<T> {
     negRem = isNegative[remSign]
     negQuo = isNegative[quoSign]
     test2 = and[negRem, or[isGreater[cmp2], and[isEqual[cmp2], negQuo]]]
-    quorem2 = decr<T>(quo0) & high
 
+    quorem1 = incr<T>(quo0) & low
+    quorem2 = decr<T>(quo0) & high
     return test1 ? quorem1 : test2 ? quorem2 : quorem
   }
 
@@ -171,7 +171,6 @@ template divMod<T> {
 
     quo1 = negQuo ? neg<T>(quo) : quo
     rem1 = negRem ? neg<T>(rem) : rem
-
     return quo1 & rem1
   }
 }
