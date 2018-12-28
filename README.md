@@ -5,7 +5,7 @@ Java reference implementation of Qupla (QUbic Programming LAnguage) with sample 
 * Qupla interpreter
 * Qupla to Abra tritcode translator (in progress)
 * Qupla Debug Info tritcode generator (TBD)
-* Qupla Abra tritcode interpreter (TBD)
+* Qupla Abra tritcode interpreter
 * Qupla JIT compilation (TBD)
 * Qupla Verilog generator (in progress)
 
@@ -37,6 +37,16 @@ Example of Java compilation and running Qupla on Windows command line after extr
     "C:\Program Files\Java\jdk1.8.0\bin\javac" -d \Qupla\build org\iota\qupla\Qupla.java
     cd \Qupla\qupla\src\main\resources
     java -classpath \Qupla\build org.iota.qupla.Qupla Examples "fibonacci(10)"
+
+
+
+Example of Java compilation and running Qupla on Mac command line after extracting sources into $HOME/Qupla folder:
+
+    cd $HOME/Qupla
+    mkdir build
+    javac -d $HOME/Qupla/build org/iota/qupla/Qupla.java
+    cd $HOME/Qupla/qupla/src/main/resources
+    java -classpath $HOME/Qupla/build org.iota.qupla.Qupla Examples "fibonacci(10)"
 
 
 
@@ -112,7 +122,7 @@ More documentation will follow
 
 Wishlist for changes to the language:
 * Implement entity aliases for type/lut
-* Arithmetic operators (same)
+* Arithmetic operators (to increase readability)
 * Automatic detection of type specifiers on function calls (same)
 * Type slice operator. Instead of var\[Tryte * n : Tryte\] we could maybe use var@Tryte\[n\].
 
