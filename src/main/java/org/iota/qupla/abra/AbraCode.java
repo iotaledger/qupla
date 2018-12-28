@@ -2,6 +2,7 @@ package org.iota.qupla.abra;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.abra.context.AbraCodeContext;
 import org.iota.qupla.context.AbraContext;
 import org.iota.qupla.context.CodeContext;
 
@@ -65,6 +66,25 @@ public class AbraCode
     putBlocks(imports);
     putBlocks(luts);
     putBlocks(branches);
+  }
+
+  public void eval(final AbraCodeContext context)
+  {
+    numberBlocks();
+    for (final AbraBlockImport imp : imports)
+    {
+      imp.eval(context);
+    }
+
+    for (final AbraBlockLut lut : luts)
+    {
+      lut.eval(context);
+    }
+
+    for (final AbraBlockBranch branch : branches)
+    {
+      branch.eval(context);
+    }
   }
 
   private void numberBlocks()

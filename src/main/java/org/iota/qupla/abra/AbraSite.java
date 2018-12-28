@@ -1,9 +1,10 @@
 package org.iota.qupla.abra;
 
+import org.iota.qupla.abra.context.AbraCodeContext;
 import org.iota.qupla.context.CodeContext;
 import org.iota.qupla.expression.base.BaseExpr;
 
-public class AbraSite
+public abstract class AbraSite
 {
   public int index;
   public boolean isLatch;
@@ -25,12 +26,14 @@ public class AbraSite
 
     context.append("// " + index + " ");
     context.append(nullifyTrue != null ? "T" + nullifyTrue.index : nullifyFalse != null ? "F" + nullifyFalse.index : " ");
-    return context.append(" " + references + " " + type + " site: ");
+    return context.append(" " + references + " " + type + " site(" + size + "): ");
   }
 
   public void code(final TritCode tritCode)
   {
   }
+
+  public abstract void eval(final AbraCodeContext context);
 
   public void from(final BaseExpr expr)
   {

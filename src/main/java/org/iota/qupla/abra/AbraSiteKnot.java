@@ -1,5 +1,6 @@
 package org.iota.qupla.abra;
 
+import org.iota.qupla.abra.context.AbraCodeContext;
 import org.iota.qupla.abra.funcs.ConcatManager;
 import org.iota.qupla.abra.funcs.ConstManager;
 import org.iota.qupla.abra.funcs.NullifyManager;
@@ -52,6 +53,12 @@ public class AbraSiteKnot extends AbraSiteMerge
   public void concat(final AbraContext context)
   {
     block = concats.find(context, size);
+  }
+
+  @Override
+  public void eval(final AbraCodeContext context)
+  {
+    context.evalKnot(this);
   }
 
   public void lut(final AbraContext context)

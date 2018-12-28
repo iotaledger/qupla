@@ -2,6 +2,7 @@ package org.iota.qupla.abra;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.abra.context.AbraCodeContext;
 import org.iota.qupla.abra.optimizers.ConcatenatedOutputOptimizer;
 import org.iota.qupla.abra.optimizers.ConcatenationOptimizer;
 import org.iota.qupla.abra.optimizers.EmptyFunctionOptimizer;
@@ -24,12 +25,23 @@ public class AbraBlockBranch extends AbraBlock
   public ArrayList<AbraSite> sites = new ArrayList<>();
   public int size;
 
+  public void addInput(final AbraSiteParam inputSite)
+  {
+    if (inputs.size() != 0)
+    {
+      final AbraSiteParam lastInput = (AbraSiteParam) inputs.get(inputs.size() - 1);
+      inputSite.offset = lastInput.offset + lastInput.size;
+    }
+
+    inputs.add(inputSite);
+  }
+
   public AbraSiteParam addInputParam(final int inputSize)
   {
     final AbraSiteParam inputSite = new AbraSiteParam();
     inputSite.size = inputSize;
     inputSite.name = "P" + inputs.size();
-    inputs.add(inputSite);
+    addInput(inputSite);
     return inputSite;
   }
 
@@ -66,6 +78,12 @@ public class AbraBlockBranch extends AbraBlock
     putSites(sites);
     putSites(outputs);
     putSites(latches);
+  }
+
+  @Override
+  public void eval(final AbraCodeContext context)
+  {
+    context.evalBranch(this);
   }
 
   @Override

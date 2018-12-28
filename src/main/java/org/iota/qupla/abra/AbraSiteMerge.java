@@ -2,6 +2,7 @@ package org.iota.qupla.abra;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.abra.context.AbraCodeContext;
 import org.iota.qupla.context.CodeContext;
 
 public class AbraSiteMerge extends AbraSite
@@ -37,6 +38,12 @@ public class AbraSiteMerge extends AbraSite
   }
 
   @Override
+  public void eval(final AbraCodeContext context)
+  {
+    context.evalMerge(this);
+  }
+
+  @Override
   public void markReferences()
   {
     super.markReferences();
@@ -44,10 +51,10 @@ public class AbraSiteMerge extends AbraSite
     for (int i = 0; i < inputs.size(); i++)
     {
       final AbraSite input = inputs.get(i);
-      if (input instanceof AbraSiteState)
+      if (input instanceof AbraSiteLatch)
       {
         // reroute from placeholder to actual latch site
-        final AbraSiteState state = (AbraSiteState) input;
+        final AbraSiteLatch state = (AbraSiteLatch) input;
         inputs.set(i, state.latch);
         state.latch.references++;
         continue;
