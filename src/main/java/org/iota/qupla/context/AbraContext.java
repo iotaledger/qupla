@@ -15,6 +15,7 @@ import org.iota.qupla.abra.AbraSiteKnot;
 import org.iota.qupla.abra.AbraSiteLatch;
 import org.iota.qupla.abra.AbraSiteMerge;
 import org.iota.qupla.abra.AbraSiteParam;
+import org.iota.qupla.abra.context.AbraFpgaContext;
 import org.iota.qupla.expression.AssignExpr;
 import org.iota.qupla.expression.ConcatExpr;
 import org.iota.qupla.expression.CondExpr;
@@ -88,6 +89,7 @@ public class AbraContext extends CodeContext
   public void evalAssign(final AssignExpr assign)
   {
     assign.expr.eval(this);
+    lastSite.varName = assign.name;
     stack.push(lastSite);
 
     if (assign.stateIndex != 0)
@@ -176,6 +178,7 @@ public class AbraContext extends CodeContext
     {
       final AbraSiteParam site = new AbraSiteParam();
       site.from(param);
+      site.varName = param.name;
       stack.push(site);
       branch.addInput(site);
     }
@@ -237,7 +240,7 @@ public class AbraContext extends CodeContext
     {
       final AbraBlockLut block = new AbraBlockLut();
       block.origin = lut;
-      block.name = lut.name + "$" + i;
+      block.name = lut.name + "_" + i;
       block.tritNr = i;
       abra.addLut(block);
     }
@@ -258,7 +261,8 @@ public class AbraContext extends CodeContext
     {
       final AbraSiteKnot site = new AbraSiteKnot();
       site.from(lookup);
-      site.name += "$" + i;
+      site.name += "_" + i;
+      site.size = 1;
       site.inputs.addAll(args.inputs);
       while (site.inputs.size() < 3)
       {
@@ -364,6 +368,7 @@ public class AbraContext extends CodeContext
     abra.optimize(this);
     abra.code();
     abra.append(this);
+    abra.eval(new AbraFpgaContext());
 
     try
     {

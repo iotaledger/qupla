@@ -1,7 +1,6 @@
 package org.iota.qupla.abra;
 
 import org.iota.qupla.abra.context.AbraCodeContext;
-import org.iota.qupla.abra.funcs.ConcatManager;
 import org.iota.qupla.abra.funcs.ConstManager;
 import org.iota.qupla.abra.funcs.NullifyManager;
 import org.iota.qupla.abra.funcs.SliceManager;
@@ -10,7 +9,6 @@ import org.iota.qupla.context.CodeContext;
 
 public class AbraSiteKnot extends AbraSiteMerge
 {
-  public static ConcatManager concats = new ConcatManager();
   public static ConstManager constants = new ConstManager();
   public static NullifyManager nullifyFalse = new NullifyManager(false);
   public static NullifyManager nullifyTrue = new NullifyManager(true);
@@ -52,7 +50,7 @@ public class AbraSiteKnot extends AbraSiteMerge
 
   public void concat(final AbraContext context)
   {
-    block = concats.find(context, size);
+    block = slicers.find(context, size, 0);
   }
 
   @Override
@@ -81,12 +79,6 @@ public class AbraSiteKnot extends AbraSiteMerge
 
   public void slice(final AbraContext context, final int inputSize, final int start)
   {
-    if (start == 0)
-    {
-      block = concats.find(context, size);
-      return;
-    }
-
     block = slicers.find(context, size, start);
   }
 

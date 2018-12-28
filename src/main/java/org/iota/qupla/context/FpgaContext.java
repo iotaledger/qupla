@@ -163,7 +163,7 @@ public class FpgaContext extends CodeContext
   {
     newline();
 
-    final String funcName = func.name.replace('$', '_');
+    final String funcName = func.name;
     append("function [" + (func.size * 2 - 1) + ":0] ").append(funcName).append("(").newline().indent();
 
     boolean first = true;
@@ -205,7 +205,7 @@ public class FpgaContext extends CodeContext
   @Override
   public void evalFuncCall(final FuncExpr call)
   {
-    append(call.name.replace('$', '_'));
+    append(call.name);
 
     boolean first = true;
     for (final BaseExpr arg : call.args)
@@ -227,7 +227,7 @@ public class FpgaContext extends CodeContext
   @Override
   public void evalLutDefinition(final LutStmt lut)
   {
-    final String lutName = lut.name.replace('$', '_') + "_lut";
+    final String lutName = lut.name + "_lut";
     append("function [" + (lut.size * 2 - 1) + ":0] ").append(lutName).append("(").newline().indent();
 
     boolean first = true;
@@ -268,7 +268,7 @@ public class FpgaContext extends CodeContext
   @Override
   public void evalLutLookup(final LutExpr lookup)
   {
-    append(lookup.name.replace('$', '_')).append("_lut(");
+    append(lookup.name).append("_lut(");
     boolean first = true;
     for (final BaseExpr arg : lookup.args)
     {
@@ -296,7 +296,6 @@ public class FpgaContext extends CodeContext
     append(", ");
     merge.rhs.eval(this);
     append(")");
-
   }
 
   @Override
@@ -387,16 +386,16 @@ public class FpgaContext extends CodeContext
       switch (trits.charAt(i))
       {
       case '0':
-        append("00");
+        append("01");
         break;
       case '1':
-        append("01");
+        append("10");
         break;
       case '-':
         append("11");
         break;
       case '@':
-        append("10");
+        append("00");
         break;
       }
     }

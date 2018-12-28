@@ -37,7 +37,7 @@ public class SliceManager extends AbraFuncManager
     this.context = context;
     this.size = size;
     this.start = start;
-    name = "$" + funcName + "$" + size + "@" + start;
+    name = funcName + "_" + size + "_" + start;
     return findInstance();
   }
 }

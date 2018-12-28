@@ -32,7 +32,7 @@ public class ConstZeroManager extends AbraFuncManager
     manager.sorted = sorted;
 
     final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = "$" + funcName + "$" + inputSize;
+    branch.name = funcName + "_" + inputSize;
     branch.size = inputSize;
 
     final AbraSiteParam inputValue = branch.addInputParam(1);
@@ -51,14 +51,14 @@ public class ConstZeroManager extends AbraFuncManager
   @Override
   protected void generateLut()
   {
-    lut = context.abra.addLut("$constZero$", "000000000000000000000000000");
+    lut = context.abra.addLut("constZero_", "000000000000000000000000000");
   }
 
   protected void generateLutFunc(final int inputSize)
   {
     // generate function that use LUTs
     final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = "$" + funcName + "$" + inputSize;
+    branch.name = funcName + "_" + inputSize;
     branch.size = inputSize;
 
     final AbraSiteParam inputValue = branch.addInputParam(1);

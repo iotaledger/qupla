@@ -226,7 +226,7 @@ public class FuncStmt extends BaseExpr
 
   public void appendSignature()
   {
-    append("func ").append(returnType).append(" ").append(name.split("\\$")[0]);
+    append("func ").append(returnType).append(" ").append(name.split("_")[0]);
     if (funcTypes.size() != 0)
     {
       boolean first = true;

@@ -352,13 +352,13 @@ public class EvalContext extends CodeContext
 
   private void interceptCall(final FuncExpr call)
   {
-    if (usePrint && call.name.startsWith("print$"))
+    if (usePrint && call.name.startsWith("print_"))
     {
       final BaseExpr arg = call.args.get(0);
       BaseExpr.logLine("" + arg.typeInfo.display(value));
     }
 
-    if (useBreak && call.name.startsWith("break$"))
+    if (useBreak && call.name.startsWith("break_"))
     {
       final BaseExpr arg = call.args.get(0);
       BaseExpr.logLine("" + arg.typeInfo.display(value));

@@ -113,7 +113,7 @@ public class AbraFuncManager
   {
     this.context = context;
     this.size = size;
-    name = "$" + funcName + "$" + size;
+    name = funcName + "_" + size;
     return findInstance();
   }
 

@@ -29,8 +29,8 @@ public class ConstManager extends AbraFuncManager
     }
 
     constZero = zeroManager.lut;
-    constOne = context.abra.addLut("$constOne$", "111111111111111111111111111");
-    constMin = context.abra.addLut("$constMin$", "---------------------------");
+    constOne = context.abra.addLut("constOne_", "111111111111111111111111111");
+    constMin = context.abra.addLut("constMin_", "---------------------------");
   }
 
   @Override
@@ -94,7 +94,7 @@ public class ConstManager extends AbraFuncManager
       return zeroManager.find(context, size);
     }
 
-    name = "$" + funcName + "$" + size + "$" + trits.replace('-', 'T');
+    name = funcName + "_" + size + "_" + trits.replace('-', 'T');
     return findInstance();
   }
 
