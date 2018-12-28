@@ -14,7 +14,7 @@ import org.iota.qupla.statement.UseStmt;
 
 public abstract class BaseExpr
 {
-  public static final String SEPARATOR = "$";
+  public static final String SEPARATOR = "_";
   public static int callNr;
   public static TypeStmt constTypeInfo;
   public static Module currentModule;

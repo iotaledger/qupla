@@ -35,7 +35,7 @@ public class NullifyManager extends AbraFuncManager
     manager.sorted = sorted;
 
     final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = "$" + funcName + "$" + inputSize;
+    branch.name = funcName + "_" + inputSize;
     branch.size = inputSize;
 
     final AbraSiteParam inputFlag = branch.addInputParam(1);
@@ -58,7 +58,7 @@ public class NullifyManager extends AbraFuncManager
   {
     final String trueTrits = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
     final String falseTrits = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
-    lut = context.abra.addLut("$" + funcName + "$", trueFalse ? trueTrits : falseTrits);
+    lut = context.abra.addLut(funcName + "_", trueFalse ? trueTrits : falseTrits);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class NullifyManager extends AbraFuncManager
   {
     // generate function that use LUTs
     final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = "$" + funcName + "$" + inputSize;
+    branch.name = funcName + "_" + inputSize;
     branch.size = inputSize;
 
     final AbraSiteParam inputFlag = branch.addInputParam(1);

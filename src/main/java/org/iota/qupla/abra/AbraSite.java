@@ -16,6 +16,7 @@ public abstract class AbraSite
   public int size;
   public BaseExpr stmt;
   public String type;
+  public String varName;
 
   public CodeContext append(final CodeContext context)
   {

@@ -64,7 +64,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     final String trits = new String(lookup, 0, 27);
 
     final AbraSiteKnot tmp = new AbraSiteKnot();
-    tmp.name = "$lut$" + trits.replace('-', 'T').replace('@', 'N');
+    tmp.name = "lut_" + trits.replace('-', 'T').replace('@', 'N');
     tmp.lut(context);
 
     // already exists?

@@ -106,7 +106,7 @@ public class FuncExpr extends BaseExpr
   @Override
   public BaseExpr append()
   {
-    append(name.split("\\$")[0]);
+    append(name.split("_")[0]);
 
     if (funcTypes.size() != 0)
     {
