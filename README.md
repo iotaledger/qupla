@@ -5,7 +5,7 @@ Java reference implementation of Qupla (QUbic Programming LAnguage) with sample 
 * Qupla interpreter
 * Qupla to Abra tritcode translator (in progress)
 * Qupla Debug Info tritcode generator (TBD)
-* Qupla Abra tritcode interpreter (TBD)
+* Qupla Abra tritcode interpreter
 * Qupla JIT compilation (TBD)
 * Qupla Verilog generator (in progress)
 
