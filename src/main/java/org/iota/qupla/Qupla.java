@@ -10,6 +10,7 @@ package org.iota.qupla;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.iota.qupla.abra.context.AbraEvalContext;
 import org.iota.qupla.context.AbraContext;
 import org.iota.qupla.context.EvalContext;
 import org.iota.qupla.context.FpgaContext;
@@ -27,6 +28,7 @@ import org.iota.qupla.statement.UseStmt;
 
 public class Qupla
 {
+  private static AbraContext abraContext;
   private static final String[] flags = {
       "-abra",
       "-echo",
@@ -124,11 +126,9 @@ public class Qupla
             continue;
           }
 
-          // interpret as expression to be evaluated
-          // can be a function call, but also an expression surrounded by ( and )
+          // expression to be evaluated later
           if (arg.contains("("))
           {
-            evalExpression(arg);
             continue;
           }
 
@@ -136,6 +136,16 @@ public class Qupla
         }
 
         processOptions();
+
+        for (final String arg : args)
+        {
+          // interpret as expression to be evaluated
+          // can be a function call, but also an expression surrounded by ( and )
+          if (arg.contains("("))
+          {
+            evalExpression(arg);
+          }
+        }
       }
       catch (final CodeException ex)
       {
@@ -155,18 +165,6 @@ public class Qupla
       runEchoSource();
     }
 
-    // run all unit test comments
-    if (options.contains("-test"))
-    {
-      runTestComments();
-    }
-
-    // run all evaluation comments
-    if (options.contains("-eval"))
-    {
-      runEvalComments();
-    }
-
     // echo back all modules as Abra tritcode
     if (options.contains("-abra"))
     {
@@ -184,13 +182,26 @@ public class Qupla
     {
       runTreeViewer();
     }
+
+    // run all unit test comments
+    if (options.contains("-test"))
+    {
+      runTestComments();
+    }
+
+    // run all evaluation comments
+    if (options.contains("-eval"))
+    {
+      runEvalComments();
+    }
   }
 
   private static void runAbraGenerator()
   {
     log("Run Abra generator");
     final Module singleModule = new Module(Module.allModules.values());
-    singleModule.eval(new AbraContext());
+    abraContext = new AbraContext();
+    singleModule.eval(abraContext);
   }
 
   private static void runEchoSource()
@@ -202,9 +213,20 @@ public class Qupla
   {
     log("Eval: " + expr.toString());
 
-    long mSec = System.currentTimeMillis();
     final EvalContext context = new EvalContext();
-    expr.eval(context);
+    final AbraEvalContext abraEvalContext = new AbraEvalContext();
+
+    long mSec = System.currentTimeMillis();
+    if (options.contains("-abra"))
+    {
+      abraEvalContext.eval(abraContext, expr);
+      context.value = abraEvalContext.value;
+    }
+    else
+    {
+      expr.eval(context);
+    }
+
     mSec = System.currentTimeMillis() - mSec;
 
     log("  ==> " + expr.typeInfo.display(context.value));
@@ -251,9 +273,20 @@ public class Qupla
   {
     log("Test: " + exec.expected + " = " + exec.expr);
 
-    long mSec = System.currentTimeMillis();
     final EvalContext context = new EvalContext();
-    exec.expr.eval(context);
+    final AbraEvalContext abraEvalContext = new AbraEvalContext();
+
+    long mSec = System.currentTimeMillis();
+    if (options.contains("-abra"))
+    {
+      abraEvalContext.eval(abraContext, exec.expr);
+      context.value = abraEvalContext.value;
+    }
+    else
+    {
+      exec.expr.eval(context);
+    }
+
     mSec = System.currentTimeMillis() - mSec;
 
     if (!exec.succeed(context.value))

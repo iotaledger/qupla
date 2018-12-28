@@ -12,9 +12,9 @@ import org.iota.qupla.abra.AbraBlockLut;
 import org.iota.qupla.abra.AbraCode;
 import org.iota.qupla.abra.AbraSite;
 import org.iota.qupla.abra.AbraSiteKnot;
+import org.iota.qupla.abra.AbraSiteLatch;
 import org.iota.qupla.abra.AbraSiteMerge;
 import org.iota.qupla.abra.AbraSiteParam;
-import org.iota.qupla.abra.AbraSiteState;
 import org.iota.qupla.expression.AssignExpr;
 import org.iota.qupla.expression.ConcatExpr;
 import org.iota.qupla.expression.CondExpr;
@@ -71,6 +71,11 @@ public class AbraContext extends CodeContext
   {
     try
     {
+      if (out == null)
+      {
+        //System.out.print(text);
+        return;
+      }
       out.write(text);
     }
     catch (IOException e)
@@ -93,7 +98,7 @@ public class AbraContext extends CodeContext
       lastSite.isLatch = true;
 
       // forward placeholder state site to actual state site
-      final AbraSiteState state = (AbraSiteState) stack.get(assign.stateIndex);
+      final AbraSiteLatch state = (AbraSiteLatch) stack.get(assign.stateIndex);
       state.latch = lastSite;
     }
   }
@@ -172,7 +177,7 @@ public class AbraContext extends CodeContext
       final AbraSiteParam site = new AbraSiteParam();
       site.from(param);
       stack.push(site);
-      branch.inputs.add(site);
+      branch.addInput(site);
     }
 
     for (final BaseExpr stateExpr : func.stateExprs)
@@ -263,7 +268,7 @@ public class AbraContext extends CodeContext
       site.lut(this);
       addSite(site);
 
-      concat.size += site.size;
+      concat.size += 1;
       concat.inputs.add(site);
     }
 
@@ -336,7 +341,7 @@ public class AbraContext extends CodeContext
   public void evalState(final StateExpr state)
   {
     // create placeholder for latch
-    final AbraSiteState site = new AbraSiteState();
+    final AbraSiteLatch site = new AbraSiteLatch();
     site.from(state);
 
     lastSite = site;
@@ -365,11 +370,13 @@ public class AbraContext extends CodeContext
       if (out != null)
       {
         out.close();
+        out = null;
       }
 
       if (writer != null)
       {
         writer.close();
+        writer = null;
       }
     }
     catch (final IOException e)

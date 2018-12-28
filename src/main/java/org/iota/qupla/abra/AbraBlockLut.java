@@ -1,5 +1,6 @@
 package org.iota.qupla.abra;
 
+import org.iota.qupla.abra.context.AbraCodeContext;
 import org.iota.qupla.context.CodeContext;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.statement.LutStmt;
@@ -59,6 +60,12 @@ public class AbraBlockLut extends AbraBlock
     }
 
     //TODO convert 27 bct 'trits' to 35 trits
+  }
+
+  @Override
+  public void eval(final AbraCodeContext context)
+  {
+    context.evalLut(this);
   }
 
   @Override

@@ -2,6 +2,8 @@ package org.iota.qupla.abra;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.abra.context.AbraCodeContext;
+
 public class AbraBlockImport extends AbraBlock
 {
   public ArrayList<AbraBlock> blocks = new ArrayList<>();
@@ -16,6 +18,12 @@ public class AbraBlockImport extends AbraBlock
     {
       tritCode.putInt(block.index);
     }
+  }
+
+  @Override
+  public void eval(final AbraCodeContext context)
+  {
+    context.evalImport(this);
   }
 
   @Override
