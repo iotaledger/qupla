@@ -14,7 +14,8 @@ public class ConstManager extends AbraFuncManager
   private static AbraBlockLut constOne;
   private static AbraBlockLut constZero;
   private static ConstZeroManager zeroManager = new ConstZeroManager();
-  public String trits;
+  public TritVector trits;
+  public TritVector value;
 
   public ConstManager()
   {
@@ -53,7 +54,7 @@ public class ConstManager extends AbraFuncManager
     final AbraSiteKnot siteZero = tritConstant(constZero);
 
     AbraSiteKnot zeroes = null;
-    if (trits.length() < size)
+    if (trits.size() < size)
     {
       // need to concatenate rest of zeroes
       zeroes = new AbraSiteKnot();
@@ -65,9 +66,9 @@ public class ConstManager extends AbraFuncManager
 
     final AbraSiteKnot constant = new AbraSiteKnot();
     constant.size = size;
-    for (int i = 0; i < trits.length(); i++)
+    for (int i = 0; i < trits.size(); i++)
     {
-      final char c = trits.charAt(i);
+      final char c = trits.trit(i);
       constant.inputs.add(c == '0' ? siteZero : c == '1' ? siteOne : siteMin);
     }
 
@@ -79,35 +80,35 @@ public class ConstManager extends AbraFuncManager
     constant.concat(context);
 
     branch.type = AbraBlock.TYPE_CONSTANT;
-    final String trail = TritVector.zero(size - trits.length());
-    branch.constantValue = new TritVector(trits + trail, size);
+    branch.constantValue = value;
 
     branch.outputs.add(constant);
   }
 
-  public AbraBlockBranch find(final AbraContext context, final String value)
+  public AbraBlockBranch find(final AbraContext context, final TritVector value)
   {
     this.context = context;
-    size = value.length();
+    this.value = value;
+    size = value.size();
 
     // strip off trailing zeroes
-    trits = "";
+    trits = null;
     for (int i = size - 1; i >= 0; i--)
     {
-      if (value.charAt(i) != '0')
+      if (value.trit(i) != '0')
       {
-        trits = value.substring(0, i + 1);
+        trits = value.slice(0, i + 1);
         break;
       }
     }
 
-    if (trits.length() == 0)
+    if (trits == null || trits.size() == 0)
     {
       // all zeroes, pass it on to zero manager
       return zeroManager.find(context, size);
     }
 
-    name = funcName + "_" + size + "_" + trits.replace('-', 'T');
+    name = funcName + "_" + size + "_" + trits.trits().replace('-', 'T');
     return findInstance();
   }
 

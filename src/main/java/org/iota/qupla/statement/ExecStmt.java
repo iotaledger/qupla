@@ -75,13 +75,18 @@ public class ExecStmt extends BaseExpr
 
   public boolean succeed(final TritVector result)
   {
-    final String lhsTrits = expected.vector.trits;
-    final String rhsTrits = result.trits;
-    if (lhsTrits.equals(rhsTrits))
+    if (expected.vector.equals(result))
     {
       return true;
     }
 
-    return typeInfo.isFloat && lhsTrits.substring(1).equals(rhsTrits.substring(1));
+    if (!typeInfo.isFloat || expected.vector.size() != result.size())
+    {
+      return false;
+    }
+
+    // when it's a float allow least significant bit to differ
+    int size = result.size() - 1;
+    return expected.vector.slice(1, size).equals(result.slice(1, size));
   }
 }

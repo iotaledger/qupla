@@ -359,7 +359,7 @@ public class AbraContext extends CodeContext
     final AbraSiteKnot site = new AbraSiteKnot();
     site.from(integer);
     site.inputs.add(branch.inputs.get(0));
-    site.vector(this, integer.vector.trits);
+    site.vector(this, integer.vector);
     addSite(site);
   }
 

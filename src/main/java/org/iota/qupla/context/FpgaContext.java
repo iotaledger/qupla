@@ -151,7 +151,7 @@ public class FpgaContext extends CodeContext
     append(" : ");
     if (conditional.falseBranch == null)
     {
-      tritVector(new TritVector(conditional.size).trits);
+      tritVector(TritVector.nulls(conditional.size));
       return;
     }
 
@@ -258,7 +258,7 @@ public class FpgaContext extends CodeContext
     }
 
     append("default: ").append(lutName).append(" = ");
-    tritVector(lut.undefined.trits).append(";").newline();
+    tritVector(lut.undefined.trits()).append(";").newline();
     append("endcase").newline().undent();
 
     append("end").newline().undent();
@@ -332,7 +332,7 @@ public class FpgaContext extends CodeContext
   @Override
   public void evalVector(final IntegerExpr integer)
   {
-    tritVector(integer.vector.trits);
+    tritVector(integer.vector.trits());
   }
 
   @Override
