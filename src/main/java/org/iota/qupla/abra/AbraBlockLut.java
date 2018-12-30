@@ -18,6 +18,12 @@ public class AbraBlockLut extends AbraBlock
   public int tritNr;
 
   @Override
+  public boolean anyNull()
+  {
+    return true;
+  }
+
+  @Override
   public CodeContext append(final CodeContext context)
   {
     context.append("// lut block " + index);

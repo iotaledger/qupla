@@ -1,5 +1,6 @@
 package org.iota.qupla.abra.context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -21,30 +22,18 @@ import org.iota.qupla.helper.TritVector;
 
 public class AbraEvalContext extends AbraCodeContext
 {
-  private static final HashMap<String, Integer> indexes = new HashMap<>();
-  private static final TritVector nullTrit = new TritVector(1);
+  private static final TritVector minTrit = new TritVector("-", 1);
+  private static final TritVector nullTrit = new TritVector("@", 0);
+  private static final TritVector oneTrit = new TritVector("1", 1);
   // note: stateValues needs to be static so that state is preserved between invocations
   private static final HashMap<StateValue, StateValue> stateValues = new HashMap<>();
+  private static final TritVector zeroTrit = new TritVector("0", 1);
   public AbraContext abra;
+  public ArrayList<TritVector> args = new ArrayList<>();
   public int callNr;
   public byte[] callTrail = new byte[1024];
   public TritVector[] stack;
   public TritVector value;
-
-  public AbraEvalContext()
-  {
-    if (indexes.size() == 0)
-    {
-      char key[] = new char[3];
-      for (int i = 0; i < 27; i++)
-      {
-        key[0] = "-01".charAt((i / 1) % 3);
-        key[1] = "-01".charAt((i / 3) % 3);
-        key[2] = "-01".charAt((i / 9) % 3);
-        indexes.put(new String(key), i);
-      }
-    }
-  }
 
   public void error(final String text)
   {
@@ -61,12 +50,12 @@ public class AbraEvalContext extends AbraCodeContext
       {
         if (branch.origin == funcExpr.func)
         {
-          value = new TritVector();
+          args.clear();
           for (final BaseExpr arg : funcExpr.args)
           {
             if (arg instanceof IntegerExpr)
             {
-              value = new TritVector(value, ((IntegerExpr) arg).vector);
+              args.add(((IntegerExpr) arg).vector);
               continue;
             }
 
@@ -85,10 +74,21 @@ public class AbraEvalContext extends AbraCodeContext
     final TritVector[] oldStack = stack;
     stack = new TritVector[branch.siteNr];
 
-    for (final AbraSite input : branch.inputs)
+    if (!evalBranchInputsMatch(branch))
     {
-      input.append(abra).newline();
-      input.eval(this);
+      //BaseExpr.logLine(branch.name);
+      value = new TritVector();
+      for (final TritVector input : args)
+      {
+        // concatenate inputs
+        value = new TritVector(value, input);
+      }
+
+      for (final AbraSite input : branch.inputs)
+      {
+        input.append(abra).newline();
+        input.eval(this);
+      }
     }
 
     // initialize latches with old values
@@ -123,6 +123,28 @@ public class AbraEvalContext extends AbraCodeContext
     value = result;
   }
 
+  private boolean evalBranchInputsMatch(final AbraBlockBranch branch)
+  {
+    if (args.size() != branch.inputs.size())
+    {
+      return false;
+    }
+
+    for (int i = 0; i < args.size(); i++)
+    {
+      final TritVector arg = args.get(i);
+      final AbraSite input = branch.inputs.get(i);
+      if (arg.trits.length() != input.size)
+      {
+        return false;
+      }
+
+      stack[input.index] = arg;
+    }
+
+    return true;
+  }
+
   @Override
   public void evalImport(final AbraBlockImport imp)
   {
@@ -131,60 +153,66 @@ public class AbraEvalContext extends AbraCodeContext
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    value = new TritVector();
+    args.clear();
+    int valueTrits = 0;
     for (final AbraSite input : knot.inputs)
     {
-      // concatenate inputs
-      value = new TritVector(value, stack[input.index]);
+      final TritVector arg = stack[input.index];
+      valueTrits += arg.valueTrits;
+      args.add(arg);
     }
 
-    if (value.valueTrits == 0)
+    if (valueTrits == 0)
     {
       stack[knot.index] = new TritVector(knot.size);
       return;
     }
 
     callTrail[callNr++] = (byte) knot.index;
-    knot.block.eval(this);
-    callNr--;
 
+    knot.block.eval(this);
     stack[knot.index] = value;
+
+    callNr--;
   }
 
   @Override
-  public void evalLatch(final AbraSiteLatch state)
+  public void evalLatch(final AbraSiteLatch latch)
   {
   }
 
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    if (value.trits.length() != 3)
+    String trits = "";
+    for (final TritVector input : args)
     {
-      error("LUT input size is " + value.trits.length());
+      trits += input.trits;
     }
 
-    if (value.valueTrits != 3)
+    if (trits.length() != 3)
     {
-      value = nullTrit;
-      return;
+      error("LUT input size is " + trits.length());
     }
 
-    final Integer index = indexes.get(value.trits);
-    if (index == null)
+    final Integer index = indexFromTrits.get(trits);
+    if (index != null)
     {
-      value = nullTrit;
-      return;
+      switch (lut.tritCode.buffer[index])
+      {
+      case '0':
+        value = zeroTrit;
+        return;
+      case '1':
+        value = oneTrit;
+        return;
+      case '-':
+        value = minTrit;
+        return;
+      }
     }
 
-    final char trit = lut.tritCode.buffer[index];
-    if (trit == '@')
-    {
-      value = nullTrit;
-      return;
-    }
-
-    value = new TritVector("" + trit, 1);
+    value = nullTrit;
   }
 
   @Override
@@ -259,7 +287,10 @@ public class AbraEvalContext extends AbraCodeContext
     }
 
     latch.eval(this);
-    stack[latch.index] = value;
+
+    // do NOT update latch site on stack with new value
+    // other latches may need the old value still
+    // again, do NOT add: stack[latch.index] = value;
 
     callTrail[callNr] = (byte) latch.index;
 

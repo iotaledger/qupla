@@ -70,7 +70,12 @@ public class AbraCode
 
   public void eval(final AbraCodeContext context)
   {
+    context.abraCode = this;
+
     numberBlocks();
+
+    context.started();
+
     for (final AbraBlockImport imp : imports)
     {
       imp.eval(context);
@@ -85,6 +90,8 @@ public class AbraCode
     {
       branch.eval(context);
     }
+
+    context.finished();
   }
 
   private void numberBlocks()

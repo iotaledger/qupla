@@ -1,10 +1,12 @@
 package org.iota.qupla.abra.funcs;
 
+import org.iota.qupla.abra.AbraBlock;
 import org.iota.qupla.abra.AbraBlockBranch;
 import org.iota.qupla.abra.AbraBlockLut;
 import org.iota.qupla.abra.AbraSite;
 import org.iota.qupla.abra.AbraSiteKnot;
 import org.iota.qupla.context.AbraContext;
+import org.iota.qupla.helper.TritVector;
 
 public class ConstManager extends AbraFuncManager
 {
@@ -29,8 +31,14 @@ public class ConstManager extends AbraFuncManager
     }
 
     constZero = zeroManager.lut;
+
     constOne = context.abra.addLut("constOne_", "111111111111111111111111111");
+    constOne.type = AbraBlock.TYPE_CONSTANT;
+    constOne.constantValue = new TritVector("1", 1);
+
     constMin = context.abra.addLut("constMin_", "---------------------------");
+    constMin.type = AbraBlock.TYPE_CONSTANT;
+    constMin.constantValue = new TritVector("i", 1);
   }
 
   @Override
@@ -49,9 +57,9 @@ public class ConstManager extends AbraFuncManager
     {
       // need to concatenate rest of zeroes
       zeroes = new AbraSiteKnot();
-      zeroes.size = size;
       zeroes.inputs.add(input);
       zeroes.block = zeroManager.find(context, size);
+      zeroes.size = zeroes.block.size();
       branch.sites.add(zeroes);
     }
 
@@ -103,12 +111,12 @@ public class ConstManager extends AbraFuncManager
     final AbraSite input = branch.inputs.get(0);
 
     final AbraSiteKnot site = new AbraSiteKnot();
-    site.size = 3;
     site.name = tritLut.name;
     site.inputs.add(input);
     site.inputs.add(input);
     site.inputs.add(input);
     site.block = tritLut;
+    site.size = site.block.size();
     branch.sites.add(site);
     return site;
   }

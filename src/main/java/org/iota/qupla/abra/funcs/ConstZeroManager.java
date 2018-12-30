@@ -1,8 +1,10 @@
 package org.iota.qupla.abra.funcs;
 
+import org.iota.qupla.abra.AbraBlock;
 import org.iota.qupla.abra.AbraBlockBranch;
 import org.iota.qupla.abra.AbraSiteKnot;
 import org.iota.qupla.abra.AbraSiteParam;
+import org.iota.qupla.helper.TritVector;
 
 public class ConstZeroManager extends AbraFuncManager
 {
@@ -39,9 +41,9 @@ public class ConstZeroManager extends AbraFuncManager
     for (int i = 0; i < inputSizes.length; i++)
     {
       final AbraSiteKnot knot = new AbraSiteKnot();
-      knot.size = 1;
       knot.inputs.add(inputValue);
       knot.block = manager.find(context, inputSizes[i]);
+      knot.size = knot.block.size();
       branch.outputs.add(knot);
     }
 
@@ -52,6 +54,8 @@ public class ConstZeroManager extends AbraFuncManager
   protected void generateLut()
   {
     lut = context.abra.addLut("constZero_", "000000000000000000000000000");
+    lut.type = AbraBlock.TYPE_CONSTANT;
+    lut.constantValue = new TritVector("0", 1);
   }
 
   protected void generateLutFunc(final int inputSize)
@@ -65,11 +69,11 @@ public class ConstZeroManager extends AbraFuncManager
     for (int i = 0; i < inputSize; i++)
     {
       final AbraSiteKnot knot = new AbraSiteKnot();
-      knot.size = 1;
       knot.inputs.add(inputValue);
       knot.inputs.add(inputValue);
       knot.inputs.add(inputValue);
       knot.block = lut;
+      knot.size = knot.block.size();
       branch.outputs.add(knot);
     }
 

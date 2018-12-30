@@ -3,11 +3,12 @@
 Java reference implementation of Qupla (QUbic Programming LAnguage) with sample code and initial standard libraries.
 * Qupla source code parser
 * Qupla interpreter
-* Qupla to Abra tritcode translator (in progress)
+* Qupla to Abra tritcode translator (mostly done)
 * Qupla Debug Info tritcode generator (TBD)
-* Qupla Abra tritcode interpreter
 * Qupla JIT compilation (TBD)
-* Qupla Verilog generator (in progress)
+* Qupla Verilog generator (mostly done)
+* Abra tritcode interpreter
+* Abra tritcode Verilog generator (mostly done)
 
 Set the working folder while running to the resources folder for now.
 Or move the resources folder somewhere else so you can add your own Qupla project modules and set the working folder to that location

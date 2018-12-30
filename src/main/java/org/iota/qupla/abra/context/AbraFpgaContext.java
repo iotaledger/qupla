@@ -18,35 +18,6 @@ import org.iota.qupla.abra.AbraSiteParam;
 
 public class AbraFpgaContext extends AbraCodeContext
 {
-  private static final String[] lutValues = {
-      "---",
-      "0--",
-      "1--",
-      "-0-",
-      "00-",
-      "10-",
-      "-1-",
-      "01-",
-      "11-",
-      "--0",
-      "0-0",
-      "1-0",
-      "-00",
-      "000",
-      "100",
-      "-10",
-      "010",
-      "110",
-      "--1",
-      "0-1",
-      "1-1",
-      "-01",
-      "001",
-      "101",
-      "-11",
-      "011",
-      "111"
-  };
   public ArrayList<AbraSite> branchSites = new ArrayList<>();
   public File file;
   public HashSet<Integer> mergefuncs = new HashSet<>();
@@ -320,7 +291,7 @@ public class AbraFpgaContext extends AbraCodeContext
   }
 
   @Override
-  public void evalLatch(final AbraSiteLatch state)
+  public void evalLatch(final AbraSiteLatch latch)
   {
   }
 
@@ -351,7 +322,7 @@ public class AbraFpgaContext extends AbraCodeContext
         continue;
       }
 
-      tritVector(lutValues[i]).append(": ").append(lutName).append(" = ");
+      tritVector(lutIndexes[i]).append(": ").append(lutName).append(" = ");
       tritVector("" + trit).append(";").newline();
     }
 

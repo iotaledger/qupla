@@ -317,6 +317,11 @@ public class TritVector
 
   public TritVector slice(final int start, final int size)
   {
+    if (start == 0 && size == trits.length())
+    {
+      return this;
+    }
+
     final TritVector result = new TritVector();
     result.trits = trits.substring(start, start + size);
     if (valueTrits != 0)
