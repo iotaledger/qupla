@@ -4,13 +4,27 @@ import org.iota.qupla.abra.context.AbraCodeContext;
 import org.iota.qupla.context.AbraContext;
 import org.iota.qupla.context.CodeContext;
 import org.iota.qupla.expression.base.BaseExpr;
+import org.iota.qupla.helper.TritVector;
 
 public abstract class AbraBlock
 {
+  public static final int TYPE_CONSTANT = 3;
+  public static final int TYPE_NULLIFY_FALSE = 2;
+  public static final int TYPE_NULLIFY_TRUE = 1;
+  public static final int TYPE_SLICE = 4;
+
+  public boolean analyzed;
+  public TritVector constantValue;
   public int index;
   public String name;
   public BaseExpr origin;
   public TritCode tritCode = new TritCode();
+  public int type;
+
+  public boolean anyNull()
+  {
+    return false;
+  }
 
   public CodeContext append(final CodeContext context)
   {
@@ -40,8 +54,18 @@ public abstract class AbraBlock
   {
   }
 
+  public int offset()
+  {
+    return 0;
+  }
+
   public void optimize(final AbraContext context)
   {
+  }
+
+  public int size()
+  {
+    return 1;
   }
 
   @Override

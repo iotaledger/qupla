@@ -18,8 +18,10 @@ import org.iota.qupla.context.CodeContext;
 
 public class AbraBlockBranch extends AbraBlock
 {
+  public boolean anyNull;
   public ArrayList<AbraSite> inputs = new ArrayList<>();
   public ArrayList<AbraSite> latches = new ArrayList<>();
+  public int offset;
   public ArrayList<AbraSite> outputs = new ArrayList<>();
   public int siteNr;
   public ArrayList<AbraSite> sites = new ArrayList<>();
@@ -43,6 +45,12 @@ public class AbraBlockBranch extends AbraBlock
     inputSite.name = "P" + inputs.size();
     addInput(inputSite);
     return inputSite;
+  }
+
+  @Override
+  public boolean anyNull()
+  {
+    return anyNull;
   }
 
   @Override
@@ -121,6 +129,12 @@ public class AbraBlockBranch extends AbraBlock
   }
 
   @Override
+  public int offset()
+  {
+    return offset;
+  }
+
+  @Override
   public void optimize(final AbraContext context)
   {
     // first move the nullifies up the chain as far as possible
@@ -175,6 +189,12 @@ public class AbraBlockBranch extends AbraBlock
     {
       site.code(tritCode);
     }
+  }
+
+  @Override
+  public int size()
+  {
+    return size;
   }
 
   @Override

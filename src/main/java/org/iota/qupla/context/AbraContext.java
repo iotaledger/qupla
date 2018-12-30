@@ -15,6 +15,7 @@ import org.iota.qupla.abra.AbraSiteKnot;
 import org.iota.qupla.abra.AbraSiteLatch;
 import org.iota.qupla.abra.AbraSiteMerge;
 import org.iota.qupla.abra.AbraSiteParam;
+import org.iota.qupla.abra.context.AbraAnalyzeContext;
 import org.iota.qupla.abra.context.AbraFpgaContext;
 import org.iota.qupla.expression.AssignExpr;
 import org.iota.qupla.expression.ConcatExpr;
@@ -369,6 +370,7 @@ public class AbraContext extends CodeContext
     abra.code();
     abra.append(this);
     abra.eval(new AbraFpgaContext());
+    abra.eval(new AbraAnalyzeContext());
 
     try
     {

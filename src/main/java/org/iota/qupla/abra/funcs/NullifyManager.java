@@ -1,8 +1,10 @@
 package org.iota.qupla.abra.funcs;
 
+import org.iota.qupla.abra.AbraBlock;
 import org.iota.qupla.abra.AbraBlockBranch;
 import org.iota.qupla.abra.AbraSiteKnot;
 import org.iota.qupla.abra.AbraSiteParam;
+import org.iota.qupla.helper.TritVector;
 
 public class NullifyManager extends AbraFuncManager
 {
@@ -43,10 +45,10 @@ public class NullifyManager extends AbraFuncManager
     {
       final AbraSiteParam inputValue = branch.addInputParam(inputSizes[i]);
       final AbraSiteKnot knot = new AbraSiteKnot();
-      knot.size = 1;
       knot.inputs.add(inputFlag);
       knot.inputs.add(inputValue);
       knot.block = manager.find(context, inputSizes[i]);
+      knot.size = knot.block.size();
       branch.outputs.add(knot);
     }
 
@@ -59,6 +61,8 @@ public class NullifyManager extends AbraFuncManager
     final String trueTrits = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
     final String falseTrits = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
     lut = context.abra.addLut(funcName + "_", trueFalse ? trueTrits : falseTrits);
+    lut.type = trueFalse ? AbraBlock.TYPE_NULLIFY_TRUE : AbraBlock.TYPE_NULLIFY_FALSE;
+    lut.constantValue = new TritVector("@", 0);
   }
 
   @Override
@@ -74,11 +78,11 @@ public class NullifyManager extends AbraFuncManager
     {
       final AbraSiteParam inputValue = branch.addInputParam(1);
       final AbraSiteKnot knot = new AbraSiteKnot();
-      knot.size = 1;
       knot.inputs.add(inputFlag);
       knot.inputs.add(inputValue);
       knot.inputs.add(inputValue);
       knot.block = lut;
+      knot.size = knot.block.size();
       branch.outputs.add(knot);
     }
 
