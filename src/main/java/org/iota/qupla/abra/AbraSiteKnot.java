@@ -6,6 +6,7 @@ import org.iota.qupla.abra.funcs.NullifyManager;
 import org.iota.qupla.abra.funcs.SliceManager;
 import org.iota.qupla.context.AbraContext;
 import org.iota.qupla.context.CodeContext;
+import org.iota.qupla.helper.TritVector;
 
 public class AbraSiteKnot extends AbraSiteMerge
 {
@@ -82,8 +83,8 @@ public class AbraSiteKnot extends AbraSiteMerge
     block = slicers.find(context, size, start);
   }
 
-  public void vector(final AbraContext context, final String trits)
+  public void vector(final AbraContext context, final TritVector vector)
   {
-    block = constants.find(context, trits);
+    block = constants.find(context, vector);
   }
 }

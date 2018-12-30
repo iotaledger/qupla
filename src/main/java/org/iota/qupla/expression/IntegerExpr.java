@@ -46,7 +46,7 @@ public class IntegerExpr extends BaseExpr
     if (constTypeInfo == null)
     {
       vector.fromDecimal(name);
-      size = vector.trits.length();
+      size = vector.size();
       return;
     }
 
@@ -71,19 +71,17 @@ public class IntegerExpr extends BaseExpr
     }
 
     vector.fromDecimal(name);
-    size = vector.trits.length();
+    size = vector.size();
     if (size > constTypeInfo.size)
     {
       error("Constant value '" + name + "' exceeds " + constTypeInfo.size + " trits");
     }
 
     size = constTypeInfo.size;
-    if (vector.trits.length() < size)
+    if (vector.size() < size)
     {
       vector.padZero(size);
     }
-
-    vector.valueTrits = size;
   }
 
   @Override

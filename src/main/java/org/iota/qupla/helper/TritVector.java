@@ -11,8 +11,8 @@ public class TritVector
   private static final BigInteger three = new BigInteger("3");
   private static String zeroTrits = "0000000000000000000000000000000000000000000000000";
   public String name;
-  public String trits = "";
-  public int valueTrits;
+  private String trits = "";
+  private int valueTrits;
 
   public TritVector()
   {
@@ -24,6 +24,12 @@ public class TritVector
     valueTrits = copy.valueTrits;
   }
 
+  public TritVector(final String trits)
+  {
+    this.trits = trits;
+    this.valueTrits = trits.length();
+  }
+
   public TritVector(final String trits, final int valueTrits)
   {
     this.trits = trits;
@@ -32,12 +38,7 @@ public class TritVector
 
   public TritVector(int size)
   {
-    while (size > nullTrits.length())
-    {
-      nullTrits += nullTrits;
-    }
-
-    trits = nullTrits.substring(0, size);
+    trits = nulls(size);
   }
 
   // concatenation constructor
@@ -47,7 +48,32 @@ public class TritVector
     valueTrits = lhs.valueTrits + rhs.valueTrits;
   }
 
-  public static String zero(final int size)
+  public static TritVector concat(final TritVector lhs, final TritVector rhs)
+  {
+    if (lhs == null)
+    {
+      return rhs;
+    }
+
+    if (rhs == null)
+    {
+      return lhs;
+    }
+
+    return new TritVector(lhs, rhs);
+  }
+
+  public static String nulls(final int size)
+  {
+    while (size > nullTrits.length())
+    {
+      nullTrits += nullTrits;
+    }
+
+    return nullTrits.substring(0, size);
+  }
+
+  public static String zeroes(final int size)
   {
     while (size > zeroTrits.length())
     {
@@ -83,6 +109,12 @@ public class TritVector
     return toDecimal().toString();
   }
 
+  @Override
+  public boolean equals(final Object o)
+  {
+    return o instanceof TritVector && trits.equals(((TritVector) o).trits);
+  }
+
   public TritVector extract(final int start, final int size)
   {
     // pads slice with zeroes if necessary
@@ -94,12 +126,12 @@ public class TritVector
 
     if (start >= trits.length())
     {
-      return new TritVector(zero(size), size);
+      return new TritVector(zeroes(size), size);
     }
 
     final int remain = trits.length() - start;
     final TritVector ret = slice(start, remain);
-    ret.trits += zero(size - remain);
+    ret.trits += zeroes(size - remain);
     ret.valueTrits = size;
     return ret;
   }
@@ -198,7 +230,7 @@ public class TritVector
       {
         // special case: both mantissa and exponent zero
         valueTrits = manSize + expSize;
-        trits = zero(valueTrits);
+        trits = zeroes(valueTrits);
         return null;
       }
 
@@ -212,7 +244,7 @@ public class TritVector
       }
 
       // shift all significant trits to normalize
-      final String mantissa = zero(manSize - trits.length()) + trits;
+      final String mantissa = zeroes(manSize - trits.length()) + trits;
       return makeFloat(mantissa, trits.length(), expSize);
     }
 
@@ -230,7 +262,7 @@ public class TritVector
     final int decimals = value.length() - dot - 1;
     final String integer = value.substring(0, dot) + value.substring(dot + 1);
     final BigInteger intValue = new BigInteger(integer);
-    final BigInteger tenPower = new BigInteger("1" + zero(decimals));
+    final BigInteger tenPower = new BigInteger("1" + zeroes(decimals));
 
     // do a rough estimate of how many trits we will need at a minimum
     // add at least 20 trits of wiggling room to reduce rounding errors
@@ -272,9 +304,19 @@ public class TritVector
     return powers.get(nr);
   }
 
+  public boolean isNull()
+  {
+    return valueTrits == 0;
+  }
+
+  public boolean isValue()
+  {
+    return valueTrits == trits.length();
+  }
+
   public boolean isZero()
   {
-    if (valueTrits != trits.length())
+    if (!isValue())
     {
       return false;
     }
@@ -312,7 +354,14 @@ public class TritVector
 
   public void padZero(final int size)
   {
-    trits += zero(size - trits.length());
+    final int padLength = size - trits.length();
+    trits += zeroes(padLength);
+    valueTrits += padLength;
+  }
+
+  public int size()
+  {
+    return trits.length();
   }
 
   public TritVector slice(final int start, final int size)
@@ -410,7 +459,7 @@ public class TritVector
     final BigInteger power = getPower(-exponent);
     final int rhsLength = powerDigits.get(-exponent);
     final int extra = lhsLength < rhsLength ? rhsLength - lhsLength : 0;
-    final BigInteger mul = integer.multiply(new BigInteger("1" + zero(digits + extra)));
+    final BigInteger mul = integer.multiply(new BigInteger("1" + zeroes(digits + extra)));
     final BigInteger div = mul.divide(power);
     final String divResult = div.toString();
     final int decimal = divResult.length() - digits - extra;
@@ -422,7 +471,7 @@ public class TritVector
 
     if (decimal < 0)
     {
-      return "0." + zero(-decimal) + divResult.substring(0, last);
+      return "0." + zeroes(-decimal) + divResult.substring(0, last);
     }
 
     final String fraction = last == decimal ? "0" : divResult.substring(decimal, last);
@@ -477,5 +526,15 @@ public class TritVector
   public String toString()
   {
     return display(0, 0);
+  }
+
+  public char trit(final int index)
+  {
+    return trits.charAt(index);
+  }
+
+  public String trits()
+  {
+    return trits;
   }
 }

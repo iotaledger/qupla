@@ -2,7 +2,6 @@ package org.iota.qupla.abra;
 
 import org.iota.qupla.abra.context.AbraCodeContext;
 import org.iota.qupla.context.CodeContext;
-import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.statement.LutStmt;
 import org.iota.qupla.statement.helper.LutEntry;
 
@@ -40,7 +39,7 @@ public class AbraBlockLut extends AbraBlock
     }
 
     // initialize with 27 null trits
-    final char[] lookup = new TritVector(27).trits.toCharArray();
+    final char[] lookup = "@@@@@@@@@@@@@@@@@@@@@@@@@@@".toCharArray();
 
     final LutStmt lut = (LutStmt) origin;
     for (final LutEntry entry : lut.entries)

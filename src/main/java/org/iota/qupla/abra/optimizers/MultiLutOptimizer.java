@@ -9,7 +9,6 @@ import org.iota.qupla.abra.AbraBlockLut;
 import org.iota.qupla.abra.AbraSite;
 import org.iota.qupla.abra.AbraSiteKnot;
 import org.iota.qupla.context.AbraContext;
-import org.iota.qupla.helper.TritVector;
 
 public class MultiLutOptimizer extends BaseOptimizer
 {
@@ -28,7 +27,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     slave.block.code();
 
     // initialize with 27 null trits
-    final char[] lookup = new TritVector(27).trits.toCharArray();
+    final char[] lookup = "@@@@@@@@@@@@@@@@@@@@@@@@@@@".toCharArray();
 
     final int maxValue = AbraBlockLut.powers[inputs.size()];
     for (int v = 0; v < maxValue; v++)

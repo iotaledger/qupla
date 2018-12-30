@@ -80,7 +80,7 @@ public class AbraEvalContext extends AbraCodeContext
 
     if (branch.type == AbraBlock.TYPE_NULLIFY_TRUE)
     {
-      if (args.get(0).trits.charAt(0) != '1')
+      if (args.get(0).trit(0) != '1')
       {
         value = branch.constantValue;
         return;
@@ -92,7 +92,7 @@ public class AbraEvalContext extends AbraCodeContext
 
     if (branch.type == AbraBlock.TYPE_NULLIFY_FALSE)
     {
-      if (args.get(0).trits.charAt(0) != '-')
+      if (args.get(0).trit(0) != '-')
       {
         value = branch.constantValue;
         return;
@@ -118,12 +118,10 @@ public class AbraEvalContext extends AbraCodeContext
 
     if (!evalBranchInputsMatch(branch))
     {
-      //BaseExpr.logLine(branch.name);
-      value = new TritVector();
-      for (final TritVector input : args)
+      value = null;
+      for (final TritVector arg : args)
       {
-        // concatenate inputs
-        value = new TritVector(value, input);
+        value = TritVector.concat(value, arg);
       }
 
       if (branch.type == AbraBlock.TYPE_SLICE)
@@ -134,7 +132,6 @@ public class AbraEvalContext extends AbraCodeContext
 
       for (final AbraSite input : branch.inputs)
       {
-        input.append(abra).newline();
         input.eval(this);
       }
     }
@@ -142,28 +139,24 @@ public class AbraEvalContext extends AbraCodeContext
     // initialize latches with old values
     for (final AbraSite latch : branch.latches)
     {
-      latch.append(abra).newline();
       initializeLatch(latch);
     }
 
     for (final AbraSite site : branch.sites)
     {
-      site.append(abra).newline();
       site.eval(this);
     }
 
-    TritVector result = new TritVector();
+    TritVector result = null;
     for (final AbraSite output : branch.outputs)
     {
-      output.append(abra).newline();
       output.eval(this);
-      result = new TritVector(result, value);
+      result = TritVector.concat(result, value);
     }
 
     // update latches with new values
     for (final AbraSite latch : branch.latches)
     {
-      latch.append(abra).newline();
       updateLatch(latch);
     }
 
@@ -182,7 +175,7 @@ public class AbraEvalContext extends AbraCodeContext
     {
       final TritVector arg = args.get(i);
       final AbraSite input = branch.inputs.get(i);
-      if (arg.trits.length() != input.size)
+      if (arg.size() != input.size)
       {
         return false;
       }
@@ -202,15 +195,15 @@ public class AbraEvalContext extends AbraCodeContext
   public void evalKnot(final AbraSiteKnot knot)
   {
     args.clear();
-    int valueTrits = 0;
+    boolean isAllNull = true;
     for (final AbraSite input : knot.inputs)
     {
       final TritVector arg = stack[input.index];
-      valueTrits += arg.valueTrits;
+      isAllNull = isAllNull && arg.isNull();
       args.add(arg);
     }
 
-    if (valueTrits == 0)
+    if (isAllNull)
     {
       stack[knot.index] = new TritVector(knot.size);
       return;
@@ -232,18 +225,24 @@ public class AbraEvalContext extends AbraCodeContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    String trits = "";
-    for (final TritVector input : args)
+    if (args.size() != 3)
     {
-      trits += input.trits;
+      error("LUT needs exactly 3 inputs");
     }
 
-    if (trits.length() != 3)
+    char trits[] = new char[3];
+    for (int i = 0; i < 3; i++)
     {
-      error("LUT input size is " + trits.length());
+      final TritVector arg = args.get(i);
+      if (arg.size() != 1)
+      {
+        error("LUT inputs need to be exactly 1 trit");
+      }
+
+      trits[i] = arg.trit(0);
     }
 
-    final Integer index = indexFromTrits.get(trits);
+    final Integer index = indexFromTrits.get(new String(trits));
     if (index != null)
     {
       switch (lut.tritCode.buffer[index])
@@ -270,7 +269,7 @@ public class AbraEvalContext extends AbraCodeContext
     for (final AbraSite input : merge.inputs)
     {
       final TritVector mergeValue = stack[input.index];
-      if (mergeValue.valueTrits == 0)
+      if (mergeValue.isNull())
       {
         continue;
       }
@@ -295,7 +294,7 @@ public class AbraEvalContext extends AbraCodeContext
   @Override
   public void evalParam(final AbraSiteParam param)
   {
-    if (value.trits.length() < param.offset + param.size)
+    if (value.size() < param.offset + param.size)
     {
       error("Insufficient input trits: " + value);
     }
@@ -324,7 +323,7 @@ public class AbraEvalContext extends AbraCodeContext
       return;
     }
 
-    stack[latch.index] = new TritVector(TritVector.zero(latch.size), latch.size);
+    stack[latch.index] = new TritVector(TritVector.zeroes(latch.size), latch.size);
   }
 
   private void updateLatch(final AbraSite latch)

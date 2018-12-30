@@ -48,7 +48,7 @@ public class ConstZeroManager extends AbraFuncManager
     }
 
     branch.type = AbraBlock.TYPE_CONSTANT;
-    final String trail = TritVector.zero(size);
+    final String trail = TritVector.zeroes(size);
     branch.constantValue = new TritVector(trail, size);
 
     return branch;
@@ -82,7 +82,7 @@ public class ConstZeroManager extends AbraFuncManager
     }
 
     branch.type = AbraBlock.TYPE_CONSTANT;
-    final String trail = TritVector.zero(size);
+    final String trail = TritVector.zeroes(size);
     branch.constantValue = new TritVector(trail, size);
 
     saveBranch(branch);

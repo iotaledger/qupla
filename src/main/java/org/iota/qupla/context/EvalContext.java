@@ -54,7 +54,7 @@ public class EvalContext extends CodeContext
 
     if (varNamesOnStack)
     {
-      value = new TritVector(value.trits, value.valueTrits);
+      value = new TritVector(value);
       value.name = assign.name;
     }
 
@@ -68,7 +68,7 @@ public class EvalContext extends CodeContext
     }
 
     //  only assign non-null trits, other trits remain the same
-    if (value.valueTrits == 0)
+    if (value.isNull())
     {
       // all null, just don't assign anything
       return;
@@ -85,25 +85,22 @@ public class EvalContext extends CodeContext
     final StateValue stateValue = stateValues.get(call);
 
     // overwrite all trits?
-    if (value.valueTrits != value.trits.length())
+    if (!value.isValue())
     {
       assign.warning("Partially overwriting state");
 
       // get existing state or all zero default state
-      final String trits = stateValue != null ? stateValue.value.trits : TritVector.zero(value.trits.length());
-      final char[] buffer = trits.toCharArray();
-      for (int i = 0; i < value.trits.length(); i++)
+      final TritVector trits = stateValue != null ? stateValue.value : new TritVector(TritVector.zeroes(value.size()));
+      final char[] buffer = new char[trits.size()];
+      for (int i = 0; i < value.size(); i++)
       {
-        // overwrite non-null trits
-        final char trit = value.trits.charAt(i);
-        if (trit != '@')
-        {
-          buffer[i] = trit;
-        }
+        // only overwrite non-null trits
+        final char trit = value.trit(i);
+        buffer[i] = trit == '@' ? trits.trit(i) : trit;
       }
 
       // use the merged result as the value to set the state to
-      value = new TritVector(new String(buffer), buffer.length);
+      value = new TritVector(new String(buffer));
     }
 
     // state already saved?
@@ -146,15 +143,14 @@ public class EvalContext extends CodeContext
       return;
     }
 
-    final TritVector ret = new TritVector();
+    TritVector result = null;
     for (final BaseExpr expr : exprs)
     {
       expr.eval(this);
-      ret.trits += value.trits;
-      ret.valueTrits += value.valueTrits;
+      result = TritVector.concat(result, value);
     }
 
-    value = ret;
+    value = result;
   }
 
   @Override
@@ -168,7 +164,7 @@ public class EvalContext extends CodeContext
       return;
     }
 
-    final char trit = value.trits.charAt(0);
+    final char trit = value.trit(0);
     if (trit == '1')
     {
       conditional.trueBranch.eval(this);
@@ -265,7 +261,7 @@ public class EvalContext extends CodeContext
     evalConcat(lookup.args);
 
     // all trits non-null?
-    if (value.valueTrits == value.trits.length())
+    if (value.isValue())
     {
       value = lookup.lut.lookup[value.toLutIndex()];
       if (value != null)
@@ -289,7 +285,7 @@ public class EvalContext extends CodeContext
     }
 
     // if lhs is null then we return rhs
-    if (value.valueTrits == 0)
+    if (value.isNull())
     {
       merge.rhs.eval(this);
       return;
@@ -298,7 +294,7 @@ public class EvalContext extends CodeContext
     // if rhs is null then we return lhs
     final TritVector savedLhsBranch = value;
     merge.rhs.eval(this);
-    if (value.valueTrits == 0)
+    if (value.isNull())
     {
       value = savedLhsBranch;
       return;
@@ -336,7 +332,7 @@ public class EvalContext extends CodeContext
     value = stateValue != null ? stateValue.value : state.zero;
     if (varNamesOnStack)
     {
-      value = new TritVector(value.trits, value.valueTrits);
+      value = new TritVector(value);
       value.name = state.name;
     }
 
@@ -387,21 +383,22 @@ public class EvalContext extends CodeContext
 
   private boolean pushArguments(final FuncExpr call)
   {
-    int valueTrits = 0;
+    boolean isAllNull = true;
     for (int i = 0; i < call.args.size(); i++)
     {
       final BaseExpr arg = call.args.get(i);
       arg.eval(this);
 
-      if (call.func.anyNull && value.valueTrits == 0)
+      final boolean isNull = value.isNull();
+      if (call.func.anyNull && isNull)
       {
         return true;
       }
 
-      valueTrits += value.valueTrits;
+      isAllNull = isAllNull && isNull;
       if (varNamesOnStack)
       {
-        value = new TritVector(value.trits, value.valueTrits);
+        value = new TritVector(value);
         value.name = call.func.params.get(i).name;
       }
 
@@ -409,7 +406,7 @@ public class EvalContext extends CodeContext
       log("push ", value, arg);
     }
 
-    return valueTrits == 0;
+    return isAllNull;
   }
 }
 

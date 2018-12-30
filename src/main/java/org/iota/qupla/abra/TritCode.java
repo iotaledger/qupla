@@ -11,8 +11,7 @@ public class TritCode
 
   public int getInt(final int size)
   {
-    final TritVector tmp = new TritVector();
-    tmp.trits = getTrits(size);
+    final TritVector tmp = new TritVector(getTrits(size));
     return (int) tmp.toLong();
   }
 
@@ -114,11 +113,11 @@ public class TritCode
   {
     final TritVector tmp = new TritVector();
     tmp.fromLong(value);
-    putTrits(tmp.trits);
+    putTrits(tmp.trits());
 
-    if (size != tmp.trits.length())
+    if (size != tmp.size())
     {
-      putTrits(TritVector.zero(size - tmp.trits.length()));
+      putTrits(TritVector.zeroes(size - tmp.size()));
     }
 
     return this;
