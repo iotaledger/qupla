@@ -52,6 +52,8 @@ public class NullifyManager extends AbraFuncManager
       branch.outputs.add(knot);
     }
 
+    branch.type = trueFalse ? AbraBlock.TYPE_NULLIFY_TRUE : AbraBlock.TYPE_NULLIFY_FALSE;
+    branch.constantValue = new TritVector(size);
     return branch;
   }
 
@@ -86,6 +88,8 @@ public class NullifyManager extends AbraFuncManager
       branch.outputs.add(knot);
     }
 
+    branch.type = trueFalse ? AbraBlock.TYPE_NULLIFY_TRUE : AbraBlock.TYPE_NULLIFY_FALSE;
+    branch.constantValue = new TritVector(size);
     saveBranch(branch);
   }
 }

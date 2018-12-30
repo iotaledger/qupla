@@ -77,6 +77,11 @@ public class ConstManager extends AbraFuncManager
     }
 
     constant.concat(context);
+
+    branch.type = AbraBlock.TYPE_CONSTANT;
+    final String trail = TritVector.zero(size - trits.length());
+    branch.constantValue = new TritVector(trits + trail, size);
+
     branch.outputs.add(constant);
   }
 

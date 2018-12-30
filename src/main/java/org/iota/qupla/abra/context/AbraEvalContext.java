@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.iota.qupla.abra.AbraBlock;
 import org.iota.qupla.abra.AbraBlockBranch;
 import org.iota.qupla.abra.AbraBlockImport;
 import org.iota.qupla.abra.AbraBlockLut;
@@ -71,6 +72,47 @@ public class AbraEvalContext extends AbraCodeContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
+    if (branch.type == AbraBlock.TYPE_CONSTANT)
+    {
+      value = branch.constantValue;
+      return;
+    }
+
+    if (branch.type == AbraBlock.TYPE_NULLIFY_TRUE)
+    {
+      if (args.get(0).trits.charAt(0) != '1')
+      {
+        value = branch.constantValue;
+        return;
+      }
+
+      value = args.get(1);
+      return;
+    }
+
+    if (branch.type == AbraBlock.TYPE_NULLIFY_FALSE)
+    {
+      if (args.get(0).trits.charAt(0) != '-')
+      {
+        value = branch.constantValue;
+        return;
+      }
+
+      value = args.get(1);
+      return;
+    }
+
+    if (branch.type == AbraBlock.TYPE_SLICE)
+    {
+      if (args.size() == 1)
+      {
+        value = args.get(0).slice(branch.offset, branch.size);
+        return;
+      }
+
+      int breakpoint = 0;
+    }
+
     final TritVector[] oldStack = stack;
     stack = new TritVector[branch.siteNr];
 
@@ -82,6 +124,12 @@ public class AbraEvalContext extends AbraCodeContext
       {
         // concatenate inputs
         value = new TritVector(value, input);
+      }
+
+      if (branch.type == AbraBlock.TYPE_SLICE)
+      {
+        stack = oldStack;
+        return;
       }
 
       for (final AbraSite input : branch.inputs)

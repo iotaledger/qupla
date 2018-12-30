@@ -38,6 +38,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
   {
     for (final AbraSite site : sites)
     {
+      site.oldSize = site.size;
       site.size = 0;
     }
   }
@@ -87,6 +88,8 @@ public class AbraAnalyzeContext extends AbraCodeContext
     }
 
     branch.size = size;
+    ensure(branch.size != 0);
+    check(branch.oldSize == branch.size || branch.oldSize == 0);
 
     if (lastMissing != missing)
     {
@@ -354,8 +357,9 @@ public class AbraAnalyzeContext extends AbraCodeContext
       return;
     }
 
-    //check(knot.size == knot.block.size());
     knot.size = knot.block.size();
+    ensure(knot.size != 0);
+    check(knot.oldSize == knot.size || knot.oldSize == 0);
 
     if (knot.block instanceof AbraBlockBranch)
     {
@@ -374,6 +378,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
 
   private void evalKnotBranch(final AbraSiteKnot knot)
   {
+    //TODO
   }
 
   @Override
@@ -431,6 +436,11 @@ public class AbraAnalyzeContext extends AbraCodeContext
   @Override
   public void evalMerge(final AbraSiteMerge merge)
   {
+    if (merge.inputs.size() == 0 && merge.references == 0)
+    {
+      return;
+    }
+
     for (final AbraSite input : merge.inputs)
     {
       if (input.size != 0)
@@ -447,6 +457,14 @@ public class AbraAnalyzeContext extends AbraCodeContext
         }
       }
     }
+
+    if (merge.size == 0)
+    {
+      missing++;
+      return;
+    }
+
+    check(merge.oldSize == merge.size || merge.oldSize == 0);
   }
 
   @Override
@@ -525,6 +543,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
     // we're going to recalculate all sizes
     for (final AbraBlockBranch branch : abraCode.branches)
     {
+      branch.oldSize = branch.size;
       branch.size = 0;
       clearSizes(branch.sites);
       clearSizes(branch.outputs);

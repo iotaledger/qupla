@@ -47,6 +47,10 @@ public class ConstZeroManager extends AbraFuncManager
       branch.outputs.add(knot);
     }
 
+    branch.type = AbraBlock.TYPE_CONSTANT;
+    final String trail = TritVector.zero(size);
+    branch.constantValue = new TritVector(trail, size);
+
     return branch;
   }
 
@@ -76,6 +80,10 @@ public class ConstZeroManager extends AbraFuncManager
       knot.size = knot.block.size();
       branch.outputs.add(knot);
     }
+
+    branch.type = AbraBlock.TYPE_CONSTANT;
+    final String trail = TritVector.zero(size);
+    branch.constantValue = new TritVector(trail, size);
 
     saveBranch(branch);
   }

@@ -1,5 +1,6 @@
 package org.iota.qupla.abra.funcs;
 
+import org.iota.qupla.abra.AbraBlock;
 import org.iota.qupla.abra.AbraBlockBranch;
 import org.iota.qupla.abra.AbraSiteMerge;
 import org.iota.qupla.abra.AbraSiteParam;
@@ -29,6 +30,9 @@ public class SliceManager extends AbraFuncManager
     final AbraSiteMerge merge = new AbraSiteMerge();
     merge.size = size;
     merge.inputs.add(inputSite);
+
+    branch.type = AbraBlock.TYPE_SLICE;
+    branch.offset = start;
     branch.outputs.add(merge);
   }
 

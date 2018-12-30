@@ -11,6 +11,7 @@ public abstract class AbraSite
   public String name;
   public AbraSite nullifyFalse;
   public AbraSite nullifyTrue;
+  public int oldSize;
   public BaseExpr origin;
   public int references;
   public int size;

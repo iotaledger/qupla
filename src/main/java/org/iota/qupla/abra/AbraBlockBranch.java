@@ -22,6 +22,7 @@ public class AbraBlockBranch extends AbraBlock
   public ArrayList<AbraSite> inputs = new ArrayList<>();
   public ArrayList<AbraSite> latches = new ArrayList<>();
   public int offset;
+  public int oldSize;
   public ArrayList<AbraSite> outputs = new ArrayList<>();
   public int siteNr;
   public ArrayList<AbraSite> sites = new ArrayList<>();
