@@ -1,6 +1,7 @@
 package org.iota.qupla.abra;
 
 import org.iota.qupla.exception.CodeException;
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 
 public class TritCode
@@ -11,8 +12,7 @@ public class TritCode
 
   public int getInt(final int size)
   {
-    final TritVector tmp = new TritVector(getTrits(size));
-    return (int) tmp.toLong();
+    return TritConverter.toInt(getTrits(size));
   }
 
   public int getInt()
@@ -111,13 +111,11 @@ public class TritCode
 
   public TritCode putInt(final int value, final int size)
   {
-    final TritVector tmp = new TritVector();
-    tmp.fromLong(value);
-    putTrits(tmp.trits());
-
-    if (size != tmp.size())
+    final String trits = TritConverter.fromLong(value);
+    putTrits(trits);
+    if (size != trits.length())
     {
-      putTrits(TritVector.zeroes(size - tmp.size()));
+      putTrits(new TritVector(size - trits.length(), '0').trits());
     }
 
     return this;

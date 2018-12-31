@@ -90,7 +90,7 @@ public class EvalContext extends CodeContext
       assign.warning("Partially overwriting state");
 
       // get existing state or all zero default state
-      final TritVector trits = stateValue != null ? stateValue.value : new TritVector(TritVector.zeroes(value.size()));
+      final TritVector trits = stateValue != null ? stateValue.value : new TritVector(value.size(), '0');
       final char[] buffer = new char[trits.size()];
       for (int i = 0; i < value.size(); i++)
       {
@@ -179,7 +179,7 @@ public class EvalContext extends CodeContext
 
     // a non-bool condition value will result in a null return value
     // because both nullify calls will return null
-    value = new TritVector(conditional.size);
+    value = new TritVector(conditional.size, '@');
   }
 
   public TritVector evalEntity(final Entity entity, final TritVector vector)
@@ -189,7 +189,7 @@ public class EvalContext extends CodeContext
     int start = 0;
     for (final BaseExpr param : entity.func.params)
     {
-      value = vector.extract(start, param.size);
+      value = vector.slicePadded(start, param.size);
       value.name = param.name;
       stack.push(value);
       start += param.size;
@@ -263,7 +263,8 @@ public class EvalContext extends CodeContext
     // all trits non-null?
     if (value.isValue())
     {
-      value = lookup.lut.lookup[value.toLutIndex()];
+      final int lutIndex = LutStmt.index(value);
+      value = lookup.lut.lookup[lutIndex];
       if (value != null)
       {
         return;

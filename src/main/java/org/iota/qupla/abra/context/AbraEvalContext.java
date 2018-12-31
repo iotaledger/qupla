@@ -23,12 +23,12 @@ import org.iota.qupla.helper.TritVector;
 
 public class AbraEvalContext extends AbraCodeContext
 {
-  private static final TritVector minTrit = new TritVector("-", 1);
-  private static final TritVector nullTrit = new TritVector("@", 0);
-  private static final TritVector oneTrit = new TritVector("1", 1);
+  private static final TritVector minTrit = new TritVector(1, '-');
+  private static final TritVector nullTrit = new TritVector(1, '@');
+  private static final TritVector oneTrit = new TritVector(1, '1');
   // note: stateValues needs to be static so that state is preserved between invocations
   private static final HashMap<StateValue, StateValue> stateValues = new HashMap<>();
-  private static final TritVector zeroTrit = new TritVector("0", 1);
+  private static final TritVector zeroTrit = new TritVector(1, '0');
   public AbraContext abra;
   public ArrayList<TritVector> args = new ArrayList<>();
   public int callNr;
@@ -205,7 +205,7 @@ public class AbraEvalContext extends AbraCodeContext
 
     if (isAllNull)
     {
-      stack[knot.index] = new TritVector(knot.size);
+      stack[knot.index] = new TritVector(knot.size, '@');
       return;
     }
 
@@ -250,9 +250,11 @@ public class AbraEvalContext extends AbraCodeContext
       case '0':
         value = zeroTrit;
         return;
+
       case '1':
         value = oneTrit;
         return;
+
       case '-':
         value = minTrit;
         return;
@@ -285,7 +287,7 @@ public class AbraEvalContext extends AbraCodeContext
 
     if (value == null)
     {
-      value = new TritVector(merge.size);
+      value = new TritVector(merge.size, '@');
     }
 
     stack[merge.index] = value;
@@ -323,7 +325,7 @@ public class AbraEvalContext extends AbraCodeContext
       return;
     }
 
-    stack[latch.index] = new TritVector(TritVector.zeroes(latch.size), latch.size);
+    stack[latch.index] = new TritVector(latch.size, '0');
   }
 
   private void updateLatch(final AbraSite latch)

@@ -59,6 +59,22 @@ public class LutStmt extends BaseExpr
     tokenizer.nextToken();
   }
 
+  public static int index(final TritVector value)
+  {
+    int index = 0;
+    for (int i = 0; i < value.size(); i++)
+    {
+      index *= 3;
+      final char trit = value.trit(i);
+      if (trit != '-')
+      {
+        index += trit == '0' ? 1 : 2;
+      }
+    }
+
+    return index;
+  }
+
   @Override
   public void analyze()
   {
@@ -79,17 +95,17 @@ public class LutStmt extends BaseExpr
         entry.error("Expected " + size + " output trits");
       }
 
-      final TritVector input = new TritVector(entry.inputs, inputSize);
-      final int lutIndex = input.toLutIndex();
+      final TritVector input = new TritVector(entry.inputs);
+      final int lutIndex = index(input);
       if (lookup[lutIndex] != null)
       {
         entry.error("Duplicate input trits");
       }
 
-      lookup[lutIndex] = new TritVector(entry.outputs, size);
+      lookup[lutIndex] = new TritVector(entry.outputs);
     }
 
-    undefined = new TritVector(size);
+    undefined = new TritVector(size, '@');
   }
 
   @Override

@@ -35,11 +35,11 @@ public class ConstManager extends AbraFuncManager
 
     constOne = context.abra.addLut("constOne_", "111111111111111111111111111");
     constOne.type = AbraBlock.TYPE_CONSTANT;
-    constOne.constantValue = new TritVector("1", 1);
+    constOne.constantValue = new TritVector(1, '1');
 
     constMin = context.abra.addLut("constMin_", "---------------------------");
     constMin.type = AbraBlock.TYPE_CONSTANT;
-    constMin.constantValue = new TritVector("i", 1);
+    constMin.constantValue = new TritVector(1, '-');
   }
 
   @Override

@@ -151,7 +151,7 @@ public class FpgaContext extends CodeContext
     append(" : ");
     if (conditional.falseBranch == null)
     {
-      tritVector(TritVector.nulls(conditional.size));
+      tritVector(new TritVector(conditional.size, '@').trits());
       return;
     }
 

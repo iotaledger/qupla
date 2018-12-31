@@ -186,7 +186,7 @@ public class FuncStmt extends BaseExpr
     size = returnType.size;
     typeInfo = returnType.typeInfo;
 
-    nullReturn = new TritVector(size);
+    nullReturn = new TritVector(size, '@');
 
     for (final FuncStmt func : module.funcs)
     {
