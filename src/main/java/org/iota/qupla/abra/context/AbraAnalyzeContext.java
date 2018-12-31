@@ -392,36 +392,34 @@ public class AbraAnalyzeContext extends AbraCodeContext
 
     lut.analyzed = true;
 
-    final String trits = new String(lut.tritCode.buffer, 0, 27);
-
-    if (trits.equals(constZero))
+    if (lut.lookup.equals(constZero))
     {
       lut.type = AbraBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '0');
       return;
     }
 
-    if (trits.equals(constMin))
+    if (lut.lookup.equals(constMin))
     {
       lut.type = AbraBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '-');
       return;
     }
 
-    if (trits.equals(constOne))
+    if (lut.lookup.equals(constOne))
     {
       lut.type = AbraBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '1');
       return;
     }
 
-    if (trits.equals(nullifyFalse))
+    if (lut.lookup.equals(nullifyFalse))
     {
       lut.type = AbraBlock.TYPE_NULLIFY_FALSE;
       return;
     }
 
-    if (trits.equals(nullifyTrue))
+    if (lut.lookup.equals(nullifyTrue))
     {
       lut.type = AbraBlock.TYPE_NULLIFY_TRUE;
       return;

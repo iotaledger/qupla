@@ -245,7 +245,7 @@ public class AbraEvalContext extends AbraCodeContext
     final Integer index = indexFromTrits.get(new String(trits));
     if (index != null)
     {
-      switch (lut.tritCode.buffer[index])
+      switch (lut.lookup.charAt(index))
       {
       case '0':
         value = zeroTrit;

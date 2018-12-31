@@ -29,9 +29,17 @@ import org.iota.qupla.expression.StateExpr;
 import org.iota.qupla.expression.base.BaseExpr;
 import org.iota.qupla.statement.FuncStmt;
 import org.iota.qupla.statement.LutStmt;
+import org.iota.qupla.statement.helper.LutEntry;
 
 public class AbraContext extends CodeContext
 {
+  public static final int[] powers = {
+      1,
+      3,
+      9,
+      27
+  };
+
   public AbraCode abra = new AbraCode();
   public int bodies;
   public AbraBlockBranch branch;
@@ -237,13 +245,38 @@ public class AbraContext extends CodeContext
   public void evalLutDefinition(final LutStmt lut)
   {
     // note: lut output size can be >1, so we need a lut per output trit
-    for (int i = 0; i < lut.size; i++)
+    for (int tritNr = 0; tritNr < lut.size; tritNr++)
     {
-      final AbraBlockLut block = new AbraBlockLut();
+      final char[] lookup = "@@@@@@@@@@@@@@@@@@@@@@@@@@@".toCharArray();
+
+      for (final LutEntry entry : lut.entries)
+      {
+        // build index for this entry in lookup table
+        int index = 0;
+        for (int i = 0; i < entry.inputs.length(); i++)
+        {
+          final char trit = entry.inputs.charAt(i);
+          final int val = trit == '-' ? 0 : trit == '0' ? 1 : 2;
+          index += val * powers[i];
+        }
+
+        // set corresponding character
+        lookup[index] = entry.outputs.charAt(tritNr);
+      }
+
+      // repeat the entries across the entire table if necessary
+      final int lookupSize = powers[lut.inputSize];
+      for (int offset = lookupSize; offset < 27; offset += lookupSize)
+      {
+        for (int i = 0; i < lookupSize; i++)
+        {
+          lookup[offset + i] = lookup[i];
+        }
+      }
+
+      final AbraBlockLut block = abra.addLut(lut.name + "_" + tritNr, new String(lookup));
       block.origin = lut;
-      block.name = lut.name + "_" + i;
-      block.tritNr = i;
-      abra.addLut(block);
+      block.tritNr = tritNr;
     }
   }
 

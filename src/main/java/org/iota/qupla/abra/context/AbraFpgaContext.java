@@ -316,7 +316,7 @@ public class AbraFpgaContext extends AbraCodeContext
 
     for (int i = 0; i < 27; i++)
     {
-      char trit = lut.tritCode.buffer[i];
+      char trit = lut.lookup.charAt(i);
       if (trit == '@')
       {
         continue;

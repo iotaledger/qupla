@@ -27,11 +27,11 @@ public class AbraCode
     blocks.add(lut);
   }
 
-  public AbraBlockLut addLut(final String name, final String trits)
+  public AbraBlockLut addLut(final String name, final String lookup)
   {
     final AbraBlockLut lut = new AbraBlockLut();
     lut.name = name;
-    lut.tritCode.putTrits(trits);
+    lut.lookup = lookup;
     addLut(lut);
     return lut;
   }

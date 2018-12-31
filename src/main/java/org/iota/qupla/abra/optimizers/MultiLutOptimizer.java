@@ -29,8 +29,8 @@ public class MultiLutOptimizer extends BaseOptimizer
     // initialize with 27 null trits
     final char[] lookup = "@@@@@@@@@@@@@@@@@@@@@@@@@@@".toCharArray();
 
-    final int maxValue = AbraBlockLut.powers[inputs.size()];
-    for (int v = 0; v < maxValue; v++)
+    final int lookupSize = AbraContext.powers[inputs.size()];
+    for (int v = 0; v < lookupSize; v++)
     {
       int value = v;
       for (int i = 0; i < inputs.size(); i++)
@@ -52,18 +52,18 @@ public class MultiLutOptimizer extends BaseOptimizer
     }
 
     // repeat the entries across the entire table if necessary
-    for (int offset = maxValue; offset < 27; offset += maxValue)
+    for (int offset = lookupSize; offset < 27; offset += lookupSize)
     {
-      for (int i = 0; i < maxValue; i++)
+      for (int i = 0; i < lookupSize; i++)
       {
         lookup[offset + i] = lookup[i];
       }
     }
 
-    final String trits = new String(lookup, 0, 27);
+    final String lookupTable = new String(lookup);
 
     final AbraSiteKnot tmp = new AbraSiteKnot();
-    tmp.name = "lut_" + trits.replace('-', 'T').replace('@', 'N');
+    tmp.name = "lut_" + lookupTable.replace('-', 'T').replace('@', 'N');
     tmp.lut(context);
 
     // already exists?
@@ -73,7 +73,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     }
 
     // new LUT, create it
-    return context.abra.addLut(tmp.name, trits);
+    return context.abra.addLut(tmp.name, lookupTable);
   }
 
   private char lookupTrit(final AbraSiteKnot lut)
@@ -83,11 +83,11 @@ public class MultiLutOptimizer extends BaseOptimizer
     {
       final char trit = values.get(lut.inputs.get(i));
       final int val = trit == '-' ? 0 : trit == '0' ? 1 : 2;
-      index += val * AbraBlockLut.powers[i];
+      index += val * AbraContext.powers[i];
     }
 
-    // look up the trit in the slave lookup table
-    return lut.block.tritCode.buffer[index];
+    // look up the trit in the lut lookup table
+    return ((AbraBlockLut) lut.block).lookup.charAt(index);
   }
 
   private boolean mergeLuts(final AbraSiteKnot master, final AbraSiteKnot slave)
