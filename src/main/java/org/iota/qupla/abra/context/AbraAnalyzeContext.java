@@ -326,11 +326,6 @@ public class AbraAnalyzeContext extends AbraCodeContext
       return false;
     }
 
-    if (branch.name != null && !branch.name.startsWith("slice_"))
-    {
-      BaseExpr.logLine("Slice behavior: " + branch.name);
-    }
-
     branch.type = AbraBlock.TYPE_SLICE;
     branch.offset = input.offset;
     return true;

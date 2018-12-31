@@ -100,7 +100,6 @@ template equal2<T> {
 
 use equal2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
 
-// test statements
 
 test 1 = equal<Int>(-1, -1)
 test - = equal<Int>(-1, 0)

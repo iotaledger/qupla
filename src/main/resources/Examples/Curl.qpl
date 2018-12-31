@@ -809,7 +809,6 @@ func State curlRound(State s) {
     curl[s[365], s[  0]]
 }
 
-// test statements
 
 // do an 81-round Curl hash on 123456
 eval transform(123456, 81)

@@ -36,3 +36,16 @@ template neg2<T> {
 }
 
 use neg2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+
+
+test 99 = neg<Tiny>(-99)
+test 1 = neg<Tiny>(-1)
+test 0 = neg<Tiny>(0)
+test -1 = neg<Tiny>(1)
+test -99 = neg<Tiny>(99)
+
+test 99 = neg<Tiny2>(-99)
+test 1 = neg<Tiny2>(-1)
+test 0 = neg<Tiny2>(0)
+test -1 = neg<Tiny2>(1)
+test -99 = neg<Tiny2>(99)

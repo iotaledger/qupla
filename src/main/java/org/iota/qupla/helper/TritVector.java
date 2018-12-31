@@ -1,65 +1,82 @@
 package org.iota.qupla.helper;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-
 import org.iota.qupla.exception.CodeException;
 
 public class TritVector
 {
-  private static String nullTrits = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
-  private static final ArrayList<Integer> powerDigits = new ArrayList<>();
-  private static final ArrayList<BigInteger> powers = new ArrayList<>();
-  private static final BigInteger three = new BigInteger("3");
-  private static String zeroTrits = "0000000000000000000000000000000000000000000000000";
+  private static TritVectorBuffer nulls = new TritVectorBuffer(0);
+  private static TritVectorBuffer singleTrits = new TritVectorBuffer(2);
+  private static TritVectorBuffer zeroes = new TritVectorBuffer(0);
+
   public String name;
-  private String trits = "";
+  private int offset;
+  private int size;
   private int valueTrits;
+  private TritVectorBuffer vector;
 
   public TritVector(final TritVector copy)
   {
-    trits = copy.trits;
+    vector = copy.vector;
+    offset = copy.offset;
+    size = copy.size;
     valueTrits = copy.valueTrits;
   }
 
   public TritVector(final String trits)
   {
-    this.trits = trits;
-    this.valueTrits = trits.length();
+    size = trits.length();
+    valueTrits = size;
+    vector = new TritVectorBuffer(size);
+    for (int i = 0; i < size; i++)
+    {
+      vector.buffer[i] = trits.charAt(i);
+    }
   }
 
   public TritVector(final int size, final char trit)
   {
+    this.size = size;
+
     switch (trit)
     {
     case '@':
-      trits = nulls(size);
-      return;
+      vector = nulls;
+      break;
 
     case '0':
-      trits = zeroes(size);
+      vector = zeroes;
       valueTrits = size;
-      return;
+      break;
 
     case '-':
     case '1':
       if (size == 1)
       {
-        trits = "" + trit;
+        vector = singleTrits;
+        offset = trit == '1' ? 1 : 0;
         valueTrits = 1;
         return;
       }
-      break;
+
+    default:
+      throw new CodeException(null, "Undefined initialization trit");
     }
 
-    throw new CodeException(null, "Undefined initialization trit");
+    vector.grow(size);
+    while (vector.used < vector.buffer.length)
+    {
+      vector.buffer[vector.used++] = trit;
+    }
   }
 
-  // concatenation constructor
-  public TritVector(final TritVector lhs, final TritVector rhs)
+  private TritVector(final TritVector lhs, final TritVector rhs)
   {
-    trits = lhs.trits + rhs.trits;
+    size = lhs.size() + rhs.size();
     valueTrits = lhs.valueTrits + rhs.valueTrits;
+    vector = new TritVectorBuffer(size);
+
+    copy(lhs, 0);
+    copy(rhs, lhs.size());
   }
 
   public static TritVector concat(final TritVector lhs, final TritVector rhs)
@@ -74,43 +91,62 @@ public class TritVector
       return lhs;
     }
 
-    return new TritVector(lhs, rhs);
-  }
-
-  public static String nulls(final int size)
-  {
-    while (size > nullTrits.length())
+    // can we directly concatenate in lhs vector?
+    if (lhs.offset + lhs.size() != lhs.vector.used || lhs.vector == nulls || lhs.vector == zeroes)
     {
-      nullTrits += nullTrits;
+      // nope, construct new vector
+
+      // combine two null vectors?
+      if (lhs.isNull() && rhs.isNull())
+      {
+        return new TritVector(lhs.size() + rhs.size(), '@');
+      }
+
+      // combine two zero vectors?
+      if (lhs.vector == zeroes && rhs.vector == zeroes)
+      {
+        return new TritVector(lhs.size() + rhs.size(), '0');
+      }
+
+      return new TritVector(lhs, rhs);
     }
 
-    return nullTrits.substring(0, size);
+    // grow vector if necessary
+    lhs.vector.grow(lhs.vector.used + rhs.size());
+
+    // concatenate into lhs vector
+    lhs.copy(rhs, lhs.vector.used);
+    lhs.vector.used += rhs.size();
+
+    // point to the new combined vector
+    final TritVector result = new TritVector(lhs);
+    result.size += rhs.size();
+    result.valueTrits += rhs.valueTrits;
+    return result;
   }
 
-  public static String zeroes(final int size)
+  private void copy(final TritVector src, final int to)
   {
-    while (size > zeroTrits.length())
+    for (int i = 0; i < src.size(); i++)
     {
-      zeroTrits += zeroTrits;
+      vector.buffer[to + i] = src.trit(i);
     }
-
-    return zeroTrits.substring(0, size);
   }
 
   public String display(final int mantissa, final int exponent)
   {
     final String varName = name != null ? name + ": " : "";
-    if (valueTrits == trits.length())
+    if (isValue())
     {
-      return varName + "(" + displayValue(mantissa, exponent) + ") " + trits;
+      return varName + "(" + displayValue(mantissa, exponent) + ") " + trits();
     }
 
-    if (valueTrits == 0)
+    if (isNull())
     {
-      return varName + "(NULL) " + trits;
+      return varName + "(NULL) " + trits();
     }
 
-    return varName + "(***SOME NULL TRITS***) " + trits;
+    return varName + "(***SOME NULL TRITS***) " + trits();
   }
 
   public String displayValue(final int mantissa, final int exponent)
@@ -126,7 +162,26 @@ public class TritVector
   @Override
   public boolean equals(final Object o)
   {
-    return o instanceof TritVector && trits.equals(((TritVector) o).trits);
+    if (!(o instanceof TritVector))
+    {
+      return false;
+    }
+
+    final TritVector rhs = (TritVector) o;
+    if (size() != rhs.size())
+    {
+      return false;
+    }
+
+    for (int i = 0; i < size(); i++)
+    {
+      if (trit(i) != rhs.trit(i))
+      {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   public boolean isNull()
@@ -136,19 +191,24 @@ public class TritVector
 
   public boolean isValue()
   {
-    return valueTrits == trits.length();
+    return valueTrits == size();
   }
 
   public boolean isZero()
   {
+    if (vector == zeroes)
+    {
+      return true;
+    }
+
     if (!isValue())
     {
       return false;
     }
 
-    for (int i = 0; i < trits.length(); i++)
+    for (int i = 0; i < size(); i++)
     {
-      if (trits.charAt(i) != '0')
+      if (trit(i) != '0')
       {
         return false;
       }
@@ -159,32 +219,40 @@ public class TritVector
 
   public int size()
   {
-    return trits.length();
+    return size;
   }
 
-  public TritVector slice(final int start, final int size)
+  public TritVector slice(final int start, final int length)
   {
-    if (start == 0 && size == trits.length())
+    if (start < 0 || length < 0 || start + length > size())
     {
+      throw new CodeException(null, "Index out of range");
+    }
+
+    if (start == 0 && length == size())
+    {
+      // slice the entire vector
       return this;
     }
 
-    final TritVector result = new TritVector(trits.substring(start, start + size));
-    if (valueTrits == trits.length())
+    final TritVector result = new TritVector(this);
+    result.offset += start;
+    result.size = length;
+    if (isValue())
     {
+      result.valueTrits = length;
       return result;
     }
 
-    result.valueTrits = 0;
-    if (valueTrits == 0)
+    if (isNull())
     {
       return result;
     }
 
     // have to count non-null trits
-    for (int i = 0; i < result.trits.length(); i++)
+    for (int i = 0; i < result.size(); i++)
     {
-      if (result.trits.charAt(i) != '@')
+      if (result.trit(i) != '@')
       {
         result.valueTrits++;
       }
@@ -193,25 +261,25 @@ public class TritVector
     return result;
   }
 
-  public TritVector slicePadded(final int start, final int size)
+  public TritVector slicePadded(final int start, final int length)
   {
-    // pads slice with zeroes if necessary
+    // slices trit vector as if it was padded with infinite zeroes
 
-    if (start + size <= trits.length())
+    if (start + length <= size())
     {
-      return slice(start, size);
+      // completely within range, normal slice
+      return slice(start, length);
     }
 
-    if (start >= trits.length())
+    if (start >= size())
     {
-      return new TritVector(size, '0');
+      // completely outside range, just zeroes
+      return new TritVector(length, '0');
     }
 
-    final int remain = trits.length() - start;
-    final TritVector ret = slice(start, remain);
-    ret.trits += zeroes(size - remain);
-    ret.valueTrits = size;
-    return ret;
+    final int remain = size() - start;
+    final TritVector paddedZeroes = new TritVector(length - remain, '0');
+    return TritVector.concat(slice(start, remain), paddedZeroes);
   }
 
   @Override
@@ -222,11 +290,22 @@ public class TritVector
 
   public char trit(final int index)
   {
-    return trits.charAt(index);
+    if (index < 0 || index >= size())
+    {
+      throw new CodeException(null, "Index out of range");
+    }
+
+    return vector.buffer[offset + index];
   }
 
   public String trits()
   {
-    return trits;
+    return new String(vector.buffer, offset, size());
+  }
+
+  static
+  {
+    singleTrits.buffer[0] = '-';
+    singleTrits.buffer[1] = '1';
   }
 }

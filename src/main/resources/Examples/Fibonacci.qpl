@@ -44,7 +44,6 @@ func FibInt fibPart2 (FibInt n, FibInt fib0, FibInt fib1) {
   return retFib2 ? fib2 : fibPart2(decr<FibInt>(n), fib1, fib2)
 }
 
-// test statements
 
 test  0 = fibonacci(0)
 test  1 = fibonacci(1)
