@@ -19,7 +19,6 @@ use factorial<Tiny>, <Int>, <Huge>
 use mul<Hash>
 use factorial<Hash>
 
-// unit test statements
 
 test 1 = factorial<Tiny>(0)
 test 1 = factorial<Tiny>(1)

@@ -60,3 +60,16 @@ template sign2<T> {
 }
 
 use sign2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+
+
+test - = sign<Tiny>(-99)
+test - = sign<Tiny>(-1)
+test 0 = sign<Tiny>(0)
+test 1 = sign<Tiny>(1)
+test 1 = sign<Tiny>(99)
+
+test - = sign<Tiny2>(-99)
+test - = sign<Tiny2>(-1)
+test 0 = sign<Tiny2>(0)
+test 1 = sign<Tiny2>(1)
+test 1 = sign<Tiny2>(99)

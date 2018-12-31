@@ -48,8 +48,7 @@ public class ConstZeroManager extends AbraFuncManager
     }
 
     branch.type = AbraBlock.TYPE_CONSTANT;
-    final String trail = TritVector.zeroes(size);
-    branch.constantValue = new TritVector(trail, size);
+    branch.constantValue = new TritVector(size, '0');
 
     return branch;
   }
@@ -59,7 +58,7 @@ public class ConstZeroManager extends AbraFuncManager
   {
     lut = context.abra.addLut("constZero_", "000000000000000000000000000");
     lut.type = AbraBlock.TYPE_CONSTANT;
-    lut.constantValue = new TritVector("0", 1);
+    lut.constantValue = new TritVector(1, '0');
   }
 
   protected void generateLutFunc(final int inputSize)
@@ -82,8 +81,7 @@ public class ConstZeroManager extends AbraFuncManager
     }
 
     branch.type = AbraBlock.TYPE_CONSTANT;
-    final String trail = TritVector.zeroes(size);
-    branch.constantValue = new TritVector(trail, size);
+    branch.constantValue = new TritVector(size, '0');
 
     saveBranch(branch);
   }

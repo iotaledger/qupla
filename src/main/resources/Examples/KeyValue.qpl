@@ -4,7 +4,6 @@ func Transaction keyValue(Trit cmd, Hash key, Transaction value) {
   return map<Hash, Transaction>(cmd, key, value)
 }
 
-// test statements
 
 // retrieve hash key 123456 from initial state
 test 0 = keyValue(0, 123456, 0)

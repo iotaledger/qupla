@@ -53,7 +53,7 @@ public class NullifyManager extends AbraFuncManager
     }
 
     branch.type = trueFalse ? AbraBlock.TYPE_NULLIFY_TRUE : AbraBlock.TYPE_NULLIFY_FALSE;
-    branch.constantValue = new TritVector(size);
+    branch.constantValue = new TritVector(size, '@');
     return branch;
   }
 
@@ -64,7 +64,7 @@ public class NullifyManager extends AbraFuncManager
     final String falseTrits = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
     lut = context.abra.addLut(funcName + "_", trueFalse ? trueTrits : falseTrits);
     lut.type = trueFalse ? AbraBlock.TYPE_NULLIFY_TRUE : AbraBlock.TYPE_NULLIFY_FALSE;
-    lut.constantValue = new TritVector("@", 0);
+    lut.constantValue = new TritVector(1, '@');
   }
 
   @Override
@@ -89,7 +89,7 @@ public class NullifyManager extends AbraFuncManager
     }
 
     branch.type = trueFalse ? AbraBlock.TYPE_NULLIFY_TRUE : AbraBlock.TYPE_NULLIFY_FALSE;
-    branch.constantValue = new TritVector(size);
+    branch.constantValue = new TritVector(size, '@');
     saveBranch(branch);
   }
 }

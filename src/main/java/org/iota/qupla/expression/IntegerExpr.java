@@ -2,13 +2,14 @@ package org.iota.qupla.expression;
 
 import org.iota.qupla.context.CodeContext;
 import org.iota.qupla.expression.base.BaseExpr;
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.parser.Token;
 import org.iota.qupla.parser.Tokenizer;
 
 public class IntegerExpr extends BaseExpr
 {
-  public final TritVector vector;
+  public TritVector vector;
 
   public IntegerExpr(final IntegerExpr copy)
   {
@@ -21,7 +22,7 @@ public class IntegerExpr extends BaseExpr
   {
     super(tokenizer);
 
-    vector = new TritVector();
+    vector = new TritVector(0, '@');
 
     name = "";
     if (tokenizer.tokenId() == Token.TOK_MINUS)
@@ -45,7 +46,7 @@ public class IntegerExpr extends BaseExpr
     // are we assigning to a known type?
     if (constTypeInfo == null)
     {
-      vector.fromDecimal(name);
+      vector = new TritVector(TritConverter.fromDecimal(name));
       size = vector.size();
       return;
     }
@@ -55,12 +56,7 @@ public class IntegerExpr extends BaseExpr
     {
       final BaseExpr mantissa = constTypeInfo.struct.fields.get(0);
       final BaseExpr exponent = constTypeInfo.struct.fields.get(1);
-      final String errMsg = vector.fromFloat(name, mantissa.size, exponent.size);
-      if (errMsg != null)
-      {
-        error(errMsg);
-      }
-
+      vector = new TritVector(TritConverter.fromFloat(name, mantissa.size, exponent.size));
       size = mantissa.size + exponent.size;
       return;
     }
@@ -70,7 +66,7 @@ public class IntegerExpr extends BaseExpr
       error("Unexpected float constant: " + name);
     }
 
-    vector.fromDecimal(name);
+    vector = new TritVector(TritConverter.fromDecimal(name));
     size = vector.size();
     if (size > constTypeInfo.size)
     {
@@ -80,7 +76,7 @@ public class IntegerExpr extends BaseExpr
     size = constTypeInfo.size;
     if (vector.size() < size)
     {
-      vector.padZero(size);
+      vector = TritVector.concat(vector, new TritVector(size - vector.size(), '0'));
     }
   }
 

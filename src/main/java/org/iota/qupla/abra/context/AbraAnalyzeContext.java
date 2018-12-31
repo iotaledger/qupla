@@ -300,7 +300,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
 
     // set nullify type and have a correctly sized null vector ready
     branch.type = type;
-    branch.constantValue = new TritVector(branch.size);
+    branch.constantValue = new TritVector(branch.size, '@');
     return true;
   }
 
@@ -324,11 +324,6 @@ public class AbraAnalyzeContext extends AbraCodeContext
     if (merge.inputs.size() != 1 || merge.inputs.get(0) != input)
     {
       return false;
-    }
-
-    if (branch.name != null && !branch.name.startsWith("slice_"))
-    {
-      BaseExpr.logLine("Slice behavior: " + branch.name);
     }
 
     branch.type = AbraBlock.TYPE_SLICE;
@@ -402,21 +397,21 @@ public class AbraAnalyzeContext extends AbraCodeContext
     if (trits.equals(constZero))
     {
       lut.type = AbraBlock.TYPE_CONSTANT;
-      lut.constantValue = new TritVector("0", 1);
+      lut.constantValue = new TritVector(1, '0');
       return;
     }
 
     if (trits.equals(constMin))
     {
       lut.type = AbraBlock.TYPE_CONSTANT;
-      lut.constantValue = new TritVector("-", 1);
+      lut.constantValue = new TritVector(1, '-');
       return;
     }
 
     if (trits.equals(constOne))
     {
       lut.type = AbraBlock.TYPE_CONSTANT;
-      lut.constantValue = new TritVector("1", 1);
+      lut.constantValue = new TritVector(1, '1');
       return;
     }
 

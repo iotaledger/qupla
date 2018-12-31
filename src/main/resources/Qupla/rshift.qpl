@@ -8,3 +8,14 @@ template rshift<T> {
 
 use rshift<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 use rshift<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>
+
+
+test 0 = rshift<Tryte>(0)
+test 3 = rshift<Tryte>(1)
+test 6 = rshift<Tryte>(2)
+test 9 = rshift<Tryte>(3)
+test 0 = rshift<Tryte>(9)
+test -3 = rshift<Tryte>(-1)
+test -6 = rshift<Tryte>(-2)
+test -9 = rshift<Tryte>(-3)
+test 0 = rshift<Tryte>(-9)
