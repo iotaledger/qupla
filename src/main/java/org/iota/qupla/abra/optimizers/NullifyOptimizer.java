@@ -1,13 +1,14 @@
 package org.iota.qupla.abra.optimizers;
 
-import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraSite;
-import org.iota.qupla.abra.AbraSiteMerge;
-import org.iota.qupla.context.AbraContext;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class NullifyOptimizer extends BaseOptimizer
 {
-  public NullifyOptimizer(final AbraContext context, final AbraBlockBranch branch)
+  public NullifyOptimizer(final QuplaToAbraContext context, final AbraBlockBranch branch)
   {
     super(context, branch);
     reverse = true;
@@ -23,7 +24,7 @@ public class NullifyOptimizer extends BaseOptimizer
     }
 
     // check if all inputs have only a single reference
-    for (final AbraSite input : site.inputs)
+    for (final AbraBaseSite input : site.inputs)
     {
       if (input.isLatch)
       {
@@ -49,7 +50,7 @@ public class NullifyOptimizer extends BaseOptimizer
     }
 
     // first move those inputs to the nullify point
-    for (final AbraSite input : site.inputs)
+    for (final AbraBaseSite input : site.inputs)
     {
       branch.sites.remove(input);
     }
@@ -59,7 +60,7 @@ public class NullifyOptimizer extends BaseOptimizer
     // move nullifyFalse up the chain??
     if (site.nullifyFalse != null)
     {
-      for (final AbraSite input : site.inputs)
+      for (final AbraBaseSite input : site.inputs)
       {
         input.nullifyFalse = site.nullifyFalse;
         site.nullifyFalse.references++;
@@ -72,7 +73,7 @@ public class NullifyOptimizer extends BaseOptimizer
     // move nullifyTrue up the chain??
     if (site.nullifyTrue != null)
     {
-      for (final AbraSite input : site.inputs)
+      for (final AbraBaseSite input : site.inputs)
       {
         input.nullifyTrue = site.nullifyTrue;
         site.nullifyTrue.references++;

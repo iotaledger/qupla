@@ -3,7 +3,7 @@ package org.iota.qupla.dispatcher;
 import java.util.ArrayList;
 
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.statement.FuncStmt;
+import org.iota.qupla.qupla.statement.FuncStmt;
 
 public class Environment
 {

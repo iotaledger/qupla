@@ -2,20 +2,21 @@ package org.iota.qupla.abra.context;
 
 import java.util.ArrayList;
 
-import org.iota.qupla.abra.AbraBlock;
-import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraBlockImport;
-import org.iota.qupla.abra.AbraBlockLut;
-import org.iota.qupla.abra.AbraSite;
-import org.iota.qupla.abra.AbraSiteKnot;
-import org.iota.qupla.abra.AbraSiteLatch;
-import org.iota.qupla.abra.AbraSiteMerge;
-import org.iota.qupla.abra.AbraSiteParam;
-import org.iota.qupla.exception.CodeException;
-import org.iota.qupla.expression.base.BaseExpr;
+import org.iota.qupla.abra.AbraModule;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.AbraBlockImport;
+import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
+import org.iota.qupla.abra.block.site.AbraSiteLatch;
+import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.AbraSiteParam;
+import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.helper.TritVector;
+import org.iota.qupla.qupla.expression.base.BaseExpr;
 
-public class AbraAnalyzeContext extends AbraCodeContext
+public class AbraAnalyzeContext extends AbraBaseContext
 {
   private static final String constMin = "---------------------------";
   private static final String constOne = "111111111111111111111111111";
@@ -34,12 +35,24 @@ public class AbraAnalyzeContext extends AbraCodeContext
     }
   }
 
-  private void clearSizes(final ArrayList<AbraSite> sites)
+  private void clearSizes(final ArrayList<AbraBaseSite> sites)
   {
-    for (final AbraSite site : sites)
+    for (final AbraBaseSite site : sites)
     {
       site.oldSize = site.size;
       site.size = 0;
+    }
+  }
+
+  public void clearSizes(final AbraModule module)
+  {
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      branch.oldSize = branch.size;
+      branch.size = 0;
+      clearSizes(branch.sites);
+      clearSizes(branch.outputs);
+      clearSizes(branch.latches);
     }
   }
 
@@ -51,9 +64,17 @@ public class AbraAnalyzeContext extends AbraCodeContext
     }
   }
 
-  public void error(final String text)
+  @Override
+  public void eval(final AbraModule module)
   {
-    throw new CodeException(null, text);
+    // we're going to recalculate all sizes
+    clearSizes(module);
+
+    // single pass over everything
+    super.eval(module);
+
+    // some sizes may have been indeterminable for now due to recursion
+    resolveRecursions(module);
   }
 
   @Override
@@ -75,7 +96,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
     index = evalBranchSites(index, branch.latches, "latch");
 
     int size = 0;
-    for (final AbraSite output : branch.outputs)
+    for (final AbraBaseSite output : branch.outputs)
     {
       if (output.size == 0)
       {
@@ -103,9 +124,9 @@ public class AbraAnalyzeContext extends AbraCodeContext
     branch.analyzed = true;
   }
 
-  public int evalBranchSites(int index, final ArrayList<AbraSite> sites, final String type)
+  public int evalBranchSites(int index, final ArrayList<AbraBaseSite> sites, final String type)
   {
-    for (final AbraSite site : sites)
+    for (final AbraBaseSite site : sites)
     {
       check(site.index == index);
       site.index = index++;
@@ -141,14 +162,14 @@ public class AbraAnalyzeContext extends AbraCodeContext
     }
 
     // input is any single trit that triggers data flow
-    final AbraSite inputTrit = branch.inputs.get(0);
+    final AbraBaseSite inputTrit = branch.inputs.get(0);
     if (inputTrit.size != 1)
     {
       return false;
     }
 
     TritVector constant = null;
-    for (final AbraSite site : branch.sites)
+    for (final AbraBaseSite site : branch.sites)
     {
       if (!(site instanceof AbraSiteKnot))
       {
@@ -156,13 +177,13 @@ public class AbraAnalyzeContext extends AbraCodeContext
       }
 
       final AbraSiteKnot knot = (AbraSiteKnot) site;
-      if (knot.block.type != AbraBlock.TYPE_CONSTANT)
+      if (knot.block.type != AbraBaseBlock.TYPE_CONSTANT)
       {
         return false;
       }
 
       // all inputs triggered by input trit
-      for (final AbraSite input : knot.inputs)
+      for (final AbraBaseSite input : knot.inputs)
       {
         if (input != inputTrit)
         {
@@ -173,14 +194,14 @@ public class AbraAnalyzeContext extends AbraCodeContext
       constant = TritVector.concat(constant, knot.block.constantValue);
     }
 
-    final AbraSite output = branch.outputs.get(0);
+    final AbraBaseSite output = branch.outputs.get(0);
     if (!(output instanceof AbraSiteKnot))
     {
       return false;
     }
 
     final AbraSiteKnot knot = (AbraSiteKnot) output;
-    if (knot.block.type != AbraBlock.TYPE_SLICE || knot.inputs.size() != branch.sites.size())
+    if (knot.block.type != AbraBaseBlock.TYPE_SLICE || knot.inputs.size() != branch.sites.size())
     {
       return false;
     }
@@ -189,7 +210,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
 
     check(branch.name != null && branch.name.startsWith("const_"));
 
-    branch.type = AbraBlock.TYPE_CONSTANT;
+    branch.type = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = constant.slice(0, knot.size);
     return true;
   }
@@ -202,14 +223,14 @@ public class AbraAnalyzeContext extends AbraCodeContext
     }
 
     // input is any single trit that triggers data flow
-    final AbraSite inputTrit = branch.inputs.get(0);
+    final AbraBaseSite inputTrit = branch.inputs.get(0);
     if (inputTrit.size != 1)
     {
       return false;
     }
 
     TritVector constant = null;
-    for (final AbraSite output : branch.outputs)
+    for (final AbraBaseSite output : branch.outputs)
     {
       if (!(output instanceof AbraSiteKnot))
       {
@@ -217,13 +238,13 @@ public class AbraAnalyzeContext extends AbraCodeContext
       }
 
       final AbraSiteKnot knot = (AbraSiteKnot) output;
-      if (knot.block.type != AbraBlock.TYPE_CONSTANT)
+      if (knot.block.type != AbraBaseBlock.TYPE_CONSTANT)
       {
         return false;
       }
 
       // all inputs triggered by input trit
-      for (final AbraSite input : knot.inputs)
+      for (final AbraBaseSite input : knot.inputs)
       {
         if (input != inputTrit)
         {
@@ -236,7 +257,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
 
     check(branch.name != null && branch.name.startsWith("constZero"));
 
-    branch.type = AbraBlock.TYPE_CONSTANT;
+    branch.type = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = constant;
     return true;
   }
@@ -255,27 +276,27 @@ public class AbraAnalyzeContext extends AbraCodeContext
     }
 
     // first input is the boolean flag
-    final AbraSite inputFlag = branch.inputs.get(0);
+    final AbraBaseSite inputFlag = branch.inputs.get(0);
     if (inputFlag.size != 1)
     {
       return false;
     }
 
-    final AbraSite firstOutput = branch.outputs.get(0);
+    final AbraBaseSite firstOutput = branch.outputs.get(0);
     if (!(firstOutput instanceof AbraSiteKnot))
     {
       return false;
     }
 
     final int type = ((AbraSiteKnot) firstOutput).block.type;
-    if (type != AbraBlock.TYPE_NULLIFY_FALSE && type != AbraBlock.TYPE_NULLIFY_TRUE)
+    if (type != AbraBaseBlock.TYPE_NULLIFY_FALSE && type != AbraBaseBlock.TYPE_NULLIFY_TRUE)
     {
       return false;
     }
 
     for (int i = 0; i < branch.outputs.size(); i++)
     {
-      final AbraSite output = branch.outputs.get(0);
+      final AbraBaseSite output = branch.outputs.get(0);
       if (!(output instanceof AbraSiteKnot))
       {
         return false;
@@ -314,7 +335,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
     // last input is the sliced input
     final AbraSiteParam input = (AbraSiteParam) branch.inputs.get(branch.inputs.size() - 1);
 
-    final AbraSite output = branch.outputs.get(0);
+    final AbraBaseSite output = branch.outputs.get(0);
     if (!(output instanceof AbraSiteMerge))
     {
       return false;
@@ -326,7 +347,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
       return false;
     }
 
-    branch.type = AbraBlock.TYPE_SLICE;
+    branch.type = AbraBaseBlock.TYPE_SLICE;
     branch.offset = input.offset;
     return true;
   }
@@ -365,7 +386,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
     // knot.block is a lut
     ensure(knot.inputs.size() == 3);
 
-    for (final AbraSite input : knot.inputs)
+    for (final AbraBaseSite input : knot.inputs)
     {
       ensure(input.size == 1);
     }
@@ -394,34 +415,34 @@ public class AbraAnalyzeContext extends AbraCodeContext
 
     if (lut.lookup.equals(constZero))
     {
-      lut.type = AbraBlock.TYPE_CONSTANT;
+      lut.type = AbraBaseBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '0');
       return;
     }
 
     if (lut.lookup.equals(constMin))
     {
-      lut.type = AbraBlock.TYPE_CONSTANT;
+      lut.type = AbraBaseBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '-');
       return;
     }
 
     if (lut.lookup.equals(constOne))
     {
-      lut.type = AbraBlock.TYPE_CONSTANT;
+      lut.type = AbraBaseBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '1');
       return;
     }
 
     if (lut.lookup.equals(nullifyFalse))
     {
-      lut.type = AbraBlock.TYPE_NULLIFY_FALSE;
+      lut.type = AbraBaseBlock.TYPE_NULLIFY_FALSE;
       return;
     }
 
     if (lut.lookup.equals(nullifyTrue))
     {
-      lut.type = AbraBlock.TYPE_NULLIFY_TRUE;
+      lut.type = AbraBaseBlock.TYPE_NULLIFY_TRUE;
       return;
     }
   }
@@ -434,7 +455,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
       return;
     }
 
-    for (final AbraSite input : merge.inputs)
+    for (final AbraBaseSite input : merge.inputs)
     {
       if (input.size != 0)
       {
@@ -474,23 +495,25 @@ public class AbraAnalyzeContext extends AbraCodeContext
     offset += param.size;
   }
 
-  @Override
-  public void finished()
+  public void resolveRecursions(final AbraModule module)
   {
+    // did we encounter any missing branch sizes?
     int lastMissing = 0;
     while (missing != lastMissing)
     {
+      // try to resolve missing ones by running another pass
+      // over the ones that have not been done analyzing yet
+      // and see if that results in less missing branch sizes
       lastMissing = missing;
       missing = 0;
-      for (final AbraBlockBranch branch : abraCode.branches)
-      {
-        branch.eval(this);
-      }
+      evalBlocks(module.branches);
     }
 
     if (missing != 0)
     {
-      for (final AbraBlockBranch branch : abraCode.branches)
+      // still missing some branch sizes
+      // must be due to recursion issues
+      for (final AbraBlockBranch branch : module.branches)
       {
         if (branch.size() == 0)
         {
@@ -502,9 +525,9 @@ public class AbraAnalyzeContext extends AbraCodeContext
     }
 
     // quick sanity check if everything has a size now
-    for (final AbraBlockBranch branch : abraCode.branches)
+    for (final AbraBlockBranch branch : module.branches)
     {
-      for (final AbraSite site : branch.sites)
+      for (final AbraBaseSite site : branch.sites)
       {
         if (site.size == 0 && ((AbraSiteMerge) site).inputs.size() != 0)
         {
@@ -512,7 +535,7 @@ public class AbraAnalyzeContext extends AbraCodeContext
         }
       }
 
-      for (final AbraSite site : branch.outputs)
+      for (final AbraBaseSite site : branch.outputs)
       {
         if (site.size == 0 && ((AbraSiteMerge) site).inputs.size() != 0)
         {
@@ -520,27 +543,13 @@ public class AbraAnalyzeContext extends AbraCodeContext
         }
       }
 
-      for (final AbraSite site : branch.latches)
+      for (final AbraBaseSite site : branch.latches)
       {
         if (site.size == 0 && site.references != 0)
         {
           error("WTF?");
         }
       }
-    }
-  }
-
-  @Override
-  public void started()
-  {
-    // we're going to recalculate all sizes
-    for (final AbraBlockBranch branch : abraCode.branches)
-    {
-      branch.oldSize = branch.size;
-      branch.size = 0;
-      clearSizes(branch.sites);
-      clearSizes(branch.outputs);
-      clearSizes(branch.latches);
     }
   }
 }

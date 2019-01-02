@@ -59,7 +59,7 @@ public class TritVector
       }
 
     default:
-      throw new CodeException(null, "Undefined initialization trit");
+      throw new CodeException("Undefined initialization trit");
     }
 
     vector.grow(size);
@@ -226,7 +226,7 @@ public class TritVector
   {
     if (start < 0 || length < 0 || start + length > size())
     {
-      throw new CodeException(null, "Index out of range");
+      throw new CodeException("Index out of range");
     }
 
     if (start == 0 && length == size())
@@ -292,7 +292,7 @@ public class TritVector
   {
     if (index < 0 || index >= size())
     {
-      throw new CodeException(null, "Index out of range");
+      throw new CodeException("Index out of range");
     }
 
     return vector.buffer[offset + index];
