@@ -11,24 +11,23 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.iota.qupla.abra.context.AbraEvalContext;
-import org.iota.qupla.context.AbraContext;
-import org.iota.qupla.context.EvalContext;
-import org.iota.qupla.context.FpgaContext;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.exception.ExitException;
-import org.iota.qupla.expression.FuncExpr;
-import org.iota.qupla.expression.MergeExpr;
-import org.iota.qupla.expression.base.BaseExpr;
-import org.iota.qupla.parser.Module;
-import org.iota.qupla.parser.Token;
-import org.iota.qupla.parser.Tokenizer;
-import org.iota.qupla.statement.ExecStmt;
-import org.iota.qupla.statement.UseStmt;
+import org.iota.qupla.qupla.context.QuplaEvalContext;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
+import org.iota.qupla.qupla.context.QuplaToVerilogContext;
+import org.iota.qupla.qupla.expression.FuncExpr;
+import org.iota.qupla.qupla.expression.MergeExpr;
+import org.iota.qupla.qupla.expression.base.BaseExpr;
+import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.Token;
+import org.iota.qupla.qupla.parser.Tokenizer;
+import org.iota.qupla.qupla.statement.ExecStmt;
+import org.iota.qupla.qupla.statement.UseStmt;
 
 public class Qupla
 {
-  private static AbraContext abraContext;
   private static final String[] flags = {
       "-abra",
       "-echo",
@@ -38,6 +37,7 @@ public class Qupla
       "-tree",
       };
   private static final HashSet<String> options = new HashSet<>();
+  private static QuplaToAbraContext quplaToAbraContext;
 
   public static void codeException(final CodeException ex)
   {
@@ -200,26 +200,26 @@ public class Qupla
   {
     log("Run Abra generator");
     final Module singleModule = new Module(Module.allModules.values());
-    abraContext = new AbraContext();
-    singleModule.eval(abraContext);
+    quplaToAbraContext = new QuplaToAbraContext();
+    quplaToAbraContext.eval(singleModule);
   }
 
   private static void runEchoSource()
   {
-
+    //TODO
   }
 
   private static void runEval(final BaseExpr expr)
   {
     log("Eval: " + expr.toString());
 
-    final EvalContext context = new EvalContext();
+    final QuplaEvalContext context = new QuplaEvalContext();
     final AbraEvalContext abraEvalContext = new AbraEvalContext();
 
     long mSec = System.currentTimeMillis();
     if (options.contains("-abra"))
     {
-      abraEvalContext.eval(abraContext, expr);
+      abraEvalContext.eval(quplaToAbraContext, expr);
       context.value = abraEvalContext.value;
     }
     else
@@ -264,22 +264,20 @@ public class Qupla
   {
     log("Run Verilog compiler");
     final Module singleModule = new Module(Module.allModules.values());
-    final FpgaContext verilogCompiler = new FpgaContext();
-    singleModule.eval(verilogCompiler);
-    verilogCompiler.cleanup();
+    new QuplaToVerilogContext().eval(singleModule);
   }
 
   private static void runTest(final ExecStmt exec)
   {
     log("Test: " + exec.expected + " = " + exec.expr);
 
-    final EvalContext context = new EvalContext();
+    final QuplaEvalContext context = new QuplaEvalContext();
     final AbraEvalContext abraEvalContext = new AbraEvalContext();
 
     long mSec = System.currentTimeMillis();
     if (options.contains("-abra"))
     {
-      abraEvalContext.eval(abraContext, exec.expr);
+      abraEvalContext.eval(quplaToAbraContext, exec.expr);
       context.value = abraEvalContext.value;
     }
     else
@@ -319,6 +317,6 @@ public class Qupla
 
   private static void runTreeViewer()
   {
-
+    //TODO
   }
 }

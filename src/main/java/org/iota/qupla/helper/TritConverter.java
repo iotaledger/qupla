@@ -110,7 +110,7 @@ public class TritConverter
       // make sure it fits in the mantissa
       if (trits.length() > manSize)
       {
-        throw new CodeException(null, "Mantissa '" + value + "' exceeds " + manSize + " trits");
+        throw new CodeException("Mantissa '" + value + "' exceeds " + manSize + " trits");
       }
 
       // shift all significant trits to normalize
@@ -181,7 +181,7 @@ public class TritConverter
     // make sure exponent fits
     if (trits.length() > expSize)
     {
-      throw new CodeException(null, "Exponent '" + exponent + "' exceeds " + expSize + " trits");
+      throw new CodeException("Exponent '" + exponent + "' exceeds " + expSize + " trits");
     }
 
     return mantissa + trits + zeroes(expSize - trits.length());

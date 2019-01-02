@@ -2,15 +2,15 @@ package org.iota.qupla.dispatcher;
 
 import java.util.ArrayList;
 
-import org.iota.qupla.context.EvalContext;
-import org.iota.qupla.expression.AffectExpr;
-import org.iota.qupla.expression.base.BaseExpr;
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.statement.FuncStmt;
+import org.iota.qupla.qupla.context.QuplaEvalContext;
+import org.iota.qupla.qupla.expression.AffectExpr;
+import org.iota.qupla.qupla.expression.base.BaseExpr;
+import org.iota.qupla.qupla.statement.FuncStmt;
 
 public class Entity
 {
-  public static final EvalContext evalContext = new EvalContext();
+  public static final QuplaEvalContext evalContext = new QuplaEvalContext();
 
   public final ArrayList<Effect> effects = new ArrayList<>();
   public FuncStmt func;

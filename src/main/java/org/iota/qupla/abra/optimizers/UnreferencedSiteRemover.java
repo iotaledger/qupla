@@ -1,14 +1,15 @@
 package org.iota.qupla.abra.optimizers;
 
-import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraSite;
-import org.iota.qupla.abra.AbraSiteMerge;
-import org.iota.qupla.context.AbraContext;
-import org.iota.qupla.expression.base.BaseExpr;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
+import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class UnreferencedSiteRemover extends BaseOptimizer
 {
-  public UnreferencedSiteRemover(final AbraContext context, final AbraBlockBranch branch)
+  public UnreferencedSiteRemover(final QuplaToAbraContext context, final AbraBlockBranch branch)
   {
     super(context, branch);
     reverse = true;
@@ -24,7 +25,7 @@ public class UnreferencedSiteRemover extends BaseOptimizer
     if (index + 1 < branch.sites.size())
     {
       // attach statement to next body site
-      final AbraSite nextSite = branch.sites.get(index + 1);
+      final AbraBaseSite nextSite = branch.sites.get(index + 1);
       if (nextSite.stmt == null) //TODO
       {
         nextSite.stmt = stmt;
@@ -35,7 +36,7 @@ public class UnreferencedSiteRemover extends BaseOptimizer
     }
 
     // attach statement to first output site
-    final AbraSite nextSite = branch.outputs.get(0);
+    final AbraBaseSite nextSite = branch.outputs.get(0);
     if (nextSite.stmt == null) //TODO
     {
       nextSite.stmt = stmt;
@@ -72,7 +73,7 @@ public class UnreferencedSiteRemover extends BaseOptimizer
 
   private void updateReferenceCounts(final AbraSiteMerge site)
   {
-    for (final AbraSite input : site.inputs)
+    for (final AbraBaseSite input : site.inputs)
     {
       input.references--;
     }

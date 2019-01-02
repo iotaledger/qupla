@@ -1,12 +1,13 @@
 package org.iota.qupla.abra.optimizers;
 
-import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraSiteMerge;
-import org.iota.qupla.context.AbraContext;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class SlicedInputOptimizer extends BaseOptimizer
 {
-  public SlicedInputOptimizer(final AbraContext context, final AbraBlockBranch branch)
+  public SlicedInputOptimizer(final QuplaToAbraContext context, final AbraBlockBranch branch)
   {
     super(context, branch);
   }

@@ -1,12 +1,13 @@
 package org.iota.qupla.abra.optimizers;
 
-import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraSiteMerge;
-import org.iota.qupla.context.AbraContext;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class SingleInputMergeOptimizer extends BaseOptimizer
 {
-  public SingleInputMergeOptimizer(final AbraContext context, final AbraBlockBranch branch)
+  public SingleInputMergeOptimizer(final QuplaToAbraContext context, final AbraBlockBranch branch)
   {
     super(context, branch);
   }

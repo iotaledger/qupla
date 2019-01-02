@@ -1,21 +1,22 @@
 package org.iota.qupla.abra.optimizers;
 
-import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraSite;
-import org.iota.qupla.abra.AbraSiteKnot;
-import org.iota.qupla.abra.AbraSiteMerge;
-import org.iota.qupla.context.AbraContext;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
+import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class NullifyInserter extends BaseOptimizer
 {
-  public NullifyInserter(final AbraContext context, final AbraBlockBranch branch)
+  public NullifyInserter(final QuplaToAbraContext context, final AbraBlockBranch branch)
   {
     super(context, branch);
   }
 
-  private void insertNullify(final AbraSite condition, final boolean trueFalse)
+  private void insertNullify(final AbraBaseSite condition, final boolean trueFalse)
   {
-    final AbraSite site = branch.sites.get(index);
+    final AbraBaseSite site = branch.sites.get(index);
 
     // create a site for nullify<site.size>(conditon, site)
     final AbraSiteKnot nullify = new AbraSiteKnot();

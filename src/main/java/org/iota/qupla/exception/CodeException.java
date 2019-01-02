@@ -1,10 +1,15 @@
 package org.iota.qupla.exception;
 
-import org.iota.qupla.parser.Token;
+import org.iota.qupla.qupla.parser.Token;
 
 public class CodeException extends RuntimeException
 {
-  public final Token token;
+  public Token token;
+
+  public CodeException(final String message)
+  {
+    super(message);
+  }
 
   public CodeException(final Token token, final String message)
   {

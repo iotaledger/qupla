@@ -3,34 +3,31 @@ package org.iota.qupla.abra.optimizers;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.iota.qupla.abra.AbraBlock;
-import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraBlockLut;
-import org.iota.qupla.abra.AbraSite;
-import org.iota.qupla.abra.AbraSiteKnot;
-import org.iota.qupla.context.AbraContext;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
+import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class MultiLutOptimizer extends BaseOptimizer
 {
-  public HashMap<AbraSite, Character> values = new HashMap<>();
+  public HashMap<AbraBaseSite, Character> values = new HashMap<>();
 
-  public MultiLutOptimizer(final AbraContext context, final AbraBlockBranch branch)
+  public MultiLutOptimizer(final QuplaToAbraContext context, final AbraBlockBranch branch)
   {
     super(context, branch);
     reverse = true;
   }
 
-  private AbraBlock generateLookupTable(final AbraSiteKnot master, final AbraSiteKnot slave, final ArrayList<AbraSite> inputs)
+  private AbraBaseBlock generateLookupTable(final AbraSiteKnot master, final AbraSiteKnot slave, final ArrayList<AbraBaseSite> inputs)
   {
-    // initialize lookup tables if necessary
-    master.block.code();
-    slave.block.code();
-
     // initialize with 27 null trits
     final char[] lookup = "@@@@@@@@@@@@@@@@@@@@@@@@@@@".toCharArray();
 
-    final int maxValue = AbraBlockLut.powers[inputs.size()];
-    for (int v = 0; v < maxValue; v++)
+    final int lookupSize = QuplaToAbraContext.powers[inputs.size()];
+    for (int v = 0; v < lookupSize; v++)
     {
       int value = v;
       for (int i = 0; i < inputs.size(); i++)
@@ -52,18 +49,18 @@ public class MultiLutOptimizer extends BaseOptimizer
     }
 
     // repeat the entries across the entire table if necessary
-    for (int offset = maxValue; offset < 27; offset += maxValue)
+    for (int offset = lookupSize; offset < 27; offset += lookupSize)
     {
-      for (int i = 0; i < maxValue; i++)
+      for (int i = 0; i < lookupSize; i++)
       {
         lookup[offset + i] = lookup[i];
       }
     }
 
-    final String trits = new String(lookup, 0, 27);
+    final String lookupTable = new String(lookup);
 
     final AbraSiteKnot tmp = new AbraSiteKnot();
-    tmp.name = "lut_" + trits.replace('-', 'T').replace('@', 'N');
+    tmp.name = "lut_" + lookupTable.replace('-', 'T').replace('@', 'N');
     tmp.lut(context);
 
     // already exists?
@@ -73,7 +70,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     }
 
     // new LUT, create it
-    return context.abra.addLut(tmp.name, trits);
+    return context.abraModule.addLut(tmp.name, lookupTable);
   }
 
   private char lookupTrit(final AbraSiteKnot lut)
@@ -83,19 +80,19 @@ public class MultiLutOptimizer extends BaseOptimizer
     {
       final char trit = values.get(lut.inputs.get(i));
       final int val = trit == '-' ? 0 : trit == '0' ? 1 : 2;
-      index += val * AbraBlockLut.powers[i];
+      index += val * QuplaToAbraContext.powers[i];
     }
 
-    // look up the trit in the slave lookup table
-    return lut.block.tritCode.buffer[index];
+    // look up the trit in the lut lookup table
+    return ((AbraBlockLut) lut.block).lookup.charAt(index);
   }
 
   private boolean mergeLuts(final AbraSiteKnot master, final AbraSiteKnot slave)
   {
-    final ArrayList<AbraSite> inputs = new ArrayList<>();
+    final ArrayList<AbraBaseSite> inputs = new ArrayList<>();
 
     // gather all unique master inputs (omit slave)
-    for (final AbraSite input : master.inputs)
+    for (final AbraBaseSite input : master.inputs)
     {
       if (input != slave && !inputs.contains(input))
       {
@@ -105,7 +102,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     }
 
     // gather all unique slave inputs
-    for (final AbraSite input : slave.inputs)
+    for (final AbraBaseSite input : slave.inputs)
     {
       if (!inputs.contains(input))
       {
@@ -150,7 +147,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     }
 
     // figure out if this LUT refers to another LUT
-    for (final AbraSite input : knot.inputs)
+    for (final AbraBaseSite input : knot.inputs)
     {
       if (input instanceof AbraSiteKnot)
       {

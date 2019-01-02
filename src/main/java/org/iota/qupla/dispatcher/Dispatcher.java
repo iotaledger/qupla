@@ -3,10 +3,10 @@ package org.iota.qupla.dispatcher;
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.iota.qupla.expression.JoinExpr;
-import org.iota.qupla.expression.base.BaseExpr;
-import org.iota.qupla.parser.Module;
-import org.iota.qupla.statement.FuncStmt;
+import org.iota.qupla.qupla.expression.JoinExpr;
+import org.iota.qupla.qupla.expression.base.BaseExpr;
+import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.statement.FuncStmt;
 
 public class Dispatcher
 {

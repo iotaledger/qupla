@@ -1,15 +1,16 @@
 package org.iota.qupla.abra.optimizers;
 
-import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraSite;
-import org.iota.qupla.abra.AbraSiteKnot;
-import org.iota.qupla.abra.AbraSiteMerge;
-import org.iota.qupla.abra.AbraSiteParam;
-import org.iota.qupla.context.AbraContext;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
+import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.AbraSiteParam;
+import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class EmptyFunctionOptimizer extends BaseOptimizer
 {
-  public EmptyFunctionOptimizer(final AbraContext context, final AbraBlockBranch branch)
+  public EmptyFunctionOptimizer(final QuplaToAbraContext context, final AbraBlockBranch branch)
   {
     super(context, branch);
   }
@@ -38,7 +39,7 @@ public class EmptyFunctionOptimizer extends BaseOptimizer
       return;
     }
 
-    final AbraSite knotInput = knot.inputs.get(0);
+    final AbraBaseSite knotInput = knot.inputs.get(0);
 
     final AbraSiteParam input = (AbraSiteParam) target.inputs.get(0);
     if (input.size != knotInput.size)

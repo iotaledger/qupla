@@ -2,15 +2,16 @@ package org.iota.qupla.abra.optimizers;
 
 import java.util.ArrayList;
 
-import org.iota.qupla.abra.AbraBlockBranch;
-import org.iota.qupla.abra.AbraBlockLut;
-import org.iota.qupla.abra.AbraSite;
-import org.iota.qupla.abra.AbraSiteKnot;
-import org.iota.qupla.context.AbraContext;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
+import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class LutFunctionWrapperOptimizer extends BaseOptimizer
 {
-  public LutFunctionWrapperOptimizer(final AbraContext context, final AbraBlockBranch branch)
+  public LutFunctionWrapperOptimizer(final QuplaToAbraContext context, final AbraBlockBranch branch)
   {
     super(context, branch);
   }
@@ -27,7 +28,7 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
     }
 
     // all input values must be single trit
-    for (final AbraSite input : knot.inputs)
+    for (final AbraBaseSite input : knot.inputs)
     {
       if (input.size != 1)
       {
@@ -49,7 +50,7 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
     }
 
     // all input params must be single trit
-    for (final AbraSite input : target.inputs)
+    for (final AbraBaseSite input : target.inputs)
     {
       if (input.size != 1)
       {
@@ -72,16 +73,16 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
 
     // well, looks like we have a candidate
     // reroute knot directly to LUT
-    final ArrayList<AbraSite> inputs = new ArrayList<>();
-    for (final AbraSite input : output.inputs)
+    final ArrayList<AbraBaseSite> inputs = new ArrayList<>();
+    for (final AbraBaseSite input : output.inputs)
     {
       final int idx = target.inputs.indexOf(input);
-      final AbraSite knotInput = knot.inputs.get(idx);
+      final AbraBaseSite knotInput = knot.inputs.get(idx);
       inputs.add(knotInput);
       knotInput.references++;
     }
 
-    for (final AbraSite input : knot.inputs)
+    for (final AbraBaseSite input : knot.inputs)
     {
       input.references--;
     }
