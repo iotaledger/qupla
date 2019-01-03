@@ -198,58 +198,6 @@ public class FuncStmt extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    appendSignature();
-
-    append(" {").newline().indent();
-
-    for (final BaseExpr envExpr : envExprs)
-    {
-      append(envExpr).newline();
-    }
-
-    for (final BaseExpr stateExpr : stateExprs)
-    {
-      append(stateExpr).newline();
-    }
-
-    for (final BaseExpr assignExpr : assignExprs)
-    {
-      append(assignExpr).newline();
-    }
-
-    append("return ").append(returnExpr).newline();
-
-    return undent().append("}");
-  }
-
-  public void appendSignature()
-  {
-    append("func ").append(returnType).append(" ").append(name.split("_")[0]);
-    if (funcTypes.size() != 0)
-    {
-      boolean first = true;
-      for (final BaseExpr funcType : funcTypes)
-      {
-        append(first ? "<" : ", ").append(funcType);
-        first = false;
-      }
-
-      append(">");
-    }
-
-    boolean first = true;
-    for (final BaseExpr param : params)
-    {
-      append(first ? "(" : ", ").append(param);
-      first = false;
-    }
-
-    append(")");
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new FuncStmt(this);
@@ -338,6 +286,6 @@ public class FuncStmt extends BaseExpr
   @Override
   public void toStringify()
   {
-    appendSignature();
+    printer.evalFuncBodySignature(this);
   }
 }

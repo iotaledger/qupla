@@ -60,6 +60,12 @@ template fullMul<T> {
   type P2Carry [P2 + Carry]
 
   func T2 fullMul<T> (T lhs, T rhs) {
+    lhsZero = isZero[sign<T>(lhs)]
+    rhsZero = isZero[sign<T>(rhs)]
+    return or[lhsZero, rhsZero] ? 0 : fullMulNonZero<T>(lhs, rhs)
+  }
+
+  func T2 fullMulNonZero<T> (T lhs, T rhs) {
     // get lhs digits
     A = lhs[P * 0 : P]
     B = lhs[P * 1 : P]
@@ -103,14 +109,14 @@ template fullMul<T> {
     carry2 = AFBEcCD[P * 1 : P]
 
     // BF000 + CE000 + carry2
-    BFCD = addProduct<P>(BF, CE)
-    // note: this is where the extra overflow carry trit goes
-    BFCDc = addCarryToProduct<P>(BFCD[0 : P * 2], carry2, AFBEcCD[P * 2])
-    tryte3 = BFCDc[P * 0 : P]
-    carry3 = BFCDc[P * 1 : P]
+    BFCE = addProduct<P>(BF, CE)
+    BFCEc = addCarryToProduct<P>(BFCE[0 : P * 2], carry2, 0)
+    tryte3 = BFCEc[P * 0 : P]
+    carry3 = BFCEc[P * 1 : P]
 
     // CF0000 + carry3
-    CFc = addCarryToProduct<P>(CF, carry3, 0)
+    // note: this is where the extra overflow carry trit goes
+    CFc = addCarryToProduct<P>(CF, carry3, AFBEcCD[P * 2])
     // tryte4 = CFc[P * 0 : P]
     // tryte5 = CFc[P * 1 : P]
 
@@ -141,6 +147,12 @@ template fullMul2<T> {
   type P3 [P * 3]
 
   func T2 fullMul<T> (T lhs, T rhs) {
+    lhsZero = isZero[sign<T>(lhs)]
+    rhsZero = isZero[sign<T>(rhs)]
+    return or[lhsZero, rhsZero] ? 0 : fullMulNonZero<T>(lhs, rhs)
+  }
+
+  func T2 fullMulNonZero<T> (T lhs, T rhs) {
     zero = as<P>(0)
     product = fullMul<P3>(lhs & zero, rhs & zero)
     return product[0 : T2]
@@ -149,3 +161,22 @@ template fullMul2<T> {
 
 use fullMul2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
 
+
+test 16 = fullMul<Tryte>(4, 4)
+test 25 = fullMul<Tryte>(5, 5)
+test 36 = fullMul<Tryte>(6, 6)
+test 49 = fullMul<Tryte>(7, 7)
+test 64 = fullMul<Tryte>(8, 8)
+test 81 = fullMul<Tryte>(9, 9)
+test 100 = fullMul<Tryte>(10, 10)
+test 121 = fullMul<Tryte>(11, 11)
+test 144 = fullMul<Tryte>(12, 12)
+test 169 = fullMul<Tryte>(13, 13)
+test 132496 = fullMul<Tryte2>(364, 364)
+
+test 10758400 = fullMul<Tiny>(3280, 3280)
+test 43046721 = fullMul<Tiny>(6561, 6561)
+test 96805921 = fullMul<Tiny>(9839, 9839)
+test 96825600 = fullMul<Tiny>(9840, 9840)
+test 96845281 = fullMul<Tiny>(9841, 9841)
+test 871666576 = fullMul<Tiny2>(29524, 29524)

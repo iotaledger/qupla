@@ -1,10 +1,9 @@
 package org.iota.qupla.qupla.expression.base;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 
 import org.iota.qupla.exception.CodeException;
+import org.iota.qupla.qupla.context.QuplaPrintContext;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.parser.Module;
 import org.iota.qupla.qupla.parser.Token;
@@ -20,12 +19,8 @@ public abstract class BaseExpr
   public static Module currentModule;
   public static UseStmt currentUse;
   public static int currentUseIndex;
-  private static boolean mustIndent;
-  private static int newlines;
+  protected static QuplaPrintContext printer = new QuplaPrintContext();
   public static final ArrayList<BaseExpr> scope = new ArrayList<>();
-  private static int spaces;
-  private static String string;
-  public static Writer writer;
 
   public Module module;
   public String name;
@@ -89,78 +84,6 @@ public abstract class BaseExpr
     final TypeStmt type = (TypeStmt) findEntity(TypeStmt.class, "type");
     size = type.size;
     return type;
-  }
-
-  public abstract BaseExpr append();
-
-  public BaseExpr append(final BaseExpr item)
-  {
-    return item == null ? this : item.append();
-  }
-
-  public BaseExpr append(final String text)
-  {
-    if (text.length() == 0)
-    {
-      return this;
-    }
-
-    if ("\n".equals(text))
-    {
-      // count consecutive newlines
-      newlines++;
-      if (newlines == 1)
-      {
-        // always emit first newline since it ends previous line
-        appendify("\n");
-      }
-
-      return this;
-    }
-
-    // never have empty lines before a closing brace
-    if (!"}".equals(text))
-    {
-      // emit accumulated newlines, without indenting
-      for (int i = 1; i < newlines; i++)
-      {
-        appendify("\n");
-      }
-    }
-    newlines = 0;
-
-    if (mustIndent)
-    {
-      mustIndent = false;
-      for (int i = 0; i < spaces; i++)
-      {
-        appendify(" ");
-      }
-    }
-
-    appendify(text);
-    return this;
-  }
-
-  private void appendify(final String text)
-  {
-    if (string != null)
-    {
-      string += text;
-      return;
-    }
-
-    if (writer != null)
-    {
-      try
-      {
-        writer.append(text);
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace();
-      }
-    }
   }
 
   public BaseExpr clone(final BaseExpr expr)
@@ -246,23 +169,10 @@ public abstract class BaseExpr
     return externEntity;
   }
 
-  public BaseExpr indent()
-  {
-    spaces += 2;
-    return this;
-  }
-
   public void log(final String text)
   {
     final String name = getClass().getName();
     logLine(name.substring(name.lastIndexOf(".") + 1) + ": " + text);
-  }
-
-  public BaseExpr newline()
-  {
-    append("\n");
-    mustIndent = true;
-    return this;
   }
 
   public BaseExpr optimize()
@@ -270,35 +180,20 @@ public abstract class BaseExpr
     return this;
   }
 
-  public String source()
-  {
-    string = "";
-    append();
-    final String ret = string;
-    string = null;
-    return ret;
-  }
-
   @Override
   public String toString()
   {
-    final String oldString = string;
-    string = new String(new char[0]);
+    final String oldString = printer.string;
+    printer.string = new String(new char[0]);
     toStringify();
-    final String ret = string;
-    string = oldString;
+    final String ret = printer.string;
+    printer.string = oldString;
     return ret;
   }
 
   public void toStringify()
   {
-    append();
-  }
-
-  public BaseExpr undent()
-  {
-    spaces -= 2;
-    return this;
+    eval(printer);
   }
 
   public void warning(final String message)

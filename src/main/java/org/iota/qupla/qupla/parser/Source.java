@@ -71,12 +71,6 @@ public class Source extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    return null;
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return null;

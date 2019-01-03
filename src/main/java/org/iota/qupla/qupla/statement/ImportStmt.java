@@ -33,12 +33,6 @@ public class ImportStmt extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    return append("import ").append(name);
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new ImportStmt(this);

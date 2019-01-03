@@ -21,6 +21,8 @@ public class ExecStmt extends BaseExpr
 
   public ExecStmt(final Tokenizer tokenizer, final boolean test)
   {
+    super(tokenizer);
+
     tokenizer.nextToken();
     this.module = tokenizer.module;
 
@@ -54,17 +56,6 @@ public class ExecStmt extends BaseExpr
     }
 
     callNr = saveCallNr;
-  }
-
-  @Override
-  public BaseExpr append()
-  {
-    if (expected == null)
-    {
-      return append("eval ").append(expr);
-    }
-
-    return append("test ").append(expected).append(" = ").append(expr);
   }
 
   @Override

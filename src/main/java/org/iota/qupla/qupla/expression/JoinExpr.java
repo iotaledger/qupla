@@ -42,18 +42,6 @@ public class JoinExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append("join ").append(name);
-    if (limit != null)
-    {
-      append(" limit ").append(limit);
-    }
-
-    return this;
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new JoinExpr(this);

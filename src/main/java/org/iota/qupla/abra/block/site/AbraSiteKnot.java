@@ -17,12 +17,6 @@ public class AbraSiteKnot extends AbraSiteMerge
 
   public AbraBaseBlock block;
 
-  public AbraSiteKnot()
-  {
-    type = "knot";
-    typeTrit = '-';
-  }
-
   public void branch(final QuplaToAbraContext context)
   {
     for (final AbraBaseBlock branch : context.abraModule.branches)

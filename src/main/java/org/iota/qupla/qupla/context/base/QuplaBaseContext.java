@@ -1,9 +1,8 @@
 package org.iota.qupla.qupla.context.base;
 
-import java.util.ArrayList;
-
 import org.iota.qupla.helper.BaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
+import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
 import org.iota.qupla.qupla.expression.FuncExpr;
 import org.iota.qupla.qupla.expression.IntegerExpr;
@@ -11,10 +10,13 @@ import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
+import org.iota.qupla.qupla.expression.TypeExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
+import org.iota.qupla.qupla.expression.base.BaseSubExpr;
 import org.iota.qupla.qupla.parser.Module;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.LutStmt;
+import org.iota.qupla.qupla.statement.TypeStmt;
 
 public abstract class QuplaBaseContext extends BaseContext
 {
@@ -43,7 +45,12 @@ public abstract class QuplaBaseContext extends BaseContext
 
   public abstract void evalAssign(AssignExpr assign);
 
-  public abstract void evalConcat(ArrayList<BaseExpr> exprs);
+  public void evalBaseExpr(final BaseExpr expr)
+  {
+    expr.error("Cannot call eval: " + expr.toString());
+  }
+
+  public abstract void evalConcat(ConcatExpr concat);
 
   public abstract void evalConditional(CondExpr conditional);
 
@@ -62,6 +69,18 @@ public abstract class QuplaBaseContext extends BaseContext
   public abstract void evalSlice(SliceExpr slice);
 
   public abstract void evalState(StateExpr state);
+
+  public void evalSubExpr(final BaseSubExpr sub)
+  {
+    sub.expr.eval(this);
+  }
+
+  public abstract void evalType(TypeExpr type);
+
+  public void evalTypeDefinition(final TypeStmt type)
+  {
+    evalBaseExpr(type);
+  }
 
   public abstract void evalVector(IntegerExpr integer);
 }

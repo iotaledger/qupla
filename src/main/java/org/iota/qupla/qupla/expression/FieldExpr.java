@@ -25,12 +25,6 @@ public class FieldExpr extends BaseSubExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    return append(name).append(" = ").append(expr);
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new FieldExpr(this);

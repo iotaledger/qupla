@@ -57,12 +57,6 @@ public class StateExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    return append("state ").append(stateType).append(" ").append(name);
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new StateExpr(this);

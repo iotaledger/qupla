@@ -66,21 +66,6 @@ public class LutExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append(name);
-
-    boolean first = true;
-    for (final BaseExpr arg : args)
-    {
-      append(first ? "[" : ", ").append(arg);
-      first = false;
-    }
-
-    return append("]");
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new LutExpr(this);

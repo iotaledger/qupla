@@ -1,6 +1,7 @@
 package org.iota.qupla.qupla.statement;
 
 import org.iota.qupla.helper.TritVector;
+import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
@@ -73,18 +74,6 @@ public class TypeStmt extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append("type ");
-    if (struct != null)
-    {
-      return append(struct);
-    }
-
-    return append(vector);
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new TypeStmt(this);
@@ -112,6 +101,12 @@ public class TypeStmt extends BaseExpr
     final BaseExpr mantissa = struct.fields.get(0);
     final BaseExpr exponent = struct.fields.get(1);
     return value.displayValue(mantissa.size, exponent.size);
+  }
+
+  @Override
+  public void eval(final QuplaBaseContext context)
+  {
+    context.evalTypeDefinition(this);
   }
 
   @Override

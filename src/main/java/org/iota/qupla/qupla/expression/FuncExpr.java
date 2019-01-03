@@ -104,33 +104,6 @@ public class FuncExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append(name.split("_")[0]);
-
-    if (funcTypes.size() != 0)
-    {
-      boolean first = true;
-      for (final BaseExpr funcType : funcTypes)
-      {
-        append(first ? "<" : ", ").append(funcType);
-        first = false;
-      }
-
-      append(">");
-    }
-
-    boolean first = true;
-    for (final BaseExpr arg : args)
-    {
-      append(first ? "(" : ", ").append(arg);
-      first = false;
-    }
-
-    return append(")");
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new FuncExpr(this);

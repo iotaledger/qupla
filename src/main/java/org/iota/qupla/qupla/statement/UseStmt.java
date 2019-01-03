@@ -102,30 +102,6 @@ public class UseStmt extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append("use ").append(name);
-
-    boolean next = false;
-    for (final ArrayList<BaseExpr> typeArgs : typeInstantiations)
-    {
-      append(next ? ", " : "");
-      next = true;
-
-      boolean first = true;
-      for (final BaseExpr typeArg : typeArgs)
-      {
-        append(first ? "<" : ", ").append(typeArg);
-        first = false;
-      }
-
-      append(">");
-    }
-
-    return this;
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new UseStmt(this);

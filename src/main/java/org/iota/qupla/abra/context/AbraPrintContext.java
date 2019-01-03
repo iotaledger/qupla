@@ -16,6 +16,20 @@ import org.iota.qupla.abra.context.base.AbraBaseContext;
 
 public class AbraPrintContext extends AbraBaseContext
 {
+  public void appendSiteInputs(final AbraSiteMerge merge)
+  {
+    append("(");
+
+    boolean first = true;
+    for (AbraBaseSite input : merge.inputs)
+    {
+      append(first ? "" : ", ").append("" + input.index);
+      first = false;
+    }
+
+    append(")");
+  }
+
   public void eval(final AbraModule module)
   {
     module.blockNr = 0;
@@ -77,8 +91,10 @@ public class AbraPrintContext extends AbraBaseContext
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    evalMerge(knot);
+    evalSite(knot);
 
+    append("knot");
+    appendSiteInputs(knot);
     append(" " + knot.block);
   }
 
@@ -105,16 +121,8 @@ public class AbraPrintContext extends AbraBaseContext
   {
     evalSite(merge);
 
-    append(merge.type + "(");
-
-    boolean first = true;
-    for (AbraBaseSite input : merge.inputs)
-    {
-      append(first ? "" : ", ").append("" + input.index);
-      first = false;
-    }
-
-    append(")");
+    append("merge");
+    appendSiteInputs(merge);
   }
 
   @Override

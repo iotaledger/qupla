@@ -108,19 +108,6 @@ public class TypeExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append(name).append("{").newline().indent();
-
-    for (final BaseExpr field : fields)
-    {
-      append(field).newline();
-    }
-
-    return undent().append("}");
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new TypeExpr(this);
@@ -129,6 +116,6 @@ public class TypeExpr extends BaseExpr
   @Override
   public void eval(final QuplaBaseContext context)
   {
-    context.evalConcat(fields);
+    context.evalType(this);
   }
 }

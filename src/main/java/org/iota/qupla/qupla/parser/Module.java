@@ -182,57 +182,6 @@ public class Module extends BaseExpr
     new QuplaAnyNullContext().eval(this);
   }
 
-  @Override
-  public BaseExpr append()
-  {
-    for (final ImportStmt stmt : imports)
-    {
-      append(stmt).newline();
-    }
-
-    append(imports.size() == 0 ? "" : "\n");
-
-    for (final TypeStmt stmt : types)
-    {
-      if (!stmt.fromTritCode)
-      {
-        append(stmt).newline();
-      }
-    }
-
-    append(types.size() == 0 ? "" : "\n");
-
-    for (final LutStmt stmt : luts)
-    {
-      append(stmt).newline().newline();
-    }
-
-    for (final FuncStmt stmt : funcs)
-    {
-      if (stmt.use == null)
-      {
-        append(stmt).newline().newline();
-      }
-    }
-
-    for (final TemplateStmt stmt : templates)
-    {
-      append(stmt).newline().newline();
-    }
-
-    for (final UseStmt stmt : uses)
-    {
-      append(stmt).newline();
-    }
-
-    for (final ExecStmt exec : execs)
-    {
-      append(exec).newline();
-    }
-
-    return this;
-  }
-
   public void checkDuplicateName(final ArrayList<? extends BaseExpr> items, final BaseExpr symbol)
   {
     for (final BaseExpr item : items)

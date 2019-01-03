@@ -70,42 +70,6 @@ public class TemplateStmt extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    appendSignature();
-
-    append("{").newline().indent();
-
-    for (final BaseExpr type : types)
-    {
-      append(type).newline();
-    }
-
-    for (final BaseExpr func : funcs)
-    {
-      append(func).newline();
-    }
-
-    return newline().undent().append("}");
-  }
-
-  private BaseExpr appendSignature()
-  {
-    append("template ").append(name);
-
-    boolean first = true;
-    for (final BaseExpr param : params)
-    {
-      append(first ? "<" : ", ").append(param);
-      first = false;
-    }
-
-    append("> ");
-
-    return this;
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new TemplateStmt(this);
@@ -114,21 +78,21 @@ public class TemplateStmt extends BaseExpr
   @Override
   public void toStringify()
   {
-    appendSignature();
+    printer.evalTemplateSignature(this);
+
     if (funcs.size() == 1)
     {
       FuncStmt func = (FuncStmt) funcs.get(0);
-      func.appendSignature();
+      printer.evalFuncBodySignature(func);
       return;
     }
 
     final boolean first = true;
     for (final BaseExpr func : funcs)
     {
-      append(first ? "{ " : ", ").append(func.name);
+      printer.append(first ? "{ " : ", ").append(func.name);
     }
 
-    append(" }");
-
+    printer.append(" }");
   }
 }

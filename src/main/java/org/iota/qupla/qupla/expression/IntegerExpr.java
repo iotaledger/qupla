@@ -81,12 +81,6 @@ public class IntegerExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    return append(name);
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new IntegerExpr(this);
