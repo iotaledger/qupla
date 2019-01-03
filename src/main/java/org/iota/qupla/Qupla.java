@@ -1,12 +1,5 @@
 package org.iota.qupla;
 
-// running from command line after extracting sources into \Qupla folder:
-// md \Qupla\build
-// cd \Qupla\qupla\src\main\java
-// "C:\Program Files\Java\jdk1.8.0\bin\javac" -d \Qupla\build org\iota\qupla\Qupla.java
-// cd \Qupla\qupla\src\main\resources
-// java -classpath \Qupla\build org.iota.qupla.Qupla Examples "fibonacci(10)"
-
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -14,10 +7,14 @@ import org.iota.qupla.abra.context.AbraEvalContext;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.exception.ExitException;
+import org.iota.qupla.helper.TritConverter;
+import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.QuplaEvalContext;
+import org.iota.qupla.qupla.context.QuplaPrintContext;
 import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.context.QuplaToVerilogContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
+import org.iota.qupla.qupla.expression.IntegerExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Module;
@@ -33,6 +30,7 @@ public class Qupla
       "-echo",
       "-eval",
       "-fpga",
+      "-math",
       "-test",
       "-tree",
       };
@@ -184,15 +182,21 @@ public class Qupla
     }
 
     // run all unit test comments
+    if (options.contains("-math"))
+    {
+      runMathTests();
+    }
+
+    // run all unit test comments
     if (options.contains("-test"))
     {
-      runTestComments();
+      runTests();
     }
 
     // run all evaluation comments
     if (options.contains("-eval"))
     {
-      runEvalComments();
+      runEvals();
     }
   }
 
@@ -206,7 +210,9 @@ public class Qupla
 
   private static void runEchoSource()
   {
-    //TODO
+    log("Generate Qupla.txt");
+    final Module singleModule = new Module(Module.allModules.values());
+    new QuplaPrintContext().eval(singleModule);
   }
 
   private static void runEval(final BaseExpr expr)
@@ -242,7 +248,7 @@ public class Qupla
     }
   }
 
-  private static void runEvalComments()
+  private static void runEvals()
   {
     long mSec = System.currentTimeMillis();
     for (final Module module : Module.allModules.values())
@@ -265,6 +271,49 @@ public class Qupla
     log("Run Verilog compiler");
     final Module singleModule = new Module(Module.allModules.values());
     new QuplaToVerilogContext().eval(singleModule);
+  }
+
+  private static void runMathTest(final QuplaEvalContext context, final FuncExpr expr, final int lhs, final int rhs, final int result)
+  {
+    final IntegerExpr lhsArg = (IntegerExpr) expr.args.get(0);
+    lhsArg.vector = new TritVector(TritConverter.fromLong(lhs)).slicePadded(0, lhsArg.size);
+    final IntegerExpr rhsArg = (IntegerExpr) expr.args.get(1);
+    rhsArg.vector = new TritVector(TritConverter.fromLong(rhs)).slicePadded(0, rhsArg.size);
+
+    expr.eval(context);
+
+    final String value = context.value.displayValue(0, 0);
+    if (!value.equals(Integer.toString(result)))
+    {
+      lhsArg.name = Integer.toString(lhs);
+      rhsArg.name = Integer.toString(rhs);
+      log(expr + " = " + result + ", found: " + context.value + ", inputs: " + lhsArg.vector + " and " + rhsArg.vector);
+    }
+  }
+
+  private static void runMathTests()
+  {
+    final String statement = "fullAdd<Tiny>(1,1,0)";
+    log("\nEvaluate: " + statement);
+    long mSec = System.currentTimeMillis();
+    final Tokenizer tokenizer = new Tokenizer();
+    tokenizer.lines.add(statement);
+    tokenizer.module = new Module(new ArrayList<>());
+    tokenizer.module.modules.addAll(Module.allModules.values());
+    tokenizer.nextToken();
+    final FuncExpr expr = (FuncExpr) new MergeExpr(tokenizer).optimize();
+    expr.analyze();
+    final QuplaEvalContext context = new QuplaEvalContext();
+    for (int lhs = 0; lhs <= 9841; lhs += 1)
+    {
+      for (int rhs = 0; rhs <= 9841; rhs += 1)
+      {
+        runMathTest(context, expr, lhs, rhs, lhs + rhs);
+      }
+    }
+
+    mSec = System.currentTimeMillis() - mSec;
+    log("Time: " + mSec + " ms");
   }
 
   private static void runTest(final ExecStmt exec)
@@ -297,7 +346,7 @@ public class Qupla
     log("Time: " + mSec + " ms");
   }
 
-  private static void runTestComments()
+  private static void runTests()
   {
     long mSec = System.currentTimeMillis();
     for (final Module module : Module.allModules.values())

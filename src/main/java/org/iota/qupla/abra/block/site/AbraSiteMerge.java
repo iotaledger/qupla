@@ -8,8 +8,6 @@ import org.iota.qupla.abra.context.base.AbraBaseContext;
 public class AbraSiteMerge extends AbraBaseSite
 {
   public ArrayList<AbraBaseSite> inputs = new ArrayList<>();
-  public String type = "merge";
-  public char typeTrit = '1';
 
   @Override
   public void eval(final AbraBaseContext context)

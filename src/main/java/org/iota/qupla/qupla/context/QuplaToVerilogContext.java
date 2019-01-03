@@ -6,6 +6,7 @@ import java.util.HashSet;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
+import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
 import org.iota.qupla.qupla.expression.FuncExpr;
 import org.iota.qupla.qupla.expression.IntegerExpr;
@@ -13,6 +14,7 @@ import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
+import org.iota.qupla.qupla.expression.TypeExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Module;
 import org.iota.qupla.qupla.statement.FuncStmt;
@@ -119,7 +121,22 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   }
 
   @Override
-  public void evalConcat(final ArrayList<BaseExpr> exprs)
+  public void evalConcat(final ConcatExpr concat)
+  {
+    if (concat.rhs == null)
+    {
+      concat.lhs.eval(this);
+      return;
+    }
+
+    append("{ ");
+    concat.lhs.eval(this);
+    append(" : ");
+    concat.rhs.eval(this);
+    append(" }");
+  }
+
+  public void evalConcatExprs(final ArrayList<BaseExpr> exprs)
   {
     if (exprs.size() == 1)
     {
@@ -326,6 +343,12 @@ public class QuplaToVerilogContext extends QuplaBaseContext
     //    final StateValue stateValue = stateValues.get(call);
     //    value = stateValue != null ? stateValue.value : state.zero;
     //    stack.push(value);
+  }
+
+  @Override
+  public void evalType(final TypeExpr type)
+  {
+    evalConcatExprs(type.fields);
   }
 
   @Override

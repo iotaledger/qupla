@@ -9,11 +9,18 @@ public abstract class BaseContext extends Indentable
 {
   private File file;
   protected BufferedWriter out;
+  public String string;
   private FileWriter writer;
 
   @Override
   protected void appendify(final String text)
   {
+    if (string != null)
+    {
+      string += text;
+      return;
+    }
+
     if (out != null)
     {
       fileWrite(text);

@@ -2,9 +2,12 @@
 
 template mul<T> {
   func T mul<T> (T lhs, T rhs) {
+    lhsZero = isZero[sign<T>(lhs)]
+    rhsZero = isZero[sign<T>(rhs)]
+
     // use full multiplier but don't return the overflow
-    product = fullMul<T>(lhs, rhs)
-    return product[0 : T]
+    product = fullMulNonZero<T>(lhs, rhs)
+    return or[lhsZero, rhsZero] ? 0 : product[0 : T]
   }
 }
 

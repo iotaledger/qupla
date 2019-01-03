@@ -1,7 +1,5 @@
 package org.iota.qupla.qupla.expression;
 
-import java.util.ArrayList;
-
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseBinaryExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
@@ -57,13 +55,6 @@ public class ConcatExpr extends BaseBinaryExpr
   @Override
   public void eval(final QuplaBaseContext context)
   {
-    final ArrayList<BaseExpr> exprs = new ArrayList<>();
-    exprs.add(lhs);
-    if (rhs != null)
-    {
-      exprs.add(rhs);
-    }
-
-    context.evalConcat(exprs);
+    context.evalConcat(this);
   }
 }

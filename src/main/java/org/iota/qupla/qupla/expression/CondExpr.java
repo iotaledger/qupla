@@ -85,25 +85,6 @@ public class CondExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append(condition);
-
-    if (trueBranch != null)
-    {
-      append(" ? ").append(trueBranch).append(" : ");
-      if (falseBranch == null)
-      {
-        return append("null");
-      }
-
-      append(falseBranch);
-    }
-
-    return this;
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new CondExpr(this);

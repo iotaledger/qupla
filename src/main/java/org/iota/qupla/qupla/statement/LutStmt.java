@@ -109,19 +109,6 @@ public class LutStmt extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append("lut ").append(name).append(" [").newline().indent();
-
-    for (final LutEntry entry : entries)
-    {
-      append(entry).newline();
-    }
-
-    return undent().append("]");
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new LutStmt(this);

@@ -132,12 +132,13 @@ template float<M, E> {
   }
 
   func F floatMul<M, E> (F lhs, F rhs) {
-    zero = or[isZero[sign<M>(lhs.mantissa)], isZero[sign<M>(rhs.mantissa)]]
-    return zero ? 0 : floatMulNonZero<M, E>(lhs, rhs)
+    lhsZero = isZero[sign<M>(lhs.mantissa)]
+    rhsZero = isZero[sign<M>(rhs.mantissa)]
+    return or[lhsZero, rhsZero] ? 0 : floatMulNonZero<M, E>(lhs, rhs)
   }
 
   func F floatMulNonZero<M, E> (F lhs, F rhs) {
-    product = fullMul<M>(lhs.mantissa, rhs.mantissa)
+    product = fullMulNonZero<M>(lhs.mantissa, rhs.mantissa)
     sum = add<E>(lhs.exponent, rhs.exponent)
     return floatMulNormalize<M, E>(product, sum)
   }

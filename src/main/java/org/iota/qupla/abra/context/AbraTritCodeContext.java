@@ -73,7 +73,8 @@ public class AbraTritCodeContext extends AbraBaseContext
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    evalMerge(knot);
+    putTrit('-');
+    putSiteInputs(knot);
     putInt(knot.block.index);
   }
 
@@ -93,12 +94,8 @@ public class AbraTritCodeContext extends AbraBaseContext
   @Override
   public void evalMerge(final AbraSiteMerge merge)
   {
-    putTrit(merge.typeTrit);
-    putInt(merge.inputs.size());
-    for (final AbraBaseSite input : merge.inputs)
-    {
-      putInt(merge.refer(input.index));
-    }
+    putTrit('1');
+    putSiteInputs(merge);
   }
 
   @Override
@@ -218,6 +215,15 @@ public class AbraTritCodeContext extends AbraBaseContext
     }
 
     return this;
+  }
+
+  public void putSiteInputs(final AbraSiteMerge merge)
+  {
+    putInt(merge.inputs.size());
+    for (final AbraBaseSite input : merge.inputs)
+    {
+      putInt(merge.refer(input.index));
+    }
   }
 
   public AbraTritCodeContext putTrit(final char trit)

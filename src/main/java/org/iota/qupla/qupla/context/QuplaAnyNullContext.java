@@ -1,11 +1,11 @@
 package org.iota.qupla.qupla.context;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Stack;
 
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
+import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
 import org.iota.qupla.qupla.expression.FuncExpr;
 import org.iota.qupla.qupla.expression.IntegerExpr;
@@ -13,6 +13,7 @@ import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
+import org.iota.qupla.qupla.expression.TypeExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.LutStmt;
@@ -39,17 +40,16 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   }
 
   @Override
-  public void evalConcat(final ArrayList<BaseExpr> exprs)
+  public void evalConcat(final ConcatExpr concat)
   {
     // if any expr is non-null the entire concat is non-null
-    for (final BaseExpr expr : exprs)
+    concat.lhs.eval(this);
+    if (!isNull || concat.rhs == null)
     {
-      expr.eval(this);
-      if (!isNull)
-      {
-        return;
-      }
+      return;
     }
+
+    concat.rhs.eval(this);
   }
 
   @Override
@@ -226,6 +226,20 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   {
     // of course this is non-null: state vars cannot be null
     isNull = false;
+  }
+
+  @Override
+  public void evalType(final TypeExpr type)
+  {
+    // if any field is non-null the entire type is non-null
+    for (final BaseExpr expr : type.fields)
+    {
+      expr.eval(this);
+      if (!isNull)
+      {
+        return;
+      }
+    }
   }
 
   @Override

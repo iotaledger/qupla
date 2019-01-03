@@ -106,12 +106,10 @@ public class AbraEvalContext extends AbraBaseContext
         value = args.get(0).slice(branch.offset, branch.size);
         return;
       }
-
-      int breakpoint = 0;
     }
 
     final TritVector[] oldStack = stack;
-    stack = new TritVector[branch.siteNr];
+    stack = new TritVector[branch.siteNr]; //TODO determine size in another way?
 
     if (!evalBranchInputsMatch(branch))
     {

@@ -2,6 +2,7 @@ package org.iota.qupla.qupla.statement.helper;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
@@ -46,21 +47,14 @@ public class TritStructDef extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append(name).append(" {").newline().indent();
-
-    for (final BaseExpr field : fields)
-    {
-      append(field).newline();
-    }
-
-    return undent().append("}");
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new TritStructDef(this);
+  }
+
+  @Override
+  public void eval(final QuplaBaseContext context)
+  {
+    context.evalBaseExpr(this);
   }
 }

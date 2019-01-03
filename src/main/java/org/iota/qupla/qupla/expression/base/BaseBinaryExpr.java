@@ -23,18 +23,6 @@ public abstract class BaseBinaryExpr extends BaseExpr
     super(tokenizer);
   }
 
-  @Override
-  public BaseExpr append()
-  {
-    append(lhs);
-    if (rhs != null)
-    {
-      append(" " + operator.text + " ").append(rhs);
-    }
-
-    return this;
-  }
-
   protected BaseExpr connectBranch(final Tokenizer tokenizer, BaseExpr leaf, final BaseBinaryExpr branch)
   {
     branch.lhs = leaf;

@@ -58,12 +58,6 @@ public class PostfixExpr extends BaseSubExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    return append(expr);
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new PostfixExpr(this);

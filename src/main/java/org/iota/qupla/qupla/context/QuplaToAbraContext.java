@@ -25,6 +25,7 @@ import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
+import org.iota.qupla.qupla.expression.TypeExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Module;
 import org.iota.qupla.qupla.statement.FuncStmt;
@@ -96,7 +97,19 @@ public class QuplaToAbraContext extends QuplaBaseContext
   }
 
   @Override
-  public void evalConcat(final ArrayList<BaseExpr> exprs)
+  public void evalConcat(final ConcatExpr concat)
+  {
+    final ArrayList<BaseExpr> exprs = new ArrayList<>();
+    exprs.add(concat.lhs);
+    if (concat.rhs != null)
+    {
+      exprs.add(concat.rhs);
+    }
+
+    evalConcatExprs(exprs);
+  }
+
+  public void evalConcatExprs(final ArrayList<BaseExpr> exprs)
   {
     final AbraSiteKnot site = new AbraSiteKnot();
     for (final BaseExpr expr : exprs)
@@ -365,6 +378,12 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
     lastSite = site;
     stack.push(site);
+  }
+
+  @Override
+  public void evalType(final TypeExpr type)
+  {
+    evalConcatExprs(type.fields);
   }
 
   @Override

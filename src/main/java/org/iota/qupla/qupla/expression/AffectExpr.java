@@ -42,18 +42,6 @@ public class AffectExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append("affect ").append(name);
-    if (delay != null)
-    {
-      append(" delay ").append(delay);
-    }
-
-    return this;
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new AffectExpr(this);

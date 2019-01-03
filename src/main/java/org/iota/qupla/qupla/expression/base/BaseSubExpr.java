@@ -28,15 +28,8 @@ public abstract class BaseSubExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    return append("(").append(expr).append(")");
-  }
-
-  @Override
   public void eval(final QuplaBaseContext context)
   {
-    expr.eval(context);
+    context.evalSubExpr(this);
   }
-
 }

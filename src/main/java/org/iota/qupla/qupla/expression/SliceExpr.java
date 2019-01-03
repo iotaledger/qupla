@@ -158,31 +158,6 @@ public class SliceExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    append(name);
-
-    for (final BaseExpr field : fields)
-    {
-      append(".").append(field);
-    }
-
-    if (startOffset != null)
-    {
-      append("[").append(startOffset);
-
-      if (endOffset != null)
-      {
-        append(" : ").append(endOffset);
-      }
-
-      append("]");
-    }
-
-    return this;
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new SliceExpr(this);

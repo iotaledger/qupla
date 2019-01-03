@@ -11,6 +11,7 @@ import org.iota.qupla.helper.StateValue;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
+import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
 import org.iota.qupla.qupla.expression.FuncExpr;
 import org.iota.qupla.qupla.expression.IntegerExpr;
@@ -18,6 +19,7 @@ import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
+import org.iota.qupla.qupla.expression.TypeExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.LutStmt;
@@ -135,15 +137,21 @@ public class QuplaEvalContext extends QuplaBaseContext
   }
 
   @Override
-  public void evalConcat(final ArrayList<BaseExpr> exprs)
+  public void evalConcat(final ConcatExpr concat)
   {
-    if (exprs.size() == 1)
+    concat.lhs.eval(this);
+    if (concat.rhs == null)
     {
-      final BaseExpr expr = exprs.get(0);
-      expr.eval(this);
       return;
     }
 
+    final TritVector lhsValue = value;
+    concat.rhs.eval(this);
+    value = TritVector.concat(lhsValue, value);
+  }
+
+  private void evalConcatExprs(final ArrayList<BaseExpr> exprs)
+  {
     TritVector result = null;
     for (final BaseExpr expr : exprs)
     {
@@ -259,7 +267,7 @@ public class QuplaEvalContext extends QuplaBaseContext
   @Override
   public void evalLutLookup(final LutExpr lookup)
   {
-    evalConcat(lookup.args);
+    evalConcatExprs(lookup.args);
 
     // all trits non-null?
     if (value.isValue())
@@ -340,6 +348,12 @@ public class QuplaEvalContext extends QuplaBaseContext
 
     stack.push(value);
     log("     state " + state.name + " = ", stack.peek(), state);
+  }
+
+  @Override
+  public void evalType(final TypeExpr type)
+  {
+    evalConcatExprs(type.fields);
   }
 
   @Override

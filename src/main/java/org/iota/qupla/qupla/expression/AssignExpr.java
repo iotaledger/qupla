@@ -86,12 +86,6 @@ public class AssignExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    return append(name).append(" = ").append(expr);
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new AssignExpr(this);

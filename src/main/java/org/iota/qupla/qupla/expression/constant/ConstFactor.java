@@ -48,12 +48,6 @@ public class ConstFactor extends BaseSubExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    return append(negative ? "-" : "").append(expr);
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new ConstFactor(this);

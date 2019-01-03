@@ -1,5 +1,6 @@
 package org.iota.qupla.qupla.statement.helper;
 
+import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.expression.constant.ConstExpr;
 import org.iota.qupla.qupla.parser.Token;
@@ -42,19 +43,14 @@ public class TritVectorDef extends BaseExpr
   }
 
   @Override
-  public BaseExpr append()
-  {
-    if (name != null)
-    {
-      append(name).append(" ");
-    }
-
-    return append("[").append(typeExpr).append("]");
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new TritVectorDef(this);
+  }
+
+  @Override
+  public void eval(final QuplaBaseContext context)
+  {
+    context.evalBaseExpr(this);
   }
 }
