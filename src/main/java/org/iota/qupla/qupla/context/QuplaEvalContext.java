@@ -34,7 +34,7 @@ public class QuplaEvalContext extends QuplaBaseContext
   private static final boolean varNamesOnStack = true;
 
   public int callNr;
-  public byte[] callTrail = new byte[1024];
+  public byte[] callTrail = new byte[4096];
   public final Stack<TritVector> stack = new Stack<>();
   public int stackFrame;
   public TritVector value;
@@ -224,7 +224,7 @@ public class QuplaEvalContext extends QuplaBaseContext
     //     call path from within different top level functions to store
     //     state data in the stateValues HashMap when call path is short
 
-    if (callNr == 1000)
+    if (callNr == 4000)
     {
       call.error("Exceeded function call nesting limit");
     }
@@ -370,7 +370,7 @@ public class QuplaEvalContext extends QuplaBaseContext
       BaseExpr.logLine("" + arg.typeInfo.display(value));
     }
 
-    if (useBreak && call.name.startsWith("break_"))
+    if (useBreak && call.name.startsWith("break"))
     {
       final BaseExpr arg = call.args.get(0);
       BaseExpr.logLine("" + arg.typeInfo.display(value));

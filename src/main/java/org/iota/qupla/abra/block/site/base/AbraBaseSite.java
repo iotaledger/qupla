@@ -1,22 +1,23 @@
 package org.iota.qupla.abra.block.site.base;
 
+import org.iota.qupla.abra.context.AbraPrintContext;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public abstract class AbraBaseSite
 {
+  private static AbraPrintContext printer = new AbraPrintContext();
+
   public int index;
   public boolean isLatch;
   public String name;
   public AbraBaseSite nullifyFalse;
   public AbraBaseSite nullifyTrue;
-  public int oldSize;
   public BaseExpr origin;
   public int references;
   public int size;
   public BaseExpr stmt;
-  public String type;
-  public String varName;
+  public String varName; //TODO should be able to remove this
 
   public abstract void eval(final AbraBaseContext context);
 
@@ -53,5 +54,16 @@ public abstract class AbraBaseSite
     //    }
 
     return site;
+  }
+
+  @Override
+  public String toString()
+  {
+    final String oldString = printer.string;
+    printer.string = new String(new char[0]);
+    eval(printer);
+    final String ret = printer.string;
+    printer.string = oldString;
+    return ret;
   }
 }

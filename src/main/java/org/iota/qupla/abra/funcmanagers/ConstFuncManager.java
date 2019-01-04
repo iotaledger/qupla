@@ -34,12 +34,12 @@ public class ConstFuncManager extends BaseFuncManager
 
     constZero = zeroManager.lut;
 
-    constOne = context.abraModule.addLut("constOne_", "111111111111111111111111111");
-    constOne.type = AbraBaseBlock.TYPE_CONSTANT;
+    constOne = context.abraModule.addLut("constOne" + SEPARATOR, "111111111111111111111111111");
+    constOne.specialType = AbraBaseBlock.TYPE_CONSTANT;
     constOne.constantValue = new TritVector(1, '1');
 
-    constMin = context.abraModule.addLut("constMin_", "---------------------------");
-    constMin.type = AbraBaseBlock.TYPE_CONSTANT;
+    constMin = context.abraModule.addLut("constMin" + SEPARATOR, "---------------------------");
+    constMin.specialType = AbraBaseBlock.TYPE_CONSTANT;
     constMin.constantValue = new TritVector(1, '-');
   }
 
@@ -80,7 +80,7 @@ public class ConstFuncManager extends BaseFuncManager
 
     constant.concat(context);
 
-    branch.type = AbraBaseBlock.TYPE_CONSTANT;
+    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = value;
 
     branch.outputs.add(constant);
@@ -109,7 +109,7 @@ public class ConstFuncManager extends BaseFuncManager
       return zeroManager.find(context, size);
     }
 
-    name = funcName + "_" + size + "_" + trits.trits().replace('-', 'T');
+    name = funcName + SEPARATOR + size + SEPARATOR + trits.trits().replace('-', 'T');
     return findInstance();
   }
 

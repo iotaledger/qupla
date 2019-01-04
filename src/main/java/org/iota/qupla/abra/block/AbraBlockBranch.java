@@ -20,13 +20,10 @@ import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class AbraBlockBranch extends AbraBaseBlock
 {
-  public boolean anyNull;
   public ArrayList<AbraBaseSite> inputs = new ArrayList<>();
   public ArrayList<AbraBaseSite> latches = new ArrayList<>();
   public int offset;
-  public int oldSize;
   public ArrayList<AbraBaseSite> outputs = new ArrayList<>();
-  public int siteNr;
   public ArrayList<AbraBaseSite> sites = new ArrayList<>();
   public int size;
 
@@ -48,12 +45,6 @@ public class AbraBlockBranch extends AbraBaseBlock
     inputSite.name = "P" + inputs.size();
     addInput(inputSite);
     return inputSite;
-  }
-
-  @Override
-  public boolean anyNull()
-  {
-    return anyNull;
   }
 
   @Override
@@ -81,25 +72,21 @@ public class AbraBlockBranch extends AbraBaseBlock
 
   public void numberSites()
   {
-    siteNr = 0;
-    numberSites(inputs);
-    numberSites(sites);
-    numberSites(outputs);
-    numberSites(latches);
+    int siteNr = 0;
+    siteNr = numberSites(siteNr, inputs);
+    siteNr = numberSites(siteNr, sites);
+    siteNr = numberSites(siteNr, outputs);
+    siteNr = numberSites(siteNr, latches);
   }
 
-  private void numberSites(final ArrayList<? extends AbraBaseSite> sites)
+  private int numberSites(int siteNr, final ArrayList<? extends AbraBaseSite> sites)
   {
     for (final AbraBaseSite site : sites)
     {
       site.index = siteNr++;
     }
-  }
 
-  @Override
-  public int offset()
-  {
-    return offset;
+    return siteNr;
   }
 
   @Override
@@ -158,8 +145,13 @@ public class AbraBlockBranch extends AbraBaseBlock
   }
 
   @Override
-  public String type()
+  public String toString()
   {
-    return "()";
+    return super.toString() + "()";
+  }
+
+  public int totalSites()
+  {
+    return inputs.size() + sites.size() + outputs.size() + latches.size();
   }
 }

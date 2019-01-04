@@ -60,7 +60,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     final String lookupTable = new String(lookup);
 
     final AbraSiteKnot tmp = new AbraSiteKnot();
-    tmp.name = "lut_" + lookupTable.replace('-', 'T').replace('@', 'N');
+    tmp.name = AbraBlockLut.unnamed(lookupTable);
     tmp.lut(context);
 
     // already exists?

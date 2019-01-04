@@ -1,6 +1,5 @@
 package org.iota.qupla.qupla.expression.constant;
 
-import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseBinaryExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
@@ -54,11 +53,5 @@ public class ConstExpr extends BaseBinaryExpr
   public BaseExpr clone()
   {
     return new ConstExpr(this);
-  }
-
-  @Override
-  public void eval(final QuplaBaseContext context)
-  {
-    context.evalBaseExpr(this);
   }
 }

@@ -35,7 +35,7 @@ public class ConstZeroFuncManager extends BaseFuncManager
     manager.sorted = sorted;
 
     final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = funcName + "_" + inputSize;
+    branch.name = funcName + SEPARATOR + inputSize;
     branch.size = inputSize;
 
     final AbraSiteParam inputValue = branch.addInputParam(1);
@@ -48,7 +48,7 @@ public class ConstZeroFuncManager extends BaseFuncManager
       branch.outputs.add(knot);
     }
 
-    branch.type = AbraBaseBlock.TYPE_CONSTANT;
+    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = new TritVector(size, '0');
 
     return branch;
@@ -57,8 +57,8 @@ public class ConstZeroFuncManager extends BaseFuncManager
   @Override
   protected void generateLut()
   {
-    lut = context.abraModule.addLut("constZero_", "000000000000000000000000000");
-    lut.type = AbraBaseBlock.TYPE_CONSTANT;
+    lut = context.abraModule.addLut("constZero" + SEPARATOR, "000000000000000000000000000");
+    lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
     lut.constantValue = new TritVector(1, '0');
   }
 
@@ -66,7 +66,7 @@ public class ConstZeroFuncManager extends BaseFuncManager
   {
     // generate function that use LUTs
     final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = funcName + "_" + inputSize;
+    branch.name = funcName + SEPARATOR + inputSize;
     branch.size = inputSize;
 
     final AbraSiteParam inputValue = branch.addInputParam(1);
@@ -81,7 +81,7 @@ public class ConstZeroFuncManager extends BaseFuncManager
       branch.outputs.add(knot);
     }
 
-    branch.type = AbraBaseBlock.TYPE_CONSTANT;
+    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = new TritVector(size, '0');
 
     saveBranch(branch);

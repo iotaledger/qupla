@@ -1,9 +1,10 @@
 package org.iota.qupla.qupla.context;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
+import org.iota.qupla.helper.BaseContext;
 import org.iota.qupla.helper.TritVector;
+import org.iota.qupla.helper.Verilog;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.ConcatExpr;
@@ -23,93 +24,23 @@ import org.iota.qupla.qupla.statement.helper.LutEntry;
 
 public class QuplaToVerilogContext extends QuplaBaseContext
 {
-  public HashSet<Integer> mergefuncs = new HashSet<>();
+  private final Verilog verilog = new Verilog();
 
-  public QuplaToVerilogContext()
+  private BaseContext appendVector(final String trits)
   {
-    fileOpen("QuplaVerilog.txt");
-  }
-
-  private void addMergeFuncs()
-  {
-    newline().append("x reg [0:0];").newline();
-    newline().append("function [1:0] Qupla_merge(").newline().indent();
-    append("  input [1:0] input1").newline();
-    append(", input [1:0] input2").newline();
-    append(");").newline();
-    append("begin").newline().indent();
-    append("case ({input1, input2})").newline();
-    append("4'b0000: Qupla_merge = 2'b00;").newline();
-    append("4'b0001: Qupla_merge = 2'b01;").newline();
-    append("4'b0010: Qupla_merge = 2'b10;").newline();
-    append("4'b0011: Qupla_merge = 2'b11;").newline();
-    append("4'b0100: Qupla_merge = 2'b01;").newline();
-    append("4'b1000: Qupla_merge = 2'b10;").newline();
-    append("4'b1100: Qupla_merge = 2'b11;").newline();
-    append("4'b0101: Qupla_merge = 2'b01;").newline();
-    append("4'b1010: Qupla_merge = 2'b10;").newline();
-    append("4'b1111: Qupla_merge = 2'b11;").newline();
-    append("default: Qupla_merge = 2'b00;").newline();
-    append("         x <= 1;").newline();
-    append("endcase").newline().undent();
-    append("end").newline().undent();
-    append("endfunction").newline();
-
-    for (final Integer size : mergefuncs)
-    {
-      final String funcName = "Qupla_merge_" + size;
-      newline().append("function [" + (size * 2 - 1) + ":0] ").append(funcName).append("(").newline().indent();
-      append("  input [" + (size * 2 - 1) + ":0] input1").newline();
-      append(", input [" + (size * 2 - 1) + ":0] input2").newline();
-      append(");").newline();
-      append("begin").newline().indent();
-      append(funcName).append(" = {").newline().indent();
-      boolean first = true;
-      for (int i = 0; i < size; i++)
-      {
-        final int from = i * 2 + 1;
-        final int to = i * 2;
-        append(first ? "" : ": ").append("Qupla_merge(input1[" + from + ":" + to + "], input2[" + from + ":" + to + "])").newline();
-        first = false;
-      }
-      undent();
-      append("};").newline().undent();
-      append("end").newline().undent();
-      append("endfunction").newline();
-    }
-  }
-
-  private QuplaToVerilogContext appendVector(final String trits)
-  {
-    final int size = trits.length() * 2;
-    append(size + "'b");
-    for (int i = 0; i < trits.length(); i++)
-    {
-      switch (trits.charAt(i))
-      {
-      case '0':
-        append("01");
-        break;
-      case '1':
-        append("10");
-        break;
-      case '-':
-        append("11");
-        break;
-      case '@':
-        append("00");
-        break;
-      }
-    }
-
-    return this;
+    return verilog.appendVector(this, trits);
   }
 
   @Override
   public void eval(final Module module)
   {
+    fileOpen("QuplaVerilog.txt");
+
     super.eval(module);
-    addMergeFuncs();
+
+    verilog.addMergeLut(this);
+    verilog.addMergeFuncs(this);
+
     fileClose();
   }
 
@@ -237,7 +168,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   @Override
   public void evalFuncSignature(final FuncStmt func)
   {
-    // generate Verilog forward declarations for functions
+    // generate Verilog forward declarations for functions?
   }
 
   @Override
@@ -306,8 +237,8 @@ public class QuplaToVerilogContext extends QuplaBaseContext
       return;
     }
 
-    mergefuncs.add(merge.lhs.size);
-    append(("Qupla_merge_" + merge.lhs.size) + "(");
+    verilog.mergefuncs.add(merge.lhs.size);
+    append(verilog.prefix + merge.lhs.size + "(");
     merge.lhs.eval(this);
     append(", ");
     merge.rhs.eval(this);

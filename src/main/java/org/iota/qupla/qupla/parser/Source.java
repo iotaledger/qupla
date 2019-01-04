@@ -75,4 +75,10 @@ public class Source extends BaseExpr
   {
     return null;
   }
+
+  @Override
+  public String toString()
+  {
+    return pathName;
+  }
 }

@@ -39,7 +39,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
   {
     for (final AbraBaseSite site : sites)
     {
-      site.oldSize = site.size;
       site.size = 0;
     }
   }
@@ -48,11 +47,14 @@ public class AbraAnalyzeContext extends AbraBaseContext
   {
     for (final AbraBlockBranch branch : module.branches)
     {
-      branch.oldSize = branch.size;
       branch.size = 0;
       clearSizes(branch.sites);
       clearSizes(branch.outputs);
       clearSizes(branch.latches);
+      for (final AbraBaseSite latch : branch.latches)
+      {
+        latch.isLatch = true;
+      }
     }
   }
 
@@ -90,10 +92,10 @@ public class AbraAnalyzeContext extends AbraBaseContext
     offset = 0;
     int index = 0;
     int lastMissing = missing;
-    index = evalBranchSites(index, branch.inputs, "input");
-    index = evalBranchSites(index, branch.sites, "body");
-    index = evalBranchSites(index, branch.outputs, "output");
-    index = evalBranchSites(index, branch.latches, "latch");
+    index = evalBranchSites(index, branch.inputs);
+    index = evalBranchSites(index, branch.sites);
+    index = evalBranchSites(index, branch.outputs);
+    index = evalBranchSites(index, branch.latches);
 
     int size = 0;
     for (final AbraBaseSite output : branch.outputs)
@@ -110,7 +112,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     branch.size = size;
     ensure(branch.size != 0);
-    check(branch.oldSize == branch.size || branch.oldSize == 0);
 
     if (lastMissing != missing)
     {
@@ -124,15 +125,12 @@ public class AbraAnalyzeContext extends AbraBaseContext
     branch.analyzed = true;
   }
 
-  public int evalBranchSites(int index, final ArrayList<AbraBaseSite> sites, final String type)
+  public int evalBranchSites(int index, final ArrayList<AbraBaseSite> sites)
   {
     for (final AbraBaseSite site : sites)
     {
       check(site.index == index);
       site.index = index++;
-
-      check(site.type.equals(type));
-      site.type = type;
 
       site.eval(this);
     }
@@ -177,7 +175,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       }
 
       final AbraSiteKnot knot = (AbraSiteKnot) site;
-      if (knot.block.type != AbraBaseBlock.TYPE_CONSTANT)
+      if (knot.block.specialType != AbraBaseBlock.TYPE_CONSTANT)
       {
         return false;
       }
@@ -201,7 +199,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     }
 
     final AbraSiteKnot knot = (AbraSiteKnot) output;
-    if (knot.block.type != AbraBaseBlock.TYPE_SLICE || knot.inputs.size() != branch.sites.size())
+    if (knot.block.specialType != AbraBaseBlock.TYPE_SLICE || knot.inputs.size() != branch.sites.size())
     {
       return false;
     }
@@ -210,7 +208,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     check(branch.name != null && branch.name.startsWith("const_"));
 
-    branch.type = AbraBaseBlock.TYPE_CONSTANT;
+    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = constant.slice(0, knot.size);
     return true;
   }
@@ -238,7 +236,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       }
 
       final AbraSiteKnot knot = (AbraSiteKnot) output;
-      if (knot.block.type != AbraBaseBlock.TYPE_CONSTANT)
+      if (knot.block.specialType != AbraBaseBlock.TYPE_CONSTANT)
       {
         return false;
       }
@@ -257,7 +255,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     check(branch.name != null && branch.name.startsWith("constZero"));
 
-    branch.type = AbraBaseBlock.TYPE_CONSTANT;
+    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = constant;
     return true;
   }
@@ -288,7 +286,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       return false;
     }
 
-    final int type = ((AbraSiteKnot) firstOutput).block.type;
+    final int type = ((AbraSiteKnot) firstOutput).block.specialType;
     if (type != AbraBaseBlock.TYPE_NULLIFY_FALSE && type != AbraBaseBlock.TYPE_NULLIFY_TRUE)
     {
       return false;
@@ -303,7 +301,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       }
 
       final AbraSiteKnot knot = (AbraSiteKnot) output;
-      if (knot.block.type != type)
+      if (knot.block.specialType != type)
       {
         // must be same nullify type
         return false;
@@ -320,7 +318,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     check(branch.name != null && branch.name.startsWith("nullify"));
 
     // set nullify type and have a correctly sized null vector ready
-    branch.type = type;
+    branch.specialType = type;
     branch.constantValue = new TritVector(branch.size, '@');
     return true;
   }
@@ -347,7 +345,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       return false;
     }
 
-    branch.type = AbraBaseBlock.TYPE_SLICE;
+    branch.specialType = AbraBaseBlock.TYPE_SLICE;
     branch.offset = input.offset;
     return true;
   }
@@ -375,7 +373,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     knot.size = knot.block.size();
     ensure(knot.size != 0);
-    check(knot.oldSize == knot.size || knot.oldSize == 0);
 
     if (knot.block instanceof AbraBlockBranch)
     {
@@ -415,34 +412,34 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     if (lut.lookup.equals(constZero))
     {
-      lut.type = AbraBaseBlock.TYPE_CONSTANT;
+      lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '0');
       return;
     }
 
     if (lut.lookup.equals(constMin))
     {
-      lut.type = AbraBaseBlock.TYPE_CONSTANT;
+      lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '-');
       return;
     }
 
     if (lut.lookup.equals(constOne))
     {
-      lut.type = AbraBaseBlock.TYPE_CONSTANT;
+      lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '1');
       return;
     }
 
     if (lut.lookup.equals(nullifyFalse))
     {
-      lut.type = AbraBaseBlock.TYPE_NULLIFY_FALSE;
+      lut.specialType = AbraBaseBlock.TYPE_NULLIFY_FALSE;
       return;
     }
 
     if (lut.lookup.equals(nullifyTrue))
     {
-      lut.type = AbraBaseBlock.TYPE_NULLIFY_TRUE;
+      lut.specialType = AbraBaseBlock.TYPE_NULLIFY_TRUE;
       return;
     }
   }
@@ -475,10 +472,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     if (merge.size == 0)
     {
       missing++;
-      return;
     }
-
-    check(merge.oldSize == merge.size || merge.oldSize == 0);
   }
 
   @Override

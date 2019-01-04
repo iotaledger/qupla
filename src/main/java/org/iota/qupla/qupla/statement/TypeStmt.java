@@ -10,7 +10,6 @@ import org.iota.qupla.qupla.statement.helper.TritVectorDef;
 
 public class TypeStmt extends BaseExpr
 {
-  public boolean fromTritCode;
   public boolean isFloat;
   public TritStructDef struct;
   public TritVectorDef vector;

@@ -293,7 +293,9 @@ public class Qupla
 
   private static void runMathTests()
   {
-    final String statement = "fullAdd<Tiny>(1,1,0)";
+    //final String statement = "fullAdd<Tiny>(1,1,0)";
+    //final String statement = "fullMul<Tiny>(1,1)";
+    final String statement = "div<Tiny>(1,1)";
     log("\nEvaluate: " + statement);
     long mSec = System.currentTimeMillis();
     final Tokenizer tokenizer = new Tokenizer();
@@ -304,11 +306,14 @@ public class Qupla
     final FuncExpr expr = (FuncExpr) new MergeExpr(tokenizer).optimize();
     expr.analyze();
     final QuplaEvalContext context = new QuplaEvalContext();
-    for (int lhs = 0; lhs <= 9841; lhs += 1)
+    for (int lhs = 2100; lhs <= 9841; lhs += 1)
     {
-      for (int rhs = 0; rhs <= 9841; rhs += 1)
+      log("Iteration: " + lhs);
+      for (int rhs = lhs; rhs <= 9841; rhs += 1)
       {
-        runMathTest(context, expr, lhs, rhs, lhs + rhs);
+        //runMathTest(context, expr, lhs, rhs, lhs + rhs);
+        //runMathTest(context, expr, lhs, rhs, lhs * rhs);
+        runMathTest(context, expr, lhs, rhs, lhs / rhs);
       }
     }
 

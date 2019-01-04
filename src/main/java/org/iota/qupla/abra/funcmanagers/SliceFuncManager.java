@@ -32,7 +32,7 @@ public class SliceFuncManager extends BaseFuncManager
     merge.size = size;
     merge.inputs.add(inputSite);
 
-    branch.type = AbraBaseBlock.TYPE_SLICE;
+    branch.specialType = AbraBaseBlock.TYPE_SLICE;
     branch.offset = start;
     branch.outputs.add(merge);
   }
@@ -42,7 +42,7 @@ public class SliceFuncManager extends BaseFuncManager
     this.context = context;
     this.size = size;
     this.start = start;
-    name = funcName + "_" + size + "_" + start;
+    name = funcName + SEPARATOR + size + SEPARATOR + start;
     return findInstance();
   }
 }

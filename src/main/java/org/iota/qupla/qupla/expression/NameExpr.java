@@ -1,6 +1,5 @@
 package org.iota.qupla.qupla.expression;
 
-import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
@@ -39,11 +38,5 @@ public class NameExpr extends BaseExpr
   public BaseExpr clone()
   {
     return new NameExpr(this);
-  }
-
-  @Override
-  public void eval(final QuplaBaseContext context)
-  {
-    context.evalBaseExpr(this);
   }
 }

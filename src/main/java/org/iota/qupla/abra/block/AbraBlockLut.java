@@ -7,12 +7,10 @@ import org.iota.qupla.abra.context.base.AbraBaseContext;
 public class AbraBlockLut extends AbraBaseBlock
 {
   public String lookup = "@@@@@@@@@@@@@@@@@@@@@@@@@@@";
-  public int tritNr;
 
-  @Override
-  public boolean anyNull()
+  public static String unnamed(final String lookupTable)
   {
-    return true;
+    return "lut_" + lookupTable.replace('-', 'T').replace('@', 'N');
   }
 
   @Override
@@ -22,8 +20,8 @@ public class AbraBlockLut extends AbraBaseBlock
   }
 
   @Override
-  public String type()
+  public String toString()
   {
-    return "[]";
+    return super.toString() + "[]";
   }
 }
