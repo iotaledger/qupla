@@ -1,6 +1,5 @@
 package org.iota.qupla.qupla.statement.helper;
 
-import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
@@ -36,12 +35,6 @@ public class LutEntry extends BaseExpr
   public BaseExpr clone()
   {
     return new LutEntry(this);
-  }
-
-  @Override
-  public void eval(final QuplaBaseContext context)
-  {
-    context.evalBaseExpr(this);
   }
 
   private String parseTrit(final Tokenizer tokenizer)

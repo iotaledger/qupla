@@ -13,9 +13,12 @@ import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
+import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraPrintContext extends AbraBaseContext
 {
+  public String type = "site";
+
   public void appendSiteInputs(final AbraSiteMerge merge)
   {
     append("(");
@@ -74,9 +77,9 @@ public class AbraPrintContext extends AbraBaseContext
 
   private void evalBranchSites(final ArrayList<? extends AbraBaseSite> sites, final String type)
   {
+    this.type = type;
     for (final AbraBaseSite site : sites)
     {
-      site.type = type;
       site.eval(this);
       newline();
     }
@@ -135,9 +138,9 @@ public class AbraPrintContext extends AbraBaseContext
 
   private void evalSite(final AbraBaseSite site)
   {
-    if (site.stmt != null)
+    for (BaseExpr stmt = site.stmt; stmt != null; stmt = stmt.next)
     {
-      newline().append("" + site.stmt).newline();
+      newline().append("" + stmt).newline();
     }
 
     String nullifyIndex = " ";
@@ -152,6 +155,6 @@ public class AbraPrintContext extends AbraBaseContext
     }
 
     append("// " + site.index + " ").append(nullifyIndex);
-    append(" " + site.references + " " + site.type + " site(" + site.size + "): ");
+    append(" " + site.references + " " + type + "(" + site.size + "): ");
   }
 }

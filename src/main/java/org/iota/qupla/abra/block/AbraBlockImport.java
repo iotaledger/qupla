@@ -15,10 +15,4 @@ public class AbraBlockImport extends AbraBaseBlock
   {
     context.evalImport(this);
   }
-
-  @Override
-  public String type()
-  {
-    return "<<";
-  }
 }

@@ -25,8 +25,6 @@ public class UseStmt extends BaseExpr
   {
     super(tokenizer);
 
-    //throw new RuntimeException("template unset? init placeholders");
-
     expect(tokenizer, Token.TOK_USE, "use");
 
     final Token templateName = expect(tokenizer, Token.TOK_NAME, "template name");
@@ -114,7 +112,6 @@ public class UseStmt extends BaseExpr
     {
       type.typeInfo = null;
       type.typeInfo = (TypeStmt) type.clone();
-      type.typeInfo.fromTritCode = true;
       type.typeInfo.analyze();
 
       type.typeInfo.name = template.name;

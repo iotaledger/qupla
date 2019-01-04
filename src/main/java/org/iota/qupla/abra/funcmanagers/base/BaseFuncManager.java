@@ -10,6 +10,7 @@ import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class BaseFuncManager
 {
+  protected static final String SEPARATOR = "_";
   public AbraBlockBranch branch;
   public QuplaToAbraContext context;
   public String funcName;
@@ -113,7 +114,7 @@ public class BaseFuncManager
   {
     this.context = context;
     this.size = size;
-    name = funcName + "_" + size;
+    name = funcName + SEPARATOR + size;
     return findInstance();
   }
 

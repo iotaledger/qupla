@@ -147,6 +147,18 @@ public class QuplaPrintContext extends QuplaBaseContext
       return;
     }
 
+    if (expr instanceof ExecStmt)
+    {
+      evalExec((ExecStmt) expr);
+      return;
+    }
+
+    if (expr instanceof UseStmt)
+    {
+      evalUseDefinition((UseStmt) expr);
+      return;
+    }
+
     super.evalBaseExpr(expr);
   }
 

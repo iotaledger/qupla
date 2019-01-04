@@ -17,22 +17,12 @@ public abstract class AbraBaseBlock
   public int index;
   public String name;
   public BaseExpr origin;
-  public int type;
-
-  public boolean anyNull()
-  {
-    return false;
-  }
+  public int specialType;
 
   public abstract void eval(final AbraBaseContext context);
 
   public void markReferences()
   {
-  }
-
-  public int offset()
-  {
-    return 0;
   }
 
   public void optimize(final QuplaToAbraContext context)
@@ -47,8 +37,6 @@ public abstract class AbraBaseBlock
   @Override
   public String toString()
   {
-    return "block " + index + " // " + name + type();
+    return "block " + index + " // " + name;
   }
-
-  public abstract String type();
 }

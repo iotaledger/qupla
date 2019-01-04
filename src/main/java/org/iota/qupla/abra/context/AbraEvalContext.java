@@ -34,7 +34,7 @@ public class AbraEvalContext extends AbraBaseContext
   public QuplaToAbraContext abra;
   public ArrayList<TritVector> args = new ArrayList<>();
   public int callNr;
-  public byte[] callTrail = new byte[1024];
+  public byte[] callTrail = new byte[4096];
   public TritVector[] stack;
   public TritVector value;
 
@@ -69,13 +69,13 @@ public class AbraEvalContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
-    if (branch.type == AbraBaseBlock.TYPE_CONSTANT)
+    if (branch.specialType == AbraBaseBlock.TYPE_CONSTANT)
     {
       value = branch.constantValue;
       return;
     }
 
-    if (branch.type == AbraBaseBlock.TYPE_NULLIFY_TRUE)
+    if (branch.specialType == AbraBaseBlock.TYPE_NULLIFY_TRUE)
     {
       if (args.get(0).trit(0) != '1')
       {
@@ -87,7 +87,7 @@ public class AbraEvalContext extends AbraBaseContext
       return;
     }
 
-    if (branch.type == AbraBaseBlock.TYPE_NULLIFY_FALSE)
+    if (branch.specialType == AbraBaseBlock.TYPE_NULLIFY_FALSE)
     {
       if (args.get(0).trit(0) != '-')
       {
@@ -99,7 +99,7 @@ public class AbraEvalContext extends AbraBaseContext
       return;
     }
 
-    if (branch.type == AbraBaseBlock.TYPE_SLICE)
+    if (branch.specialType == AbraBaseBlock.TYPE_SLICE)
     {
       if (args.size() == 1)
       {
@@ -109,7 +109,7 @@ public class AbraEvalContext extends AbraBaseContext
     }
 
     final TritVector[] oldStack = stack;
-    stack = new TritVector[branch.siteNr]; //TODO determine size in another way?
+    stack = new TritVector[branch.totalSites()];
 
     if (!evalBranchInputsMatch(branch))
     {
@@ -119,7 +119,7 @@ public class AbraEvalContext extends AbraBaseContext
         value = TritVector.concat(value, arg);
       }
 
-      if (branch.type == AbraBaseBlock.TYPE_SLICE)
+      if (branch.specialType == AbraBaseBlock.TYPE_SLICE)
       {
         stack = oldStack;
         return;

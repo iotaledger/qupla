@@ -283,10 +283,10 @@ public class TritConverter
     int power = 1;
     for (int i = 0; i < trits.length(); i++)
     {
-      final char c = trits.charAt(i);
-      if (c != '0')
+      final char trit = trits.charAt(i);
+      if (trit != '0')
       {
-        result += c == '-' ? -power : power;
+        result += trit == '-' ? -power : power;
       }
 
       power *= 3;

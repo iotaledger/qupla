@@ -13,7 +13,7 @@ import org.iota.qupla.qupla.statement.UseStmt;
 
 public abstract class BaseExpr
 {
-  public static final String SEPARATOR = "_";
+  protected static final String SEPARATOR = "_";
   public static int callNr;
   public static TypeStmt constTypeInfo;
   public static Module currentModule;
@@ -24,6 +24,7 @@ public abstract class BaseExpr
 
   public Module module;
   public String name;
+  public BaseExpr next;
   public Token origin;
   public int size;
   public int stackIndex;
@@ -113,7 +114,7 @@ public abstract class BaseExpr
 
   public void eval(final QuplaBaseContext context)
   {
-    error("Cannot call eval: " + toString());
+    context.evalBaseExpr(this);
   }
 
   public Token expect(final Tokenizer tokenizer, final int type, final String what)

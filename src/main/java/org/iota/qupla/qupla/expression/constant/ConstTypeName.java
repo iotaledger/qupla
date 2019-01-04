@@ -2,7 +2,6 @@ package org.iota.qupla.qupla.expression.constant;
 
 import java.util.ArrayList;
 
-import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
@@ -50,11 +49,5 @@ public class ConstTypeName extends BaseExpr
   public BaseExpr clone()
   {
     return new ConstTypeName(this);
-  }
-
-  @Override
-  public void eval(final QuplaBaseContext context)
-  {
-    context.evalBaseExpr(this);
   }
 }

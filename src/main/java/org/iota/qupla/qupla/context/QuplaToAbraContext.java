@@ -12,6 +12,7 @@ import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.AbraAnalyzeContext;
+import org.iota.qupla.abra.context.AbraDebugTritCodeContext;
 import org.iota.qupla.abra.context.AbraPrintContext;
 import org.iota.qupla.abra.context.AbraToVerilogContext;
 import org.iota.qupla.abra.context.AbraTritCodeContext;
@@ -73,6 +74,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
     new AbraPrintContext().eval(abraModule);
     new AbraToVerilogContext().eval(abraModule);
     new AbraAnalyzeContext().eval(abraModule);
+    new AbraDebugTritCodeContext().eval(abraModule);
     new AbraTritCodeContext().eval(abraModule);
   }
 
@@ -270,7 +272,6 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
       final AbraBlockLut block = abraModule.addLut(lut.name + "_" + tritNr, new String(lookup));
       block.origin = lut;
-      block.tritNr = tritNr;
     }
   }
 

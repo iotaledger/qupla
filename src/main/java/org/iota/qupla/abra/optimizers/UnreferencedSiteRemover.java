@@ -15,35 +15,24 @@ public class UnreferencedSiteRemover extends BaseOptimizer
     reverse = true;
   }
 
-  private boolean moveSiteStmtToNextSite(final BaseExpr stmt)
+  private void moveSiteStmtToNextSite(final BaseExpr stmt)
   {
     if (stmt == null)
     {
-      return true;
+      return;
     }
 
-    if (index + 1 < branch.sites.size())
+    // link statement(s) to next body site or to first output site
+    final boolean useBody = index + 1 < branch.sites.size();
+    final AbraBaseSite site = useBody ? branch.sites.get(index + 1) : branch.outputs.get(0);
+    BaseExpr last = stmt;
+    while (last.next != null)
     {
-      // attach statement to next body site
-      final AbraBaseSite nextSite = branch.sites.get(index + 1);
-      if (nextSite.stmt == null) //TODO
-      {
-        nextSite.stmt = stmt;
-        return true;
-      }
-
-      return false;
+      last = last.next;
     }
 
-    // attach statement to first output site
-    final AbraBaseSite nextSite = branch.outputs.get(0);
-    if (nextSite.stmt == null) //TODO
-    {
-      nextSite.stmt = stmt;
-      return true;
-    }
-
-    return false;
+    last.next = site.stmt;
+    site.stmt = stmt;
   }
 
   @Override
@@ -56,10 +45,8 @@ public class UnreferencedSiteRemover extends BaseOptimizer
 
     updateReferenceCounts(site);
 
-    if (moveSiteStmtToNextSite(site.stmt))
-    {
-      branch.sites.remove(index);
-    }
+    moveSiteStmtToNextSite(site.stmt);
+    branch.sites.remove(index);
   }
 
   @Override

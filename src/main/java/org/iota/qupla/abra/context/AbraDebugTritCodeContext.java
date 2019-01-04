@@ -4,7 +4,6 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteMerge;
@@ -12,13 +11,15 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
 
-public class AbraTritCodeContext extends AbraTritCodeBaseContext
+public class AbraDebugTritCodeContext extends AbraTritCodeBaseContext
 {
   @Override
   public void eval(final AbraModule module)
   {
     module.numberBlocks();
 
+    //TODO add all types to context and write them out
+    //     (vector AND struct) name/size/isFloat?
     putInt(0); // version
     putInt(module.luts.size());
     evalBlocks(module.luts);
@@ -26,72 +27,63 @@ public class AbraTritCodeContext extends AbraTritCodeBaseContext
     evalBlocks(module.branches);
     putInt(module.imports.size());
     evalBlocks(module.imports);
+
+    //TODO generate tritcode hash so that we can create a function
+    //     in the normal tritcode that returns that hash as a constant
   }
 
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
-    // we need a separate temporary buffer to gather everything
-    // before we can add the accumulated length and data
-    final AbraTritCodeContext branchTritCode = new AbraTritCodeContext();
-    branchTritCode.evalBranchSites(branch);
-
-    // now copy the temporary buffer length and contents
-    putInt(branchTritCode.bufferOffset);
-    putTrits(new String(branchTritCode.buffer, 0, branchTritCode.bufferOffset));
+    //TODO origin?
+    putString(branch.name);
+    evalBranchSites(branch);
   }
 
   @Override
   public void evalImport(final AbraBlockImport imp)
   {
-    putTrits(imp.hash);
-    putInt(imp.blocks.size());
-    for (final AbraBaseBlock block : imp.blocks)
-    {
-      putInt(block.index);
-    }
+    //TODO origin?
+    putString(imp.name);
   }
 
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    putTrit('-');
-    putSiteInputs(knot);
-    putInt(knot.block.index);
+    evalSite(knot);
   }
 
   @Override
   public void evalLatch(final AbraSiteLatch latch)
   {
-
+    evalSite(latch);
   }
 
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    //TODO convert 27 bct lookup 'trits' to 35 trits
-    putTrits(lut.lookup);
+    //TODO origin?
+    final boolean isUnnamed = lut.name.equals(AbraBlockLut.unnamed(lut.lookup));
+    putString(isUnnamed ? null : lut.name);
   }
 
   @Override
   public void evalMerge(final AbraSiteMerge merge)
   {
-    putTrit('1');
-    putSiteInputs(merge);
+    evalSite(merge);
   }
 
   @Override
   public void evalParam(final AbraSiteParam param)
   {
-    putInt(param.size);
+    evalSite(param);
   }
 
-  public void putSiteInputs(final AbraSiteMerge merge)
+  private void evalSite(final AbraBaseSite site)
   {
-    putInt(merge.inputs.size());
-    for (final AbraBaseSite input : merge.inputs)
-    {
-      putInt(merge.refer(input.index));
-    }
+    //TODO origin?
+    //TODO stmt?
+    //TODO putInt(typeId) (index of origin.typeInfo)
+    putString(site.name);
   }
 }
