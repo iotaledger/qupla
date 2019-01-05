@@ -1,5 +1,8 @@
 package org.iota.qupla.qupla.parser;
 
+/**
+ * Immutable token representation.
+ */
 public class Token
 {
   public static final int TOK_AFFECT = 1;
@@ -43,12 +46,41 @@ public class Token
   public static final int TOK_TYPE = TOK_TEST + 1;
   public static final int TOK_USE = TOK_TYPE + 1;
 
-  public int colNr;
-  public int id;
-  public int lineNr;
-  public QuplaSource source;
-  public int symbol;
-  public String text;
+  public static final int UNKNOWN_SYMBOL = -1;
+  public static final int UNKNONW_ID = -1;
+
+
+  public final int colNr;
+  public final int id;
+  public final int lineNr;
+  public final QuplaSource source;
+  public final int symbol;
+  public final String text;
+
+  public Token(int lineNr, int colNr, QuplaSource source, int id, int symbol, String text) {
+    this.colNr = colNr;
+    this.id = id;
+    this.lineNr = lineNr;
+    this.source = source;
+    this.symbol = symbol;
+    this.text = text;
+  }
+
+  public Token resetId(int tokenId) {
+    return new Token(lineNr,colNr,source,tokenId,symbol,text);
+  }
+
+  public Token resetText(String text, Integer tokenId, int colNr) {
+    return new Token(lineNr,colNr,source,tokenId,symbol,text);
+  }
+
+  public Token resetText(String text) {
+    return new Token(lineNr,colNr,source,id,symbol,text);
+  }
+
+  public Token resetSymbol(Integer symbol) {
+    return new Token(lineNr,colNr,source,id,symbol,text);
+  }
 
   @Override
   public String toString()
