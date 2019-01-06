@@ -214,6 +214,17 @@ public class QuplaEvalContext extends QuplaBaseContext
   @Override
   public void evalFuncBody(final FuncStmt func)
   {
+    for (final BaseExpr stateExpr : func.stateExprs)
+    {
+      stateExpr.eval(this);
+    }
+
+    for (final BaseExpr assignExpr : func.assignExprs)
+    {
+      assignExpr.eval(this);
+    }
+
+    func.returnExpr.eval(this);
   }
 
   @Override
@@ -353,6 +364,8 @@ public class QuplaEvalContext extends QuplaBaseContext
   @Override
   public void evalType(final TypeExpr type)
   {
+    // type expression is a concatenation, but in declared field order
+    // analyze will have sorted the fields in order already
     evalConcatExprs(type.fields);
   }
 

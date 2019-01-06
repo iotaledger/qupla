@@ -8,21 +8,24 @@ func Trit all<Trit> (Trit val) {
 }
 
 template all<T> {
-  type P [T / 3]
+  type A [T / 3]
+  type B [T / 3]
+  type C [T / 3]
 
   func T all<T>(Trit val) {
-  return all<P>(val) & all<P>(val) & all<P>(val)
-}
+    return all<A>(val) & all<B>(val) & all<C>(val)
+  }
 }
 
 use all<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 template all2<T> {
-  type P [T / 2]
+  type A [T / 2]
+  type B [T / 2]
 
   func T all<T>(Trit val) {
-  return all<P>(val) & all<P>(val)
-}
+    return all<A>(val) & all<B>(val)
+  }
 }
 
 use all2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

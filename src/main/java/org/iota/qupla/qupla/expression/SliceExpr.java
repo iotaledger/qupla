@@ -29,8 +29,6 @@ public class SliceExpr extends BaseExpr
   {
     super(tokenizer, identifier);
 
-    name = identifier.text;
-
     while (tokenizer.tokenId() == Token.TOK_DOT)
     {
       tokenizer.nextToken();

@@ -3,11 +3,6 @@
 // implement subtraction by adding the negative value
 // exploits that A - B is equivalent to A + (-B)
 
-// note that we can also copy the entire add functionality
-// and replace the halfAdd LUT with one that has the second
-// trit column negated which ends up in more efficient code
-// because we don't have to do the negate before adding
-
 template sub<T> {
   func T sub<T> (T lhs, T rhs) {
     // use full adder but don't return the carry trit

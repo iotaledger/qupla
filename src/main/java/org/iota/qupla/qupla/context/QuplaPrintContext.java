@@ -59,16 +59,19 @@ public class QuplaPrintContext extends QuplaBaseContext
     for (final TemplateStmt template : module.templates)
     {
       evalTemplateDefinition(template);
+      newline();
     }
 
     for (final UseStmt use : module.uses)
     {
       evalUseDefinition(use);
+      newline();
     }
 
     for (final ExecStmt exec : module.execs)
     {
       evalExec(exec);
+      newline();
     }
 
     fileClose();
@@ -93,7 +96,13 @@ public class QuplaPrintContext extends QuplaBaseContext
   @Override
   public void evalBaseExpr(final BaseExpr expr)
   {
-    if (expr instanceof ConstTypeName || expr instanceof ConstNumber)
+    if (expr instanceof ConstTypeName)
+    {
+      append(expr.name);
+      return;
+    }
+
+    if (expr instanceof ConstNumber)
     {
       append(expr.name);
       return;
@@ -236,7 +245,7 @@ public class QuplaPrintContext extends QuplaBaseContext
 
     for (final BaseExpr stateExpr : func.stateExprs)
     {
-      evalState((StateExpr) stateExpr);
+      stateExpr.eval(this);
       newline();
     }
 
@@ -429,11 +438,23 @@ public class QuplaPrintContext extends QuplaBaseContext
 
     if (sub instanceof ConstFactor)
     {
-      append(((ConstFactor) sub).negative ? "-" : "");
+      final ConstFactor constFactor = (ConstFactor) sub;
+      append(constFactor.negative ? "-" : "");
+      super.evalSubExpr(constFactor);
+
+      for (final BaseExpr field : constFactor.fields)
+      {
+        append(".").append(field.name);
+      }
+
+      return;
     }
-    else if (sub instanceof FieldExpr)
+
+    if (sub instanceof FieldExpr)
     {
       append(sub.name).append(" = ");
+      super.evalSubExpr(sub);
+      return;
     }
 
     super.evalSubExpr(sub);

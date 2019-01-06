@@ -12,7 +12,10 @@ lut halfAdd {
   1,1 = -,1 //  1 +  1 = -1, carry  1
 }
 
-type TritCarry [Trit + Carry]
+type TritCarry {
+  value [Trit]
+  carry [Carry]
+}
 
 // returns val + carry
 
@@ -21,27 +24,36 @@ func TritCarry halfAdd<Trit> (Trit val, Carry carry) {
 }
 
 template halfAdd<T> {
-  type P [T / 3]
-  type TCarry [T + Carry]
+  type A [T / 3]
+  type B [T / 3]
+  type C [T / 3]
+  type TCarry {
+    value [T]
+    carry [Carry]
+  }
 
   func TCarry halfAdd<T> (T val, Carry carry) {
-    add0 = halfAdd<P>(val[P * 0 : P], carry)
-    add1 = halfAdd<P>(val[P * 1 : P], add0[P])
-    add2 = halfAdd<P>(val[P * 2 : P], add1[P])
-    return add0[0 : P] & add1[0 : P] & add2
+    add0 = halfAdd<A>(val[0 : A], carry)
+    add1 = halfAdd<B>(val[A : B], add0.carry)
+    add2 = halfAdd<C>(val[A + B : C], add1.carry)
+    return add0.value & add1.value & add2
   }
 }
 
 use halfAdd<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 template halfAdd2<T> {
-  type P [T / 2]
-  type TCarry [T + Carry]
+  type A [T / 2]
+  type B [T / 2]
+  type TCarry {
+    value [T]
+    carry [Carry]
+  }
 
   func TCarry halfAdd<T> (T val, Carry carry) {
-    add0 = halfAdd<P>(val[P * 0 : P], carry)
-    add1 = halfAdd<P>(val[P * 1 : P], add0[P])
-    return add0[0 : P] & add1
+    add0 = halfAdd<A>(val[0 : A], carry)
+    add1 = halfAdd<B>(val[A : B], add0.carry)
+    return add0.value & add1
   }
 }
 

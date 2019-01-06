@@ -61,23 +61,26 @@ func Trit cmp<Trit> (Trit lhs, Trit rhs) {
 }
 
 template cmp<T> {
-  type P [T / 3]
+  type A [T / 3]
+  type B [T / 3]
+  type C [T / 3]
 
   func Trit cmp<T> (T lhs, T rhs) {
-    return sign[cmp<P>(lhs[P * 0 : P], rhs[P * 0 : P]),
-                cmp<P>(lhs[P * 1 : P], rhs[P * 1 : P]),
-                cmp<P>(lhs[P * 2 : P], rhs[P * 2 : P])]
+    return sign[cmp<A>(lhs[0 : A], rhs[0 : A]),
+                cmp<B>(lhs[A : B], rhs[A : B]),
+                cmp<C>(lhs[A + B : C], rhs[A + B : C])]
   }
 }
 
 use cmp<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 template cmp2<T> {
-  type P [T / 2]
+  type A [T / 2]
+  type B [T / 2]
 
   func Trit cmp<T> (T lhs, T rhs) {
-    return sign[cmp<P>(lhs[P * 0 : P], rhs[P * 0 : P]),
-                cmp<P>(lhs[P * 1 : P], rhs[P * 1 : P]),
+    return sign[cmp<A>(lhs[0 : A], rhs[0 : A]),
+                cmp<B>(lhs[A : B], rhs[A : B]),
                 0]
   }
 }

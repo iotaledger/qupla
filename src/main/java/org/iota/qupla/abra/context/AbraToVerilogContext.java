@@ -88,6 +88,8 @@ public class AbraToVerilogContext extends AbraBaseContext
       newline();
     }
 
+    //TODO latches
+
     append("begin").newline().indent();
 
     for (final AbraBaseSite site : branch.sites)

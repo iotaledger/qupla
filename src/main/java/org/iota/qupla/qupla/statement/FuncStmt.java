@@ -229,17 +229,7 @@ public class FuncStmt extends BaseExpr
   @Override
   public void eval(final QuplaBaseContext context)
   {
-    for (final BaseExpr stateExpr : stateExprs)
-    {
-      stateExpr.eval(context);
-    }
-
-    for (final BaseExpr assignExpr : assignExprs)
-    {
-      assignExpr.eval(context);
-    }
-
-    returnExpr.eval(context);
+    context.evalFuncBody(this);
   }
 
   private void parseBody(final Tokenizer tokenizer)

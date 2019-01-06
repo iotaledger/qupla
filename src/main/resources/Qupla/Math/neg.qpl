@@ -15,23 +15,26 @@ func Trit neg<Trit> (Trit val) {
 }
 
 template neg<T> {
-  type P [T / 3]
+  type A [T / 3]
+  type B [T / 3]
+  type C [T / 3]
 
   func T neg<T> (T val) {
-    return neg<P>(val[P * 0 : P]) &
-           neg<P>(val[P * 1 : P]) &
-           neg<P>(val[P * 2 : P])
+    return neg<A>(val[0 : A]) &
+           neg<B>(val[A : B]) &
+           neg<C>(val[A + B : C])
   }
 }
 
 use neg<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 template neg2<T> {
-  type P [T / 2]
+  type A [T / 2]
+  type B [T / 2]
 
   func T neg<T> (T val) {
-    return neg<P>(val[P * 0 : P]) &
-           neg<P>(val[P * 1 : P])
+    return neg<A>(val[0 : A]) &
+           neg<B>(val[A : B])
   }
 }
 

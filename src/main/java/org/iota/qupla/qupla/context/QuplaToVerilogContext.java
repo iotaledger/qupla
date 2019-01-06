@@ -133,6 +133,8 @@ public class QuplaToVerilogContext extends QuplaBaseContext
       newline();
     }
 
+    //TODO state vars
+
     append("begin").newline().indent();
 
     for (final BaseExpr assignExpr : func.assignExprs)
@@ -279,6 +281,8 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   @Override
   public void evalType(final TypeExpr type)
   {
+    // type expression is a concatenation, but in declared field order
+    // analyze will have sorted the fields in order already
     evalConcatExprs(type.fields);
   }
 

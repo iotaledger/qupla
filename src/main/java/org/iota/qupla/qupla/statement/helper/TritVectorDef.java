@@ -20,8 +20,6 @@ public class TritVectorDef extends BaseExpr
   {
     super(tokenizer, identifier);
 
-    name = identifier == null ? null : identifier.text;
-
     expect(tokenizer, Token.TOK_ARRAY_OPEN, "'['");
 
     typeExpr = new ConstExpr(tokenizer).optimize();

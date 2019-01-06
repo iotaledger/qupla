@@ -384,6 +384,8 @@ public class QuplaToAbraContext extends QuplaBaseContext
   @Override
   public void evalType(final TypeExpr type)
   {
+    // type expression is a concatenation, but in declared field order
+    // analyze will have sorted the fields in order already
     evalConcatExprs(type.fields);
   }
 

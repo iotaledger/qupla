@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-      <meta name="generator" content="Railroad Diagram Generator 1.54.1745" />
+      <meta name="generator" content="Railroad Diagram Generator 1.55.1750" />
       <style type="text/css">
     ::-moz-selection
     {
@@ -14,11 +14,11 @@
       color: #FFFCF0;
       background: #0F0C00;
     }      
-    .ebnf a
+    .ebnf a, .grammar a
     {
       text-decoration: none;
     }
-    .ebnf a:hover
+    .ebnf a:hover, .grammar a:hover
     {
       color: #050400;
       text-decoration: underline;
@@ -128,13 +128,33 @@
       padding: 10px;
       border: 1px dotted #0F0C00;
     }
-    #divs div.ebnf, div.ebnf
+    #divs div.ebnf, .ebnf code
+    {
+      display: block;
+      padding: 10px;
+      background: #FFF6D1;
+      width: 992px;
+    }
+    #divs div.grammar
     {
       display: block;
       padding-left: 16px;
-      padding-top: 2px; 
-      padding-bottom: 2px; 
+      padding-top: 2px;
+      padding-bottom: 2px;
       background: #FFF6D1;
+    }
+    pre
+    {
+      margin: 0px;
+    }
+    .ebnf div
+    {
+      padding-left: 13ch;
+      text-indent: -13ch;
+    }
+    .ebnf code, .grammar code, textarea, pre
+    {
+      font:12px SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
     }
     tr.option-line td:first-child
     {
@@ -236,9 +256,8 @@
             <text class="nonterminal" x="59" y="21">quplaStmt</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 51 h2 m20 0 h10 m0 0 h94 m-124 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m104 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-104 0 h10 m84 0 h10 m23 34 h-3"/>
          <polygon points="173 51 181 47 181 55"/>
          <polygon points="173 51 165 47 165 55"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#qupla" title="qupla">qupla</a>    ::= <a href="#quplaStmt" title="quplaStmt">quplaStmt</a>*</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#qupla" title="qupla">qupla</a>    ::= <a href="#quplaStmt" title="quplaStmt">quplaStmt</a>*</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">no references</xhtml:p><xhtml:br xmlns:xhtml="http://www.w3.org/1999/xhtml" /><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml" style="font-size: 14px; font-weight:bold"><xhtml:a name="quplaStmt">quplaStmt:</xhtml:a></xhtml:p><svg xmlns="http://www.w3.org/2000/svg" width="205" height="345">
          <defs>
@@ -298,17 +317,16 @@
             <text class="nonterminal" x="59" y="329">useStmt</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m20 0 h10 m90 0 h10 m0 0 h16 m-146 0 h20 m126 0 h20 m-166 0 q10 0 10 10 m146 0 q0 -10 10 -10 m-156 10 v24 m146 0 v-24 m-146 24 q0 10 10 10 m126 0 q10 0 10 -10 m-136 10 h10 m78 0 h10 m0 0 h28 m-136 -10 v20 m146 0 v-20 m-146 20 v24 m146 0 v-24 m-146 24 q0 10 10 10 m126 0 q10 0 10 -10 m-136 10 h10 m66 0 h10 m0 0 h40 m-136 -10 v20 m146 0 v-20 m-146 20 v24 m146 0 v-24 m-146 24 q0 10 10 10 m126 0 q10 0 10 -10 m-136 10 h10 m76 0 h10 m0 0 h30 m-136 -10 v20 m146 0 v-20 m-146 20 v24 m146 0 v-24 m-146 24 q0 10 10 10 m126 0 q10 0 10 -10 m-136 10 h10 m76 0 h10 m0 0 h30 m-136 -10 v20 m146 0 v-20 m-146 20 v24 m146 0 v-24 m-146 24 q0 10 10 10 m126 0 q10 0 10 -10 m-136 10 h10 m74 0 h10 m0 0 h32 m-136 -10 v20 m146 0 v-20 m-146 20 v24 m146 0 v-24 m-146 24 q0 10 10 10 m126 0 q10 0 10 -10 m-136 10 h10 m106 0 h10 m-136 -10 v20 m146 0 v-20 m-146 20 v24 m146 0 v-24 m-146 24 q0 10 10 10 m126 0 q10 0 10 -10 m-136 10 h10 m72 0 h10 m0 0 h34 m23 -308 h-3"/>
          <polygon points="195 17 203 13 203 21"/>
          <polygon points="195 17 187 13 187 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#quplaStmt" title="quplaStmt">quplaStmt</a>
-         ::= <a href="#importStmt" title="importStmt">importStmt</a>
-           | <a href="#typeStmt" title="typeStmt">typeStmt</a>
-           | <a href="#lutStmt" title="lutStmt">lutStmt</a>
-           | <a href="#funcStmt" title="funcStmt">funcStmt</a>
-           | <a href="#evalStmt" title="evalStmt">evalStmt</a>
-           | <a href="#testStmt" title="testStmt">testStmt</a>
-           | <a href="#templateStmt" title="templateStmt">templateStmt</a>
-           | <a href="#useStmt" title="useStmt">useStmt</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></div>
+               <div>         ::= <a href="#importStmt" title="importStmt">importStmt</a></div>
+               <div>           | <a href="#typeStmt" title="typeStmt">typeStmt</a></div>
+               <div>           | <a href="#lutStmt" title="lutStmt">lutStmt</a></div>
+               <div>           | <a href="#funcStmt" title="funcStmt">funcStmt</a></div>
+               <div>           | <a href="#evalStmt" title="evalStmt">evalStmt</a></div>
+               <div>           | <a href="#testStmt" title="testStmt">testStmt</a></div>
+               <div>           | <a href="#templateStmt" title="templateStmt">templateStmt</a></div>
+               <div>           | <a href="#useStmt" title="useStmt">useStmt</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -354,10 +372,9 @@
             <text class="nonterminal" x="123" y="21">moduleName</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m64 0 h10 m0 0 h10 m104 0 h10 m3 0 h-3"/>
          <polygon points="237 17 245 13 245 21"/>
          <polygon points="237 17 229 13 229 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#importStmt" title="importStmt">importStmt</a>
-         ::= 'import' <a href="#moduleName" title="moduleName">moduleName</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#importStmt" title="importStmt">importStmt</a></div>
+               <div>         ::= 'import' <a href="#moduleName" title="moduleName">moduleName</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -419,9 +436,8 @@
             <text class="nonterminal" x="233" y="131">entityAlias</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m50 0 h10 m0 0 h10 m84 0 h10 m20 0 h10 m74 0 h10 m0 0 h238 m-352 0 h20 m332 0 h20 m-372 0 q10 0 10 10 m352 0 q0 -10 10 -10 m-362 10 v46 m352 0 v-46 m-352 46 q0 10 10 10 m332 0 q10 0 10 -10 m-342 10 h10 m28 0 h10 m20 0 h10 m82 0 h10 m0 0 h10 m74 0 h10 m-216 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -12 q0 -10 10 -10 m196 32 l20 0 m-20 0 q10 0 10 -10 l0 -12 q0 -10 -10 -10 m-196 0 h10 m0 0 h186 m20 32 h10 m28 0 h10 m-342 -10 v20 m352 0 v-20 m-352 20 v24 m352 0 v-24 m-352 24 q0 10 10 10 m332 0 q10 0 10 -10 m-342 10 h10 m86 0 h10 m0 0 h226 m23 -110 h-3"/>
          <polygon points="575 17 583 13 583 21"/>
          <polygon points="575 17 567 13 567 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#typeStmt" title="typeStmt">typeStmt</a> ::= 'type' <a href="#typeName" title="typeName">typeName</a> ( <a href="#typeSize" title="typeSize">typeSize</a> | '{' ( <a href="#fieldName" title="fieldName">fieldName</a> <a href="#typeSize" title="typeSize">typeSize</a> )+ '}' | <a href="#entityAlias" title="entityAlias">entityAlias</a> )</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#typeStmt" title="typeStmt">typeStmt</a> ::= 'type' <a href="#typeName" title="typeName">typeName</a> ( <a href="#typeSize" title="typeSize">typeSize</a> | '{' ( <a href="#fieldName" title="fieldName">fieldName</a> <a href="#typeSize" title="typeSize">typeSize</a> )+ '}' | <a href="#entityAlias" title="entityAlias">entityAlias</a> )</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -483,9 +499,8 @@
             <text class="nonterminal" x="209" y="81">entityAlias</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 33 h2 m0 0 h10 m38 0 h10 m0 0 h10 m72 0 h10 m20 0 h10 m28 0 h10 m20 0 h10 m60 0 h10 m0 0 h10 m30 0 h10 m0 0 h10 m60 0 h10 m-230 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -12 q0 -10 10 -10 m210 32 l20 0 m-20 0 q10 0 10 -10 l0 -12 q0 -10 -10 -10 m-210 0 h10 m0 0 h200 m20 32 h10 m28 0 h10 m-366 0 h20 m346 0 h20 m-386 0 q10 0 10 10 m366 0 q0 -10 10 -10 m-376 10 v24 m366 0 v-24 m-366 24 q0 10 10 10 m346 0 q10 0 10 -10 m-356 10 h10 m86 0 h10 m0 0 h240 m23 -44 h-3"/>
          <polygon points="565 33 573 29 573 37"/>
          <polygon points="565 33 557 29 557 37"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#lutStmt" title="lutStmt">lutStmt</a>  ::= 'lut' <a href="#lutName" title="lutName">lutName</a> ( '{' ( <a href="#tritList" title="tritList">tritList</a> '=' <a href="#tritList" title="tritList">tritList</a> )+ '}' | <a href="#entityAlias" title="entityAlias">entityAlias</a> )</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#lutStmt" title="lutStmt">lutStmt</a>  ::= 'lut' <a href="#lutName" title="lutName">lutName</a> ( '{' ( <a href="#tritList" title="tritList">tritList</a> '=' <a href="#tritList" title="tritList">tritList</a> )+ '}' | <a href="#entityAlias" title="entityAlias">entityAlias</a> )</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -534,9 +549,8 @@
             <text class="nonterminal" x="235" y="21">funcBody</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m48 0 h10 m0 0 h10 m108 0 h10 m0 0 h10 m78 0 h10 m3 0 h-3"/>
          <polygon points="323 17 331 13 331 21"/>
          <polygon points="323 17 315 13 315 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#funcStmt" title="funcStmt">funcStmt</a> ::= 'func' <a href="#funcSignature" title="funcSignature">funcSignature</a> <a href="#funcBody" title="funcBody">funcBody</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#funcStmt" title="funcStmt">funcStmt</a> ::= 'func' <a href="#funcSignature" title="funcSignature">funcSignature</a> <a href="#funcBody" title="funcBody">funcBody</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -583,9 +597,8 @@
             <text class="nonterminal" x="107" y="21">funcExpr</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m48 0 h10 m0 0 h10 m74 0 h10 m3 0 h-3"/>
          <polygon points="191 17 199 13 199 21"/>
          <polygon points="191 17 183 13 183 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#evalStmt" title="evalStmt">evalStmt</a> ::= 'eval' <a href="#funcExpr" title="funcExpr">funcExpr</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#evalStmt" title="evalStmt">evalStmt</a> ::= 'eval' <a href="#funcExpr" title="funcExpr">funcExpr</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -636,9 +649,8 @@
             <text class="nonterminal" x="257" y="21">funcExpr</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m46 0 h10 m0 0 h10 m82 0 h10 m0 0 h10 m30 0 h10 m0 0 h10 m74 0 h10 m3 0 h-3"/>
          <polygon points="341 17 349 13 349 21"/>
          <polygon points="341 17 333 13 333 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#testStmt" title="testStmt">testStmt</a> ::= 'test' <a href="#valueExpr" title="valueExpr">valueExpr</a> '=' <a href="#funcExpr" title="funcExpr">funcExpr</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#testStmt" title="testStmt">testStmt</a> ::= 'test' <a href="#valueExpr" title="valueExpr">valueExpr</a> '=' <a href="#funcExpr" title="funcExpr">funcExpr</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -697,10 +709,9 @@
             <text class="nonterminal" x="595" y="65">templateBody</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m0 0 h10 m80 0 h10 m0 0 h10 m114 0 h10 m0 0 h10 m30 0 h10 m20 0 h10 m162 0 h10 m-202 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m182 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-182 0 h10 m24 0 h10 m0 0 h138 m20 44 h10 m30 0 h10 m0 0 h10 m108 0 h10 m3 0 h-3"/>
          <polygon points="713 61 721 57 721 65"/>
          <polygon points="713 61 705 57 705 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#templateStmt" title="templateStmt">templateStmt</a>
-         ::= 'template' <a href="#templateName" title="templateName">templateName</a> '&lt;' <a href="#placeHolderTypeName" title="placeHolderTypeName">placeHolderTypeName</a> ( ',' <a href="#placeHolderTypeName" title="placeHolderTypeName">placeHolderTypeName</a> )* '&gt;' <a href="#templateBody" title="templateBody">templateBody</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#templateStmt" title="templateStmt">templateStmt</a></div>
+               <div>         ::= 'template' <a href="#templateName" title="templateName">templateName</a> '&lt;' <a href="#placeHolderTypeName" title="placeHolderTypeName">placeHolderTypeName</a> ( ',' <a href="#placeHolderTypeName" title="placeHolderTypeName">placeHolderTypeName</a> )* '&gt;' <a href="#templateBody" title="templateBody">templateBody</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -752,10 +763,9 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 51 h2 m0 0 h10 m28 0 h10 m20 0 h10 m0 0 h88 m-118 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m98 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-98 0 h10 m78 0 h10 m40 34 h10 m76 0 h10 m-116 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -12 q0 -10 10 -10 m96 32 l20 0 m-20 0 q10 0 10 -10 l0 -12 q0 -10 -10 -10 m-96 0 h10 m0 0 h86 m20 32 h10 m28 0 h10 m3 0 h-3"/>
          <polygon points="399 51 407 47 407 55"/>
          <polygon points="399 51 391 47 391 55"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#templateBody" title="templateBody">templateBody</a>
-         ::= '{' <a href="#typeStmt" title="typeStmt">typeStmt</a>* <a href="#funcStmt" title="funcStmt">funcStmt</a>+ '}'</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#templateBody" title="templateBody">templateBody</a></div>
+               <div>         ::= '{' <a href="#typeStmt" title="typeStmt">typeStmt</a>* <a href="#funcStmt" title="funcStmt">funcStmt</a>+ '}'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -807,9 +817,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m0 0 h10 m44 0 h10 m0 0 h10 m114 0 h10 m20 0 h10 m130 0 h10 m-170 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m150 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-150 0 h10 m24 0 h10 m0 0 h106 m23 44 h-3"/>
          <polygon points="417 61 425 57 425 65"/>
          <polygon points="417 61 409 57 409 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#useStmt" title="useStmt">useStmt</a>  ::= 'use' <a href="#templateName" title="templateName">templateName</a> <a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a> ( ',' <a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a> )*</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#useStmt" title="useStmt">useStmt</a>  ::= 'use' <a href="#templateName" title="templateName">templateName</a> <a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a> ( ',' <a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a> )*</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -861,10 +870,9 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m0 0 h10 m30 0 h10 m20 0 h10 m84 0 h10 m-124 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m104 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-104 0 h10 m24 0 h10 m0 0 h60 m20 44 h10 m30 0 h10 m3 0 h-3"/>
          <polygon points="273 61 281 57 281 65"/>
          <polygon points="273 61 265 57 265 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a>
-         ::= '&lt;' <a href="#typeName" title="typeName">typeName</a> ( ',' <a href="#typeName" title="typeName">typeName</a> )* '&gt;'</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a></div>
+               <div>         ::= '&lt;' <a href="#typeName" title="typeName">typeName</a> ( ',' <a href="#typeName" title="typeName">typeName</a> )* '&gt;'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -915,10 +923,9 @@
             <text class="nonterminal" x="253" y="21">moduleName</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m30 0 h10 m0 0 h10 m92 0 h10 m0 0 h10 m32 0 h10 m0 0 h10 m104 0 h10 m3 0 h-3"/>
          <polygon points="367 17 375 13 375 21"/>
          <polygon points="367 17 359 13 359 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#entityAlias" title="entityAlias">entityAlias</a>
-         ::= '=' <a href="#entityName" title="entityName">entityName</a> '@' <a href="#moduleName" title="moduleName">moduleName</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#entityAlias" title="entityAlias">entityAlias</a></div>
+               <div>         ::= '=' <a href="#entityName" title="entityName">entityName</a> '@' <a href="#moduleName" title="moduleName">moduleName</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -987,10 +994,9 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m0 0 h10 m84 0 h10 m0 0 h10 m82 0 h10 m20 0 h10 m30 0 h10 m20 0 h10 m84 0 h10 m-124 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m104 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-104 0 h10 m24 0 h10 m0 0 h60 m20 44 h10 m30 0 h10 m-264 0 h20 m244 0 h20 m-284 0 q10 0 10 10 m264 0 q0 -10 10 -10 m-274 10 v14 m264 0 v-14 m-264 14 q0 10 10 10 m244 0 q10 0 10 -10 m-254 10 h10 m0 0 h234 m20 -34 h10 m26 0 h10 m20 0 h10 m86 0 h10 m-126 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m106 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-106 0 h10 m24 0 h10 m0 0 h62 m20 44 h10 m26 0 h10 m3 0 h-3"/>
          <polygon points="757 61 765 57 765 65"/>
          <polygon points="757 61 749 57 749 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#funcSignature" title="funcSignature">funcSignature</a>
-         ::= <a href="#typeName" title="typeName">typeName</a> <a href="#funcName" title="funcName">funcName</a> ( '&lt;' <a href="#typeName" title="typeName">typeName</a> ( ',' <a href="#typeName" title="typeName">typeName</a> )* '&gt;' )? '(' <a href="#funcParam" title="funcParam">funcParam</a> ( ',' <a href="#funcParam" title="funcParam">funcParam</a> )* ')'</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#funcSignature" title="funcSignature">funcSignature</a></div>
+               <div>         ::= <a href="#typeName" title="typeName">typeName</a> <a href="#funcName" title="funcName">funcName</a> ( '&lt;' <a href="#typeName" title="typeName">typeName</a> ( ',' <a href="#typeName" title="typeName">typeName</a> )* '&gt;' )? '(' <a href="#funcParam" title="funcParam">funcParam</a> ( ',' <a href="#funcParam" title="funcParam">funcParam</a> )* ')'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1036,10 +1042,9 @@
             <text class="nonterminal" x="143" y="21">paramName</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m84 0 h10 m0 0 h10 m96 0 h10 m3 0 h-3"/>
          <polygon points="249 17 257 13 257 21"/>
          <polygon points="249 17 241 13 241 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#funcParam" title="funcParam">funcParam</a>
-         ::= <a href="#typeName" title="typeName">typeName</a> <a href="#paramName" title="paramName">paramName</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#funcParam" title="funcParam">funcParam</a></div>
+               <div>         ::= <a href="#typeName" title="typeName">typeName</a> <a href="#paramName" title="paramName">paramName</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1097,9 +1102,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 51 h2 m0 0 h10 m28 0 h10 m0 0 h10 m70 0 h10 m20 0 h10 m0 0 h90 m-120 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m100 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-100 0 h10 m80 0 h10 m40 34 h10 m0 0 h100 m-130 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m110 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-110 0 h10 m90 0 h10 m20 34 h10 m86 0 h10 m0 0 h10 m28 0 h10 m3 0 h-3"/>
          <polygon points="611 51 619 47 619 55"/>
          <polygon points="611 51 603 47 603 55"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#funcBody" title="funcBody">funcBody</a> ::= '{' <a href="#envExpr" title="envExpr">envExpr</a> <a href="#stateExpr" title="stateExpr">stateExpr</a>* <a href="#assignExpr" title="assignExpr">assignExpr</a>* <a href="#returnExpr" title="returnExpr">returnExpr</a> '}'</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#funcBody" title="funcBody">funcBody</a> ::= '{' <a href="#envExpr" title="envExpr">envExpr</a> <a href="#stateExpr" title="stateExpr">stateExpr</a>* <a href="#assignExpr" title="assignExpr">assignExpr</a>* <a href="#returnExpr" title="returnExpr">returnExpr</a> '}'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1145,9 +1149,8 @@
             <text class="nonterminal" x="191" y="21">affectExpr</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 51 h2 m20 0 h10 m0 0 h82 m-112 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m92 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-92 0 h10 m72 0 h10 m40 34 h10 m0 0 h94 m-124 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m104 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-104 0 h10 m84 0 h10 m23 34 h-3"/>
          <polygon points="305 51 313 47 313 55"/>
          <polygon points="305 51 297 47 297 55"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#envExpr" title="envExpr">envExpr</a>  ::= <a href="#joinExpr" title="joinExpr">joinExpr</a>* <a href="#affectExpr" title="affectExpr">affectExpr</a>*</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#envExpr" title="envExpr">envExpr</a>  ::= <a href="#joinExpr" title="joinExpr">joinExpr</a>* <a href="#affectExpr" title="affectExpr">affectExpr</a>*</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1198,9 +1201,8 @@
             <text class="nonterminal" x="351" y="53">number</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m46 0 h10 m0 0 h10 m136 0 h10 m20 0 h10 m0 0 h148 m-178 0 h20 m158 0 h20 m-198 0 q10 0 10 10 m178 0 q0 -10 10 -10 m-188 10 v12 m178 0 v-12 m-178 12 q0 10 10 10 m158 0 q10 0 10 -10 m-168 10 h10 m50 0 h10 m0 0 h10 m68 0 h10 m23 -32 h-3"/>
          <polygon points="449 17 457 13 457 21"/>
          <polygon points="449 17 441 13 441 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#joinExpr" title="joinExpr">joinExpr</a> ::= 'join' <a href="#environmentName" title="environmentName">environmentName</a> ( 'limit' <a href="#number" title="number">number</a> )?</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#joinExpr" title="joinExpr">joinExpr</a> ::= 'join' <a href="#environmentName" title="environmentName">environmentName</a> ( 'limit' <a href="#number" title="number">number</a> )?</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1251,10 +1253,9 @@
             <text class="nonterminal" x="369" y="53">number</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m58 0 h10 m0 0 h10 m136 0 h10 m20 0 h10 m0 0 h154 m-184 0 h20 m164 0 h20 m-204 0 q10 0 10 10 m184 0 q0 -10 10 -10 m-194 10 v12 m184 0 v-12 m-184 12 q0 10 10 10 m164 0 q10 0 10 -10 m-174 10 h10 m56 0 h10 m0 0 h10 m68 0 h10 m23 -32 h-3"/>
          <polygon points="467 17 475 13 475 21"/>
          <polygon points="467 17 459 13 459 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#affectExpr" title="affectExpr">affectExpr</a>
-         ::= 'affect' <a href="#environmentName" title="environmentName">environmentName</a> ( 'delay' <a href="#number" title="number">number</a> )?</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#affectExpr" title="affectExpr">affectExpr</a></div>
+               <div>         ::= 'affect' <a href="#environmentName" title="environmentName">environmentName</a> ( 'delay' <a href="#number" title="number">number</a> )?</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1303,10 +1304,9 @@
             <text class="nonterminal" x="217" y="21">varName</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m54 0 h10 m0 0 h10 m84 0 h10 m0 0 h10 m76 0 h10 m3 0 h-3"/>
          <polygon points="303 17 311 13 311 21"/>
          <polygon points="303 17 295 13 295 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#stateExpr" title="stateExpr">stateExpr</a>
-         ::= 'state' <a href="#typeName" title="typeName">typeName</a> <a href="#varName" title="varName">varName</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#stateExpr" title="stateExpr">stateExpr</a></div>
+               <div>         ::= 'state' <a href="#typeName" title="typeName">typeName</a> <a href="#varName" title="varName">varName</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1354,10 +1354,9 @@
             <text class="nonterminal" x="185" y="21">condExpr</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m76 0 h10 m0 0 h10 m30 0 h10 m0 0 h10 m78 0 h10 m3 0 h-3"/>
          <polygon points="273 17 281 13 281 21"/>
          <polygon points="273 17 265 13 265 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#assignExpr" title="assignExpr">assignExpr</a>
-         ::= <a href="#varName" title="varName">varName</a> '=' <a href="#condExpr" title="condExpr">condExpr</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#assignExpr" title="assignExpr">assignExpr</a></div>
+               <div>         ::= <a href="#varName" title="varName">varName</a> '=' <a href="#condExpr" title="condExpr">condExpr</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1403,10 +1402,9 @@
             <text class="nonterminal" x="121" y="21">condExpr</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m62 0 h10 m0 0 h10 m78 0 h10 m3 0 h-3"/>
          <polygon points="209 17 217 13 217 21"/>
          <polygon points="209 17 201 13 201 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#returnExpr" title="returnExpr">returnExpr</a>
-         ::= 'return' <a href="#condExpr" title="condExpr">condExpr</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#returnExpr" title="returnExpr">returnExpr</a></div>
+               <div>         ::= 'return' <a href="#condExpr" title="condExpr">condExpr</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1459,9 +1457,8 @@
             <text class="nonterminal" x="367" y="53">falseBranch</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m88 0 h10 m20 0 h10 m0 0 h304 m-334 0 h20 m314 0 h20 m-354 0 q10 0 10 10 m334 0 q0 -10 10 -10 m-344 10 v12 m334 0 v-12 m-334 12 q0 10 10 10 m314 0 q10 0 10 -10 m-324 10 h10 m26 0 h10 m0 0 h10 m90 0 h10 m0 0 h10 m24 0 h10 m0 0 h10 m94 0 h10 m23 -32 h-3"/>
          <polygon points="491 17 499 13 499 21"/>
          <polygon points="491 17 483 13 483 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#condExpr" title="condExpr">condExpr</a> ::= <a href="#mergeExpr" title="mergeExpr">mergeExpr</a> ( '?' <a href="#trueBranch" title="trueBranch">trueBranch</a> ':' <a href="#falseBranch" title="falseBranch">falseBranch</a> )?</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#condExpr" title="condExpr">condExpr</a> ::= <a href="#mergeExpr" title="mergeExpr">mergeExpr</a> ( '?' <a href="#trueBranch" title="trueBranch">trueBranch</a> ':' <a href="#falseBranch" title="falseBranch">falseBranch</a> )?</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1509,10 +1506,9 @@
             <text class="nonterminal" x="39" y="21">mergeExpr</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m88 0 h10 m3 0 h-3"/>
          <polygon points="137 17 145 13 145 21"/>
          <polygon points="137 17 129 13 129 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#trueBranch" title="trueBranch">trueBranch</a>
-         ::= <a href="#mergeExpr" title="mergeExpr">mergeExpr</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#trueBranch" title="trueBranch">trueBranch</a></div>
+               <div>         ::= <a href="#mergeExpr" title="mergeExpr">mergeExpr</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1558,11 +1554,10 @@
             <text class="nonterminal" x="59" y="65">condExpr</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m20 0 h10 m44 0 h10 m0 0 h34 m-118 0 h20 m98 0 h20 m-138 0 q10 0 10 10 m118 0 q0 -10 10 -10 m-128 10 v24 m118 0 v-24 m-118 24 q0 10 10 10 m98 0 q10 0 10 -10 m-108 10 h10 m78 0 h10 m23 -44 h-3"/>
          <polygon points="167 17 175 13 175 21"/>
          <polygon points="167 17 159 13 159 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#falseBranch" title="falseBranch">falseBranch</a>
-         ::= 'null'
-           | <a href="#condExpr" title="condExpr">condExpr</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#falseBranch" title="falseBranch">falseBranch</a></div>
+               <div>         ::= 'null'</div>
+               <div>           | <a href="#condExpr" title="condExpr">condExpr</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1608,10 +1603,9 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m20 0 h10 m90 0 h10 m-130 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m110 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-110 0 h10 m26 0 h10 m0 0 h64 m23 44 h-3"/>
          <polygon points="179 61 187 57 187 65"/>
          <polygon points="179 61 171 57 171 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#mergeExpr" title="mergeExpr">mergeExpr</a>
-         ::= <a href="#concatExpr" title="concatExpr">concatExpr</a> ( '|' <a href="#concatExpr" title="concatExpr">concatExpr</a> )*</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#mergeExpr" title="mergeExpr">mergeExpr</a></div>
+               <div>         ::= <a href="#concatExpr" title="concatExpr">concatExpr</a> ( '|' <a href="#concatExpr" title="concatExpr">concatExpr</a> )*</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1659,10 +1653,9 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m20 0 h10 m90 0 h10 m-130 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m110 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-110 0 h10 m30 0 h10 m0 0 h60 m23 44 h-3"/>
          <polygon points="179 61 187 57 187 65"/>
          <polygon points="179 61 171 57 171 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#concatExpr" title="concatExpr">concatExpr</a>
-         ::= <a href="#postfixExpr" title="postfixExpr">postfixExpr</a> ( '&amp;' <a href="#postfixExpr" title="postfixExpr">postfixExpr</a> )*</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#concatExpr" title="concatExpr">concatExpr</a></div>
+               <div>         ::= <a href="#postfixExpr" title="postfixExpr">postfixExpr</a> ( '&amp;' <a href="#postfixExpr" title="postfixExpr">postfixExpr</a> )*</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1725,15 +1718,14 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m20 0 h10 m82 0 h10 m0 0 h88 m-210 0 h20 m190 0 h20 m-230 0 q10 0 10 10 m210 0 q0 -10 10 -10 m-220 10 v24 m210 0 v-24 m-210 24 q0 10 10 10 m190 0 q10 0 10 -10 m-200 10 h10 m76 0 h10 m0 0 h94 m-200 -10 v20 m210 0 v-20 m-210 20 v24 m210 0 v-24 m-210 24 q0 10 10 10 m190 0 q10 0 10 -10 m-200 10 h10 m74 0 h10 m0 0 h96 m-200 -10 v20 m210 0 v-20 m-210 20 v24 m210 0 v-24 m-210 24 q0 10 10 10 m190 0 q10 0 10 -10 m-200 10 h10 m64 0 h10 m0 0 h106 m-200 -10 v20 m210 0 v-20 m-210 20 v24 m210 0 v-24 m-210 24 q0 10 10 10 m190 0 q10 0 10 -10 m-200 10 h10 m76 0 h10 m0 0 h94 m-200 -10 v20 m210 0 v-20 m-210 20 v24 m210 0 v-24 m-210 24 q0 10 10 10 m190 0 q10 0 10 -10 m-200 10 h10 m26 0 h10 m0 0 h10 m78 0 h10 m0 0 h10 m26 0 h10 m23 -220 h-3"/>
          <polygon points="259 17 267 13 267 21"/>
          <polygon points="259 17 251 13 251 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#postfixExpr" title="postfixExpr">postfixExpr</a>
-         ::= <a href="#valueExpr" title="valueExpr">valueExpr</a>
-           | <a href="#typeExpr" title="typeExpr">typeExpr</a>
-           | <a href="#funcExpr" title="funcExpr">funcExpr</a>
-           | <a href="#lutExpr" title="lutExpr">lutExpr</a>
-           | <a href="#sliceExpr" title="sliceExpr">sliceExpr</a>
-           | '(' <a href="#condExpr" title="condExpr">condExpr</a> ')'</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></div>
+               <div>         ::= <a href="#valueExpr" title="valueExpr">valueExpr</a></div>
+               <div>           | <a href="#typeExpr" title="typeExpr">typeExpr</a></div>
+               <div>           | <a href="#funcExpr" title="funcExpr">funcExpr</a></div>
+               <div>           | <a href="#lutExpr" title="lutExpr">lutExpr</a></div>
+               <div>           | <a href="#sliceExpr" title="sliceExpr">sliceExpr</a></div>
+               <div>           | '(' <a href="#condExpr" title="condExpr">condExpr</a> ')'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1782,12 +1774,11 @@
             <text class="nonterminal" x="59" y="109">float</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m20 0 h10 m38 0 h10 m0 0 h26 m-104 0 h20 m84 0 h20 m-124 0 q10 0 10 10 m104 0 q0 -10 10 -10 m-114 10 v24 m104 0 v-24 m-104 24 q0 10 10 10 m84 0 q10 0 10 -10 m-94 10 h10 m64 0 h10 m-94 -10 v20 m104 0 v-20 m-104 20 v24 m104 0 v-24 m-104 24 q0 10 10 10 m84 0 q10 0 10 -10 m-94 10 h10 m48 0 h10 m0 0 h16 m23 -88 h-3"/>
          <polygon points="153 17 161 13 161 21"/>
          <polygon points="153 17 145 13 145 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#valueExpr" title="valueExpr">valueExpr</a>
-         ::= <a href="#trit" title="trit">trit</a>
-           | <a href="#integer" title="integer">integer</a>
-           | <a href="#float" title="float">float</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#valueExpr" title="valueExpr">valueExpr</a></div>
+               <div>         ::= <a href="#trit" title="trit">trit</a></div>
+               <div>           | <a href="#integer" title="integer">integer</a></div>
+               <div>           | <a href="#float" title="float">float</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1844,9 +1835,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 33 h2 m0 0 h10 m84 0 h10 m0 0 h10 m28 0 h10 m20 0 h10 m82 0 h10 m0 0 h10 m30 0 h10 m0 0 h10 m78 0 h10 m-270 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -12 q0 -10 10 -10 m250 32 l20 0 m-20 0 q10 0 10 -10 l0 -12 q0 -10 -10 -10 m-250 0 h10 m0 0 h240 m20 32 h10 m28 0 h10 m3 0 h-3"/>
          <polygon points="519 33 527 29 527 37"/>
          <polygon points="519 33 511 29 511 37"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#typeExpr" title="typeExpr">typeExpr</a> ::= <a href="#typeName" title="typeName">typeName</a> '{' ( <a href="#fieldName" title="fieldName">fieldName</a> '=' <a href="#condExpr" title="condExpr">condExpr</a> )+ '}'</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#typeExpr" title="typeExpr">typeExpr</a> ::= <a href="#typeName" title="typeName">typeName</a> '{' ( <a href="#fieldName" title="fieldName">fieldName</a> '=' <a href="#condExpr" title="condExpr">condExpr</a> )+ '}'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1911,9 +1901,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m0 0 h10 m82 0 h10 m20 0 h10 m30 0 h10 m20 0 h10 m84 0 h10 m-124 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m104 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-104 0 h10 m24 0 h10 m0 0 h60 m20 44 h10 m30 0 h10 m-264 0 h20 m244 0 h20 m-284 0 q10 0 10 10 m264 0 q0 -10 10 -10 m-274 10 v14 m264 0 v-14 m-264 14 q0 10 10 10 m244 0 q10 0 10 -10 m-254 10 h10 m0 0 h234 m20 -34 h10 m26 0 h10 m20 0 h10 m78 0 h10 m-118 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m98 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-98 0 h10 m24 0 h10 m0 0 h54 m20 44 h10 m26 0 h10 m3 0 h-3"/>
          <polygon points="645 61 653 57 653 65"/>
          <polygon points="645 61 637 57 637 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#funcExpr" title="funcExpr">funcExpr</a> ::= <a href="#funcName" title="funcName">funcName</a> ( '&lt;' <a href="#typeName" title="typeName">typeName</a> ( ',' <a href="#typeName" title="typeName">typeName</a> )* '&gt;' )? '(' <a href="#condExpr" title="condExpr">condExpr</a> ( ',' <a href="#condExpr" title="condExpr">condExpr</a> )* ')'</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#funcExpr" title="funcExpr">funcExpr</a> ::= <a href="#funcName" title="funcName">funcName</a> ( '&lt;' <a href="#typeName" title="typeName">typeName</a> ( ',' <a href="#typeName" title="typeName">typeName</a> )* '&gt;' )? '(' <a href="#condExpr" title="condExpr">condExpr</a> ( ',' <a href="#condExpr" title="condExpr">condExpr</a> )* ')'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -1969,9 +1958,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m0 0 h10 m72 0 h10 m0 0 h10 m26 0 h10 m20 0 h10 m88 0 h10 m-128 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m108 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-108 0 h10 m24 0 h10 m0 0 h64 m20 44 h10 m26 0 h10 m3 0 h-3"/>
          <polygon points="361 61 369 57 369 65"/>
          <polygon points="361 61 353 57 353 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#lutExpr" title="lutExpr">lutExpr</a>  ::= <a href="#lutName" title="lutName">lutName</a> '[' <a href="#mergeExpr" title="mergeExpr">mergeExpr</a> ( ',' <a href="#mergeExpr" title="mergeExpr">mergeExpr</a> )* ']'</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#lutExpr" title="lutExpr">lutExpr</a>  ::= <a href="#lutName" title="lutName">lutName</a> '[' <a href="#mergeExpr" title="mergeExpr">mergeExpr</a> ( ',' <a href="#mergeExpr" title="mergeExpr">mergeExpr</a> )* ']'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -2035,10 +2023,9 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 33 h2 m20 0 h10 m76 0 h10 m0 0 h20 m-136 0 h20 m116 0 h20 m-156 0 q10 0 10 10 m136 0 q0 -10 10 -10 m-146 10 v24 m136 0 v-24 m-136 24 q0 10 10 10 m116 0 q10 0 10 -10 m-126 10 h10 m96 0 h10 m60 -44 h10 m24 0 h10 m0 0 h10 m82 0 h10 m-166 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -12 q0 -10 10 -10 m146 32 l20 0 m-20 0 q10 0 10 -10 l0 -12 q0 -10 -10 -10 m-146 0 h10 m0 0 h136 m-186 32 h20 m186 0 h20 m-226 0 q10 0 10 10 m206 0 q0 -10 10 -10 m-216 10 v14 m206 0 v-14 m-206 14 q0 10 10 10 m186 0 q10 0 10 -10 m-196 10 h10 m0 0 h176 m40 -34 h10 m0 0 h370 m-400 0 h20 m380 0 h20 m-420 0 q10 0 10 10 m400 0 q0 -10 10 -10 m-410 10 v12 m400 0 v-12 m-400 12 q0 10 10 10 m380 0 q10 0 10 -10 m-390 10 h10 m26 0 h10 m0 0 h10 m82 0 h10 m20 0 h10 m0 0 h136 m-166 0 h20 m146 0 h20 m-186 0 q10 0 10 10 m166 0 q0 -10 10 -10 m-176 10 v12 m166 0 v-12 m-166 12 q0 10 10 10 m146 0 q10 0 10 -10 m-156 10 h10 m24 0 h10 m0 0 h10 m82 0 h10 m20 -32 h10 m26 0 h10 m23 -32 h-3"/>
          <polygon points="831 33 839 29 839 37"/>
          <polygon points="831 33 823 29 823 37"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#sliceExpr" title="sliceExpr">sliceExpr</a>
-         ::= ( <a href="#varName" title="varName">varName</a> | <a href="#paramName" title="paramName">paramName</a> ) ( '.' <a href="#fieldName" title="fieldName">fieldName</a> )* ( '[' <a href="#constExpr" title="constExpr">constExpr</a> ( ':' <a href="#constExpr" title="constExpr">constExpr</a> )? ']' )?</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#sliceExpr" title="sliceExpr">sliceExpr</a></div>
+               <div>         ::= ( <a href="#varName" title="varName">varName</a> | <a href="#paramName" title="paramName">paramName</a> ) ( '.' <a href="#fieldName" title="fieldName">fieldName</a> )* ( '[' <a href="#constExpr" title="constExpr">constExpr</a> ( ':' <a href="#constExpr" title="constExpr">constExpr</a> )? ']' )?</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -2087,10 +2074,9 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 105 h2 m20 0 h10 m86 0 h10 m-126 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m106 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-106 0 h10 m26 0 h10 m0 0 h60 m-116 10 l0 -44 q0 -10 10 -10 m116 54 l0 -44 q0 -10 -10 -10 m-106 0 h10 m30 0 h10 m0 0 h56 m23 88 h-3"/>
          <polygon points="175 105 183 101 183 109"/>
          <polygon points="175 105 167 101 167 109"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#constExpr" title="constExpr">constExpr</a>
-         ::= <a href="#constTerm" title="constTerm">constTerm</a> ( [-+] <a href="#constTerm" title="constTerm">constTerm</a> )*</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#constExpr" title="constExpr">constExpr</a></div>
+               <div>         ::= <a href="#constTerm" title="constTerm">constTerm</a> ( [-+] <a href="#constTerm" title="constTerm">constTerm</a> )*</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -2144,16 +2130,15 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 149 h2 m20 0 h10 m94 0 h10 m-134 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m114 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-114 0 h10 m28 0 h10 m0 0 h66 m-124 10 l0 -44 q0 -10 10 -10 m124 54 l0 -44 q0 -10 -10 -10 m-114 0 h10 m28 0 h10 m0 0 h66 m-124 10 l0 -44 q0 -10 10 -10 m124 54 l0 -44 q0 -10 -10 -10 m-114 0 h10 m34 0 h10 m0 0 h60 m23 132 h-3"/>
          <polygon points="183 149 191 145 191 153"/>
          <polygon points="183 149 175 145 175 153"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#constTerm" title="constTerm">constTerm</a>
-         ::= <a href="#constFactor" title="constFactor">constFactor</a> ( [*/%] <a href="#constFactor" title="constFactor">constFactor</a> )*</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#constTerm" title="constTerm">constTerm</a></div>
+               <div>         ::= <a href="#constFactor" title="constFactor">constFactor</a> ( [*/%] <a href="#constFactor" title="constFactor">constFactor</a> )*</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
             <xhtml:li><xhtml:a href="#constExpr" title="constExpr">constExpr</xhtml:a></xhtml:li>
          </xhtml:ul>
-      </xhtml:p><xhtml:br xmlns:xhtml="http://www.w3.org/1999/xhtml" /><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml" style="font-size: 14px; font-weight:bold"><xhtml:a name="constFactor">constFactor:</xhtml:a></xhtml:p><svg xmlns="http://www.w3.org/2000/svg" width="359" height="159">
+      </xhtml:p><xhtml:br xmlns:xhtml="http://www.w3.org/1999/xhtml" /><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml" style="font-size: 14px; font-weight:bold"><xhtml:a name="constFactor">constFactor:</xhtml:a></xhtml:p><svg xmlns="http://www.w3.org/2000/svg" width="495" height="203">
          <defs>
             <style type="text/css">
     @namespace "http://www.w3.org/2000/svg";
@@ -2191,23 +2176,27 @@
             <rect x="137" y="37" width="68" height="32"/>
             <rect x="135" y="35" width="68" height="32" class="nonterminal"/>
             <text class="nonterminal" x="145" y="55">number</text></a><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#typeName" xlink:title="typeName">
-            <rect x="137" y="81" width="84" height="32"/>
-            <rect x="135" y="79" width="84" height="32" class="nonterminal"/>
-            <text class="nonterminal" x="145" y="99">typeName</text></a><rect x="137" y="125" width="26" height="32" rx="10"/>
-         <rect x="135" y="123" width="26" height="32" class="terminal" rx="10"/>
-         <text class="terminal" x="145" y="143">(</text><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#constExpr" xlink:title="constExpr">
-            <rect x="183" y="125" width="82" height="32"/>
-            <rect x="181" y="123" width="82" height="32" class="nonterminal"/>
-            <text class="nonterminal" x="191" y="143">constExpr</text></a><rect x="285" y="125" width="26" height="32" rx="10"/>
-         <rect x="283" y="123" width="26" height="32" class="terminal" rx="10"/>
-         <text class="terminal" x="293" y="143">)</text>
-         <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 51 h2 m20 0 h10 m0 0 h36 m-66 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m46 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-46 0 h10 m26 0 h10 m40 34 h10 m68 0 h10 m0 0 h106 m-214 0 h20 m194 0 h20 m-234 0 q10 0 10 10 m214 0 q0 -10 10 -10 m-224 10 v24 m214 0 v-24 m-214 24 q0 10 10 10 m194 0 q10 0 10 -10 m-204 10 h10 m84 0 h10 m0 0 h90 m-204 -10 v20 m214 0 v-20 m-214 20 v24 m214 0 v-24 m-214 24 q0 10 10 10 m194 0 q10 0 10 -10 m-204 10 h10 m26 0 h10 m0 0 h10 m82 0 h10 m0 0 h10 m26 0 h10 m23 -88 h-3"/>
-         <polygon points="349 51 357 47 357 55"/>
-         <polygon points="349 51 341 47 341 55"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#constFactor" title="constFactor">constFactor</a>
-         ::= '-'* ( <a href="#number" title="number">number</a> | <a href="#typeName" title="typeName">typeName</a> | '(' <a href="#constExpr" title="constExpr">constExpr</a> ')' )</xhtml:pre>
-         </xhtml:div>
+            <rect x="137" y="103" width="84" height="32"/>
+            <rect x="135" y="101" width="84" height="32" class="nonterminal"/>
+            <text class="nonterminal" x="145" y="121">typeName</text></a><rect x="281" y="103" width="24" height="32" rx="10"/>
+         <rect x="279" y="101" width="24" height="32" class="terminal" rx="10"/>
+         <text class="terminal" x="289" y="121">.</text><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#fieldName" xlink:title="fieldName">
+            <rect x="325" y="103" width="82" height="32"/>
+            <rect x="323" y="101" width="82" height="32" class="nonterminal"/>
+            <text class="nonterminal" x="333" y="121">fieldName</text></a><rect x="137" y="169" width="26" height="32" rx="10"/>
+         <rect x="135" y="167" width="26" height="32" class="terminal" rx="10"/>
+         <text class="terminal" x="145" y="187">(</text><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#constExpr" xlink:title="constExpr">
+            <rect x="183" y="169" width="82" height="32"/>
+            <rect x="181" y="167" width="82" height="32" class="nonterminal"/>
+            <text class="nonterminal" x="191" y="187">constExpr</text></a><rect x="285" y="169" width="26" height="32" rx="10"/>
+         <rect x="283" y="167" width="26" height="32" class="terminal" rx="10"/>
+         <text class="terminal" x="293" y="187">)</text>
+         <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 51 h2 m20 0 h10 m0 0 h36 m-66 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m46 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-46 0 h10 m26 0 h10 m40 34 h10 m68 0 h10 m0 0 h242 m-350 0 h20 m330 0 h20 m-370 0 q10 0 10 10 m350 0 q0 -10 10 -10 m-360 10 v46 m350 0 v-46 m-350 46 q0 10 10 10 m330 0 q10 0 10 -10 m-340 10 h10 m84 0 h10 m40 0 h10 m24 0 h10 m0 0 h10 m82 0 h10 m-166 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -12 q0 -10 10 -10 m146 32 l20 0 m-20 0 q10 0 10 -10 l0 -12 q0 -10 -10 -10 m-146 0 h10 m0 0 h136 m-186 32 h20 m186 0 h20 m-226 0 q10 0 10 10 m206 0 q0 -10 10 -10 m-216 10 v14 m206 0 v-14 m-206 14 q0 10 10 10 m186 0 q10 0 10 -10 m-196 10 h10 m0 0 h176 m-320 -44 v20 m350 0 v-20 m-350 20 v46 m350 0 v-46 m-350 46 q0 10 10 10 m330 0 q10 0 10 -10 m-340 10 h10 m26 0 h10 m0 0 h10 m82 0 h10 m0 0 h10 m26 0 h10 m0 0 h136 m23 -132 h-3"/>
+         <polygon points="485 51 493 47 493 55"/>
+         <polygon points="485 51 477 47 477 55"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#constFactor" title="constFactor">constFactor</a></div>
+               <div>         ::= '-'* ( <a href="#number" title="number">number</a> | <a href="#typeName" title="typeName">typeName</a> ( '.' <a href="#fieldName" title="fieldName">fieldName</a> )* | '(' <a href="#constExpr" title="constExpr">constExpr</a> ')' )</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -2256,9 +2245,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m0 0 h10 m26 0 h10 m0 0 h10 m82 0 h10 m0 0 h10 m26 0 h10 m3 0 h-3"/>
          <polygon points="223 17 231 13 231 21"/>
          <polygon points="223 17 215 13 215 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#typeSize" title="typeSize">typeSize</a> ::= '[' <a href="#constExpr" title="constExpr">constExpr</a> ']'</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#typeSize" title="typeSize">typeSize</a> ::= '[' <a href="#constExpr" title="constExpr">constExpr</a> ']'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -2304,9 +2292,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m20 0 h10 m38 0 h10 m-78 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m58 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-58 0 h10 m24 0 h10 m0 0 h14 m23 44 h-3"/>
          <polygon points="127 61 135 57 135 65"/>
          <polygon points="127 61 119 57 119 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#tritList" title="tritList">tritList</a> ::= <a href="#trit" title="trit">trit</a> ( ',' <a href="#trit" title="trit">trit</a> )*</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#tritList" title="tritList">tritList</a> ::= <a href="#trit" title="trit">trit</a> ( ',' <a href="#trit" title="trit">trit</a> )*</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -2356,9 +2343,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m20 0 h10 m26 0 h10 m0 0 h2 m-68 0 h20 m48 0 h20 m-88 0 q10 0 10 10 m68 0 q0 -10 10 -10 m-78 10 v24 m68 0 v-24 m-68 24 q0 10 10 10 m48 0 q10 0 10 -10 m-58 10 h10 m28 0 h10 m-58 -10 v20 m68 0 v-20 m-68 20 v24 m68 0 v-24 m-68 24 q0 10 10 10 m48 0 q10 0 10 -10 m-58 10 h10 m28 0 h10 m23 -88 h-3"/>
          <polygon points="117 17 125 13 125 21"/>
          <polygon points="117 17 109 13 109 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#trit" title="trit">trit</a>     ::= [-01]</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#trit" title="trit">trit</a>     ::= [-01]</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -2421,9 +2407,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 183 h2 m20 0 h10 m60 0 h10 m0 0 h2 m-102 0 h20 m82 0 h20 m-122 0 q10 0 10 10 m102 0 q0 -10 10 -10 m-112 10 v24 m102 0 v-24 m-102 24 q0 10 10 10 m82 0 q10 0 10 -10 m-92 10 h10 m62 0 h10 m-92 -10 v20 m102 0 v-20 m-102 20 v24 m102 0 v-24 m-102 24 q0 10 10 10 m82 0 q10 0 10 -10 m-92 10 h10 m28 0 h10 m0 0 h34 m40 -88 h10 m0 0 h72 m-102 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m82 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-82 0 h10 m62 0 h10 m-92 10 l0 -44 q0 -10 10 -10 m92 54 l0 -44 q0 -10 -10 -10 m-82 0 h10 m60 0 h10 m0 0 h2 m-92 10 l0 -44 q0 -10 10 -10 m92 54 l0 -44 q0 -10 -10 -10 m-82 0 h10 m62 0 h10 m-92 10 l0 -44 q0 -10 10 -10 m92 54 l0 -44 q0 -10 -10 -10 m-82 0 h10 m28 0 h10 m0 0 h34 m23 166 h-3"/>
          <polygon points="273 183 281 179 281 187"/>
          <polygon points="273 183 265 179 265 187"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#name" title="name">name</a>     ::= [a-zA-Z_] [0-9a-zA-Z_]*</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#name" title="name">name</a>     ::= [a-zA-Z_] [0-9a-zA-Z_]*</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">no references</xhtml:p><xhtml:br xmlns:xhtml="http://www.w3.org/1999/xhtml" /><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml" style="font-size: 14px; font-weight:bold"><xhtml:a name="number">number:</xhtml:a></xhtml:p><svg xmlns="http://www.w3.org/2000/svg" width="161" height="53">
          <defs>
@@ -2463,9 +2448,8 @@
          <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 33 h2 m20 0 h10 m62 0 h10 m-102 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -12 q0 -10 10 -10 m82 32 l20 0 m-20 0 q10 0 10 -10 l0 -12 q0 -10 -10 -10 m-82 0 h10 m0 0 h72 m23 32 h-3"/>
          <polygon points="151 33 159 29 159 37"/>
          <polygon points="151 33 143 29 143 37"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#number" title="number">number</a>   ::= [0-9]+</xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#number" title="number">number</a>   ::= [0-9]+</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -2515,9 +2499,8 @@
             <text class="nonterminal" x="125" y="21">number</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m20 0 h10 m0 0 h36 m-66 0 h20 m46 0 h20 m-86 0 q10 0 10 10 m66 0 q0 -10 10 -10 m-76 10 v12 m66 0 v-12 m-66 12 q0 10 10 10 m46 0 q10 0 10 -10 m-56 10 h10 m26 0 h10 m20 -32 h10 m68 0 h10 m3 0 h-3"/>
          <polygon points="203 17 211 13 211 21"/>
          <polygon points="203 17 195 13 195 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#integer" title="integer">integer</a>  ::= '-'? <a href="#number" title="number">number</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#integer" title="integer">integer</a>  ::= '-'? <a href="#number" title="number">number</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
@@ -2568,9 +2551,8 @@
             <text class="nonterminal" x="257" y="21">number</text></a><svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 17 h2 m20 0 h10 m0 0 h36 m-66 0 h20 m46 0 h20 m-86 0 q10 0 10 10 m66 0 q0 -10 10 -10 m-76 10 v12 m66 0 v-12 m-66 12 q0 10 10 10 m46 0 q10 0 10 -10 m-56 10 h10 m26 0 h10 m20 -32 h10 m68 0 h10 m0 0 h10 m24 0 h10 m0 0 h10 m68 0 h10 m3 0 h-3"/>
          <polygon points="335 17 343 13 343 21"/>
          <polygon points="335 17 327 13 327 21"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf">
-            <xhtml:pre><a href="#float" title="float">float</a>    ::= '-'? <a href="#number" title="number">number</a> '.' <a href="#number" title="number">number</a></xhtml:pre>
-         </xhtml:div>
+         <xhtml:div class="ebnf"><xhtml:code>
+               <div><a href="#float" title="float">float</a>    ::= '-'? <a href="#number" title="number">number</a> '.' <a href="#number" title="number">number</a></div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>

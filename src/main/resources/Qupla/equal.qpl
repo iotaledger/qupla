@@ -75,12 +75,14 @@ func Bool equal<Trit>(Trit lhs, Trit rhs) {
 }
 
 template equal<T> {
-  type P [T / 3]
+  type A [T / 3]
+  type B [T / 3]
+  type C [T / 3]
 
   func Bool equal<T>(T lhs, T rhs) {
-    eq0 = equal<P>(lhs[P * 0 : P], rhs[P * 0 : P])
-    eq1 = equal<P>(lhs[P * 1 : P], rhs[P * 1 : P])
-    eq2 = equal<P>(lhs[P * 2 : P], rhs[P * 2 : P])
+    eq0 = equal<A>(lhs[0 : A], rhs[0 : A])
+    eq1 = equal<B>(lhs[A : B], rhs[A : B])
+    eq2 = equal<C>(lhs[A + B : C], rhs[A + B : C])
     return and3[eq0, eq1, eq2]
   }
 }
@@ -89,11 +91,12 @@ use equal<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 
 template equal2<T> {
-  type P [T / 2]
+  type A [T / 2]
+  type B [T / 2]
 
   func Bool equal<T>(T lhs, T rhs) {
-    eq0 = equal<P>(lhs[P * 0 : P], rhs[P * 0 : P])
-    eq1 = equal<P>(lhs[P * 1 : P], rhs[P * 1 : P])
+    eq0 = equal<A>(lhs[0 : A], rhs[0 : A])
+    eq1 = equal<B>(lhs[A : B], rhs[A : B])
     return and[eq0, eq1]
   }
 }

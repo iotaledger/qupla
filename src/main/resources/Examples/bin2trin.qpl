@@ -1,10 +1,12 @@
 import Qupla
 
+// convert input value from 'binary' trit value to trinary value
+// 'binary' input trits can only be 0 or 1
+
 template bin2trin<T>
 {
   func T bin2trin<T>(T val)
   {
-    brk = break<T>(val)
     return bin2trin2<T>(val, 0, 1)
   }
 

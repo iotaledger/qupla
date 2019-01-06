@@ -18,23 +18,26 @@ func Bool unequal<Trit>(Trit lhs, Trit rhs) {
 }
 
 template unequal<T> {
-  type P [T / 3]
+  type A [T / 3]
+  type B [T / 3]
+  type C [T / 3]
 
   func Bool unequal<T>(T lhs, T rhs) {
-    return or3[unequal<P>(lhs[P * 0 : P], rhs[P * 0 : P]),
-               unequal<P>(lhs[P * 1 : P], rhs[P * 1 : P]),
-               unequal<P>(lhs[P * 2 : P], rhs[P * 2 : P])]
+    return or3[unequal<A>(lhs[0 : A], rhs[0 : A]),
+               unequal<B>(lhs[A : B], rhs[A : B]),
+               unequal<C>(lhs[A + B : C], rhs[A + B : C])]
   }
 }
 
 use unequal<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 template unequal2<T> {
-  type P [T / 2]
+  type A [T / 2]
+  type B [T / 2]
 
   func Bool unequal<T>(T lhs, T rhs) {
-    return or[unequal<P>(lhs[P * 0 : P], rhs[P * 0 : P]),
-              unequal<P>(lhs[P * 1 : P], rhs[P * 1 : P])]
+    return or[unequal<A>(lhs[0 : A], rhs[0 : A]),
+              unequal<B>(lhs[A : B], rhs[A : B])]
   }
 }
 

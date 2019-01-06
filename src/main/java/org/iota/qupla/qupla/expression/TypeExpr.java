@@ -4,26 +4,28 @@ import java.util.ArrayList;
 
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
+import org.iota.qupla.qupla.expression.constant.ConstTypeName;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
-import org.iota.qupla.qupla.statement.TypeStmt;
 
 public class TypeExpr extends BaseExpr
 {
   public final ArrayList<BaseExpr> fields = new ArrayList<>();
+  public BaseExpr type;
 
   public TypeExpr(final TypeExpr copy)
   {
     super(copy);
 
     cloneArray(fields, copy.fields);
+    type = clone(copy.type);
   }
 
   public TypeExpr(final Tokenizer tokenizer, final Token identifier)
   {
     super(tokenizer, identifier);
 
-    name = identifier.text;
+    type = new ConstTypeName(tokenizer, identifier);
 
     expect(tokenizer, Token.TOK_GROUP_OPEN, "'{'");
 
@@ -39,13 +41,14 @@ public class TypeExpr extends BaseExpr
   @Override
   public void analyze()
   {
-    final TypeStmt type = analyzeType();
-    if (type.struct == null)
+    type.analyze();
+    typeInfo = type.typeInfo;
+    size = typeInfo.size;
+    name = typeInfo.name;
+    if (typeInfo.struct == null)
     {
-      error("Expected structured trit vector name");
+      error("Expected structured trit vector type name");
     }
-
-    typeInfo = type;
 
     for (final BaseExpr field : fields)
     {
@@ -53,7 +56,7 @@ public class TypeExpr extends BaseExpr
 
       // check that this is a field name
       boolean found = false;
-      for (final BaseExpr structField : type.struct.fields)
+      for (final BaseExpr structField : typeInfo.struct.fields)
       {
         if (field.name.equals(structField.name))
         {
@@ -72,7 +75,7 @@ public class TypeExpr extends BaseExpr
     // also check the assigned size
     // also sort the fields in the same order as in the struct vector
     final ArrayList<BaseExpr> sortedFields = new ArrayList<>();
-    for (final BaseExpr structField : type.struct.fields)
+    for (final BaseExpr structField : typeInfo.struct.fields)
     {
       boolean found = false;
       for (final BaseExpr field : fields)

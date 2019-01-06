@@ -38,23 +38,26 @@ func Trit sign<Trit> (Trit val) {
 }
 
 template sign<T> {
-  type P [T / 3]
+  type A [T / 3]
+  type B [T / 3]
+  type C [T / 3]
 
   func Trit sign<T> (T val) {
-    return sign[sign<P>(val[P * 0 : P]),
-                sign<P>(val[P * 1 : P]),
-                sign<P>(val[P * 2 : P])]
+    return sign[sign<A>(val[0 : A]),
+                sign<B>(val[A : B]),
+                sign<C>(val[A + B : C])]
   }
 }
 
 use sign<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 template sign2<T> {
-  type P [T / 2]
+  type A [T / 2]
+  type B [T / 2]
 
   func Trit sign<T> (T val) {
-    return sign[sign<P>(val[P * 0 : P]),
-                sign<P>(val[P * 1 : P]),
+    return sign[sign<A>(val[0 : A]),
+                sign<B>(val[A : B]),
                 0]
   }
 }

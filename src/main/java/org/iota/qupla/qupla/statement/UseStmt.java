@@ -55,6 +55,7 @@ public class UseStmt extends BaseExpr
     {
       placeHolders.add(new FuncStmt(this));
     }
+
     module.funcs.addAll(placeHolders);
 
     final Module oldCurrentModule = currentModule;

@@ -21,8 +21,6 @@ public class TritStructDef extends BaseExpr
   {
     super(tokenizer, identifier);
 
-    name = identifier.text;
-
     tokenizer.nextToken();
     do
     {

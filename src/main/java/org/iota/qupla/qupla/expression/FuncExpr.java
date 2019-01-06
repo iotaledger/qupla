@@ -30,8 +30,6 @@ public class FuncExpr extends BaseExpr
   {
     super(tokenizer, identifier);
 
-    name = identifier.text;
-
     if (tokenizer.tokenId() == Token.TOK_TEMPL_OPEN)
     {
       tokenizer.nextToken();

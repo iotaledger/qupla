@@ -72,7 +72,7 @@ constExpr ::= constTerm ([-+] constTerm)*
 
 constTerm ::= constFactor ([*/%] constFactor)*
 
-constFactor ::= number | typeName | ('-' constFactor) | ('(' constExpr ')')
+constFactor ::= number | (typeName ('.' fieldName)*) | ('-' constFactor) | ('(' constExpr ')')
 
 
 typeSize ::= '[' constExpr ']'

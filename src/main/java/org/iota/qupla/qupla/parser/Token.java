@@ -2,7 +2,7 @@ package org.iota.qupla.qupla.parser;
 
 public class Token
 {
-  public static final int TOK_AFFECT = +1;
+  public static final int TOK_AFFECT = 1;
   public static final int TOK_ARRAY_CLOSE = TOK_AFFECT + 1;
   public static final int TOK_ARRAY_OPEN = TOK_ARRAY_CLOSE + 1;
   public static final int TOK_COLON = TOK_ARRAY_OPEN + 1;

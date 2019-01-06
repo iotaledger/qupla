@@ -50,10 +50,11 @@ public abstract class BaseExpr
     origin = tokenizer.currentToken();
   }
 
-  protected BaseExpr(final Tokenizer tokenizer, final Token origin)
+  protected BaseExpr(final Tokenizer tokenizer, final Token identifier)
   {
     module = tokenizer.module;
-    this.origin = origin != null ? origin : tokenizer.currentToken();
+    origin = identifier;
+    name = identifier.text;
   }
 
   public static void logLine(final String text)
@@ -62,30 +63,6 @@ public abstract class BaseExpr
   }
 
   public abstract void analyze();
-
-  protected TypeStmt analyzeType()
-  {
-    if (currentUse != null)
-    {
-      for (final BaseExpr type : currentUse.template.types)
-      {
-        if (type.name.equals(name))
-        {
-          if (type.typeInfo.size == 0)
-          {
-            error("Did not analyze: " + name);
-          }
-
-          size = type.typeInfo.size;
-          return type.typeInfo;
-        }
-      }
-    }
-
-    final TypeStmt type = (TypeStmt) findEntity(TypeStmt.class, "type");
-    size = type.size;
-    return type;
-  }
 
   public BaseExpr clone(final BaseExpr expr)
   {
