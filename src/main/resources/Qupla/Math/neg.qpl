@@ -14,7 +14,7 @@ func Trit neg<Trit> (Trit val) {
   return neg[val]
 }
 
-template neg<T> {
+template neg<T> = A + B + C {
   type A [T / 3]
   type B [T / 3]
   type C [T / 3]
@@ -28,7 +28,7 @@ template neg<T> {
 
 use neg<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
-template neg2<T> {
+template neg2<T> = A + B {
   type A [T / 2]
   type B [T / 2]
 
@@ -38,7 +38,7 @@ template neg2<T> {
   }
 }
 
-use neg2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use neg2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>
 
 
 test 99 = neg<Tiny>(-99)

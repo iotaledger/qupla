@@ -22,6 +22,7 @@ type Tiny2 [Tiny * 2]   // -/+ 193,710,244
 type Tiny4 [Tiny * 4]   // -/+ 75,047,317,648,499,560
 type Int2 [Int * 2]     // -/+ 29,074,868,501,520,029,845,195,084
 type Int4 [Int * 4]
+type Int8 [Int * 8]
 type Huge2 [Huge * 2]
 type Huge4 [Huge * 4]
 type Hash2 [Hash * 2]

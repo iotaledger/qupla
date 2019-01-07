@@ -193,47 +193,47 @@
    </head>
    <body>
       
-      <p style="font-size: 14px; font-weight:bold"><a name="qupla">qupla:</a></p><img border="0" src="diagram/qupla.png" height="57" width="183" usemap="#qupla.map"><map name="qupla.map"><area shape="rect" coords="49,1,133,33" href="#quplaStmt" title="quplaStmt"></map><p>
+      <p style="font-size: 14px; font-weight:bold"><a name="QuplaSource">QuplaSource:</a></p><img border="0" src="diagram/QuplaSource.png" height="57" width="183" usemap="#QuplaSource.map"><map name="QuplaSource.map"><area shape="rect" coords="49,1,133,33" href="#quplaStmt" title="quplaStmt"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#qupla" title="qupla" shape="rect">qupla</a>&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#quplaStmt" title="quplaStmt" shape="rect">quplaStmt</a>*</div></code></div>
+               <div><a href="#QuplaSource" title="QuplaSource" shape="rect">QuplaSource</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#quplaStmt" title="quplaStmt" shape="rect">quplaStmt</a>*</div></code></div>
          </p>
       
-      <p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="quplaStmt">quplaStmt:</a></p><img border="0" src="diagram/quplaStmt.png" height="345" width="205" usemap="#quplaStmt.map"><map name="quplaStmt.map"><area shape="rect" coords="49,1,139,33" href="#importStmt" title="importStmt"><area shape="rect" coords="49,45,127,77" href="#typeStmt" title="typeStmt"><area shape="rect" coords="49,89,115,121" href="#lutStmt" title="lutStmt"><area shape="rect" coords="49,133,125,165" href="#funcStmt" title="funcStmt"><area shape="rect" coords="49,177,125,209" href="#evalStmt" title="evalStmt"><area shape="rect" coords="49,221,123,253" href="#testStmt" title="testStmt"><area shape="rect" coords="49,265,155,297" href="#templateStmt" title="templateStmt"><area shape="rect" coords="49,309,121,341" href="#useStmt" title="useStmt"></map><p>
+      <p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="quplaStmt">quplaStmt:</a></p><img border="0" src="diagram/quplaStmt.png" height="301" width="207" usemap="#quplaStmt.map"><map name="quplaStmt.map"><area shape="rect" coords="49,1,141,33" href="#ImportStmt" title="ImportStmt"><area shape="rect" coords="49,45,129,77" href="#TypeStmt" title="TypeStmt"><area shape="rect" coords="49,89,119,121" href="#LutStmt" title="LutStmt"><area shape="rect" coords="49,133,127,165" href="#FuncStmt" title="FuncStmt"><area shape="rect" coords="49,177,127,209" href="#ExecStmt" title="ExecStmt"><area shape="rect" coords="49,221,157,253" href="#TemplateStmt" title="TemplateStmt"><area shape="rect" coords="49,265,123,297" href="#UseStmt" title="UseStmt"></map><p>
          
          <div class="ebnf"><code>
                
                <div><a href="#quplaStmt" title="quplaStmt" shape="rect">quplaStmt</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#importStmt" title="importStmt" shape="rect">importStmt</a></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#ImportStmt" title="ImportStmt" shape="rect">ImportStmt</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#typeStmt" title="typeStmt" shape="rect">typeStmt</a></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#TypeStmt" title="TypeStmt" shape="rect">TypeStmt</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#lutStmt" title="lutStmt" shape="rect">lutStmt</a></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#LutStmt" title="LutStmt" shape="rect">LutStmt</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#funcStmt" title="funcStmt" shape="rect">funcStmt</a></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#FuncStmt" title="FuncStmt" shape="rect">FuncStmt</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#evalStmt" title="evalStmt" shape="rect">evalStmt</a></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#ExecStmt" title="ExecStmt" shape="rect">ExecStmt</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#testStmt" title="testStmt" shape="rect">testStmt</a></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#TemplateStmt" title="TemplateStmt" shape="rect">TemplateStmt</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#templateStmt" title="templateStmt" shape="rect">templateStmt</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#useStmt" title="useStmt" shape="rect">useStmt</a></div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#UseStmt" title="UseStmt" shape="rect">UseStmt</a></div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#qupla" title="qupla">qupla</a></li>
+            <li><a href="#QuplaSource" title="QuplaSource">QuplaSource</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="importStmt">importStmt:</a></p><img border="0" src="diagram/importStmt.png" height="37" width="247" usemap="#importStmt.map"><map name="importStmt.map"><area shape="rect" coords="113,1,217,33" href="#moduleName" title="moduleName"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ImportStmt">ImportStmt:</a></p><img border="0" src="diagram/ImportStmt.png" height="37" width="247" usemap="#ImportStmt.map"><map name="ImportStmt.map"><area shape="rect" coords="113,1,217,33" href="#moduleName" title="moduleName"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#importStmt" title="importStmt" shape="rect">importStmt</a></div>
+               <div><a href="#ImportStmt" title="ImportStmt" shape="rect">ImportStmt</a></div>
                
                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'import' <a href="#moduleName" title="moduleName" shape="rect">moduleName</a></div></code></div>
          </p>
@@ -244,11 +244,11 @@
             
             <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="typeStmt">typeStmt:</a></p><img border="0" src="diagram/typeStmt.png" height="147" width="585" usemap="#typeStmt.map"><map name="typeStmt.map"><area shape="rect" coords="99,1,183,33" href="#typeName" title="typeName"><area shape="rect" coords="223,1,297,33" href="#typeSize" title="typeSize"><area shape="rect" coords="291,67,373,99" href="#fieldName" title="fieldName"><area shape="rect" coords="393,67,467,99" href="#typeSize" title="typeSize"><area shape="rect" coords="223,111,309,143" href="#entityAlias" title="entityAlias"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="TypeStmt">TypeStmt:</a></p><img border="0" src="diagram/TypeStmt.png" height="125" width="375" usemap="#TypeStmt.map"><map name="TypeStmt.map"><area shape="rect" coords="99,1,183,33" href="#typeName" title="typeName"><area shape="rect" coords="223,1,325,33" href="#TritVectorDef" title="TritVectorDef"><area shape="rect" coords="223,45,321,77" href="#TritStructDef" title="TritStructDef"><area shape="rect" coords="223,89,309,121" href="#entityAlias" title="entityAlias"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#typeStmt" title="typeStmt" shape="rect">typeStmt</a>&nbsp;::= 'type' <a href="#typeName" title="typeName" shape="rect">typeName</a> ( <a href="#typeSize" title="typeSize" shape="rect">typeSize</a> | '{' ( <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> <a href="#typeSize" title="typeSize" shape="rect">typeSize</a> )+ '}' | <a href="#entityAlias" title="entityAlias" shape="rect">entityAlias</a> )</div></code></div>
+               <div><a href="#TypeStmt" title="TypeStmt" shape="rect">TypeStmt</a>&nbsp;::= 'type' <a href="#typeName" title="typeName" shape="rect">typeName</a> ( <a href="#TritVectorDef" title="TritVectorDef" shape="rect">TritVectorDef</a> | <a href="#TritStructDef" title="TritStructDef" shape="rect">TritStructDef</a> | <a href="#entityAlias" title="entityAlias" shape="rect">entityAlias</a> )</div></code></div>
          </p>
       
       <p>referenced by:
@@ -259,11 +259,43 @@
             
             <li><a href="#templateBody" title="templateBody">templateBody</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="lutStmt">lutStmt:</a></p><img border="0" src="diagram/lutStmt.png" height="97" width="575" usemap="#lutStmt.map"><map name="lutStmt.map"><area shape="rect" coords="87,17,159,49" href="#lutName" title="lutName"><area shape="rect" coords="267,17,327,49" href="#tritList" title="tritList"><area shape="rect" coords="397,17,457,49" href="#tritList" title="tritList"><area shape="rect" coords="199,61,285,93" href="#entityAlias" title="entityAlias"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="TritVectorDef">TritVectorDef:</a></p><img border="0" src="diagram/TritVectorDef.png" height="37" width="235" usemap="#TritVectorDef.map"><map name="TritVectorDef.map"><area shape="rect" coords="75,1,159,33" href="#ConstExpr" title="ConstExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#lutStmt" title="lutStmt" shape="rect">lutStmt</a>&nbsp;&nbsp;::= 'lut' <a href="#lutName" title="lutName" shape="rect">lutName</a> ( '{' ( <a href="#tritList" title="tritList" shape="rect">tritList</a> '=' <a href="#tritList" title="tritList" shape="rect">tritList</a> )+ '}' | <a href="#entityAlias" title="entityAlias" shape="rect">entityAlias</a> )</div></code></div>
+               <div><a href="#TritVectorDef" title="TritVectorDef" shape="rect">TritVectorDef</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '[' <a href="#ConstExpr" title="ConstExpr" shape="rect">ConstExpr</a> ']'</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#TritStructDef" title="TritStructDef">TritStructDef</a></li>
+            
+            <li><a href="#TypeStmt" title="TypeStmt">TypeStmt</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="TritStructDef">TritStructDef:</a></p><img border="0" src="diagram/TritStructDef.png" height="53" width="399" usemap="#TritStructDef.map"><map name="TritStructDef.map"><area shape="rect" coords="97,17,179,49" href="#fieldName" title="fieldName"><area shape="rect" coords="199,17,301,49" href="#TritVectorDef" title="TritVectorDef"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#TritStructDef" title="TritStructDef" shape="rect">TritStructDef</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '{' ( <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> <a href="#TritVectorDef" title="TritVectorDef" shape="rect">TritVectorDef</a> )+ '}'</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#TypeStmt" title="TypeStmt">TypeStmt</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="LutStmt">LutStmt:</a></p><img border="0" src="diagram/LutStmt.png" height="97" width="457" usemap="#LutStmt.map"><map name="LutStmt.map"><area shape="rect" coords="87,17,159,49" href="#lutName" title="lutName"><area shape="rect" coords="267,17,339,49" href="#LutEntry" title="LutEntry"><area shape="rect" coords="199,61,285,93" href="#entityAlias" title="entityAlias"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#LutStmt" title="LutStmt" shape="rect">LutStmt</a>&nbsp;&nbsp;::= 'lut' <a href="#lutName" title="lutName" shape="rect">lutName</a> ( '{' <a href="#LutEntry" title="LutEntry" shape="rect">LutEntry</a>+ '}' | <a href="#entityAlias" title="entityAlias" shape="rect">entityAlias</a> )</div></code></div>
          </p>
       
       <p>referenced by:
@@ -272,11 +304,37 @@
             
             <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcStmt">funcStmt:</a></p><img border="0" src="diagram/funcStmt.png" height="37" width="333" usemap="#funcStmt.map"><map name="funcStmt.map"><area shape="rect" coords="97,1,205,33" href="#funcSignature" title="funcSignature"><area shape="rect" coords="225,1,303,33" href="#funcBody" title="funcBody"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="LutEntry">LutEntry:</a></p><img border="0" src="diagram/LutEntry.png" height="37" width="249" usemap="#LutEntry.map"><map name="LutEntry.map"><area shape="rect" coords="29,1,89,33" href="#tritList" title="tritList"><area shape="rect" coords="159,1,219,33" href="#tritList" title="tritList"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#funcStmt" title="funcStmt" shape="rect">funcStmt</a>&nbsp;::= 'func' <a href="#funcSignature" title="funcSignature" shape="rect">funcSignature</a> <a href="#funcBody" title="funcBody" shape="rect">funcBody</a></div></code></div>
+               <div><a href="#LutEntry" title="LutEntry" shape="rect">LutEntry</a>&nbsp;::= <a href="#tritList" title="tritList" shape="rect">tritList</a> '=' <a href="#tritList" title="tritList" shape="rect">tritList</a></div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#LutStmt" title="LutStmt">LutStmt</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="tritList">tritList:</a></p><img border="0" src="diagram/tritList.png" height="81" width="137" usemap="#tritList.map"><map name="tritList.map"><area shape="rect" coords="49,45,87,77" href="#trit" title="trit"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#tritList" title="tritList" shape="rect">tritList</a>&nbsp;::= <a href="#trit" title="trit" shape="rect">trit</a> ( ',' <a href="#trit" title="trit" shape="rect">trit</a> )*</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#LutEntry" title="LutEntry">LutEntry</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="FuncStmt">FuncStmt:</a></p><img border="0" src="diagram/FuncStmt.png" height="37" width="333" usemap="#FuncStmt.map"><map name="FuncStmt.map"><area shape="rect" coords="97,1,205,33" href="#funcSignature" title="funcSignature"><area shape="rect" coords="225,1,303,33" href="#funcBody" title="funcBody"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#FuncStmt" title="FuncStmt" shape="rect">FuncStmt</a>&nbsp;::= 'func' <a href="#funcSignature" title="funcSignature" shape="rect">funcSignature</a> <a href="#funcBody" title="funcBody" shape="rect">funcBody</a></div></code></div>
          </p>
       
       <p>referenced by:
@@ -287,11 +345,67 @@
             
             <li><a href="#templateBody" title="templateBody">templateBody</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="evalStmt">evalStmt:</a></p><img border="0" src="diagram/evalStmt.png" height="37" width="201" usemap="#evalStmt.map"><map name="evalStmt.map"><area shape="rect" coords="97,1,171,33" href="#funcExpr" title="funcExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcSignature">funcSignature:</a></p><img border="0" src="diagram/funcSignature.png" height="97" width="847" usemap="#funcSignature.map"><map name="funcSignature.map"><area shape="rect" coords="29,45,153,77" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="173,45,255,77" href="#funcName" title="funcName"><area shape="rect" coords="365,45,489,77" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="665,45,751,77" href="#funcParam" title="funcParam"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#evalStmt" title="evalStmt" shape="rect">evalStmt</a>&nbsp;::= 'eval' <a href="#funcExpr" title="funcExpr" shape="rect">funcExpr</a></div></code></div>
+               <div><a href="#funcSignature" title="funcSignature" shape="rect">funcSignature</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> <a href="#funcName" title="funcName" shape="rect">funcName</a> ( '&lt;' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> ( ',' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> )* '&gt;' )? '(' <a href="#funcParam" title="funcParam" shape="rect">funcParam</a> ( ',' <a href="#funcParam" title="funcParam" shape="rect">funcParam</a> )* ')'</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#FuncStmt" title="FuncStmt">FuncStmt</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcParam">funcParam:</a></p><img border="0" src="diagram/funcParam.png" height="37" width="299" usemap="#funcParam.map"><map name="funcParam.map"><area shape="rect" coords="29,1,153,33" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="173,1,269,33" href="#paramName" title="paramName"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#funcParam" title="funcParam" shape="rect">funcParam</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> <a href="#paramName" title="paramName" shape="rect">paramName</a></div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#funcSignature" title="funcSignature">funcSignature</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcBody">funcBody:</a></p><img border="0" src="diagram/funcBody.png" height="71" width="699" usemap="#funcBody.map"><map name="funcBody.map"><area shape="rect" coords="77,35,147,67" href="#envExpr" title="envExpr"><area shape="rect" coords="187,1,269,33" href="#StateExpr" title="StateExpr"><area shape="rect" coords="329,1,419,33" href="#AssignExpr" title="AssignExpr"><area shape="rect" coords="541,35,621,67" href="#CondExpr" title="CondExpr"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#funcBody" title="funcBody" shape="rect">funcBody</a>&nbsp;::= '{' <a href="#envExpr" title="envExpr" shape="rect">envExpr</a> <a href="#StateExpr" title="StateExpr" shape="rect">StateExpr</a>* <a href="#AssignExpr" title="AssignExpr" shape="rect">AssignExpr</a>* 'return' <a href="#CondExpr" title="CondExpr" shape="rect">CondExpr</a> '}'</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#FuncStmt" title="FuncStmt">FuncStmt</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="envExpr">envExpr:</a></p><img border="0" src="diagram/envExpr.png" height="57" width="315" usemap="#envExpr.map"><map name="envExpr.map"><area shape="rect" coords="49,1,121,33" href="#JoinExpr" title="JoinExpr"><area shape="rect" coords="181,1,265,33" href="#AffectExpr" title="AffectExpr"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#envExpr" title="envExpr" shape="rect">envExpr</a>&nbsp;&nbsp;::= <a href="#JoinExpr" title="JoinExpr" shape="rect">JoinExpr</a>* <a href="#AffectExpr" title="AffectExpr" shape="rect">AffectExpr</a>*</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#funcBody" title="funcBody">funcBody</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ExecStmt">ExecStmt:</a></p><img border="0" src="diagram/ExecStmt.png" height="81" width="399" usemap="#ExecStmt.map"><map name="ExecStmt.map"><area shape="rect" coords="115,45,203,77" href="#VectorExpr" title="VectorExpr"><area shape="rect" coords="293,1,369,33" href="#FuncExpr" title="FuncExpr"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#ExecStmt" title="ExecStmt" shape="rect">ExecStmt</a>&nbsp;::= ( 'eval' | 'test' <a href="#VectorExpr" title="VectorExpr" shape="rect">VectorExpr</a> '=' ) <a href="#FuncExpr" title="FuncExpr" shape="rect">FuncExpr</a></div></code></div>
          </p>
       
       <p>referenced by:
@@ -300,11 +414,13 @@
             
             <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="testStmt">testStmt:</a></p><img border="0" src="diagram/testStmt.png" height="37" width="351" usemap="#testStmt.map"><map name="testStmt.map"><area shape="rect" coords="95,1,177,33" href="#valueExpr" title="valueExpr"><area shape="rect" coords="247,1,321,33" href="#funcExpr" title="funcExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="TemplateStmt">TemplateStmt:</a></p><img border="0" src="diagram/TemplateStmt.png" height="113" width="939" usemap="#TemplateStmt.map"><map name="TemplateStmt.map"><area shape="rect" coords="129,45,243,77" href="#templateName" title="templateName"><area shape="rect" coords="333,45,493,77" href="#placeholderTypeName" title="placeholderTypeName"><area shape="rect" coords="603,77,761,109" href="#templateTypeRelation" title="templateTypeRelation"><area shape="rect" coords="801,45,909,77" href="#templateBody" title="templateBody"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#testStmt" title="testStmt" shape="rect">testStmt</a>&nbsp;::= 'test' <a href="#valueExpr" title="valueExpr" shape="rect">valueExpr</a> '=' <a href="#funcExpr" title="funcExpr" shape="rect">funcExpr</a></div></code></div>
+               <div><a href="#TemplateStmt" title="TemplateStmt" shape="rect">TemplateStmt</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'template' <a href="#templateName" title="templateName" shape="rect">templateName</a> '&lt;' <a href="#placeholderTypeName" title="placeholderTypeName" shape="rect">placeholderTypeName</a> ( ',' <a href="#placeholderTypeName" title="placeholderTypeName" shape="rect">placeholderTypeName</a> )* '&gt;' <a href="#templateTypeRelation" title="templateTypeRelation" shape="rect">templateTypeRelation</a>? <a href="#templateBody" title="templateBody" shape="rect">templateBody</a></div></code></div>
          </p>
       
       <p>referenced by:
@@ -313,41 +429,41 @@
             
             <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="templateStmt">templateStmt:</a></p><img border="0" src="diagram/templateStmt.png" height="81" width="723" usemap="#templateStmt.map"><map name="templateStmt.map"><area shape="rect" coords="129,45,243,77" href="#templateName" title="templateName"><area shape="rect" coords="333,45,495,77" href="#placeHolderTypeName" title="placeHolderTypeName"><area shape="rect" coords="585,45,693,77" href="#templateBody" title="templateBody"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="templateTypeRelation">templateTypeRelation:</a></p><img border="0" src="diagram/templateTypeRelation.png" height="53" width="507" usemap="#templateTypeRelation.map"><map name="templateTypeRelation.map"><area shape="rect" coords="79,17,223,49" href="#templateTypeName" title="templateTypeName"><area shape="rect" coords="313,17,457,49" href="#templateTypeName" title="templateTypeName"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#templateStmt" title="templateStmt" shape="rect">templateStmt</a></div>
+               <div><a href="#templateTypeRelation" title="templateTypeRelation" shape="rect">templateTypeRelation</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'template' <a href="#templateName" title="templateName" shape="rect">templateName</a> '&lt;' <a href="#placeHolderTypeName" title="placeHolderTypeName" shape="rect">placeHolderTypeName</a> ( ',' <a href="#placeHolderTypeName" title="placeHolderTypeName" shape="rect">placeHolderTypeName</a> )* '&gt;' <a href="#templateBody" title="templateBody" shape="rect">templateBody</a></div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '=' <a href="#templateTypeName" title="templateTypeName" shape="rect">templateTypeName</a> ( '+' <a href="#templateTypeName" title="templateTypeName" shape="rect">templateTypeName</a> )+</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
+            <li><a href="#TemplateStmt" title="TemplateStmt">TemplateStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="templateBody">templateBody:</a></p><img border="0" src="diagram/templateBody.png" height="71" width="409" usemap="#templateBody.map"><map name="templateBody.map"><area shape="rect" coords="97,1,175,33" href="#typeStmt" title="typeStmt"><area shape="rect" coords="235,35,311,67" href="#funcStmt" title="funcStmt"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="templateBody">templateBody:</a></p><img border="0" src="diagram/templateBody.png" height="71" width="413" usemap="#templateBody.map"><map name="templateBody.map"><area shape="rect" coords="97,1,177,33" href="#TypeStmt" title="TypeStmt"><area shape="rect" coords="237,35,315,67" href="#FuncStmt" title="FuncStmt"></map><p>
          
          <div class="ebnf"><code>
                
                <div><a href="#templateBody" title="templateBody" shape="rect">templateBody</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '{' <a href="#typeStmt" title="typeStmt" shape="rect">typeStmt</a>* <a href="#funcStmt" title="funcStmt" shape="rect">funcStmt</a>+ '}'</div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '{' <a href="#TypeStmt" title="TypeStmt" shape="rect">TypeStmt</a>* <a href="#FuncStmt" title="FuncStmt" shape="rect">FuncStmt</a>+ '}'</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#templateStmt" title="templateStmt">templateStmt</a></li>
+            <li><a href="#TemplateStmt" title="TemplateStmt">TemplateStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="useStmt">useStmt:</a></p><img border="0" src="diagram/useStmt.png" height="81" width="427" usemap="#useStmt.map"><map name="useStmt.map"><area shape="rect" coords="93,45,207,77" href="#templateName" title="templateName"><area shape="rect" coords="247,45,377,77" href="#typeInstantiation" title="typeInstantiation"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="UseStmt">UseStmt:</a></p><img border="0" src="diagram/UseStmt.png" height="81" width="427" usemap="#UseStmt.map"><map name="UseStmt.map"><area shape="rect" coords="93,45,207,77" href="#templateName" title="templateName"><area shape="rect" coords="247,45,377,77" href="#typeInstantiation" title="typeInstantiation"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#useStmt" title="useStmt" shape="rect">useStmt</a>&nbsp;&nbsp;::= 'use' <a href="#templateName" title="templateName" shape="rect">templateName</a> <a href="#typeInstantiation" title="typeInstantiation" shape="rect">typeInstantiation</a> ( ',' <a href="#typeInstantiation" title="typeInstantiation" shape="rect">typeInstantiation</a> )*</div></code></div>
+               <div><a href="#UseStmt" title="UseStmt" shape="rect">UseStmt</a>&nbsp;&nbsp;::= 'use' <a href="#templateName" title="templateName" shape="rect">templateName</a> <a href="#typeInstantiation" title="typeInstantiation" shape="rect">typeInstantiation</a> ( ',' <a href="#typeInstantiation" title="typeInstantiation" shape="rect">typeInstantiation</a> )*</div></code></div>
          </p>
       
       <p>referenced by:
@@ -356,20 +472,20 @@
             
             <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="typeInstantiation">typeInstantiation:</a></p><img border="0" src="diagram/typeInstantiation.png" height="81" width="283" usemap="#typeInstantiation.map"><map name="typeInstantiation.map"><area shape="rect" coords="99,45,183,77" href="#typeName" title="typeName"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="typeInstantiation">typeInstantiation:</a></p><img border="0" src="diagram/typeInstantiation.png" height="81" width="323" usemap="#typeInstantiation.map"><map name="typeInstantiation.map"><area shape="rect" coords="99,45,223,77" href="#ConstTypeName" title="ConstTypeName"></map><p>
          
          <div class="ebnf"><code>
                
                <div><a href="#typeInstantiation" title="typeInstantiation" shape="rect">typeInstantiation</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '&lt;' <a href="#typeName" title="typeName" shape="rect">typeName</a> ( ',' <a href="#typeName" title="typeName" shape="rect">typeName</a> )* '&gt;'</div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '&lt;' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> ( ',' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> )* '&gt;'</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#useStmt" title="useStmt">useStmt</a></li>
+            <li><a href="#UseStmt" title="UseStmt">UseStmt</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="entityAlias">entityAlias:</a></p><img border="0" src="diagram/entityAlias.png" height="37" width="377" usemap="#entityAlias.map"><map name="entityAlias.map"><area shape="rect" coords="79,1,171,33" href="#entityName" title="entityName"><area shape="rect" coords="243,1,347,33" href="#moduleName" title="moduleName"></map><p>
          
@@ -384,71 +500,15 @@
          
          <ul>
             
-            <li><a href="#lutStmt" title="lutStmt">lutStmt</a></li>
+            <li><a href="#LutStmt" title="LutStmt">LutStmt</a></li>
             
-            <li><a href="#typeStmt" title="typeStmt">typeStmt</a></li>
+            <li><a href="#TypeStmt" title="TypeStmt">TypeStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcSignature">funcSignature:</a></p><img border="0" src="diagram/funcSignature.png" height="97" width="767" usemap="#funcSignature.map"><map name="funcSignature.map"><area shape="rect" coords="29,45,113,77" href="#typeName" title="typeName"><area shape="rect" coords="133,45,215,77" href="#funcName" title="funcName"><area shape="rect" coords="325,45,409,77" href="#typeName" title="typeName"><area shape="rect" coords="585,45,671,77" href="#funcParam" title="funcParam"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="JoinExpr">JoinExpr:</a></p><img border="0" src="diagram/JoinExpr.png" height="69" width="497" usemap="#JoinExpr.map"><map name="JoinExpr.map"><area shape="rect" coords="95,1,231,33" href="#environmentName" title="environmentName"><area shape="rect" coords="341,33,447,65" href="#ConstNumber" title="ConstNumber"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#funcSignature" title="funcSignature" shape="rect">funcSignature</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#typeName" title="typeName" shape="rect">typeName</a> <a href="#funcName" title="funcName" shape="rect">funcName</a> ( '&lt;' <a href="#typeName" title="typeName" shape="rect">typeName</a> ( ',' <a href="#typeName" title="typeName" shape="rect">typeName</a> )* '&gt;' )? '(' <a href="#funcParam" title="funcParam" shape="rect">funcParam</a> ( ',' <a href="#funcParam" title="funcParam" shape="rect">funcParam</a> )* ')'</div></code></div>
-         </p>
-      
-      <p>referenced by:
-         
-         <ul>
-            
-            <li><a href="#funcStmt" title="funcStmt">funcStmt</a></li>
-            </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcParam">funcParam:</a></p><img border="0" src="diagram/funcParam.png" height="37" width="259" usemap="#funcParam.map"><map name="funcParam.map"><area shape="rect" coords="29,1,113,33" href="#typeName" title="typeName"><area shape="rect" coords="133,1,229,33" href="#paramName" title="paramName"></map><p>
-         
-         <div class="ebnf"><code>
-               
-               <div><a href="#funcParam" title="funcParam" shape="rect">funcParam</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#typeName" title="typeName" shape="rect">typeName</a> <a href="#paramName" title="paramName" shape="rect">paramName</a></div></code></div>
-         </p>
-      
-      <p>referenced by:
-         
-         <ul>
-            
-            <li><a href="#funcSignature" title="funcSignature">funcSignature</a></li>
-            </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcBody">funcBody:</a></p><img border="0" src="diagram/funcBody.png" height="71" width="621" usemap="#funcBody.map"><map name="funcBody.map"><area shape="rect" coords="77,35,147,67" href="#envExpr" title="envExpr"><area shape="rect" coords="187,1,267,33" href="#stateExpr" title="stateExpr"><area shape="rect" coords="327,1,417,33" href="#assignExpr" title="assignExpr"><area shape="rect" coords="457,35,543,67" href="#returnExpr" title="returnExpr"></map><p>
-         
-         <div class="ebnf"><code>
-               
-               <div><a href="#funcBody" title="funcBody" shape="rect">funcBody</a>&nbsp;::= '{' <a href="#envExpr" title="envExpr" shape="rect">envExpr</a> <a href="#stateExpr" title="stateExpr" shape="rect">stateExpr</a>* <a href="#assignExpr" title="assignExpr" shape="rect">assignExpr</a>* <a href="#returnExpr" title="returnExpr" shape="rect">returnExpr</a> '}'</div></code></div>
-         </p>
-      
-      <p>referenced by:
-         
-         <ul>
-            
-            <li><a href="#funcStmt" title="funcStmt">funcStmt</a></li>
-            </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="envExpr">envExpr:</a></p><img border="0" src="diagram/envExpr.png" height="57" width="315" usemap="#envExpr.map"><map name="envExpr.map"><area shape="rect" coords="49,1,121,33" href="#joinExpr" title="joinExpr"><area shape="rect" coords="181,1,265,33" href="#affectExpr" title="affectExpr"></map><p>
-         
-         <div class="ebnf"><code>
-               
-               <div><a href="#envExpr" title="envExpr" shape="rect">envExpr</a>&nbsp;&nbsp;::= <a href="#joinExpr" title="joinExpr" shape="rect">joinExpr</a>* <a href="#affectExpr" title="affectExpr" shape="rect">affectExpr</a>*</div></code></div>
-         </p>
-      
-      <p>referenced by:
-         
-         <ul>
-            
-            <li><a href="#funcBody" title="funcBody">funcBody</a></li>
-            </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="joinExpr">joinExpr:</a></p><img border="0" src="diagram/joinExpr.png" height="69" width="459" usemap="#joinExpr.map"><map name="joinExpr.map"><area shape="rect" coords="95,1,231,33" href="#environmentName" title="environmentName"><area shape="rect" coords="341,33,409,65" href="#number" title="number"></map><p>
-         
-         <div class="ebnf"><code>
-               
-               <div><a href="#joinExpr" title="joinExpr" shape="rect">joinExpr</a>&nbsp;::= 'join' <a href="#environmentName" title="environmentName" shape="rect">environmentName</a> ( 'limit' <a href="#number" title="number" shape="rect">number</a> )?</div></code></div>
+               <div><a href="#JoinExpr" title="JoinExpr" shape="rect">JoinExpr</a>&nbsp;::= 'join' <a href="#environmentName" title="environmentName" shape="rect">environmentName</a> ( 'limit' <a href="#ConstNumber" title="ConstNumber" shape="rect">ConstNumber</a> )?</div></code></div>
          </p>
       
       <p>referenced by:
@@ -457,13 +517,13 @@
             
             <li><a href="#envExpr" title="envExpr">envExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="affectExpr">affectExpr:</a></p><img border="0" src="diagram/affectExpr.png" height="69" width="477" usemap="#affectExpr.map"><map name="affectExpr.map"><area shape="rect" coords="107,1,243,33" href="#environmentName" title="environmentName"><area shape="rect" coords="359,33,427,65" href="#number" title="number"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="AffectExpr">AffectExpr:</a></p><img border="0" src="diagram/AffectExpr.png" height="69" width="515" usemap="#AffectExpr.map"><map name="AffectExpr.map"><area shape="rect" coords="107,1,243,33" href="#environmentName" title="environmentName"><area shape="rect" coords="359,33,465,65" href="#ConstNumber" title="ConstNumber"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#affectExpr" title="affectExpr" shape="rect">affectExpr</a></div>
+               <div><a href="#AffectExpr" title="AffectExpr" shape="rect">AffectExpr</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'affect' <a href="#environmentName" title="environmentName" shape="rect">environmentName</a> ( 'delay' <a href="#number" title="number" shape="rect">number</a> )?</div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'affect' <a href="#environmentName" title="environmentName" shape="rect">environmentName</a> ( 'delay' <a href="#ConstNumber" title="ConstNumber" shape="rect">ConstNumber</a> )?</div></code></div>
          </p>
       
       <p>referenced by:
@@ -472,13 +532,13 @@
             
             <li><a href="#envExpr" title="envExpr">envExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="stateExpr">stateExpr:</a></p><img border="0" src="diagram/stateExpr.png" height="37" width="313" usemap="#stateExpr.map"><map name="stateExpr.map"><area shape="rect" coords="103,1,187,33" href="#typeName" title="typeName"><area shape="rect" coords="207,1,283,33" href="#varName" title="varName"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="StateExpr">StateExpr:</a></p><img border="0" src="diagram/StateExpr.png" height="37" width="353" usemap="#StateExpr.map"><map name="StateExpr.map"><area shape="rect" coords="103,1,227,33" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="247,1,323,33" href="#varName" title="varName"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#stateExpr" title="stateExpr" shape="rect">stateExpr</a></div>
+               <div><a href="#StateExpr" title="StateExpr" shape="rect">StateExpr</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'state' <a href="#typeName" title="typeName" shape="rect">typeName</a> <a href="#varName" title="varName" shape="rect">varName</a></div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'state' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> <a href="#varName" title="varName" shape="rect">varName</a></div></code></div>
          </p>
       
       <p>referenced by:
@@ -487,13 +547,13 @@
             
             <li><a href="#funcBody" title="funcBody">funcBody</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="assignExpr">assignExpr:</a></p><img border="0" src="diagram/assignExpr.png" height="37" width="283" usemap="#assignExpr.map"><map name="assignExpr.map"><area shape="rect" coords="29,1,105,33" href="#varName" title="varName"><area shape="rect" coords="175,1,253,33" href="#condExpr" title="condExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="AssignExpr">AssignExpr:</a></p><img border="0" src="diagram/AssignExpr.png" height="37" width="285" usemap="#AssignExpr.map"><map name="AssignExpr.map"><area shape="rect" coords="29,1,105,33" href="#varName" title="varName"><area shape="rect" coords="175,1,255,33" href="#CondExpr" title="CondExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#assignExpr" title="assignExpr" shape="rect">assignExpr</a></div>
+               <div><a href="#AssignExpr" title="AssignExpr" shape="rect">AssignExpr</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#varName" title="varName" shape="rect">varName</a> '=' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a></div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#varName" title="varName" shape="rect">varName</a> '=' <a href="#CondExpr" title="CondExpr" shape="rect">CondExpr</a></div></code></div>
          </p>
       
       <p>referenced by:
@@ -502,140 +562,104 @@
             
             <li><a href="#funcBody" title="funcBody">funcBody</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="returnExpr">returnExpr:</a></p><img border="0" src="diagram/returnExpr.png" height="37" width="219" usemap="#returnExpr.map"><map name="returnExpr.map"><area shape="rect" coords="111,1,189,33" href="#condExpr" title="condExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="CondExpr">CondExpr:</a></p><img border="0" src="diagram/CondExpr.png" height="113" width="521" usemap="#CondExpr.map"><map name="CondExpr.map"><area shape="rect" coords="29,1,115,33" href="#MergeExpr" title="MergeExpr"><area shape="rect" coords="201,33,287,65" href="#MergeExpr" title="MergeExpr"><area shape="rect" coords="371,77,451,109" href="#CondExpr" title="CondExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#returnExpr" title="returnExpr" shape="rect">returnExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'return' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a></div></code></div>
+               <div><a href="#CondExpr" title="CondExpr" shape="rect">CondExpr</a>&nbsp;::= <a href="#MergeExpr" title="MergeExpr" shape="rect">MergeExpr</a> ( '?' <a href="#MergeExpr" title="MergeExpr" shape="rect">MergeExpr</a> ':' ( 'null' | <a href="#CondExpr" title="CondExpr" shape="rect">CondExpr</a> ) )?</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
+            
+            <li><a href="#AssignExpr" title="AssignExpr">AssignExpr</a></li>
+            
+            <li><a href="#CondExpr" title="CondExpr">CondExpr</a></li>
+            
+            <li><a href="#FieldExpr" title="FieldExpr">FieldExpr</a></li>
+            
+            <li><a href="#FuncExpr" title="FuncExpr">FuncExpr</a></li>
+            
+            <li><a href="#SubExpr" title="SubExpr">SubExpr</a></li>
             
             <li><a href="#funcBody" title="funcBody">funcBody</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="condExpr">condExpr:</a></p><img border="0" src="diagram/condExpr.png" height="69" width="501" usemap="#condExpr.map"><map name="condExpr.map"><area shape="rect" coords="29,1,117,33" href="#mergeExpr" title="mergeExpr"><area shape="rect" coords="203,33,293,65" href="#trueBranch" title="trueBranch"><area shape="rect" coords="357,33,451,65" href="#falseBranch" title="falseBranch"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="MergeExpr">MergeExpr:</a></p><img border="0" src="diagram/MergeExpr.png" height="81" width="191" usemap="#MergeExpr.map"><map name="MergeExpr.map"><area shape="rect" coords="49,45,141,77" href="#ConcatExpr" title="ConcatExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#condExpr" title="condExpr" shape="rect">condExpr</a>&nbsp;::= <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> ( '?' <a href="#trueBranch" title="trueBranch" shape="rect">trueBranch</a> ':' <a href="#falseBranch" title="falseBranch" shape="rect">falseBranch</a> )?</div></code></div>
+               <div><a href="#MergeExpr" title="MergeExpr" shape="rect">MergeExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#ConcatExpr" title="ConcatExpr" shape="rect">ConcatExpr</a> ( '|' <a href="#ConcatExpr" title="ConcatExpr" shape="rect">ConcatExpr</a> )*</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#assignExpr" title="assignExpr">assignExpr</a></li>
+            <li><a href="#CondExpr" title="CondExpr">CondExpr</a></li>
             
-            <li><a href="#falseBranch" title="falseBranch">falseBranch</a></li>
-            
-            <li><a href="#funcExpr" title="funcExpr">funcExpr</a></li>
-            
-            <li><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></li>
-            
-            <li><a href="#returnExpr" title="returnExpr">returnExpr</a></li>
-            
-            <li><a href="#typeExpr" title="typeExpr">typeExpr</a></li>
+            <li><a href="#LutExpr" title="LutExpr">LutExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="trueBranch">trueBranch:</a></p><img border="0" src="diagram/trueBranch.png" height="37" width="147" usemap="#trueBranch.map"><map name="trueBranch.map"><area shape="rect" coords="29,1,117,33" href="#mergeExpr" title="mergeExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConcatExpr">ConcatExpr:</a></p><img border="0" src="diagram/ConcatExpr.png" height="81" width="189" usemap="#ConcatExpr.map"><map name="ConcatExpr.map"><area shape="rect" coords="49,45,139,77" href="#PostfixExpr" title="PostfixExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#trueBranch" title="trueBranch" shape="rect">trueBranch</a></div>
+               <div><a href="#ConcatExpr" title="ConcatExpr" shape="rect">ConcatExpr</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a></div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#PostfixExpr" title="PostfixExpr" shape="rect">PostfixExpr</a> ( '&amp;' <a href="#PostfixExpr" title="PostfixExpr" shape="rect">PostfixExpr</a> )*</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#condExpr" title="condExpr">condExpr</a></li>
+            <li><a href="#MergeExpr" title="MergeExpr">MergeExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="falseBranch">falseBranch:</a></p><img border="0" src="diagram/falseBranch.png" height="81" width="177" usemap="#falseBranch.map"><map name="falseBranch.map"><area shape="rect" coords="49,45,127,77" href="#condExpr" title="condExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="PostfixExpr">PostfixExpr:</a></p><img border="0" src="diagram/PostfixExpr.png" height="257" width="187" usemap="#PostfixExpr.map"><map name="PostfixExpr.map"><area shape="rect" coords="49,1,121,33" href="#SubExpr" title="SubExpr"><area shape="rect" coords="49,45,137,77" href="#VectorExpr" title="VectorExpr"><area shape="rect" coords="49,89,125,121" href="#SliceExpr" title="SliceExpr"><area shape="rect" coords="49,133,125,165" href="#FuncExpr" title="FuncExpr"><area shape="rect" coords="49,177,117,209" href="#LutExpr" title="LutExpr"><area shape="rect" coords="49,221,127,253" href="#TypeExpr" title="TypeExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#falseBranch" title="falseBranch" shape="rect">falseBranch</a></div>
+               <div><a href="#PostfixExpr" title="PostfixExpr" shape="rect">PostfixExpr</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'null'</div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#SubExpr" title="SubExpr" shape="rect">SubExpr</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#condExpr" title="condExpr" shape="rect">condExpr</a></div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#VectorExpr" title="VectorExpr" shape="rect">VectorExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#SliceExpr" title="SliceExpr" shape="rect">SliceExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#FuncExpr" title="FuncExpr" shape="rect">FuncExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#LutExpr" title="LutExpr" shape="rect">LutExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#TypeExpr" title="TypeExpr" shape="rect">TypeExpr</a></div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#condExpr" title="condExpr">condExpr</a></li>
+            <li><a href="#ConcatExpr" title="ConcatExpr">ConcatExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="mergeExpr">mergeExpr:</a></p><img border="0" src="diagram/mergeExpr.png" height="81" width="189" usemap="#mergeExpr.map"><map name="mergeExpr.map"><area shape="rect" coords="49,45,139,77" href="#concatExpr" title="concatExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="SubExpr">SubExpr:</a></p><img border="0" src="diagram/SubExpr.png" height="37" width="231" usemap="#SubExpr.map"><map name="SubExpr.map"><area shape="rect" coords="75,1,155,33" href="#CondExpr" title="CondExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#concatExpr" title="concatExpr" shape="rect">concatExpr</a> ( '|' <a href="#concatExpr" title="concatExpr" shape="rect">concatExpr</a> )*</div></code></div>
+               <div><a href="#SubExpr" title="SubExpr" shape="rect">SubExpr</a>&nbsp;&nbsp;::= '(' <a href="#CondExpr" title="CondExpr" shape="rect">CondExpr</a> ')'</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#condExpr" title="condExpr">condExpr</a></li>
-            
-            <li><a href="#lutExpr" title="lutExpr">lutExpr</a></li>
-            
-            <li><a href="#trueBranch" title="trueBranch">trueBranch</a></li>
+            <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="concatExpr">concatExpr:</a></p><img border="0" src="diagram/concatExpr.png" height="81" width="189" usemap="#concatExpr.map"><map name="concatExpr.map"><area shape="rect" coords="49,45,139,77" href="#postfixExpr" title="postfixExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="VectorExpr">VectorExpr:</a></p><img border="0" src="diagram/VectorExpr.png" height="125" width="163" usemap="#VectorExpr.map"><map name="VectorExpr.map"><area shape="rect" coords="49,1,87,33" href="#trit" title="trit"><area shape="rect" coords="49,45,113,77" href="#integer" title="integer"><area shape="rect" coords="49,89,97,121" href="#float" title="float"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#concatExpr" title="concatExpr" shape="rect">concatExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#postfixExpr" title="postfixExpr" shape="rect">postfixExpr</a> ( '&amp;' <a href="#postfixExpr" title="postfixExpr" shape="rect">postfixExpr</a> )*</div></code></div>
-         </p>
-      
-      <p>referenced by:
-         
-         <ul>
-            
-            <li><a href="#mergeExpr" title="mergeExpr">mergeExpr</a></li>
-            </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="postfixExpr">postfixExpr:</a></p><img border="0" src="diagram/postfixExpr.png" height="257" width="269" usemap="#postfixExpr.map"><map name="postfixExpr.map"><area shape="rect" coords="49,1,131,33" href="#valueExpr" title="valueExpr"><area shape="rect" coords="49,45,125,77" href="#typeExpr" title="typeExpr"><area shape="rect" coords="49,89,123,121" href="#funcExpr" title="funcExpr"><area shape="rect" coords="49,133,113,165" href="#lutExpr" title="lutExpr"><area shape="rect" coords="49,177,125,209" href="#sliceExpr" title="sliceExpr"><area shape="rect" coords="95,221,173,253" href="#condExpr" title="condExpr"></map><p>
-         
-         <div class="ebnf"><code>
-               
-               <div><a href="#postfixExpr" title="postfixExpr" shape="rect">postfixExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#valueExpr" title="valueExpr" shape="rect">valueExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#typeExpr" title="typeExpr" shape="rect">typeExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#funcExpr" title="funcExpr" shape="rect">funcExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#lutExpr" title="lutExpr" shape="rect">lutExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#sliceExpr" title="sliceExpr" shape="rect">sliceExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| '(' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a> ')'</div></code></div>
-         </p>
-      
-      <p>referenced by:
-         
-         <ul>
-            
-            <li><a href="#concatExpr" title="concatExpr">concatExpr</a></li>
-            </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="valueExpr">valueExpr:</a></p><img border="0" src="diagram/valueExpr.png" height="125" width="163" usemap="#valueExpr.map"><map name="valueExpr.map"><area shape="rect" coords="49,1,87,33" href="#trit" title="trit"><area shape="rect" coords="49,45,113,77" href="#integer" title="integer"><area shape="rect" coords="49,89,97,121" href="#float" title="float"></map><p>
-         
-         <div class="ebnf"><code>
-               
-               <div><a href="#valueExpr" title="valueExpr" shape="rect">valueExpr</a></div>
+               <div><a href="#VectorExpr" title="VectorExpr" shape="rect">VectorExpr</a></div>
                
                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#trit" title="trit" shape="rect">trit</a></div>
                
@@ -648,142 +672,213 @@
          
          <ul>
             
-            <li><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></li>
+            <li><a href="#ExecStmt" title="ExecStmt">ExecStmt</a></li>
             
-            <li><a href="#testStmt" title="testStmt">testStmt</a></li>
+            <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="typeExpr">typeExpr:</a></p><img border="0" src="diagram/typeExpr.png" height="53" width="529" usemap="#typeExpr.map"><map name="typeExpr.map"><area shape="rect" coords="29,17,113,49" href="#typeName" title="typeName"><area shape="rect" coords="201,17,283,49" href="#fieldName" title="fieldName"><area shape="rect" coords="353,17,431,49" href="#condExpr" title="condExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="SliceExpr">SliceExpr:</a></p><img border="0" src="diagram/SliceExpr.png" height="117" width="847" usemap="#SliceExpr.map"><map name="SliceExpr.map"><area shape="rect" coords="49,17,125,49" href="#varName" title="varName"><area shape="rect" coords="49,61,145,93" href="#paramName" title="paramName"><area shape="rect" coords="269,17,353,49" href="#NameExpr" title="NameExpr"><area shape="rect" coords="479,49,563,81" href="#ConstExpr" title="ConstExpr"><area shape="rect" coords="647,81,731,113" href="#ConstExpr" title="ConstExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#typeExpr" title="typeExpr" shape="rect">typeExpr</a>&nbsp;::= <a href="#typeName" title="typeName" shape="rect">typeName</a> '{' ( <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> '=' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a> )+ '}'</div></code></div>
+               <div><a href="#SliceExpr" title="SliceExpr" shape="rect">SliceExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= ( <a href="#varName" title="varName" shape="rect">varName</a> | <a href="#paramName" title="paramName" shape="rect">paramName</a> ) ( '.' <a href="#NameExpr" title="NameExpr" shape="rect">NameExpr</a> )* ( '[' <a href="#ConstExpr" title="ConstExpr" shape="rect">ConstExpr</a> ( ':' <a href="#ConstExpr" title="ConstExpr" shape="rect">ConstExpr</a> )? ']' )?</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></li>
+            <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="funcExpr">funcExpr:</a></p><img border="0" src="diagram/funcExpr.png" height="97" width="655" usemap="#funcExpr.map"><map name="funcExpr.map"><area shape="rect" coords="29,45,111,77" href="#funcName" title="funcName"><area shape="rect" coords="221,45,305,77" href="#typeName" title="typeName"><area shape="rect" coords="481,45,559,77" href="#condExpr" title="condExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="FuncExpr">FuncExpr:</a></p><img border="0" src="diagram/FuncExpr.png" height="97" width="697" usemap="#FuncExpr.map"><map name="FuncExpr.map"><area shape="rect" coords="29,45,111,77" href="#funcName" title="funcName"><area shape="rect" coords="221,45,345,77" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="521,45,601,77" href="#CondExpr" title="CondExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#funcExpr" title="funcExpr" shape="rect">funcExpr</a>&nbsp;::= <a href="#funcName" title="funcName" shape="rect">funcName</a> ( '&lt;' <a href="#typeName" title="typeName" shape="rect">typeName</a> ( ',' <a href="#typeName" title="typeName" shape="rect">typeName</a> )* '&gt;' )? '(' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a> ( ',' <a href="#condExpr" title="condExpr" shape="rect">condExpr</a> )* ')'</div></code></div>
+               <div><a href="#FuncExpr" title="FuncExpr" shape="rect">FuncExpr</a>&nbsp;::= <a href="#funcName" title="funcName" shape="rect">funcName</a> ( '&lt;' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> ( ',' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> )* '&gt;' )? '(' <a href="#CondExpr" title="CondExpr" shape="rect">CondExpr</a> ( ',' <a href="#CondExpr" title="CondExpr" shape="rect">CondExpr</a> )* ')'</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#evalStmt" title="evalStmt">evalStmt</a></li>
+            <li><a href="#ExecStmt" title="ExecStmt">ExecStmt</a></li>
             
-            <li><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></li>
-            
-            <li><a href="#testStmt" title="testStmt">testStmt</a></li>
+            <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="lutExpr">lutExpr:</a></p><img border="0" src="diagram/lutExpr.png" height="81" width="371" usemap="#lutExpr.map"><map name="lutExpr.map"><area shape="rect" coords="29,45,101,77" href="#lutName" title="lutName"><area shape="rect" coords="187,45,275,77" href="#mergeExpr" title="mergeExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="LutExpr">LutExpr:</a></p><img border="0" src="diagram/LutExpr.png" height="81" width="369" usemap="#LutExpr.map"><map name="LutExpr.map"><area shape="rect" coords="29,45,101,77" href="#lutName" title="lutName"><area shape="rect" coords="187,45,273,77" href="#MergeExpr" title="MergeExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#lutExpr" title="lutExpr" shape="rect">lutExpr</a>&nbsp;&nbsp;::= <a href="#lutName" title="lutName" shape="rect">lutName</a> '[' <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> ( ',' <a href="#mergeExpr" title="mergeExpr" shape="rect">mergeExpr</a> )* ']'</div></code></div>
+               <div><a href="#LutExpr" title="LutExpr" shape="rect">LutExpr</a>&nbsp;&nbsp;::= <a href="#lutName" title="lutName" shape="rect">lutName</a> '[' <a href="#MergeExpr" title="MergeExpr" shape="rect">MergeExpr</a> ( ',' <a href="#MergeExpr" title="MergeExpr" shape="rect">MergeExpr</a> )* ']'</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></li>
+            <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="sliceExpr">sliceExpr:</a></p><img border="0" src="diagram/sliceExpr.png" height="117" width="841" usemap="#sliceExpr.map"><map name="sliceExpr.map"><area shape="rect" coords="49,17,125,49" href="#varName" title="varName"><area shape="rect" coords="49,61,145,93" href="#paramName" title="paramName"><area shape="rect" coords="269,17,351,49" href="#fieldName" title="fieldName"><area shape="rect" coords="477,49,559,81" href="#constExpr" title="constExpr"><area shape="rect" coords="643,81,725,113" href="#constExpr" title="constExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="TypeExpr">TypeExpr:</a></p><img border="0" src="diagram/TypeExpr.png" height="53" width="417" usemap="#TypeExpr.map"><map name="TypeExpr.map"><area shape="rect" coords="29,17,153,49" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="241,17,319,49" href="#FieldExpr" title="FieldExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#sliceExpr" title="sliceExpr" shape="rect">sliceExpr</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= ( <a href="#varName" title="varName" shape="rect">varName</a> | <a href="#paramName" title="paramName" shape="rect">paramName</a> ) ( '.' <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> )* ( '[' <a href="#constExpr" title="constExpr" shape="rect">constExpr</a> ( ':' <a href="#constExpr" title="constExpr" shape="rect">constExpr</a> )? ']' )?</div></code></div>
+               <div><a href="#TypeExpr" title="TypeExpr" shape="rect">TypeExpr</a>&nbsp;::= <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> '{' <a href="#FieldExpr" title="FieldExpr" shape="rect">FieldExpr</a>+ '}'</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#postfixExpr" title="postfixExpr">postfixExpr</a></li>
+            <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="constExpr">constExpr:</a></p><img border="0" src="diagram/constExpr.png" height="125" width="185" usemap="#constExpr.map"><map name="constExpr.map"><area shape="rect" coords="49,89,135,121" href="#constTerm" title="constTerm"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="FieldExpr">FieldExpr:</a></p><img border="0" src="diagram/FieldExpr.png" height="37" width="291" usemap="#FieldExpr.map"><map name="FieldExpr.map"><area shape="rect" coords="29,1,111,33" href="#fieldName" title="fieldName"><area shape="rect" coords="181,1,261,33" href="#CondExpr" title="CondExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#constExpr" title="constExpr" shape="rect">constExpr</a></div>
+               <div><a href="#FieldExpr" title="FieldExpr" shape="rect">FieldExpr</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#constTerm" title="constTerm" shape="rect">constTerm</a> ( [-+] <a href="#constTerm" title="constTerm" shape="rect">constTerm</a> )*</div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> '=' <a href="#CondExpr" title="CondExpr" shape="rect">CondExpr</a></div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#constFactor" title="constFactor">constFactor</a></li>
-            
-            <li><a href="#sliceExpr" title="sliceExpr">sliceExpr</a></li>
-            
-            <li><a href="#typeSize" title="typeSize">typeSize</a></li>
+            <li><a href="#TypeExpr" title="TypeExpr">TypeExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="constTerm">constTerm:</a></p><img border="0" src="diagram/constTerm.png" height="169" width="193" usemap="#constTerm.map"><map name="constTerm.map"><area shape="rect" coords="49,133,143,165" href="#constFactor" title="constFactor"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConstExpr">ConstExpr:</a></p><img border="0" src="diagram/ConstExpr.png" height="125" width="187" usemap="#ConstExpr.map"><map name="ConstExpr.map"><area shape="rect" coords="49,89,137,121" href="#ConstTerm" title="ConstTerm"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#constTerm" title="constTerm" shape="rect">constTerm</a></div>
+               <div><a href="#ConstExpr" title="ConstExpr" shape="rect">ConstExpr</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#constFactor" title="constFactor" shape="rect">constFactor</a> ( [*/%] <a href="#constFactor" title="constFactor" shape="rect">constFactor</a> )*</div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#ConstTerm" title="ConstTerm" shape="rect">ConstTerm</a> ( [-+] <a href="#ConstTerm" title="ConstTerm" shape="rect">ConstTerm</a> )*</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#constExpr" title="constExpr">constExpr</a></li>
+            <li><a href="#ConstSubExpr" title="ConstSubExpr">ConstSubExpr</a></li>
+            
+            <li><a href="#SliceExpr" title="SliceExpr">SliceExpr</a></li>
+            
+            <li><a href="#TritVectorDef" title="TritVectorDef">TritVectorDef</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="constFactor">constFactor:</a></p><img border="0" src="diagram/constFactor.png" height="203" width="495" usemap="#constFactor.map"><map name="constFactor.map"><area shape="rect" coords="135,35,203,67" href="#number" title="number"><area shape="rect" coords="135,101,219,133" href="#typeName" title="typeName"><area shape="rect" coords="323,101,405,133" href="#fieldName" title="fieldName"><area shape="rect" coords="181,167,263,199" href="#constExpr" title="constExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConstTerm">ConstTerm:</a></p><img border="0" src="diagram/ConstTerm.png" height="169" width="195" usemap="#ConstTerm.map"><map name="ConstTerm.map"><area shape="rect" coords="49,133,145,165" href="#ConstFactor" title="ConstFactor"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#constFactor" title="constFactor" shape="rect">constFactor</a></div>
+               <div><a href="#ConstTerm" title="ConstTerm" shape="rect">ConstTerm</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '-'* ( <a href="#number" title="number" shape="rect">number</a> | <a href="#typeName" title="typeName" shape="rect">typeName</a> ( '.' <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> )* | '(' <a href="#constExpr" title="constExpr" shape="rect">constExpr</a> ')' )</div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#ConstFactor" title="ConstFactor" shape="rect">ConstFactor</a> ( [*/%] <a href="#ConstFactor" title="ConstFactor" shape="rect">ConstFactor</a> )*</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#constTerm" title="constTerm">constTerm</a></li>
+            <li><a href="#ConstExpr" title="ConstExpr">ConstExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="typeSize">typeSize:</a></p><img border="0" src="diagram/typeSize.png" height="37" width="233" usemap="#typeSize.map"><map name="typeSize.map"><area shape="rect" coords="75,1,157,33" href="#constExpr" title="constExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConstFactor">ConstFactor:</a></p><img border="0" src="diagram/ConstFactor.png" height="207" width="451" usemap="#ConstFactor.map"><map name="ConstFactor.map"><area shape="rect" coords="49,1,157,33" href="#ConstSubExpr" title="ConstSubExpr"><area shape="rect" coords="95,45,191,77" href="#ConstFactor" title="ConstFactor"><area shape="rect" coords="49,89,155,121" href="#ConstNumber" title="ConstNumber"><area shape="rect" coords="49,155,173,187" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="277,155,361,187" href="#NameExpr" title="NameExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#typeSize" title="typeSize" shape="rect">typeSize</a>&nbsp;::= '[' <a href="#constExpr" title="constExpr" shape="rect">constExpr</a> ']'</div></code></div>
+               <div><a href="#ConstFactor" title="ConstFactor" shape="rect">ConstFactor</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#ConstSubExpr" title="ConstSubExpr" shape="rect">ConstSubExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| '-' <a href="#ConstFactor" title="ConstFactor" shape="rect">ConstFactor</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#ConstNumber" title="ConstNumber" shape="rect">ConstNumber</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> ( '.' <a href="#NameExpr" title="NameExpr" shape="rect">NameExpr</a> )*</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#typeStmt" title="typeStmt">typeStmt</a></li>
+            <li><a href="#ConstFactor" title="ConstFactor">ConstFactor</a></li>
+            
+            <li><a href="#ConstTerm" title="ConstTerm">ConstTerm</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="tritList">tritList:</a></p><img border="0" src="diagram/tritList.png" height="81" width="137" usemap="#tritList.map"><map name="tritList.map"><area shape="rect" coords="49,45,87,77" href="#trit" title="trit"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConstSubExpr">ConstSubExpr:</a></p><img border="0" src="diagram/ConstSubExpr.png" height="37" width="235" usemap="#ConstSubExpr.map"><map name="ConstSubExpr.map"><area shape="rect" coords="75,1,159,33" href="#ConstExpr" title="ConstExpr"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#tritList" title="tritList" shape="rect">tritList</a>&nbsp;::= <a href="#trit" title="trit" shape="rect">trit</a> ( ',' <a href="#trit" title="trit" shape="rect">trit</a> )*</div></code></div>
+               <div><a href="#ConstSubExpr" title="ConstSubExpr" shape="rect">ConstSubExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '(' <a href="#ConstExpr" title="ConstExpr" shape="rect">ConstExpr</a> ')'</div></code></div>
          </p>
       
       <p>referenced by:
          
          <ul>
             
-            <li><a href="#lutStmt" title="lutStmt">lutStmt</a></li>
+            <li><a href="#ConstFactor" title="ConstFactor">ConstFactor</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConstNumber">ConstNumber:</a></p><img border="0" src="diagram/ConstNumber.png" height="37" width="127" usemap="#ConstNumber.map"><map name="ConstNumber.map"><area shape="rect" coords="29,1,97,33" href="#number" title="number"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#ConstNumber" title="ConstNumber" shape="rect">ConstNumber</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#number" title="number" shape="rect">number</a></div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#AffectExpr" title="AffectExpr">AffectExpr</a></li>
+            
+            <li><a href="#ConstFactor" title="ConstFactor">ConstFactor</a></li>
+            
+            <li><a href="#JoinExpr" title="JoinExpr">JoinExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConstTypeName">ConstTypeName:</a></p><img border="0" src="diagram/ConstTypeName.png" height="37" width="143" usemap="#ConstTypeName.map"><map name="ConstTypeName.map"><area shape="rect" coords="29,1,113,33" href="#typeName" title="typeName"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#typeName" title="typeName" shape="rect">typeName</a></div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ConstFactor" title="ConstFactor">ConstFactor</a></li>
+            
+            <li><a href="#FuncExpr" title="FuncExpr">FuncExpr</a></li>
+            
+            <li><a href="#StateExpr" title="StateExpr">StateExpr</a></li>
+            
+            <li><a href="#TypeExpr" title="TypeExpr">TypeExpr</a></li>
+            
+            <li><a href="#funcParam" title="funcParam">funcParam</a></li>
+            
+            <li><a href="#funcSignature" title="funcSignature">funcSignature</a></li>
+            
+            <li><a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="NameExpr">NameExpr:</a></p><img border="0" src="diagram/NameExpr.png" height="37" width="115" usemap="#NameExpr.map"><map name="NameExpr.map"><area shape="rect" coords="29,1,85,33" href="#name" title="name"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#NameExpr" title="NameExpr" shape="rect">NameExpr</a>&nbsp;::= <a href="#name" title="name" shape="rect">name</a></div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ConstFactor" title="ConstFactor">ConstFactor</a></li>
+            
+            <li><a href="#SliceExpr" title="SliceExpr">SliceExpr</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="trit">trit:</a></p><img border="0" src="diagram/trit.png" height="125" width="127"><p>
          
@@ -796,18 +891,24 @@
          
          <ul>
             
-            <li><a href="#tritList" title="tritList">tritList</a></li>
+            <li><a href="#VectorExpr" title="VectorExpr">VectorExpr</a></li>
             
-            <li><a href="#valueExpr" title="valueExpr">valueExpr</a></li>
+            <li><a href="#tritList" title="tritList">tritList</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="name">name:</a></p><img border="0" src="diagram/name.png" height="291" width="283"><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="name">name:</a></p><img border="0" src="diagram/name.png" height="247" width="283"><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#name" title="name" shape="rect">name</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= [a-zA-Z_] [0-9a-zA-Z_]*</div></code></div>
+               <div><a href="#name" title="name" shape="rect">name</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= [a-zA-Z] [0-9a-zA-Z_]*</div></code></div>
          </p>
       
-      <p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="number">number:</a></p><img border="0" src="diagram/number.png" height="53" width="161"><p>
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#NameExpr" title="NameExpr">NameExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="number">number:</a></p><img border="0" src="diagram/number.png" height="53" width="161"><p>
          
          <div class="ebnf"><code>
                
@@ -818,15 +919,11 @@
          
          <ul>
             
-            <li><a href="#affectExpr" title="affectExpr">affectExpr</a></li>
-            
-            <li><a href="#constFactor" title="constFactor">constFactor</a></li>
+            <li><a href="#ConstNumber" title="ConstNumber">ConstNumber</a></li>
             
             <li><a href="#float" title="float">float</a></li>
             
             <li><a href="#integer" title="integer">integer</a></li>
-            
-            <li><a href="#joinExpr" title="joinExpr">joinExpr</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="integer">integer:</a></p><img border="0" src="diagram/integer.png" height="69" width="213" usemap="#integer.map"><map name="integer.map"><area shape="rect" coords="115,1,183,33" href="#number" title="number"></map><p>
          
@@ -839,7 +936,7 @@
          
          <ul>
             
-            <li><a href="#valueExpr" title="valueExpr">valueExpr</a></li>
+            <li><a href="#VectorExpr" title="VectorExpr">VectorExpr</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="float">float:</a></p><img border="0" src="diagram/float.png" height="69" width="345" usemap="#float.map"><map name="float.map"><area shape="rect" coords="115,1,183,33" href="#number" title="number"><area shape="rect" coords="247,1,315,33" href="#number" title="number"></map><p>
          
@@ -852,7 +949,7 @@
          
          <ul>
             
-            <li><a href="#valueExpr" title="valueExpr">valueExpr</a></li>
+            <li><a href="#VectorExpr" title="VectorExpr">VectorExpr</a></li>
             </ul>
          </p><br><hr>
       

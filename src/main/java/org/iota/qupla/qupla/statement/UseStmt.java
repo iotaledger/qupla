@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.expression.constant.ConstTypeName;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 
@@ -58,7 +58,7 @@ public class UseStmt extends BaseExpr
 
     module.funcs.addAll(placeHolders);
 
-    final Module oldCurrentModule = currentModule;
+    final QuplaModule oldCurrentModule = currentModule;
     currentModule = module;
     currentUse = this;
     currentUseIndex = 0;
@@ -130,7 +130,7 @@ public class UseStmt extends BaseExpr
   private void parseTypeInstantiation(final Tokenizer tokenizer)
   {
     final ArrayList<BaseExpr> typeArgs = new ArrayList<>();
-    expect(tokenizer, Token.TOK_TEMPL_OPEN, "<");
+    expect(tokenizer, Token.TOK_TEMPL_OPEN, "'<'");
 
     typeArgs.add(new ConstTypeName(tokenizer));
 
@@ -142,6 +142,7 @@ public class UseStmt extends BaseExpr
     }
 
     expect(tokenizer, Token.TOK_TEMPL_CLOSE, "',' or '>'");
+
     typeInstantiations.add(typeArgs);
   }
 }

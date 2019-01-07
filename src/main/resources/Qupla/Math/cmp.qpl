@@ -60,7 +60,7 @@ func Trit cmp<Trit> (Trit lhs, Trit rhs) {
   return cmp[lhs, rhs]
 }
 
-template cmp<T> {
+template cmp<T> = A + B + C {
   type A [T / 3]
   type B [T / 3]
   type C [T / 3]
@@ -74,7 +74,7 @@ template cmp<T> {
 
 use cmp<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
-template cmp2<T> {
+template cmp2<T> = A + B {
   type A [T / 2]
   type B [T / 2]
 
@@ -85,7 +85,7 @@ template cmp2<T> {
   }
 }
 
-use cmp2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use cmp2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>
 
 
 test 0 = cmp<Tiny>(-1, -1)

@@ -4,7 +4,7 @@
 // significant trit is never zero except when the value is exactly zero
 
 
-template float<T> {
+template float<T> = M + E {
   type M [T.mantissa]
   type E [T.exponent]
   type M2 [M * 2]

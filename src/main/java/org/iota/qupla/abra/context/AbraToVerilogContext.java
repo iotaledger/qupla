@@ -33,8 +33,7 @@ public class AbraToVerilogContext extends AbraBaseContext
 
     super.eval(module);
 
-    verilog.addMergeLut(this);
-    verilog.addMergeFuncs(this);
+    verilog.generateMergeFuncs(this);
 
     fileClose();
   }
@@ -66,22 +65,24 @@ public class AbraToVerilogContext extends AbraBaseContext
     }
 
     final String funcName = branch.name;
-    append("function [" + (branch.size * 2 - 1) + ":0] ").append(funcName).append("(").newline().indent();
+    append("function " + size(branch.size) + " ").append(funcName).append("(").newline().indent();
 
     boolean first = true;
     for (final AbraBaseSite input : branch.inputs)
     {
       append(first ? "  " : ", ");
       first = false;
-      append("input [" + (input.size * 2 - 1) + ":0] ").append(input.varName).newline();
+      append("input " + size(input.size) + " ").append(input.varName).newline();
     }
 
     append(");").newline();
 
     for (final AbraBaseSite site : branch.sites)
     {
-      append("reg [" + (site.size * 2 - 1) + ":0] ").append(site.varName).append(";").newline();
+      append("reg " + size(site.size) + " ").append(site.varName).append(";").newline();
     }
+
+    append("reg " + size(branch.size) + " ").append(funcName).append("_ret;").newline();
 
     if (branch.sites.size() != 0)
     {
@@ -104,7 +105,7 @@ public class AbraToVerilogContext extends AbraBaseContext
       append(";").newline();
     }
 
-    append(funcName).append(" = ");
+    append(funcName).append("_ret = ");
     if (branch.outputs.size() != 1)
     {
       append("{ ");
@@ -124,6 +125,8 @@ public class AbraToVerilogContext extends AbraBaseContext
     }
 
     append(";").newline();
+
+    append(funcName).append(" = ").append(funcName).append("_ret;").newline();
 
     undent().append("end").newline().undent();
     append("endfunction").newline();
@@ -191,7 +194,7 @@ public class AbraToVerilogContext extends AbraBaseContext
     boolean first = true;
     for (final AbraBaseSite input : knot.inputs)
     {
-      append(first ? "" : " : ").append(input.varName);
+      append(first ? "" : ", ").append(input.varName);
       first = false;
       totalSize += input.size;
     }
@@ -205,9 +208,9 @@ public class AbraToVerilogContext extends AbraBaseContext
     final AbraSiteParam input = (AbraSiteParam) branch.inputs.get(branch.inputs.size() - 1);
     if (totalSize > input.size)
     {
-      final int start = input.offset * 2;
-      final int end = start + input.size * 2 - 1;
-      append("[" + end + ":" + start + "]");
+      final int start = (totalSize - input.offset) * 2 - 1;
+      final int end = start - input.size * 2 + 1;
+      append("[" + start + ":" + end + "]");
     }
   }
 
@@ -266,7 +269,7 @@ public class AbraToVerilogContext extends AbraBaseContext
       return;
     }
 
-    verilog.mergefuncs.add(merge.size);
+    verilog.mergeFuncs.add(merge.size);
 
     for (int i = 0; i < merge.inputs.size() - 1; i++)
     {
@@ -286,5 +289,10 @@ public class AbraToVerilogContext extends AbraBaseContext
   @Override
   public void evalParam(final AbraSiteParam param)
   {
+  }
+
+  private String size(final int trits)
+  {
+    return verilog.size(trits);
   }
 }

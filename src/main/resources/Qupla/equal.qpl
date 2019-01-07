@@ -74,7 +74,7 @@ func Bool equal<Trit>(Trit lhs, Trit rhs) {
   return equal[lhs, rhs]
 }
 
-template equal<T> {
+template equal<T> = A + B + C {
   type A [T / 3]
   type B [T / 3]
   type C [T / 3]
@@ -90,7 +90,7 @@ template equal<T> {
 use equal<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
 
-template equal2<T> {
+template equal2<T> = A + B {
   type A [T / 2]
   type B [T / 2]
 

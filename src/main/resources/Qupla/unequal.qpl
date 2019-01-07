@@ -17,7 +17,7 @@ func Bool unequal<Trit>(Trit lhs, Trit rhs) {
   return unequal[lhs, rhs]
 }
 
-template unequal<T> {
+template unequal<T> = A + B + C {
   type A [T / 3]
   type B [T / 3]
   type C [T / 3]
@@ -31,7 +31,7 @@ template unequal<T> {
 
 use unequal<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
-template unequal2<T> {
+template unequal2<T> = A + B {
   type A [T / 2]
   type B [T / 2]
 

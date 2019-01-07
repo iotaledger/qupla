@@ -21,7 +21,8 @@ public class TritStructDef extends BaseExpr
   {
     super(tokenizer, identifier);
 
-    tokenizer.nextToken();
+    expect(tokenizer, Token.TOK_GROUP_OPEN, "'{'");
+
     do
     {
       final Token fieldName = expect(tokenizer, Token.TOK_NAME, "field name");

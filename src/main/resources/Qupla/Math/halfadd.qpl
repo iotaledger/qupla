@@ -23,7 +23,7 @@ func TritCarry halfAdd<Trit> (Trit val, Carry carry) {
   return halfAdd[val, carry]
 }
 
-template halfAdd<T> {
+template halfAdd<T> = A + B + C {
   type A [T / 3]
   type B [T / 3]
   type C [T / 3]
@@ -42,7 +42,7 @@ template halfAdd<T> {
 
 use halfAdd<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
-template halfAdd2<T> {
+template halfAdd2<T> = A + B {
   type A [T / 2]
   type B [T / 2]
   type TCarry {
@@ -57,4 +57,4 @@ template halfAdd2<T> {
   }
 }
 
-use halfAdd2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use halfAdd2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>

@@ -7,7 +7,7 @@ func Trit all<Trit> (Trit val) {
   return val
 }
 
-template all<T> {
+template all<T> = A + B + C {
   type A [T / 3]
   type B [T / 3]
   type C [T / 3]
@@ -19,7 +19,7 @@ template all<T> {
 
 use all<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
-template all2<T> {
+template all2<T> = A + B {
   type A [T / 2]
   type B [T / 2]
 

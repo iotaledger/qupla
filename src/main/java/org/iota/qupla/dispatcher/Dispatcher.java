@@ -5,18 +5,18 @@ import java.util.HashMap;
 
 import org.iota.qupla.qupla.expression.JoinExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.statement.FuncStmt;
 
 public class Dispatcher
 {
   private static final HashMap<String, Environment> environments = new HashMap<>();
 
-  public Dispatcher(final Collection<Module> modules)
+  public Dispatcher(final Collection<QuplaModule> modules)
   {
     // add all functions in all modules that have join statements
     // as entities to their corresponding environment
-    for (final Module module : modules)
+    for (final QuplaModule module : modules)
     {
       for (final FuncStmt func : module.funcs)
       {

@@ -25,7 +25,7 @@ public class PostfixExpr extends BaseSubExpr
     case Token.TOK_FLOAT:
     case Token.TOK_NUMBER:
     case Token.TOK_MINUS:
-      expr = new IntegerExpr(tokenizer);
+      expr = new VectorExpr(tokenizer);
       return;
     }
 
@@ -48,20 +48,18 @@ public class PostfixExpr extends BaseSubExpr
     case Token.TOK_TEMPL_OPEN:
     case Token.TOK_FUNC_OPEN:
       expr = new FuncExpr(tokenizer, varName);
-      break;
-
-    case Token.TOK_GROUP_OPEN:
-      expr = new TypeExpr(tokenizer, varName);
-      break;
+      return;
 
     case Token.TOK_ARRAY_OPEN:
       expr = new LutExpr(tokenizer, varName);
-      break;
+      return;
 
-    default:
-      expect(tokenizer, 0, "'{', '(', '<', or '['");
-      break;
+    case Token.TOK_GROUP_OPEN:
+      expr = new TypeExpr(tokenizer, varName);
+      return;
     }
+
+    expect(tokenizer, 0, "'{', '(', '<', or '['");
   }
 
   @Override

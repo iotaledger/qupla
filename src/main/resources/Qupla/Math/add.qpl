@@ -9,7 +9,7 @@ template add<T> {
 }
 
 use add<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use add<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
+use add<Tryte2>, <Tiny2>, <Int2>, <Int4>, <Huge2>
 
 
 test  0 = add<Tiny>( 0,  0)

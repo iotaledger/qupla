@@ -7,18 +7,18 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 
-public class IntegerExpr extends BaseExpr
+public class VectorExpr extends BaseExpr
 {
   public TritVector vector;
 
-  public IntegerExpr(final IntegerExpr copy)
+  public VectorExpr(final VectorExpr copy)
   {
     super(copy);
 
     vector = new TritVector(copy.vector);
   }
 
-  public IntegerExpr(final Tokenizer tokenizer)
+  public VectorExpr(final Tokenizer tokenizer)
   {
     super(tokenizer);
 
@@ -83,7 +83,7 @@ public class IntegerExpr extends BaseExpr
   @Override
   public BaseExpr clone()
   {
-    return new IntegerExpr(this);
+    return new VectorExpr(this);
   }
 
   @Override

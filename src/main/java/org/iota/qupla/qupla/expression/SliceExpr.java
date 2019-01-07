@@ -14,6 +14,7 @@ public class SliceExpr extends BaseExpr
   public final ArrayList<BaseExpr> fields = new ArrayList<>();
   public int start;
   public BaseExpr startOffset;
+  public int varSize;
 
   public SliceExpr(final SliceExpr copy)
   {
@@ -23,6 +24,7 @@ public class SliceExpr extends BaseExpr
     fields.addAll(copy.fields);
     start = copy.start;
     startOffset = clone(copy.startOffset);
+    varSize = copy.varSize;
   }
 
   public SliceExpr(final Tokenizer tokenizer, final Token identifier)
@@ -42,12 +44,10 @@ public class SliceExpr extends BaseExpr
 
       startOffset = new ConstExpr(tokenizer).optimize();
 
-      switch (tokenizer.tokenId())
+      if (tokenizer.tokenId() == Token.TOK_COLON)
       {
-      case Token.TOK_COLON:
         tokenizer.nextToken();
         endOffset = new ConstExpr(tokenizer).optimize();
-        break;
       }
 
       expect(tokenizer, Token.TOK_ARRAY_CLOSE, "']'");
@@ -110,6 +110,7 @@ public class SliceExpr extends BaseExpr
         stackIndex = var.stackIndex;
         typeInfo = var.typeInfo;
         size = var.size;
+        varSize = size;
 
         analyzeVarFields(var);
         return;

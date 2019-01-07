@@ -21,14 +21,14 @@ import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
 import org.iota.qupla.qupla.expression.FuncExpr;
-import org.iota.qupla.qupla.expression.IntegerExpr;
 import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
 import org.iota.qupla.qupla.expression.TypeExpr;
+import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.LutStmt;
 import org.iota.qupla.qupla.statement.helper.LutEntry;
@@ -65,7 +65,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
   }
 
   @Override
-  public void eval(final Module module)
+  public void eval(final QuplaModule module)
   {
     super.eval(module);
 
@@ -390,7 +390,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
   }
 
   @Override
-  public void evalVector(final IntegerExpr integer)
+  public void evalVector(final VectorExpr integer)
   {
     final AbraSiteKnot site = new AbraSiteKnot();
     site.from(integer);

@@ -46,7 +46,7 @@ public class Token
   public int colNr;
   public int id;
   public int lineNr;
-  public Source source;
+  public QuplaSource source;
   public int symbol;
   public String text;
 

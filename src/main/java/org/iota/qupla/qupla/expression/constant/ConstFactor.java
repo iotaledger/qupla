@@ -31,6 +31,15 @@ public class ConstFactor extends BaseSubExpr
       expr = new ConstSubExpr(tokenizer);
       return;
 
+    case Token.TOK_MINUS:
+      negative = true;
+      expr = new ConstFactor(tokenizer);
+      return;
+
+    case Token.TOK_NUMBER:
+      expr = new ConstNumber(tokenizer);
+      return;
+
     case Token.TOK_NAME:
       expr = new ConstTypeName(tokenizer);
       while (tokenizer.tokenId() == Token.TOK_DOT)
@@ -40,16 +49,10 @@ public class ConstFactor extends BaseSubExpr
         fields.add(new NameExpr(tokenizer, "field name"));
       }
       return;
-
-    case Token.TOK_NUMBER:
-      expr = new ConstNumber(tokenizer);
-      return;
     }
 
-    expect(tokenizer, Token.TOK_MINUS, "name, number, '-', or '('");
+    expect(tokenizer, 0, "name, number, '-', or '('");
 
-    negative = true;
-    expr = new ConstFactor(tokenizer);
   }
 
   @Override

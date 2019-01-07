@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.qupla.context.QuplaPrintContext;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 import org.iota.qupla.qupla.statement.TypeStmt;
@@ -16,13 +16,13 @@ public abstract class BaseExpr
   protected static final String SEPARATOR = "_";
   public static int callNr;
   public static TypeStmt constTypeInfo;
-  public static Module currentModule;
+  public static QuplaModule currentModule;
   public static UseStmt currentUse;
   public static int currentUseIndex;
   protected static QuplaPrintContext printer = new QuplaPrintContext();
   public static final ArrayList<BaseExpr> scope = new ArrayList<>();
 
-  public Module module;
+  public QuplaModule module;
   public String name;
   public BaseExpr next;
   public Token origin;
@@ -122,7 +122,7 @@ public abstract class BaseExpr
     }
 
     BaseExpr externEntity = null;
-    for (final Module extern : module.modules)
+    for (final QuplaModule extern : module.modules)
     {
       for (final BaseExpr entity : extern.entities(classId))
       {

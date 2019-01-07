@@ -18,7 +18,7 @@ public class Tokenizer
   public int colNr;
   public int lineNr;
   public final ArrayList<String> lines = new ArrayList<>();
-  public Module module;
+  public QuplaModule module;
   private Token token;
 
   private static void addToken(final int id, final String name)

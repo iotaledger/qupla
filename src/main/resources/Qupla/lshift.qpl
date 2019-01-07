@@ -7,7 +7,8 @@ template lshift<T> {
 }
 
 use lshift<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use lshift<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>
+use lshift<Tryte2>, <Tiny2>, <Int2>, <Huge2>, <Hash2>
+use lshift<Tryte4>, <Tiny4>, <Int4>, <Huge4>, <Hash4>
 
 
 test 0 = lshift<Tryte>(0)
