@@ -12,11 +12,6 @@ lut halfAdd {
   1,1 = -,1 //  1 +  1 = -1, carry  1
 }
 
-type TritCarry {
-  value [Trit]
-  carry [Carry]
-}
-
 // returns val + carry
 
 func TritCarry halfAdd<Trit> (Trit val, Carry carry) {

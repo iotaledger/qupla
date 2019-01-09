@@ -95,8 +95,17 @@ public class Verilog
     mergeFuncs.remove(1);
     addedFuncs.add(1);
 
-    // add all requested powers of 3
-    for (int power = 3; mergeFuncs.contains(power); power *= 3)
+    int largest = 1;
+    for (final Integer value : mergeFuncs)
+    {
+      if (largest < value)
+      {
+        largest = value;
+      }
+    }
+
+    // add all needed powers of 3
+    for (int power = 3; power <= largest; power *= 3)
     {
       int size = power / 3;
       generateMergeFunc(context, new int[] {

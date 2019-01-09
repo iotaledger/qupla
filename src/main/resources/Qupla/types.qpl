@@ -35,6 +35,11 @@ type Bool [Trit]
 
 type Carry [Trit]
 
+type TritCarry {
+  value [Trit]
+  carry [Carry]
+}
+
 // here's how to define a named structured trit vector
 // it consists of the concatenation of all sub-vectors
 // its total size is the sum of all sub-vector sizes

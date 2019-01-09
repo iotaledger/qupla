@@ -166,20 +166,17 @@ public class QuplaModule extends BaseExpr
       use.analyze();
     }
 
+    for (final ExecStmt exec : execs)
+    {
+      exec.analyze();
+    }
+
     // now that we know all functions and their properties
     // we can finally analyze their bodies
     for (int i = 0; i < funcs.size(); i++)
     {
       final FuncStmt func = funcs.get(i);
-      if (!func.analyzed())
-      {
-        func.analyze();
-      }
-    }
-
-    for (final ExecStmt exec : execs)
-    {
-      exec.analyze();
+      func.analyze();
     }
 
     // determine which functions short-circuit on any null parameter

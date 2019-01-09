@@ -32,6 +32,9 @@ public class ConstFuncManager extends BaseFuncManager
       return;
     }
 
+    // make sure zeroManager is initialized
+    zeroManager.find(context, 1);
+
     constZero = zeroManager.lut;
 
     constOne = context.abraModule.addLut("constOne" + SEPARATOR, "111111111111111111111111111");

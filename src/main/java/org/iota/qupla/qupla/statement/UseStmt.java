@@ -120,5 +120,8 @@ public class UseStmt extends BaseExpr
       useType.analyze();
       types.add(useType);
     }
+
+    //TODO check relationship expression
+
   }
 }

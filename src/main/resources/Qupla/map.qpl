@@ -59,41 +59,4 @@ template map<K, V>
 
     return oldValue
   }
-
-//  func V traverse<K, V> (Traversal param) {
-//    keyZero = isZero[sign<K>(param.key)]
-//
-//    leafParam = keyZero ? param : null
-//    branchLeaf = leaf<K, V>(leafParam)
-//
-//    altParam = not[keyZero] ? param : null
-//    keyTrit = altParam.key[0]
-//    nextParam = Traversal {
-//      cmd = altParam.cmd
-//      key = lshift<K>(altParam.key)
-//      value = altParam.value
-//    }
-//
-//    paramOne  = isOne[keyTrit] ? nextParam : null
-//    paramZero = isZero[keyTrit] ? nextParam : null
-//    paramMin  = isMin[keyTrit] ? nextParam : null
-//
-//    branchOne  = traverse<K, V>(paramOne)
-//    branchZero = traverse<K, V>(paramZero)
-//    branchMin  = traverse<K, V>(paramMin)
-//
-//    return branchLeaf | branchOne | branchZero | branchMin
-//  }
-//
-//  func V leaf<K, V> (Traversal param) {
-//    state value [V]
-//    oldValue = value
-//
-//    set    = isOne[param.cmd] ? param.value : null
-//    get    = isZero[param.cmd] ? oldValue : null
-//    remove = isMin[param.cmd] ? 0 : null
-//    value = set | get | remove
-//
-//    return oldValue
-//  }
 }

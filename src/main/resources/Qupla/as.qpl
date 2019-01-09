@@ -10,10 +10,3 @@ template as<T> {
     return val
   }
 }
-
-
-test 1 = as<Trit>(1)
-test 2 = as<Tryte>(2)
-test -10 = as<Tiny>(-10)
-test 123 = as<Int>(123)
-test 0 = as<Huge>(0)

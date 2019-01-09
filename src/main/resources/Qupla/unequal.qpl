@@ -40,19 +40,3 @@ template unequal<T> {
     return or[val0, val1]
   }
 }
-
-
-test - = unequal<Int>(-1, -1)
-test 1 = unequal<Int>(-1, 0)
-test 1 = unequal<Int>(-1, 1)
-test 1 = unequal<Int>(0, -1)
-test - = unequal<Int>(0, 0)
-test 1 = unequal<Int>(0, 1)
-test 1 = unequal<Int>(1, -1)
-test 1 = unequal<Int>(1, 0)
-test - = unequal<Int>(1, 1)
-test 1 = unequal<Int>(10, 20)
-test 1 = unequal<Int>(-30, 40)
-test 1 = unequal<Int>(50, -60)
-test 1 = unequal<Int>(-70, -80)
-test - = unequal<Int>(90, 90)

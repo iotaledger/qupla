@@ -5,14 +5,3 @@ template rshift<T> {
     return 0 & val[0 : T - 1]
   }
 }
-
-
-test 0 = rshift<Tryte>(0)
-test 3 = rshift<Tryte>(1)
-test 6 = rshift<Tryte>(2)
-test 9 = rshift<Tryte>(3)
-test 0 = rshift<Tryte>(9)
-test -3 = rshift<Tryte>(-1)
-test -6 = rshift<Tryte>(-2)
-test -9 = rshift<Tryte>(-3)
-test 0 = rshift<Tryte>(-9)

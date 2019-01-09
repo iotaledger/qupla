@@ -137,6 +137,11 @@ public class FuncExpr extends BaseExpr
     {
       for (final BaseExpr func : template.funcs)
       {
+        if (((FuncStmt) func).funcTypes.size() != funcTypes.size())
+        {
+          continue;
+        }
+
         if (!func.name.equals(funcName))
         {
           continue;
@@ -159,6 +164,11 @@ public class FuncExpr extends BaseExpr
       {
         for (final BaseExpr func : template.funcs)
         {
+          if (((FuncStmt) func).funcTypes.size() != funcTypes.size())
+          {
+            continue;
+          }
+
           if (!func.name.equals(funcName))
           {
             continue;

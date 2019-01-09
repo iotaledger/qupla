@@ -1,0 +1,11 @@
+test -2 = decr<Tiny>(-1)
+test -1 = decr<Tiny>(0)
+test 0 = decr<Tiny>(1)
+test 1 = decr<Tiny>(2)
+test 2 = decr<Tiny>(3)
+
+test -2 = decr<Tiny2>(-1)
+test -1 = decr<Tiny2>(0)
+test 0 = decr<Tiny2>(1)
+test 1 = decr<Tiny2>(2)
+test 2 = decr<Tiny2>(3)

@@ -60,16 +60,3 @@ template sign<T> {
     return sign[val0, val1, 0]
   }
 }
-
-
-test - = sign<Tiny>(-99)
-test - = sign<Tiny>(-1)
-test 0 = sign<Tiny>(0)
-test 1 = sign<Tiny>(1)
-test 1 = sign<Tiny>(99)
-
-test - = sign<Tiny2>(-99)
-test - = sign<Tiny2>(-1)
-test 0 = sign<Tiny2>(0)
-test 1 = sign<Tiny2>(1)
-test 1 = sign<Tiny2>(99)
