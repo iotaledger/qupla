@@ -6,11 +6,6 @@ template rshift<T> {
   }
 }
 
-use rshift<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use rshift<Tryte2>, <Tiny2>, <Int2>, <Huge2>, <Hash2>
-use rshift<Tryte4>, <Tiny4>, <Int4>, <Huge4>, <Hash4>
-use rshift<Int8>
-
 
 test 0 = rshift<Tryte>(0)
 test 3 = rshift<Tryte>(1)

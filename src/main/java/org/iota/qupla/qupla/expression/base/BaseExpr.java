@@ -18,9 +18,8 @@ public abstract class BaseExpr
   public static TypeStmt constTypeInfo;
   public static QuplaModule currentModule;
   public static UseStmt currentUse;
-  public static int currentUseIndex;
   protected static QuplaPrintContext printer = new QuplaPrintContext();
-  public static final ArrayList<BaseExpr> scope = new ArrayList<>();
+  public static ArrayList<BaseExpr> scope = new ArrayList<>();
 
   public QuplaModule module;
   public String name;
@@ -64,6 +63,11 @@ public abstract class BaseExpr
 
   public abstract void analyze();
 
+  public boolean analyzed()
+  {
+    return size != 0;
+  }
+
   public BaseExpr clone(final BaseExpr expr)
   {
     return expr == null ? null : expr.clone();
@@ -77,6 +81,12 @@ public abstract class BaseExpr
     {
       lhs.add(expr.clone());
     }
+  }
+
+  protected BaseExpr entityNotFound(final String what)
+  {
+    error("Undefined " + what + " name: " + name);
+    return null;
   }
 
   public CodeException error(final Token token, final String message)
@@ -112,7 +122,7 @@ public abstract class BaseExpr
     {
       if (entity.name.equals(name))
       {
-        if (entity.size == 0)
+        if (!entity.analyzed())
         {
           entity.analyze();
         }
@@ -139,12 +149,7 @@ public abstract class BaseExpr
       }
     }
 
-    if (externEntity == null)
-    {
-      error("Undefined " + what + " name: " + name);
-    }
-
-    return externEntity;
+    return externEntity != null ? externEntity : entityNotFound(what);
   }
 
   public void log(final String text)

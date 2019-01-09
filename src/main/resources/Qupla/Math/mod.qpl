@@ -22,8 +22,6 @@ template mod<T> {
   }
 }
 
-use mod<Tryte>, <Tiny>, <Int>, <Huge>
-
 
 test  0 = mod<Tiny>( 0,  0)
 

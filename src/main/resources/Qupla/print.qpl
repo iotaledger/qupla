@@ -8,6 +8,3 @@ template print<T> {
     return val
   }
 }
-
-use print<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use print<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>

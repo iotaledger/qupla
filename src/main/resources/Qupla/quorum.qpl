@@ -12,6 +12,3 @@ template quorum<T> {
     return (equal1 ? val1 : null) | (equal2 ? val2 : null) | (equal3 ? val3 : null)
   }
 }
-
-use quorum<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use quorum<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>

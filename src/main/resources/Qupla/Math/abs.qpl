@@ -6,9 +6,6 @@ template abs<T> {
   }
 }
 
-use abs<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use abs<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>
-
 
 test 0 = abs<Tiny>(0)
 test 1 = abs<Tiny>(1)

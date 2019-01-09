@@ -22,9 +22,6 @@ template div<T> {
   }
 }
 
-use div<Tryte>, <Tiny>, <Int>, <Huge>
-use div<Tryte2>, <Tiny2>, <Int2>, <Int4>, <Huge2>
-
 
 test  0 = div<Tiny>( 0,  0)
 

@@ -87,8 +87,8 @@ template float<T> = M + E {
   }
 
   func T floatDivNonZero<T> (T lhs, T rhs) {
-    zero = as<M>(0)
-    quotient = div<M3>(zero & zero & lhs.mantissa, rhs.mantissa & zero & zero)
+    zero = as<M2>(0)
+    quotient = div<M3>(zero & lhs.mantissa, rhs.mantissa & zero)
     sum = sub<E>(lhs.exponent, rhs.exponent)
     isNormalized = isZero[quotient[M * 2]]
 
@@ -154,7 +154,3 @@ template float<T> = M + E {
     return floatAdd<T>(lhs, floatNeg<T>(rhs))
   }
 }
-
-use float<TinyFloat>, <Float>, <Double>, <HugeFloat>
-use print<TinyFloat>, <Float>, <Double>, <HugeFloat>
-use as<TinyFloat>, <Float>, <Double>, <HugeFloat>

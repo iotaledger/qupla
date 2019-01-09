@@ -13,12 +13,6 @@ template factorial<T> {
   }
 }
 
-use factorial<Tiny>, <Int>, <Huge>
-
-// example of how to create a larger mul func on the fly
-use mul<Hash>
-use factorial<Hash>
-
 
 test 1 = factorial<Tiny>(0)
 test 1 = factorial<Tiny>(1)

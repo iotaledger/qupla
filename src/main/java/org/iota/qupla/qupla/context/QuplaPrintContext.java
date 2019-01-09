@@ -1,7 +1,5 @@
 package org.iota.qupla.qupla.context;
 
-import java.util.ArrayList;
-
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AffectExpr;
 import org.iota.qupla.qupla.expression.AssignExpr;
@@ -550,21 +548,14 @@ public class QuplaPrintContext extends QuplaBaseContext
   {
     append("use ").append(use.name);
 
-    boolean next = false;
-    for (final ArrayList<BaseExpr> typeArgs : use.typeInstantiations)
+    boolean first = true;
+    for (final BaseExpr typeArg : use.typeArgs)
     {
-      append(next ? ", " : "");
-      next = true;
-
-      boolean first = true;
-      for (final BaseExpr typeArg : typeArgs)
-      {
-        append(first ? "<" : ", ").append(typeArg.name);
-        first = false;
-      }
-
-      append(">");
+      append(first ? "<" : ", ").append(typeArg.name);
+      first = false;
     }
+
+    append(">");
   }
 
   @Override

@@ -160,7 +160,7 @@ public class QuplaModule extends BaseExpr
       template.analyze();
     }
 
-    // this will instantiate the templated types/functions
+    // this will explicitly instantiate the templated types/functions
     for (final UseStmt use : uses)
     {
       use.analyze();
@@ -168,9 +168,13 @@ public class QuplaModule extends BaseExpr
 
     // now that we know all functions and their properties
     // we can finally analyze their bodies
-    for (final FuncStmt func : funcs)
+    for (int i = 0; i < funcs.size(); i++)
     {
-      func.analyze();
+      final FuncStmt func = funcs.get(i);
+      if (!func.analyzed())
+      {
+        func.analyze();
+      }
     }
 
     for (final ExecStmt exec : execs)

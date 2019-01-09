@@ -6,9 +6,6 @@ template min<T> {
   }
 }
 
-use min<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use min<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
-
 
 test -2 = min<Tiny>(-1, -2)
 test -2 = min<Tiny>(-2, -1)

@@ -11,8 +11,6 @@ template sub<T> {
   }
 }
 
-use sub<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use sub<Tryte2>, <Tiny2>, <Int2>, <Int4>, <Huge2>
 
 test  0 = sub<Tiny>( 0,  0)
 

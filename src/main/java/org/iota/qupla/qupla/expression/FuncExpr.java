@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.expression.constant.ConstTypeName;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 import org.iota.qupla.qupla.statement.FuncStmt;
+import org.iota.qupla.qupla.statement.TemplateStmt;
+import org.iota.qupla.qupla.statement.UseStmt;
 
 public class FuncExpr extends BaseExpr
 {
@@ -62,6 +65,11 @@ public class FuncExpr extends BaseExpr
   @Override
   public void analyze()
   {
+    if (analyzed())
+    {
+      return;
+    }
+
     callIndex = callNr++;
 
     for (final BaseExpr funcType : funcTypes)
@@ -105,6 +113,70 @@ public class FuncExpr extends BaseExpr
   public BaseExpr clone()
   {
     return new FuncExpr(this);
+  }
+
+  @Override
+  protected BaseExpr entityNotFound(final String what)
+  {
+    //TODO for now we don't do automatic multi-parameter template instantiation
+    if (funcTypes.size() != 1)
+    {
+      return super.entityNotFound(what);
+    }
+
+    int triplet = funcTypes.get(0).size;
+    while (triplet / 3 * 3 == triplet)
+    {
+      triplet /= 3;
+    }
+
+    final String funcName = origin.text;
+
+    // find a template that can instantiate this function
+    for (final TemplateStmt template : module.templates)
+    {
+      for (final BaseExpr func : template.funcs)
+      {
+        if (!func.name.equals(funcName))
+        {
+          continue;
+        }
+
+        if (template.relations.size() == 3 && triplet != 1)
+        {
+          // skip special case template which is only for for powers of 3
+          continue;
+        }
+
+        new UseStmt(template, this).analyze();
+        return findEntity(FuncStmt.class, what);
+      }
+    }
+
+    for (final QuplaModule extern : module.modules)
+    {
+      for (final TemplateStmt template : extern.templates)
+      {
+        for (final BaseExpr func : template.funcs)
+        {
+          if (!func.name.equals(funcName))
+          {
+            continue;
+          }
+
+          if (template.relations.size() == 3 && triplet != 1)
+          {
+            // skip special case template which is only for for powers of 3
+            continue;
+          }
+
+          new UseStmt(template, this).analyze();
+          return findEntity(FuncStmt.class, what);
+        }
+      }
+    }
+
+    return super.entityNotFound(what);
   }
 
   @Override

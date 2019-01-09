@@ -61,7 +61,7 @@ public class Qupla
     if (BaseExpr.currentUse != null)
     {
       final UseStmt use = BaseExpr.currentUse;
-      final ArrayList<BaseExpr> types = use.typeInstantiations.get(BaseExpr.currentUseIndex);
+      final ArrayList<BaseExpr> types = use.typeArgs;
 
       String name = use.name;
       boolean first = true;
@@ -220,11 +220,11 @@ public class Qupla
     log("Eval: " + expr.toString());
 
     final QuplaEvalContext context = new QuplaEvalContext();
-    final AbraEvalContext abraEvalContext = new AbraEvalContext();
 
     long mSec = System.currentTimeMillis();
     if (options.contains("-abra"))
     {
+      final AbraEvalContext abraEvalContext = new AbraEvalContext();
       abraEvalContext.eval(quplaToAbraContext, expr);
       context.value = abraEvalContext.value;
     }
@@ -326,11 +326,11 @@ public class Qupla
     log("Test: " + exec.expected + " = " + exec.expr);
 
     final QuplaEvalContext context = new QuplaEvalContext();
-    final AbraEvalContext abraEvalContext = new AbraEvalContext();
 
     long mSec = System.currentTimeMillis();
     if (options.contains("-abra"))
     {
+      final AbraEvalContext abraEvalContext = new AbraEvalContext();
       abraEvalContext.eval(quplaToAbraContext, exec.expr);
       context.value = abraEvalContext.value;
     }

@@ -9,7 +9,6 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class TemplateStmt extends BaseExpr
 {
-  public boolean analyzed;
   public ArrayList<BaseExpr> funcs = new ArrayList<>();
   public final ArrayList<BaseExpr> params = new ArrayList<>();
   public final ArrayList<BaseExpr> relations = new ArrayList<>();
@@ -23,7 +22,6 @@ public class TemplateStmt extends BaseExpr
     cloneArray(relations, copy.relations);
     cloneArray(types, copy.types);
     cloneArray(funcs, copy.funcs);
-    this.analyzed = copy.analyzed;
   }
 
   public TemplateStmt(final Tokenizer tokenizer)
@@ -108,7 +106,6 @@ public class TemplateStmt extends BaseExpr
 
     // just to avoid findEntity calling analyze again
     size = params.size();
-    analyzed = true;
   }
 
   @Override

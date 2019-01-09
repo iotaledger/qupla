@@ -7,9 +7,6 @@ template decr<T> {
   }
 }
 
-use decr<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use decr<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>
-
 
 test -2 = decr<Tiny>(-1)
 test -1 = decr<Tiny>(0)

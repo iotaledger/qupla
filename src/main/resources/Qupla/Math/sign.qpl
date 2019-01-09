@@ -37,32 +37,29 @@ func Trit sign<Trit> (Trit val) {
   return val
 }
 
-template sign<T> = A + B + C {
+template sign3<T> = A + B + C {
   type A [T / 3]
   type B [T / 3]
   type C [T / 3]
 
   func Trit sign<T> (T val) {
-    return sign[sign<A>(val[0 : A]),
-                sign<B>(val[A : B]),
-                sign<C>(val[A + B : C])]
+    val0 = sign<A>(val[0 : A])
+    val1 = sign<B>(val[A : B])
+    val2 = sign<C>(val[A + B : C])
+    return sign[val0, val1, val2]
   }
 }
 
-use sign<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-
-template sign2<T> = A + B {
-  type A [T / 2]
-  type B [T / 2]
+template sign<T> {
+  type A [T - T / 2]
+  type B [T - A]
 
   func Trit sign<T> (T val) {
-    return sign[sign<A>(val[0 : A]),
-                sign<B>(val[A : B]),
-                0]
+    val0 = sign<A>(val[0 : A])
+    val1 = sign<B>(val[A : B])
+    return sign[val0, val1, 0]
   }
 }
-
-use sign2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>
 
 
 test - = sign<Tiny>(-99)

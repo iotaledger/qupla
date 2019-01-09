@@ -176,7 +176,7 @@ public class AbraToVerilogContext extends AbraBaseContext
       if (input.size > param.size)
       {
         // must take slice
-        append("[" + param.size + ":0]");
+        append(size(param.size));
       }
     }
 

@@ -42,15 +42,27 @@ public class NullifyFuncManager extends BaseFuncManager
     branch.size = inputSize;
 
     final AbraSiteParam inputFlag = branch.addInputParam(1);
+    final AbraSiteParam inputValue = branch.addInputParam(inputSize);
+    int offset = 0;
     for (int i = 0; i < inputSizes.length; i++)
     {
-      final AbraSiteParam inputValue = branch.addInputParam(inputSizes[i]);
-      final AbraSiteKnot knot = new AbraSiteKnot();
-      knot.inputs.add(inputFlag);
-      knot.inputs.add(inputValue);
-      knot.block = manager.find(context, inputSizes[i]);
-      knot.size = knot.block.size();
-      branch.outputs.add(knot);
+      final AbraSiteKnot slice = new AbraSiteKnot();
+      slice.inputs.add(inputValue);
+      inputValue.references++;
+      slice.block = AbraSiteKnot.slicers.find(context, inputSizes[i], offset);
+      slice.size = slice.block.size();
+      branch.sites.add(slice);
+
+      final AbraSiteKnot nullify = new AbraSiteKnot();
+      nullify.inputs.add(inputFlag);
+      inputFlag.references++;
+      nullify.inputs.add(slice);
+      slice.references++;
+      nullify.block = manager.find(context, inputSizes[i]);
+      nullify.size = nullify.block.size();
+      branch.outputs.add(nullify);
+
+      offset += inputSizes[i];
     }
 
     branch.specialType = trueFalse ? AbraBaseBlock.TYPE_NULLIFY_TRUE : AbraBaseBlock.TYPE_NULLIFY_FALSE;
@@ -77,13 +89,23 @@ public class NullifyFuncManager extends BaseFuncManager
     branch.size = inputSize;
 
     final AbraSiteParam inputFlag = branch.addInputParam(1);
+    final AbraSiteParam inputValue = branch.addInputParam(inputSize);
     for (int i = 0; i < inputSize; i++)
     {
-      final AbraSiteParam inputValue = branch.addInputParam(1);
+      final AbraSiteKnot slice = new AbraSiteKnot();
+      slice.inputs.add(inputValue);
+      inputValue.references++;
+      slice.block = AbraSiteKnot.slicers.find(context, 1, i);
+      slice.size = slice.block.size();
+      branch.sites.add(slice);
+
       final AbraSiteKnot knot = new AbraSiteKnot();
       knot.inputs.add(inputFlag);
-      knot.inputs.add(inputValue);
-      knot.inputs.add(inputValue);
+      inputFlag.references++;
+      knot.inputs.add(slice);
+      slice.references++;
+      knot.inputs.add(slice);
+      slice.references++;
       knot.block = lut;
       knot.size = knot.block.size();
       branch.outputs.add(knot);

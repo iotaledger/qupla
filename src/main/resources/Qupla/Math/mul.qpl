@@ -11,9 +11,6 @@ template mul<T> {
   }
 }
 
-use mul<Tryte>, <Tiny>, <Int>, <Huge>
-use mul<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
-
 
 test  0 = mul<Tiny>( 0,  0)
 

@@ -7,9 +7,6 @@ template incr<T> {
   }
 }
 
-use incr<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use incr<Tryte2>, <Tiny2>, <Int2>, <Int4>, <Huge2>
-
 
 test -2 = incr<Tiny>(-3)
 test -1 = incr<Tiny>(-2)

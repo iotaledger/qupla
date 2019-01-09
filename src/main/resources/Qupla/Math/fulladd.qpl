@@ -37,7 +37,7 @@ func TritCarry fullAdd<Trit> (Trit lhs, Trit rhs, Carry carry) {
   return fullAdd[lhs, rhs, carry]
 }
 
-template fullAdd<T> = A + B + C {
+template fullAdd3<T> = A + B + C {
   type A [T / 3]
   type B [T / 3]
   type C [T / 3]
@@ -54,11 +54,9 @@ template fullAdd<T> = A + B + C {
   }
 }
 
-use fullAdd<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-
-template fullAdd2<T> = A + B {
-  type A [T / 2]
-  type B [T / 2]
+template fullAdd<T> {
+  type A [T - T / 2]
+  type B [T - A]
   type TCarry {
     value [T]
     carry [Carry]
@@ -70,5 +68,3 @@ template fullAdd2<T> = A + B {
     return add0.value & add1
   }
 }
-
-use fullAdd2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Int4>, <Huge2>
