@@ -101,7 +101,7 @@ public class FuncStmt extends BaseExpr
   @Override
   public void analyze()
   {
-    if (analyzed())
+    if (wasAnalyzed())
     {
       return;
     }
@@ -178,12 +178,6 @@ public class FuncStmt extends BaseExpr
   }
 
   @Override
-  public boolean analyzed()
-  {
-    return analyzed;
-  }
-
-  @Override
   public BaseExpr clone()
   {
     return new FuncStmt(this);
@@ -240,5 +234,11 @@ public class FuncStmt extends BaseExpr
   public void toStringify()
   {
     printer.evalFuncBodySignature(this);
+  }
+
+  @Override
+  public boolean wasAnalyzed()
+  {
+    return analyzed;
   }
 }

@@ -1196,7 +1196,7 @@
          <xhtml:ul>
             <xhtml:li><xhtml:a href="#TemplateStmt" title="TemplateStmt">TemplateStmt</xhtml:a></xhtml:li>
          </xhtml:ul>
-      </xhtml:p><xhtml:br xmlns:xhtml="http://www.w3.org/1999/xhtml" /><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml" style="font-size: 14px; font-weight:bold"><xhtml:a name="UseStmt">UseStmt:</xhtml:a></xhtml:p><svg xmlns="http://www.w3.org/2000/svg" width="427" height="81">
+      </xhtml:p><xhtml:br xmlns:xhtml="http://www.w3.org/1999/xhtml" /><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml" style="font-size: 14px; font-weight:bold"><xhtml:a name="UseStmt">UseStmt:</xhtml:a></xhtml:p><svg xmlns="http://www.w3.org/2000/svg" width="521" height="81">
          <defs>
             <style type="text/css">
     @namespace "http://www.w3.org/2000/svg";
@@ -1233,75 +1233,26 @@
          <text class="terminal" x="39" y="65">use</text><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#templateName" xlink:title="templateName">
             <rect x="95" y="47" width="114" height="32"/>
             <rect x="93" y="45" width="114" height="32" class="nonterminal"/>
-            <text class="nonterminal" x="103" y="65">templateName</text></a><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#typeInstantiation" xlink:title="typeInstantiation">
-            <rect x="249" y="47" width="130" height="32"/>
-            <rect x="247" y="45" width="130" height="32" class="nonterminal"/>
-            <text class="nonterminal" x="257" y="65">typeInstantiation</text></a><rect x="249" y="3" width="24" height="32" rx="10"/>
-         <rect x="247" y="1" width="24" height="32" class="terminal" rx="10"/>
-         <text class="terminal" x="257" y="21">,</text>
-         <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m0 0 h10 m44 0 h10 m0 0 h10 m114 0 h10 m20 0 h10 m130 0 h10 m-170 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m150 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-150 0 h10 m24 0 h10 m0 0 h106 m23 44 h-3"/>
-         <polygon points="417 61 425 57 425 65"/>
-         <polygon points="417 61 409 57 409 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
+            <text class="nonterminal" x="103" y="65">templateName</text></a><rect x="229" y="47" width="30" height="32" rx="10"/>
+         <rect x="227" y="45" width="30" height="32" class="terminal" rx="10"/>
+         <text class="terminal" x="237" y="65">&lt;</text><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#ConstTypeName" xlink:title="ConstTypeName">
+            <rect x="299" y="47" width="124" height="32"/>
+            <rect x="297" y="45" width="124" height="32" class="nonterminal"/>
+            <text class="nonterminal" x="307" y="65">ConstTypeName</text></a><rect x="299" y="3" width="24" height="32" rx="10"/>
+         <rect x="297" y="1" width="24" height="32" class="terminal" rx="10"/>
+         <text class="terminal" x="307" y="21">,</text>
+         <rect x="463" y="47" width="30" height="32" rx="10"/>
+         <rect x="461" y="45" width="30" height="32" class="terminal" rx="10"/>
+         <text class="terminal" x="471" y="65">&gt;</text>
+         <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m0 0 h10 m44 0 h10 m0 0 h10 m114 0 h10 m0 0 h10 m30 0 h10 m20 0 h10 m124 0 h10 m-164 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m144 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-144 0 h10 m24 0 h10 m0 0 h100 m20 44 h10 m30 0 h10 m3 0 h-3"/>
+         <polygon points="511 61 519 57 519 65"/>
+         <polygon points="511 61 503 57 503 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
          <xhtml:div class="ebnf"><xhtml:code>
-               <div><a href="#UseStmt" title="UseStmt">UseStmt</a>  ::= 'use' <a href="#templateName" title="templateName">templateName</a> <a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a> ( ',' <a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a> )*</div></xhtml:code></xhtml:div>
+               <div><a href="#UseStmt" title="UseStmt">UseStmt</a>  ::= 'use' <a href="#templateName" title="templateName">templateName</a> '&lt;' <a href="#ConstTypeName" title="ConstTypeName">ConstTypeName</a> ( ',' <a href="#ConstTypeName" title="ConstTypeName">ConstTypeName</a> )* '&gt;'</div></xhtml:code></xhtml:div>
       </xhtml:p>
       <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
          <xhtml:ul>
             <xhtml:li><xhtml:a href="#quplaStmt" title="quplaStmt">quplaStmt</xhtml:a></xhtml:li>
-         </xhtml:ul>
-      </xhtml:p><xhtml:br xmlns:xhtml="http://www.w3.org/1999/xhtml" /><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml" style="font-size: 14px; font-weight:bold"><xhtml:a name="typeInstantiation">typeInstantiation:</xhtml:a></xhtml:p><svg xmlns="http://www.w3.org/2000/svg" width="323" height="81">
-         <defs>
-            <style type="text/css">
-    @namespace "http://www.w3.org/2000/svg";
-    .line                 {fill: none; stroke: #332900;}
-    .bold-line            {stroke: #141000; shape-rendering: crispEdges; stroke-width: 2; }
-    .thin-line            {stroke: #1F1800; shape-rendering: crispEdges}
-    .filled               {fill: #332900; stroke: none;}
-    text.terminal         {font-family: Verdana, Sans-serif;
-                            font-size: 12px;
-                            fill: #141000;
-                            font-weight: bold;
-                          }
-    text.nonterminal      {font-family: Verdana, Sans-serif;
-                            font-size: 12px;
-                            fill: #1A1400;
-                            font-weight: normal;
-                          }
-    text.regexp           {font-family: Verdana, Sans-serif;
-                            font-size: 12px;
-                            fill: #1F1800;
-                            font-weight: normal;
-                          }
-    rect, circle, polygon {fill: #332900; stroke: #332900;}
-    rect.terminal         {fill: #FFDB4D; stroke: #332900;}
-    rect.nonterminal      {fill: #FFEC9E; stroke: #332900;}
-    rect.text             {fill: none; stroke: none;}    
-    polygon.regexp        {fill: #FFF4C7; stroke: #332900;}
-  </style>
-         </defs>
-         <polygon points="9 61 1 57 1 65"/>
-         <polygon points="17 61 9 57 9 65"/>
-         <rect x="31" y="47" width="30" height="32" rx="10"/>
-         <rect x="29" y="45" width="30" height="32" class="terminal" rx="10"/>
-         <text class="terminal" x="39" y="65">&lt;</text><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#ConstTypeName" xlink:title="ConstTypeName">
-            <rect x="101" y="47" width="124" height="32"/>
-            <rect x="99" y="45" width="124" height="32" class="nonterminal"/>
-            <text class="nonterminal" x="109" y="65">ConstTypeName</text></a><rect x="101" y="3" width="24" height="32" rx="10"/>
-         <rect x="99" y="1" width="24" height="32" class="terminal" rx="10"/>
-         <text class="terminal" x="109" y="21">,</text>
-         <rect x="265" y="47" width="30" height="32" rx="10"/>
-         <rect x="263" y="45" width="30" height="32" class="terminal" rx="10"/>
-         <text class="terminal" x="273" y="65">&gt;</text>
-         <svg:path xmlns:svg="http://www.w3.org/2000/svg" class="line" d="m17 61 h2 m0 0 h10 m30 0 h10 m20 0 h10 m124 0 h10 m-164 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -24 q0 -10 10 -10 m144 44 l20 0 m-20 0 q10 0 10 -10 l0 -24 q0 -10 -10 -10 m-144 0 h10 m24 0 h10 m0 0 h100 m20 44 h10 m30 0 h10 m3 0 h-3"/>
-         <polygon points="313 61 321 57 321 65"/>
-         <polygon points="313 61 305 57 305 65"/></svg><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">
-         <xhtml:div class="ebnf"><xhtml:code>
-               <div><a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a></div>
-               <div>         ::= '&lt;' <a href="#ConstTypeName" title="ConstTypeName">ConstTypeName</a> ( ',' <a href="#ConstTypeName" title="ConstTypeName">ConstTypeName</a> )* '&gt;'</div></xhtml:code></xhtml:div>
-      </xhtml:p>
-      <xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml">referenced by:
-         <xhtml:ul>
-            <xhtml:li><xhtml:a href="#UseStmt" title="UseStmt">UseStmt</xhtml:a></xhtml:li>
          </xhtml:ul>
       </xhtml:p><xhtml:br xmlns:xhtml="http://www.w3.org/1999/xhtml" /><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml" style="font-size: 14px; font-weight:bold"><xhtml:a name="entityAlias">entityAlias:</xhtml:a></xhtml:p><svg xmlns="http://www.w3.org/2000/svg" width="377" height="37">
          <defs>
@@ -2498,9 +2449,9 @@
             <xhtml:li><xhtml:a href="#FuncExpr" title="FuncExpr">FuncExpr</xhtml:a></xhtml:li>
             <xhtml:li><xhtml:a href="#StateExpr" title="StateExpr">StateExpr</xhtml:a></xhtml:li>
             <xhtml:li><xhtml:a href="#TypeExpr" title="TypeExpr">TypeExpr</xhtml:a></xhtml:li>
+            <xhtml:li><xhtml:a href="#UseStmt" title="UseStmt">UseStmt</xhtml:a></xhtml:li>
             <xhtml:li><xhtml:a href="#funcParam" title="funcParam">funcParam</xhtml:a></xhtml:li>
             <xhtml:li><xhtml:a href="#funcSignature" title="funcSignature">funcSignature</xhtml:a></xhtml:li>
-            <xhtml:li><xhtml:a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</xhtml:a></xhtml:li>
          </xhtml:ul>
       </xhtml:p><xhtml:br xmlns:xhtml="http://www.w3.org/1999/xhtml" /><xhtml:p xmlns:xhtml="http://www.w3.org/1999/xhtml" style="font-size: 14px; font-weight:bold"><xhtml:a name="NameExpr">NameExpr:</xhtml:a></xhtml:p><svg xmlns="http://www.w3.org/2000/svg" width="115" height="37">
          <defs>

@@ -11,6 +11,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class UseStmt extends BaseExpr
 {
+  public boolean automatic;
   public TemplateStmt template;
   public final ArrayList<BaseExpr> typeArgs = new ArrayList<>();
   public final ArrayList<BaseExpr> types = new ArrayList<>();
@@ -47,6 +48,7 @@ public class UseStmt extends BaseExpr
 
   public UseStmt(final TemplateStmt template, final FuncExpr func)
   {
+    automatic = true;
     module = func.module;
     origin = func.origin;
     name = template.name;
@@ -83,13 +85,59 @@ public class UseStmt extends BaseExpr
 
     for (final BaseExpr typeArg : typeArgs)
     {
-      if (!typeArg.analyzed())
+      if (!typeArg.wasAnalyzed())
       {
         typeArg.analyze();
       }
     }
 
-    generateTypes();
+    // set up use-specific types
+    for (final BaseExpr type : template.types)
+    {
+      final BaseExpr useType = type.clone();
+      useType.analyze();
+      types.add(useType);
+    }
+
+    if (typeArgs.size() == 1)
+    {
+      // check relationship expression
+      if (template.relations.size() != 0)
+      {
+        int totalSize = 0;
+        for (final BaseExpr relation : template.relations)
+        {
+          boolean found = false;
+          for (final BaseExpr useType : types)
+          {
+            if (useType.name.equals(relation.name))
+            {
+              found = true;
+              totalSize += useType.size;
+              break;
+            }
+          }
+
+          if (!found)
+          {
+            relation.error("Relation type name not found: " + relation.name);
+          }
+        }
+
+        if (totalSize != typeArgs.get(0).size)
+        {
+          if (automatic)
+          {
+            // wrong template, do not instantiate any functions
+            currentModule = oldModule;
+            currentUse = oldUse;
+            return;
+          }
+
+          error("Relation sum does not match");
+        }
+      }
+    }
 
     for (final BaseExpr func : template.funcs)
     {
@@ -101,6 +149,8 @@ public class UseStmt extends BaseExpr
       module.funcs.add(useFunc);
     }
 
+    size = template.funcs.size();
+
     currentModule = oldModule;
     currentUse = oldUse;
   }
@@ -109,19 +159,5 @@ public class UseStmt extends BaseExpr
   public BaseExpr clone()
   {
     return new UseStmt(this);
-  }
-
-  public void generateTypes()
-  {
-    // set up template types
-    for (final BaseExpr type : template.types)
-    {
-      final TypeStmt useType = (TypeStmt) type.clone();
-      useType.analyze();
-      types.add(useType);
-    }
-
-    //TODO check relationship expression
-
   }
 }

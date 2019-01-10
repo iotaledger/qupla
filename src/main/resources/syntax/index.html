@@ -459,11 +459,11 @@
             
             <li><a href="#TemplateStmt" title="TemplateStmt">TemplateStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="UseStmt">UseStmt:</a></p><img border="0" src="diagram/UseStmt.png" height="81" width="427" usemap="#UseStmt.map"><map name="UseStmt.map"><area shape="rect" coords="93,45,207,77" href="#templateName" title="templateName"><area shape="rect" coords="247,45,377,77" href="#typeInstantiation" title="typeInstantiation"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="UseStmt">UseStmt:</a></p><img border="0" src="diagram/UseStmt.png" height="81" width="521" usemap="#UseStmt.map"><map name="UseStmt.map"><area shape="rect" coords="93,45,207,77" href="#templateName" title="templateName"><area shape="rect" coords="297,45,421,77" href="#ConstTypeName" title="ConstTypeName"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#UseStmt" title="UseStmt" shape="rect">UseStmt</a>&nbsp;&nbsp;::= 'use' <a href="#templateName" title="templateName" shape="rect">templateName</a> <a href="#typeInstantiation" title="typeInstantiation" shape="rect">typeInstantiation</a> ( ',' <a href="#typeInstantiation" title="typeInstantiation" shape="rect">typeInstantiation</a> )*</div></code></div>
+               <div><a href="#UseStmt" title="UseStmt" shape="rect">UseStmt</a>&nbsp;&nbsp;::= 'use' <a href="#templateName" title="templateName" shape="rect">templateName</a> '&lt;' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> ( ',' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> )* '&gt;'</div></code></div>
          </p>
       
       <p>referenced by:
@@ -471,21 +471,6 @@
          <ul>
             
             <li><a href="#quplaStmt" title="quplaStmt">quplaStmt</a></li>
-            </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="typeInstantiation">typeInstantiation:</a></p><img border="0" src="diagram/typeInstantiation.png" height="81" width="323" usemap="#typeInstantiation.map"><map name="typeInstantiation.map"><area shape="rect" coords="99,45,223,77" href="#ConstTypeName" title="ConstTypeName"></map><p>
-         
-         <div class="ebnf"><code>
-               
-               <div><a href="#typeInstantiation" title="typeInstantiation" shape="rect">typeInstantiation</a></div>
-               
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '&lt;' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> ( ',' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> )* '&gt;'</div></code></div>
-         </p>
-      
-      <p>referenced by:
-         
-         <ul>
-            
-            <li><a href="#UseStmt" title="UseStmt">UseStmt</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="entityAlias">entityAlias:</a></p><img border="0" src="diagram/entityAlias.png" height="37" width="377" usemap="#entityAlias.map"><map name="entityAlias.map"><area shape="rect" coords="79,1,171,33" href="#entityName" title="entityName"><area shape="rect" coords="243,1,347,33" href="#moduleName" title="moduleName"></map><p>
          
@@ -859,11 +844,11 @@
             
             <li><a href="#TypeExpr" title="TypeExpr">TypeExpr</a></li>
             
+            <li><a href="#UseStmt" title="UseStmt">UseStmt</a></li>
+            
             <li><a href="#funcParam" title="funcParam">funcParam</a></li>
             
             <li><a href="#funcSignature" title="funcSignature">funcSignature</a></li>
-            
-            <li><a href="#typeInstantiation" title="typeInstantiation">typeInstantiation</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="NameExpr">NameExpr:</a></p><img border="0" src="diagram/NameExpr.png" height="37" width="115" usemap="#NameExpr.map"><map name="NameExpr.map"><area shape="rect" coords="29,1,85,33" href="#name" title="name"></map><p>
          

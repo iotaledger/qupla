@@ -41,9 +41,7 @@ templateTypeRelation ::= '=' templateTypeName ('+' templateTypeName)+
 templateBody ::= '{' TypeStmt* FuncStmt+ '}'
 
 
-UseStmt ::= 'use' templateName typeInstantiation (',' typeInstantiation)*
-
-typeInstantiation ::= '<' (ConstTypeName (',' ConstTypeName)*) '>'
+UseStmt ::= 'use' templateName '<' (ConstTypeName (',' ConstTypeName)*) '>'
 
 
 entityAlias ::= '=' entityName '@' moduleName

@@ -65,7 +65,7 @@ public class FuncExpr extends BaseExpr
   @Override
   public void analyze()
   {
-    if (analyzed())
+    if (wasAnalyzed())
     {
       return;
     }
@@ -153,8 +153,13 @@ public class FuncExpr extends BaseExpr
           continue;
         }
 
-        new UseStmt(template, this).analyze();
-        return findEntity(FuncStmt.class, what);
+        final UseStmt autoUse = new UseStmt(template, this);
+        autoUse.analyze();
+        if (autoUse.wasAnalyzed())
+        {
+          // this template was acceptable
+          return findEntity(FuncStmt.class, what);
+        }
       }
     }
 
@@ -180,8 +185,13 @@ public class FuncExpr extends BaseExpr
             continue;
           }
 
-          new UseStmt(template, this).analyze();
-          return findEntity(FuncStmt.class, what);
+          final UseStmt autoUse = new UseStmt(template, this);
+          autoUse.analyze();
+          if (autoUse.wasAnalyzed())
+          {
+            // this template was acceptable
+            return findEntity(FuncStmt.class, what);
+          }
         }
       }
     }

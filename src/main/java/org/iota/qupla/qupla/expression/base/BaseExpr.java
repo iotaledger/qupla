@@ -63,11 +63,6 @@ public abstract class BaseExpr
 
   public abstract void analyze();
 
-  public boolean analyzed()
-  {
-    return size != 0;
-  }
-
   public BaseExpr clone(final BaseExpr expr)
   {
     return expr == null ? null : expr.clone();
@@ -122,7 +117,7 @@ public abstract class BaseExpr
     {
       if (entity.name.equals(name))
       {
-        if (!entity.analyzed())
+        if (!entity.wasAnalyzed())
         {
           entity.analyze();
         }
@@ -182,5 +177,10 @@ public abstract class BaseExpr
   public void warning(final String message)
   {
     log("WARNING: " + message);
+  }
+
+  public boolean wasAnalyzed()
+  {
+    return size != 0;
   }
 }
