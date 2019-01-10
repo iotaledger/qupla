@@ -14,7 +14,11 @@ lut fullMul {
 
 // returns lhs * rhs
 
-func Trit2 fullMul<Trit> (Trit lhs, Trit rhs) {
+func TritCarry fullMul<Trit> (Trit lhs, Trit rhs) {
+  return fullMul[lhs, rhs] & 0
+}
+
+func TritCarry fullMulNonZero<Trit> (Trit lhs, Trit rhs) {
   return fullMul[lhs, rhs] & 0
 }
 
@@ -51,13 +55,18 @@ func Trit2 fullMul<Trit> (Trit lhs, Trit rhs) {
 //-------------
 
 
+//TODO depends on P being T / 3
+
 // note that a fullMul() function will return double the width
 // of its parameters so as not to lose any precision
-template fullMul<T> {
+template fullMul3<T> = P + P + P {
   type T2 [T * 2]
   type P [T / 3]
   type P2 [P * 2]
-  type P2Carry [P2 + Carry]
+  type P2Carry {
+    value [P2]
+    carry [Carry]
+  }
 
   func T2 fullMul<T> (T lhs, T rhs) {
     lhsZero = isZero[sign<T>(lhs)]
@@ -96,13 +105,13 @@ template fullMul<T> {
 
     // AE0 + BD0 + carry0
     AEBD = addProduct<P>(AE, BD)
-    AEBDc = addCarryToProduct<P>(AEBD[0 : P * 2], carry0, 0)
+    AEBDc = addCarryToProduct<P>(AEBD.value, carry0, 0)
     tryte1 = AEBDc[P * 0 : P]
     carry1 = AEBDc[P * 1 : P]
 
     // AF00 + BE00 + CD00 + carry1
     AFBE = addProduct<P>(AF, BE)
-    AFBEc = addCarryToProduct<P>(AFBE[0 : P * 2], carry1, 0)
+    AFBEc = addCarryToProduct<P>(AFBE.value, carry1, 0)
     // note: adding 3rd product, watch the extra overflow carry trit
     AFBEcCD = addProduct<P>(AFBEc, CD)
     tryte2 = AFBEcCD[P * 0 : P]
@@ -110,13 +119,13 @@ template fullMul<T> {
 
     // BF000 + CE000 + carry2
     BFCE = addProduct<P>(BF, CE)
-    BFCEc = addCarryToProduct<P>(BFCE[0 : P * 2], carry2, 0)
+    BFCEc = addCarryToProduct<P>(BFCE.value, carry2, 0)
     tryte3 = BFCEc[P * 0 : P]
     carry3 = BFCEc[P * 1 : P]
 
     // CF0000 + carry3
     // note: this is where the extra overflow carry trit goes
-    CFc = addCarryToProduct<P>(CF, carry3, AFBEcCD[P * 2])
+    CFc = addCarryToProduct<P>(CF, carry3, AFBEcCD.carry)
     // tryte4 = CFc[P * 0 : P]
     // tryte5 = CFc[P * 1 : P]
 
@@ -126,22 +135,20 @@ template fullMul<T> {
   // add two products together
   func P2Carry addProduct<P>(P2 lhs, P2 rhs) {
     lo = fullAdd<P>(lhs[P * 0 : P], rhs[P * 0 : P], 0)
-    hi = fullAdd<P>(lhs[P * 1 : P], rhs[P * 1 : P], lo[P])
-    return lo[0 : P] & hi
+    hi = fullAdd<P>(lhs[P * 1 : P], rhs[P * 1 : P], lo.carry)
+    return lo.value & hi
   }
 
   // add carry and possible extra trit to a product
   func P2 addCarryToProduct<P>(P2 lhs, P carry, Carry extraTrit) {
     lo = fullAdd<P>(lhs[P * 0 : P], carry, extraTrit)
-    hi = halfAdd<P>(lhs[P * 1 : P], lo[P])
-    return lo[0 : P] & hi[0 : P]
+    hi = halfAdd<P>(lhs[P * 1 : P], lo.carry)
+    return lo.value & hi.value
   }
 }
 
-use fullMul<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
 
-
-template fullMul2<T> {
+template fullMul<T> = P + P {
   type T2 [T * 2]
   type P [T / 2]
   type P3 [P * 3]
@@ -154,29 +161,12 @@ template fullMul2<T> {
 
   func T2 fullMulNonZero<T> (T lhs, T rhs) {
     zero = as<P>(0)
-    product = fullMul<P3>(lhs & zero, rhs & zero)
+    product = fullMulNonZero<P3>(lhs & zero, rhs & zero)
     return product[0 : T2]
   }
 }
 
-use fullMul2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
-
-
-test 16 = fullMul<Tryte>(4, 4)
-test 25 = fullMul<Tryte>(5, 5)
-test 36 = fullMul<Tryte>(6, 6)
-test 49 = fullMul<Tryte>(7, 7)
-test 64 = fullMul<Tryte>(8, 8)
-test 81 = fullMul<Tryte>(9, 9)
-test 100 = fullMul<Tryte>(10, 10)
-test 121 = fullMul<Tryte>(11, 11)
-test 144 = fullMul<Tryte>(12, 12)
-test 169 = fullMul<Tryte>(13, 13)
-test 132496 = fullMul<Tryte2>(364, 364)
-
-test 10758400 = fullMul<Tiny>(3280, 3280)
-test 43046721 = fullMul<Tiny>(6561, 6561)
-test 96805921 = fullMul<Tiny>(9839, 9839)
-test 96825600 = fullMul<Tiny>(9840, 9840)
-test 96845281 = fullMul<Tiny>(9841, 9841)
-test 871666576 = fullMul<Tiny2>(29524, 29524)
+use fullMul<Tryte2>
+use fullMul<Tiny2>
+use fullMul<Int2>
+use fullMul<Huge2>

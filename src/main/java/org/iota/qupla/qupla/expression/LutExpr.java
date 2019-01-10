@@ -25,8 +25,6 @@ public class LutExpr extends BaseExpr
   {
     super(tokenizer, identifier);
 
-    name = identifier.text;
-
     expect(tokenizer, Token.TOK_ARRAY_OPEN, "'['");
 
     args.add(new MergeExpr(tokenizer).optimize());

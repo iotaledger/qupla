@@ -2,17 +2,19 @@ package org.iota.qupla.qupla.statement;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.qupla.expression.FuncExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.expression.constant.ConstTypeName;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class UseStmt extends BaseExpr
 {
-  public ArrayList<FuncStmt> placeHolders = new ArrayList<>();
+  public boolean automatic;
   public TemplateStmt template;
-  public final ArrayList<ArrayList<BaseExpr>> typeInstantiations = new ArrayList<>();
+  public final ArrayList<BaseExpr> typeArgs = new ArrayList<>();
+  public final ArrayList<BaseExpr> types = new ArrayList<>();
 
   public UseStmt(final UseStmt copy)
   {
@@ -30,106 +32,7 @@ public class UseStmt extends BaseExpr
     final Token templateName = expect(tokenizer, Token.TOK_NAME, "template name");
     name = templateName.text;
 
-    parseTypeInstantiation(tokenizer);
-
-    while (tokenizer.tokenId() == Token.TOK_COMMA)
-    {
-      tokenizer.nextToken();
-      parseTypeInstantiation(tokenizer);
-    }
-  }
-
-  @Override
-  public void analyze()
-  {
-    for (final ArrayList<BaseExpr> typeArgs : typeInstantiations)
-    {
-      for (final BaseExpr typeArg : typeArgs)
-      {
-        typeArg.analyze();
-      }
-    }
-
-    template = (TemplateStmt) findEntity(TemplateStmt.class, "template");
-    for (int i = 0; i < template.funcs.size() * typeInstantiations.size(); i++)
-    {
-      placeHolders.add(new FuncStmt(this));
-    }
-    module.funcs.addAll(placeHolders);
-
-    final Module oldCurrentModule = currentModule;
-    currentModule = module;
-    currentUse = this;
-    currentUseIndex = 0;
-    int placeHolderIndex = 0;
-    for (final ArrayList<BaseExpr> typeArgs : typeInstantiations)
-    {
-      if (template.params.size() > typeArgs.size())
-      {
-        final BaseExpr param = template.params.get(typeArgs.size());
-        error("Missing type argument: " + param.name);
-      }
-
-      if (template.params.size() < typeArgs.size())
-      {
-        final BaseExpr typeArg = typeArgs.get(template.params.size());
-        typeArg.error("Extra type argument: " + typeArg.name);
-      }
-
-      generateTypes();
-
-      for (final BaseExpr func : template.funcs)
-      {
-        final FuncStmt useFunc = new FuncStmt((FuncStmt) func);
-        useFunc.origin = origin;
-        useFunc.module = module;
-        useFunc.use = currentUse;
-        useFunc.useIndex = currentUseIndex;
-        useFunc.analyzeSignature();
-        //TODO WTF?
-        placeHolders.get(placeHolderIndex).copyFrom(useFunc);
-        placeHolderIndex++;
-      }
-
-      currentUseIndex++;
-    }
-
-    currentModule = oldCurrentModule;
-    currentUse = null;
-    currentUseIndex = 0;
-  }
-
-  @Override
-  public BaseExpr clone()
-  {
-    return new UseStmt(this);
-  }
-
-  public void generateTypes()
-  {
-    // set up template types
-    for (final BaseExpr type : template.types)
-    {
-      type.typeInfo = null;
-      type.typeInfo = (TypeStmt) type.clone();
-      type.typeInfo.analyze();
-
-      type.typeInfo.name = template.name;
-      final ArrayList<BaseExpr> typeArgs = typeInstantiations.get(currentUseIndex);
-      for (final BaseExpr typeArg : typeArgs)
-      {
-        type.typeInfo.name += SEPARATOR + typeArg.name;
-      }
-
-      type.typeInfo.name += SEPARATOR + type.name;
-      module.types.add(type.typeInfo);
-    }
-  }
-
-  private void parseTypeInstantiation(final Tokenizer tokenizer)
-  {
-    final ArrayList<BaseExpr> typeArgs = new ArrayList<>();
-    expect(tokenizer, Token.TOK_TEMPL_OPEN, "<");
+    expect(tokenizer, Token.TOK_TEMPL_OPEN, "'<'");
 
     typeArgs.add(new ConstTypeName(tokenizer));
 
@@ -141,6 +44,120 @@ public class UseStmt extends BaseExpr
     }
 
     expect(tokenizer, Token.TOK_TEMPL_CLOSE, "',' or '>'");
-    typeInstantiations.add(typeArgs);
+  }
+
+  public UseStmt(final TemplateStmt template, final FuncExpr func)
+  {
+    automatic = true;
+    module = func.module;
+    origin = func.origin;
+    name = template.name;
+
+    for (final BaseExpr funcType : func.funcTypes)
+    {
+      final BaseExpr constType = funcType.clone();
+      typeArgs.add(constType);
+    }
+  }
+
+  @Override
+  public void analyze()
+  {
+    template = (TemplateStmt) findEntity(TemplateStmt.class, "template");
+
+    final QuplaModule oldModule = currentModule;
+    currentModule = module;
+
+    final UseStmt oldUse = currentUse;
+    currentUse = this;
+
+    if (template.params.size() > typeArgs.size())
+    {
+      final BaseExpr param = template.params.get(typeArgs.size());
+      error("Missing type argument: " + param.name);
+    }
+
+    if (template.params.size() < typeArgs.size())
+    {
+      final BaseExpr typeArg = typeArgs.get(template.params.size());
+      typeArg.error("Extra type argument: " + typeArg.name);
+    }
+
+    for (final BaseExpr typeArg : typeArgs)
+    {
+      if (!typeArg.wasAnalyzed())
+      {
+        typeArg.analyze();
+      }
+    }
+
+    // set up use-specific types
+    for (final BaseExpr type : template.types)
+    {
+      final BaseExpr useType = type.clone();
+      useType.analyze();
+      types.add(useType);
+    }
+
+    if (typeArgs.size() == 1)
+    {
+      // check relationship expression
+      if (template.relations.size() != 0)
+      {
+        int totalSize = 0;
+        for (final BaseExpr relation : template.relations)
+        {
+          boolean found = false;
+          for (final BaseExpr useType : types)
+          {
+            if (useType.name.equals(relation.name))
+            {
+              found = true;
+              totalSize += useType.size;
+              break;
+            }
+          }
+
+          if (!found)
+          {
+            relation.error("Relation type name not found: " + relation.name);
+          }
+        }
+
+        if (totalSize != typeArgs.get(0).size)
+        {
+          if (automatic)
+          {
+            // wrong template, do not instantiate any functions
+            currentModule = oldModule;
+            currentUse = oldUse;
+            return;
+          }
+
+          error("Relation sum does not match");
+        }
+      }
+    }
+
+    for (final BaseExpr func : template.funcs)
+    {
+      final FuncStmt useFunc = new FuncStmt((FuncStmt) func);
+      useFunc.origin = origin;
+      useFunc.module = module;
+      useFunc.use = this;
+      useFunc.analyzeSignature();
+      module.funcs.add(useFunc);
+    }
+
+    size = template.funcs.size();
+
+    currentModule = oldModule;
+    currentUse = oldUse;
+  }
+
+  @Override
+  public BaseExpr clone()
+  {
+    return new UseStmt(this);
   }
 }

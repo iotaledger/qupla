@@ -14,38 +14,26 @@ func Trit neg<Trit> (Trit val) {
   return neg[val]
 }
 
+template neg3<T> = A + B + C {
+  type A [T / 3]
+  type B [T / 3]
+  type C [T / 3]
+
+  func T neg<T> (T val) {
+    val0 = neg<A>(val[0 : A])
+    val1 = neg<B>(val[A : B])
+    val2 = neg<C>(val[A + B : C])
+    return val0 & val1 & val2
+  }
+}
+
 template neg<T> {
-  type P [T / 3]
+  type A [T - T / 2]
+  type B [T - A]
 
   func T neg<T> (T val) {
-    return neg<P>(val[P * 0 : P]) &
-           neg<P>(val[P * 1 : P]) &
-           neg<P>(val[P * 2 : P])
+    val0 = neg<A>(val[0 : A])
+    val1 = neg<B>(val[A : B])
+    return val0 & val1
   }
 }
-
-use neg<Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-
-template neg2<T> {
-  type P [T / 2]
-
-  func T neg<T> (T val) {
-    return neg<P>(val[P * 0 : P]) &
-           neg<P>(val[P * 1 : P])
-  }
-}
-
-use neg2<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
-
-
-test 99 = neg<Tiny>(-99)
-test 1 = neg<Tiny>(-1)
-test 0 = neg<Tiny>(0)
-test -1 = neg<Tiny>(1)
-test -99 = neg<Tiny>(99)
-
-test 99 = neg<Tiny2>(-99)
-test 1 = neg<Tiny2>(-1)
-test 0 = neg<Tiny2>(0)
-test -1 = neg<Tiny2>(1)
-test -99 = neg<Tiny2>(99)

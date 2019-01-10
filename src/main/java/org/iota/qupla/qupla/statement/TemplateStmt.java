@@ -9,9 +9,9 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class TemplateStmt extends BaseExpr
 {
-  public boolean analyzed;
   public ArrayList<BaseExpr> funcs = new ArrayList<>();
   public final ArrayList<BaseExpr> params = new ArrayList<>();
+  public final ArrayList<BaseExpr> relations = new ArrayList<>();
   public final ArrayList<BaseExpr> types = new ArrayList<>();
 
   public TemplateStmt(final TemplateStmt copy)
@@ -19,9 +19,9 @@ public class TemplateStmt extends BaseExpr
     super(copy);
 
     params.addAll(copy.params);
+    cloneArray(relations, copy.relations);
     cloneArray(types, copy.types);
     cloneArray(funcs, copy.funcs);
-    this.analyzed = copy.analyzed;
   }
 
   public TemplateStmt(final Tokenizer tokenizer)
@@ -34,7 +34,7 @@ public class TemplateStmt extends BaseExpr
     name = templateName.text;
     module.checkDuplicateName(module.templates, this);
 
-    expect(tokenizer, Token.TOK_TEMPL_OPEN, "<");
+    expect(tokenizer, Token.TOK_TEMPL_OPEN, "'<'");
 
     params.add(new NameExpr(tokenizer, "placeholder type name"));
     while (tokenizer.tokenId() == Token.TOK_COMMA)
@@ -45,6 +45,20 @@ public class TemplateStmt extends BaseExpr
     }
 
     expect(tokenizer, Token.TOK_TEMPL_CLOSE, "',' or '>'");
+
+    if (tokenizer.tokenId() == Token.TOK_EQUAL)
+    {
+      tokenizer.nextToken();
+
+      relations.add(new NameExpr(tokenizer, "template type name"));
+
+      while (tokenizer.tokenId() == Token.TOK_PLUS)
+      {
+        tokenizer.nextToken();
+
+        relations.add(new NameExpr(tokenizer, "template type name"));
+      }
+    }
 
     expect(tokenizer, Token.TOK_GROUP_OPEN, "'{'");
 
@@ -64,9 +78,34 @@ public class TemplateStmt extends BaseExpr
   @Override
   public void analyze()
   {
+    if (relations.size() != 0)
+    {
+      if (params.size() != 1)
+      {
+        error("Relation requires a single template placeholder");
+      }
+
+      for (final BaseExpr relation : relations)
+      {
+        boolean found = false;
+        for (final BaseExpr type : types)
+        {
+          if (type.name.equals(relation.name))
+          {
+            found = true;
+            break;
+          }
+        }
+
+        if (!found)
+        {
+          relation.error("Unknown template type name");
+        }
+      }
+    }
+
     // just to avoid findEntity calling analyze again
     size = params.size();
-    analyzed = true;
   }
 
   @Override

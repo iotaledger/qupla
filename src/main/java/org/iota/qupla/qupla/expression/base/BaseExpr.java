@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.qupla.context.QuplaPrintContext;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 import org.iota.qupla.qupla.statement.TypeStmt;
@@ -16,13 +16,12 @@ public abstract class BaseExpr
   protected static final String SEPARATOR = "_";
   public static int callNr;
   public static TypeStmt constTypeInfo;
-  public static Module currentModule;
+  public static QuplaModule currentModule;
   public static UseStmt currentUse;
-  public static int currentUseIndex;
   protected static QuplaPrintContext printer = new QuplaPrintContext();
-  public static final ArrayList<BaseExpr> scope = new ArrayList<>();
+  public static ArrayList<BaseExpr> scope = new ArrayList<>();
 
-  public Module module;
+  public QuplaModule module;
   public String name;
   public BaseExpr next;
   public Token origin;
@@ -50,10 +49,11 @@ public abstract class BaseExpr
     origin = tokenizer.currentToken();
   }
 
-  protected BaseExpr(final Tokenizer tokenizer, final Token origin)
+  protected BaseExpr(final Tokenizer tokenizer, final Token identifier)
   {
     module = tokenizer.module;
-    this.origin = origin != null ? origin : tokenizer.currentToken();
+    origin = identifier;
+    name = identifier.text;
   }
 
   public static void logLine(final String text)
@@ -62,30 +62,6 @@ public abstract class BaseExpr
   }
 
   public abstract void analyze();
-
-  protected TypeStmt analyzeType()
-  {
-    if (currentUse != null)
-    {
-      for (final BaseExpr type : currentUse.template.types)
-      {
-        if (type.name.equals(name))
-        {
-          if (type.typeInfo.size == 0)
-          {
-            error("Did not analyze: " + name);
-          }
-
-          size = type.typeInfo.size;
-          return type.typeInfo;
-        }
-      }
-    }
-
-    final TypeStmt type = (TypeStmt) findEntity(TypeStmt.class, "type");
-    size = type.size;
-    return type;
-  }
 
   public BaseExpr clone(final BaseExpr expr)
   {
@@ -100,6 +76,12 @@ public abstract class BaseExpr
     {
       lhs.add(expr.clone());
     }
+  }
+
+  protected BaseExpr entityNotFound(final String what)
+  {
+    error("Undefined " + what + " name: " + name);
+    return null;
   }
 
   public CodeException error(final Token token, final String message)
@@ -135,7 +117,7 @@ public abstract class BaseExpr
     {
       if (entity.name.equals(name))
       {
-        if (entity.size == 0)
+        if (!entity.wasAnalyzed())
         {
           entity.analyze();
         }
@@ -145,7 +127,7 @@ public abstract class BaseExpr
     }
 
     BaseExpr externEntity = null;
-    for (final Module extern : module.modules)
+    for (final QuplaModule extern : module.modules)
     {
       for (final BaseExpr entity : extern.entities(classId))
       {
@@ -162,12 +144,7 @@ public abstract class BaseExpr
       }
     }
 
-    if (externEntity == null)
-    {
-      error("Undefined " + what + " name: " + name);
-    }
-
-    return externEntity;
+    return externEntity != null ? externEntity : entityNotFound(what);
   }
 
   public void log(final String text)
@@ -200,5 +177,10 @@ public abstract class BaseExpr
   public void warning(final String message)
   {
     log("WARNING: " + message);
+  }
+
+  public boolean wasAnalyzed()
+  {
+    return size != 0;
   }
 }

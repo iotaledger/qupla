@@ -10,14 +10,14 @@ import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
 import org.iota.qupla.qupla.expression.FuncExpr;
-import org.iota.qupla.qupla.expression.IntegerExpr;
 import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
 import org.iota.qupla.qupla.expression.TypeExpr;
+import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.LutStmt;
 import org.iota.qupla.qupla.statement.helper.LutEntry;
@@ -32,14 +32,13 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   }
 
   @Override
-  public void eval(final Module module)
+  public void eval(final QuplaModule module)
   {
     fileOpen("QuplaVerilog.txt");
 
     super.eval(module);
 
-    verilog.addMergeLut(this);
-    verilog.addMergeFuncs(this);
+    verilog.generateMergeFuncs(this);
 
     fileClose();
   }
@@ -62,7 +61,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
 
     append("{ ");
     concat.lhs.eval(this);
-    append(" : ");
+    append(", ");
     concat.rhs.eval(this);
     append(" }");
   }
@@ -79,7 +78,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
     boolean first = true;
     for (final BaseExpr expr : exprs)
     {
-      append(first ? "{ " : " : ");
+      append(first ? "{ " : ", ");
       first = false;
       expr.eval(this);
     }
@@ -111,27 +110,31 @@ public class QuplaToVerilogContext extends QuplaBaseContext
     newline();
 
     final String funcName = func.name;
-    append("function [" + (func.size * 2 - 1) + ":0] ").append(funcName).append("(").newline().indent();
+    append("function " + size(func.size) + " ").append(funcName).append("(").newline().indent();
 
     boolean first = true;
     for (final BaseExpr param : func.params)
     {
       append(first ? "  " : ", ");
       first = false;
-      append("input [" + (param.size * 2 - 1) + ":0] ").append(param.name).newline();
+      append("input " + size(param.size) + " ").append(param.name).newline();
     }
 
     append(");").newline();
 
     for (final BaseExpr assignExpr : func.assignExprs)
     {
-      append("reg [" + (assignExpr.size * 2 - 1) + ":0] ").append(assignExpr.name).append(";").newline();
+      append("reg " + size(assignExpr.size) + " ").append(assignExpr.name).append(";").newline();
     }
+
+    append("reg " + size(func.size) + " ").append(funcName).append("_ret;").newline();
 
     if (func.assignExprs.size() != 0)
     {
       newline();
     }
+
+    //TODO state vars
 
     append("begin").newline().indent();
 
@@ -141,9 +144,11 @@ public class QuplaToVerilogContext extends QuplaBaseContext
       append(";").newline();
     }
 
-    append(funcName).append(" = ");
+    append(funcName).append("_ret = ");
     func.returnExpr.eval(this);
     append(";").newline().undent();
+
+    append(funcName).append(" = ").append(funcName).append("_ret;").newline();
 
     append("end").newline().undent();
     append("endfunction").newline();
@@ -175,7 +180,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   public void evalLutDefinition(final LutStmt lut)
   {
     final String lutName = lut.name + "_lut";
-    append("function [" + (lut.size * 2 - 1) + ":0] ").append(lutName).append("(").newline().indent();
+    append("function " + size(lut.size) + " ").append(lutName).append("(").newline().indent();
 
     boolean first = true;
     for (int i = 0; i < lut.inputSize; i++)
@@ -237,7 +242,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
       return;
     }
 
-    verilog.mergefuncs.add(merge.lhs.size);
+    verilog.mergeFuncs.add(merge.lhs.size);
     append(verilog.prefix + merge.lhs.size + "(");
     merge.lhs.eval(this);
     append(", ");
@@ -254,9 +259,9 @@ public class QuplaToVerilogContext extends QuplaBaseContext
       return;
     }
 
-    final int start = slice.start * 2;
-    final int end = start + slice.size * 2 - 1;
-    append("[" + end + ":" + start + "]");
+    final int start = (slice.varSize - slice.start) * 2 - 1;
+    final int end = start - slice.size * 2 + 1;
+    append("[" + start + ":" + end + "]");
   }
 
   @Override
@@ -279,13 +284,20 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   @Override
   public void evalType(final TypeExpr type)
   {
+    // type expression is a concatenation, but in declared field order
+    // analyze will have sorted the fields in order already
     evalConcatExprs(type.fields);
   }
 
   @Override
-  public void evalVector(final IntegerExpr integer)
+  public void evalVector(final VectorExpr integer)
   {
     appendVector(integer.vector.trits());
+  }
+
+  private String size(final int trits)
+  {
+    return verilog.size(trits);
   }
 }
 

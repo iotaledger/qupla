@@ -47,11 +47,6 @@ public class AssignExpr extends BaseExpr
     expr = new CondExpr(tokenizer).optimize();
     stackIndex = scope.size();
     scope.add(this);
-
-    if (useBreak && expr.name != null && expr.name.equals("break"))
-    {
-      int breakPoint = 0;
-    }
   }
 
   @Override

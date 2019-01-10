@@ -8,13 +8,14 @@ import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
 import org.iota.qupla.qupla.expression.FuncExpr;
-import org.iota.qupla.qupla.expression.IntegerExpr;
 import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
 import org.iota.qupla.qupla.expression.TypeExpr;
+import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.LutStmt;
 
@@ -29,6 +30,11 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   public int stackFrame;
 
   public QuplaAnyNullContext()
+  {
+  }
+
+  @Override
+  public void eval(final QuplaModule module)
   {
   }
 
@@ -71,8 +77,7 @@ public class QuplaAnyNullContext extends QuplaBaseContext
     }
   }
 
-  @Override
-  public void evalFuncBody(final FuncStmt func)
+  private void evalFunc(final FuncStmt func)
   {
     if (wasInspected(func))
     {
@@ -135,6 +140,22 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   }
 
   @Override
+  public void evalFuncBody(final FuncStmt func)
+  {
+    for (final BaseExpr stateExpr : func.stateExprs)
+    {
+      stateExpr.eval(this);
+    }
+
+    for (final BaseExpr assignExpr : func.assignExprs)
+    {
+      assignExpr.eval(this);
+    }
+
+    func.returnExpr.eval(this);
+  }
+
+  @Override
   public void evalFuncCall(final FuncExpr call)
   {
     if (call.args.size() == 1)
@@ -150,7 +171,7 @@ public class QuplaAnyNullContext extends QuplaBaseContext
     if (!currentlyInspecting && !wasInspected(call.func))
     {
       // do inspection first
-      new QuplaAnyNullContext().evalFuncBody(call.func);
+      new QuplaAnyNullContext().evalFunc(call.func);
     }
 
     int newStackFrame = stack.size();
@@ -243,7 +264,7 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   }
 
   @Override
-  public void evalVector(final IntegerExpr integer)
+  public void evalVector(final VectorExpr integer)
   {
     // of course this is non-null
     isNull = false;

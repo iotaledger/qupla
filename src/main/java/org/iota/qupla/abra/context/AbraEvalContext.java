@@ -18,7 +18,7 @@ import org.iota.qupla.helper.StateValue;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
-import org.iota.qupla.qupla.expression.IntegerExpr;
+import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraEvalContext extends AbraBaseContext
@@ -51,9 +51,9 @@ public class AbraEvalContext extends AbraBaseContext
           args.clear();
           for (final BaseExpr arg : funcExpr.args)
           {
-            if (arg instanceof IntegerExpr)
+            if (arg instanceof VectorExpr)
             {
-              args.add(((IntegerExpr) arg).vector);
+              args.add(((VectorExpr) arg).vector);
               continue;
             }
 

@@ -1,0 +1,214 @@
+// needed to split off the tests from float.abra due to chicken-and-egg problem
+// interpreter's float constant parser uses floatDiv to calculate the trit vector
+// which means that float.abra must be parsed before float constants can be used
+
+type TestFloat {
+  mantissa [Tiny2]
+  exponent [Tryte2]
+}
+
+test  0 = floatAdd<TestFloat>( 0,  0)
+
+test  1 = floatAdd<TestFloat>( 0,  1)
+test  1 = floatAdd<TestFloat>( 1,  0)
+test  2 = floatAdd<TestFloat>( 1,  1)
+test  2 = floatAdd<TestFloat>( 0,  2)
+test  2 = floatAdd<TestFloat>( 2,  0)
+test  3 = floatAdd<TestFloat>( 1,  2)
+test  3 = floatAdd<TestFloat>( 2,  1)
+test  4 = floatAdd<TestFloat>( 2,  2)
+
+test -1 = floatAdd<TestFloat>( 0, -1)
+test -1 = floatAdd<TestFloat>(-1,  0)
+test -2 = floatAdd<TestFloat>(-1, -1)
+test -2 = floatAdd<TestFloat>( 0, -2)
+test -2 = floatAdd<TestFloat>(-2,  0)
+test -3 = floatAdd<TestFloat>(-1, -2)
+test -3 = floatAdd<TestFloat>(-2, -1)
+test -4 = floatAdd<TestFloat>(-2, -2)
+
+test  0 = floatAdd<TestFloat>( 1, -1)
+test -1 = floatAdd<TestFloat>( 1, -2)
+test  1 = floatAdd<TestFloat>( 2, -1)
+test  0 = floatAdd<TestFloat>( 2, -2)
+
+test  0 = floatAdd<TestFloat>(-1,  1)
+test  1 = floatAdd<TestFloat>(-1,  2)
+test -1 = floatAdd<TestFloat>(-2,  1)
+test  0 = floatAdd<TestFloat>(-2,  2)
+
+test  6 = floatAdd<TestFloat>( 3,  3)
+test  0 = floatAdd<TestFloat>( 3, -3)
+test  0 = floatAdd<TestFloat>(-3,  3)
+test -6 = floatAdd<TestFloat>(-3, -3)
+
+test 0.1111 = floatAdd<TestFloat>( 0.11,  0.0011)
+test 0.1111 = floatAdd<TestFloat>( 0.0011,  0.11)
+
+test  4.6 = floatAdd<TestFloat>( 1.2,  3.4)
+test  2.2 = floatAdd<TestFloat>(-1.2,  3.4)
+test -2.2 = floatAdd<TestFloat>( 1.2, -3.4)
+test -4.6 = floatAdd<TestFloat>(-1.2, -3.4)
+
+test  0 = floatSub<TestFloat>( 0,  0)
+
+test -1 = floatSub<TestFloat>( 0,  1)
+test  1 = floatSub<TestFloat>( 1,  0)
+test  0 = floatSub<TestFloat>( 1,  1)
+test -2 = floatSub<TestFloat>( 0,  2)
+test  2 = floatSub<TestFloat>( 2,  0)
+test -1 = floatSub<TestFloat>( 1,  2)
+test  1 = floatSub<TestFloat>( 2,  1)
+test  0 = floatSub<TestFloat>( 2,  2)
+
+test  1 = floatSub<TestFloat>( 0, -1)
+test -1 = floatSub<TestFloat>(-1,  0)
+test  0 = floatSub<TestFloat>(-1, -1)
+test  2 = floatSub<TestFloat>( 0, -2)
+test -2 = floatSub<TestFloat>(-2,  0)
+test  1 = floatSub<TestFloat>(-1, -2)
+test -1 = floatSub<TestFloat>(-2, -1)
+test  0 = floatSub<TestFloat>(-2, -2)
+
+test  2 = floatSub<TestFloat>( 1, -1)
+test  3 = floatSub<TestFloat>( 1, -2)
+test  3 = floatSub<TestFloat>( 2, -1)
+test  4 = floatSub<TestFloat>( 2, -2)
+
+test -2 = floatSub<TestFloat>(-1,  1)
+test -3 = floatSub<TestFloat>(-1,  2)
+test -3 = floatSub<TestFloat>(-2,  1)
+test -4 = floatSub<TestFloat>(-2,  2)
+
+test  0 = floatSub<TestFloat>( 3,  3)
+test  6 = floatSub<TestFloat>( 3, -3)
+test -6 = floatSub<TestFloat>(-3,  3)
+test  0 = floatSub<TestFloat>(-3, -3)
+
+test -2.2 = floatSub<TestFloat>( 1.2,  3.4)
+test -4.6 = floatSub<TestFloat>(-1.2,  3.4)
+test  4.6 = floatSub<TestFloat>( 1.2, -3.4)
+test  2.2 = floatSub<TestFloat>(-1.2, -3.4)
+
+test  0 = floatMul<TestFloat>( 0,  0)
+
+test  0 = floatMul<TestFloat>( 0,  1)
+test  0 = floatMul<TestFloat>( 1,  0)
+test  1 = floatMul<TestFloat>( 1,  1)
+test  0 = floatMul<TestFloat>( 0,  2)
+test  0 = floatMul<TestFloat>( 2,  0)
+test  2 = floatMul<TestFloat>( 1,  2)
+test  2 = floatMul<TestFloat>( 2,  1)
+test  4 = floatMul<TestFloat>( 2,  2)
+
+test  0 = floatMul<TestFloat>( 0, -1)
+test  0 = floatMul<TestFloat>(-1,  0)
+test  1 = floatMul<TestFloat>(-1, -1)
+test  0 = floatMul<TestFloat>( 0, -2)
+test  0 = floatMul<TestFloat>(-2,  0)
+test  2 = floatMul<TestFloat>(-1, -2)
+test  2 = floatMul<TestFloat>(-2, -1)
+test  4 = floatMul<TestFloat>(-2, -2)
+
+test -1 = floatMul<TestFloat>( 1, -1)
+test -2 = floatMul<TestFloat>( 1, -2)
+test -2 = floatMul<TestFloat>( 2, -1)
+test -4 = floatMul<TestFloat>( 2, -2)
+
+test -1 = floatMul<TestFloat>(-1,  1)
+test -2 = floatMul<TestFloat>(-1,  2)
+test -2 = floatMul<TestFloat>(-2,  1)
+test -4 = floatMul<TestFloat>(-2,  2)
+
+test  9 = floatMul<TestFloat>( 3,  3)
+test -9 = floatMul<TestFloat>( 3, -3)
+test -9 = floatMul<TestFloat>(-3,  3)
+test  9 = floatMul<TestFloat>(-3, -3)
+
+test  4.08 = floatMul<TestFloat>( 1.2,  3.4)
+test -4.08 = floatMul<TestFloat>(-1.2,  3.4)
+test -4.08 = floatMul<TestFloat>( 1.2, -3.4)
+test  4.08 = floatMul<TestFloat>(-1.2, -3.4)
+
+test  0 = floatDiv<TestFloat>( 0,  0)
+
+test  0 = floatDiv<TestFloat>( 0,  1)
+//test 0 = floatDiv<TestFloat>( 1,  0)
+test  1 = floatDiv<TestFloat>( 1,  1)
+test  0 = floatDiv<TestFloat>( 0,  2)
+//test 0 = floatDiv<TestFloat>( 2,  0)
+test  0.5 = floatDiv<TestFloat>( 1,  2)
+test  2 = floatDiv<TestFloat>( 2,  1)
+test  1 = floatDiv<TestFloat>( 2,  2)
+
+test  0 = floatDiv<TestFloat>( 0, -1)
+//test 0 = floatDiv<TestFloat>(-1,  0)
+test  1 = floatDiv<TestFloat>(-1, -1)
+test  0 = floatDiv<TestFloat>( 0, -2)
+//test 0 = floatDiv<TestFloat>(-2,  0)
+test  0.5 = floatDiv<TestFloat>(-1, -2)
+test  2 = floatDiv<TestFloat>(-2, -1)
+test  1 = floatDiv<TestFloat>(-2, -2)
+
+test -1 = floatDiv<TestFloat>( 1, -1)
+test -0.5 = floatDiv<TestFloat>( 1, -2)
+test -2 = floatDiv<TestFloat>( 2, -1)
+test -1 = floatDiv<TestFloat>( 2, -2)
+
+test -1 = floatDiv<TestFloat>(-1,  1)
+test -0.5 = floatDiv<TestFloat>(-1,  2)
+test -2 = floatDiv<TestFloat>(-2,  1)
+test -1 = floatDiv<TestFloat>(-2,  2)
+
+test  1 = floatDiv<TestFloat>( 3,  3)
+test -1 = floatDiv<TestFloat>( 3, -3)
+test -1 = floatDiv<TestFloat>(-3,  3)
+test  1 = floatDiv<TestFloat>(-3, -3)
+
+test  0.35294 = floatDiv<TinyFloat>( 1.2,  3.4)
+test -0.35294 = floatDiv<TinyFloat>(-1.2,  3.4)
+test -0.35294 = floatDiv<TinyFloat>( 1.2, -3.4)
+test  0.35294 = floatDiv<TinyFloat>(-1.2, -3.4)
+
+test  0.3529411764706 = floatDiv<Float>( 1.2,  3.4)
+test -0.3529411764706 = floatDiv<Float>(-1.2,  3.4)
+test -0.3529411764706 = floatDiv<Float>( 1.2, -3.4)
+test  0.3529411764706 = floatDiv<Float>(-1.2, -3.4)
+
+test  0.35294117647058823 = floatDiv<Double>( 1.2,  3.4)
+test -0.35294117647058823 = floatDiv<Double>(-1.2,  3.4)
+test -0.35294117647058823 = floatDiv<Double>( 1.2, -3.4)
+test  0.35294117647058823 = floatDiv<Double>(-1.2, -3.4)
+
+
+test 123 = floatDiv<TinyFloat>(123, 1)
+test 0.5 = floatDiv<TinyFloat>(5, 10)
+test 0.5 = floatDiv<Float>(5, 10)
+test 0.5 = floatDiv<Double>(5, 10)
+test 0.5 = floatDiv<HugeFloat>(5, 10)
+test 0.33333 = floatDiv<TinyFloat>(1, 3)
+test 3.14 = floatDiv<TinyFloat>(314, 100)
+test 3.14159 = floatDiv<Float>(314159, 100000)
+test 3.14159 = floatDiv<Float>(3.14159, 1)
+
+
+test 0.5 = floatDiv<TinyFloat>(1, 2)
+test 1 = floatMul<TinyFloat>(2, 0.5)
+test 1 = floatAdd<TinyFloat>(0.5, 0.5)
+
+test 2.5 = floatAdd<TinyFloat>(2, 0.5)
+
+test 0.001 = floatDiv<TinyFloat>(1, 1000)
+test 0.001 = floatDiv<TinyFloat>(0.01, 10)
+
+test 1000 = floatAdd<TinyFloat>(0.001, 1000)
+test 1000.001 = floatAdd<Float>(0.001, 1000)
+
+test -1000 = floatSub<TinyFloat>(0.001, 1000)
+test -999.999 = floatSub<Float>(0.001, 1000)
+
+test 1 = floatMul<TinyFloat>(0.001, 1000)
+test 1 = floatMul<Float>(0.001, 1000)
+
+test 0.000001 = floatDiv<TinyFloat>(0.001, 1000)
+test 0.000001 = floatDiv<Float>(0.001, 1000)

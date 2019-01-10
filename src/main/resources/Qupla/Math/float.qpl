@@ -3,124 +3,104 @@
 // we expect the mantissa to always be normalized, which means that the most
 // significant trit is never zero except when the value is exactly zero
 
-type TinyFloat {
-  mantissa [Tiny]   // -/+ 9,841
-  exponent [Tryte]  // -/+ 3^13
-}
-type Float {        // slightly larger than IEEE 754 32-bit float
-  mantissa [Tiny2]  // -/+ 193,710,244
-  exponent [Tryte2] // -/+ 3^364
-}
-type Double {       // slightly larger than IEEE 754 64-bit double
-  mantissa [Tiny4]  // -/+ 75,047,317,648,499,560
-  exponent [Tiny]   // -/+ 3^9,841
-}
-type HugeFloat {
-  mantissa [Int2]   // -/+ 29,074,868,501,520,029,845,195,084
-  exponent [Tiny2]  // -/+ 3^193,710,244
-}
 
-use as<TinyFloat>, <Float>, <Double>, <HugeFloat>
-
-template float<M, E> {
-  type F {
-    mantissa [M]
-    exponent [E]
-  }
+template float<T> = M + E {
+  type M [T.mantissa]
+  type E [T.exponent]
   type M2 [M * 2]
   type M3 [M * 3]
 
-  func F floatAdd<M, E> (F lhs, F rhs) {
+  func T floatAdd<T> (T lhs, T rhs) {
     // compare exponents, make sure to add smaller exponent value to larger exponent value
     // so we swap lhs and rhs if necessary
     smaller = isLess[cmp<E>(lhs.exponent, rhs.exponent)]
 
     lhs0 = smaller ? rhs : lhs
     rhs0 = smaller ? lhs : rhs
-    return floatAddCheckMantissa<M, E>(lhs0, rhs0)
+    return floatAddCheckMantissa<T>(lhs0, rhs0)
   }
 
-  func F floatAddCheckMantissa<M, E> (F lhs, F rhs) {
+  func T floatAddCheckMantissa<T> (T lhs, T rhs) {
     // if mantissa is zero: nothing to add, return lhs
     zero = isZero[sign<M>(rhs.mantissa)]
-    return zero ? lhs : floatAddShiftMantissa<M, E>(lhs, rhs)
+    return zero ? lhs : floatAddShiftMantissa<T>(lhs, rhs)
   }
 
-  func F floatAddShiftMantissa<M, E> (F lhs, F rhs) {
+  func T floatAddShiftMantissa<T> (T lhs, T rhs) {
     // keep lshifting rhs mantissa while incrementing rhs exponent
     // if both exponents are equal: add the values, then normalize
     addValues = equal<E>(lhs.exponent, rhs.exponent)
 
-    return addValues ? floatAddMantissas<M, E>(lhs, rhs) :
-           floatAddDoShiftMantissa<M, E>(lhs, rhs)
+    return addValues ? floatAddMantissas<T>(lhs, rhs) :
+           floatAddDoShiftMantissa<T>(lhs, rhs)
   }
 
-  func F floatAddDoShiftMantissa<M, E> (F lhs, F rhs) {
+  func T floatAddDoShiftMantissa<T> (T lhs, T rhs) {
 
-    shifted = F {
+    shifted = T {
       mantissa = lshift<M>(rhs.mantissa)
       exponent = incr<E>(rhs.exponent)
     }
 
-    return floatAddCheckMantissa<M, E>(lhs, shifted)
+    return floatAddCheckMantissa<T>(lhs, shifted)
   }
 
-  func F floatAddMantissas<M, E> (F lhs, F rhs) {
+  func T floatAddMantissas<T> (T lhs, T rhs) {
     // exponents are equal, add both mantissas and normalize result
     sum = fullAdd<M>(lhs.mantissa, rhs.mantissa, 0)
     carry = notZero[sum[M]]
 
     // in case of carry we need to shift in the overflow and increment the exponent
-    ret0 = F {
+    ret0 = T {
       mantissa = carry ? sum[1 : M] : null
       exponent = incr<E>(carry ? lhs.exponent : null)
     }
 
     // value for normalization
-    val = F {
+    val = T {
       mantissa = not[carry] ? sum[0 : M] : null
       exponent = not[carry] ? lhs.exponent : null
     }
 
     // if zero then return all zero
     zero = isZero[sign<M>(val.mantissa)]
-    return ret0 | (zero ? 0 : floatAddNormalize<M, E>(val))
+    return ret0 | (zero ? 0 : floatAddNormalize<T>(val))
   }
 
-  func F floatAddNormalize<M, E> (F val) {
+  func T floatAddNormalize<T> (T val) {
     // normalize by rshift(sum) and incr(lhs.exponent) until MST is nonzero
     nonZero = notZero[val.mantissa[M - 1]]
-    return nonZero ? val : floatAddDoNormalize<M, E>(val)
+    return nonZero ? val : floatAddDoNormalize<T>(val)
   }
 
-  func F floatAddDoNormalize<M, E> (F val) {
-    val1 = F {
+  func T floatAddDoNormalize<T> (T val) {
+    val1 = T {
       mantissa = rshift<M>(val.mantissa)
       exponent = decr<E>(val.exponent)
     }
-    return floatAddNormalize<M, E>(val1)
+    return floatAddNormalize<T>(val1)
   }
 
-  func F floatDiv<M, E> (F lhs, F rhs) {
+  func T floatDiv<T> (T lhs, T rhs) {
     zero = or[isZero[sign<M>(lhs.mantissa)], isZero[sign<M>(rhs.mantissa)]]
-    return zero ? 0 : floatDivNonZero<M, E>(lhs, rhs)
+    return zero ? 0 : floatDivNonZero<T>(lhs, rhs)
   }
 
-  func F floatDivNonZero<M, E> (F lhs, F rhs) {
-    zero = as<M>(0)
-    quotient = div<M3>(zero & zero & lhs.mantissa, rhs.mantissa & zero & zero)
+  func T floatDivNonZero<T> (T lhs, T rhs) {
+    zero = as<M2>(0)
+    quotient = div<M3>(zero & lhs.mantissa, rhs.mantissa & zero)
     sum = sub<E>(lhs.exponent, rhs.exponent)
     isNormalized = isZero[quotient[M * 2]]
 
     // quotient of two normalized mantissa's is either already normalized
-    normalized = F {
+    normalized = T {
       mantissa = quotient[M : M]
       exponent = sum
     }
 
     // or it only needs a single lshift to become normalized
     // in which case the exponent needs incrementing
-    corrected = F {
+    corrected = T {
       mantissa = quotient[M + 1 : M]
       exponent = incr<E>(sum)
     }
@@ -131,19 +111,19 @@ template float<M, E> {
     return isNormalized ? normalized : corrected
   }
 
-  func F floatMul<M, E> (F lhs, F rhs) {
+  func T floatMul<T> (T lhs, T rhs) {
     lhsZero = isZero[sign<M>(lhs.mantissa)]
     rhsZero = isZero[sign<M>(rhs.mantissa)]
-    return or[lhsZero, rhsZero] ? 0 : floatMulNonZero<M, E>(lhs, rhs)
+    return or[lhsZero, rhsZero] ? 0 : floatMulNonZero<T>(lhs, rhs)
   }
 
-  func F floatMulNonZero<M, E> (F lhs, F rhs) {
+  func T floatMulNonZero<T> (T lhs, T rhs) {
     product = fullMulNonZero<M>(lhs.mantissa, rhs.mantissa)
     sum = add<E>(lhs.exponent, rhs.exponent)
-    return floatMulNormalize<M, E>(product, sum)
+    return floatMulNormalize<T>(product, sum)
   }
 
-  func F floatMulNormalize<M, E> (M2 product, E sum) {
+  func T floatMulNormalize<T> (M2 product, E sum) {
     isNormalized = notZero[product[M2 - 1]]
 
     prod0 = isNormalized ? product : null
@@ -154,26 +134,23 @@ template float<M, E> {
 
     // note that we truncate the double-width result to s single-width
     // result, which in balanced ternary amounts to correctly rounding off
-    normalized = F {
+    normalized = T {
       mantissa = prod0[M : M]
       exponent = sum0
     }
 
-    return normalized | floatMulNormalize<M, E>(prod1, decr<E>(sum1))
+    return normalized | floatMulNormalize<T>(prod1, decr<E>(sum1))
   }
 
-  func F floatNeg<M, E> (F val) {
-    return F {
+  func T floatNeg<T> (T val) {
+    return T {
       mantissa = neg<M>(val.mantissa)
       exponent = val.exponent
     }
   }
 
-  func F floatSub<M, E> (F lhs, F rhs) {
+  func T floatSub<T> (T lhs, T rhs) {
     // A - B equals A + -B
-    return floatAdd<M, E>(lhs, floatNeg<M, E>(rhs))
+    return floatAdd<T>(lhs, floatNeg<T>(rhs))
   }
 }
-
-use print<TinyFloat>, <Float>, <Double>, <HugeFloat>
-use float<Tiny, Tryte>, <Tiny2, Tryte2>, <Tiny4, Tiny>, <Int2, Tiny2>

@@ -14,10 +14,10 @@ import org.iota.qupla.qupla.context.QuplaPrintContext;
 import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.context.QuplaToVerilogContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
-import org.iota.qupla.qupla.expression.IntegerExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
+import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 import org.iota.qupla.qupla.statement.ExecStmt;
@@ -61,7 +61,7 @@ public class Qupla
     if (BaseExpr.currentUse != null)
     {
       final UseStmt use = BaseExpr.currentUse;
-      final ArrayList<BaseExpr> types = use.typeInstantiations.get(BaseExpr.currentUseIndex);
+      final ArrayList<BaseExpr> types = use.typeArgs;
 
       String name = use.name;
       boolean first = true;
@@ -84,8 +84,8 @@ public class Qupla
     log("\nEvaluate: " + statement);
     final Tokenizer tokenizer = new Tokenizer();
     tokenizer.lines.add(statement);
-    tokenizer.module = new Module(new ArrayList<>());
-    tokenizer.module.modules.addAll(Module.allModules.values());
+    tokenizer.module = new QuplaModule(new ArrayList<>());
+    tokenizer.module.modules.addAll(QuplaModule.allModules.values());
     tokenizer.nextToken();
     final BaseExpr expr = new MergeExpr(tokenizer).optimize();
     expr.analyze();
@@ -130,7 +130,7 @@ public class Qupla
             continue;
           }
 
-          Module.parse(arg);
+          QuplaModule.parse(arg);
         }
 
         processOptions();
@@ -203,7 +203,7 @@ public class Qupla
   private static void runAbraGenerator()
   {
     log("Run Abra generator");
-    final Module singleModule = new Module(Module.allModules.values());
+    final QuplaModule singleModule = new QuplaModule(QuplaModule.allModules.values());
     quplaToAbraContext = new QuplaToAbraContext();
     quplaToAbraContext.eval(singleModule);
   }
@@ -211,7 +211,7 @@ public class Qupla
   private static void runEchoSource()
   {
     log("Generate Qupla.txt");
-    final Module singleModule = new Module(Module.allModules.values());
+    final QuplaModule singleModule = new QuplaModule(QuplaModule.allModules.values());
     new QuplaPrintContext().eval(singleModule);
   }
 
@@ -220,11 +220,11 @@ public class Qupla
     log("Eval: " + expr.toString());
 
     final QuplaEvalContext context = new QuplaEvalContext();
-    final AbraEvalContext abraEvalContext = new AbraEvalContext();
 
     long mSec = System.currentTimeMillis();
     if (options.contains("-abra"))
     {
+      final AbraEvalContext abraEvalContext = new AbraEvalContext();
       abraEvalContext.eval(quplaToAbraContext, expr);
       context.value = abraEvalContext.value;
     }
@@ -240,7 +240,7 @@ public class Qupla
 
     if (expr instanceof FuncExpr)
     {
-      final Dispatcher dispatcher = new Dispatcher(Module.allModules.values());
+      final Dispatcher dispatcher = new Dispatcher(QuplaModule.allModules.values());
       final FuncExpr funcExpr = (FuncExpr) expr;
       context.createEntityEffects(funcExpr.func);
       dispatcher.runQuants();
@@ -251,7 +251,7 @@ public class Qupla
   private static void runEvals()
   {
     long mSec = System.currentTimeMillis();
-    for (final Module module : Module.allModules.values())
+    for (final QuplaModule module : QuplaModule.allModules.values())
     {
       for (final ExecStmt exec : module.execs)
       {
@@ -269,15 +269,15 @@ public class Qupla
   private static void runFpgaGenerator()
   {
     log("Run Verilog compiler");
-    final Module singleModule = new Module(Module.allModules.values());
+    final QuplaModule singleModule = new QuplaModule(QuplaModule.allModules.values());
     new QuplaToVerilogContext().eval(singleModule);
   }
 
   private static void runMathTest(final QuplaEvalContext context, final FuncExpr expr, final int lhs, final int rhs, final int result)
   {
-    final IntegerExpr lhsArg = (IntegerExpr) expr.args.get(0);
+    final VectorExpr lhsArg = (VectorExpr) expr.args.get(0);
     lhsArg.vector = new TritVector(TritConverter.fromLong(lhs)).slicePadded(0, lhsArg.size);
-    final IntegerExpr rhsArg = (IntegerExpr) expr.args.get(1);
+    final VectorExpr rhsArg = (VectorExpr) expr.args.get(1);
     rhsArg.vector = new TritVector(TritConverter.fromLong(rhs)).slicePadded(0, rhsArg.size);
 
     expr.eval(context);
@@ -300,8 +300,8 @@ public class Qupla
     long mSec = System.currentTimeMillis();
     final Tokenizer tokenizer = new Tokenizer();
     tokenizer.lines.add(statement);
-    tokenizer.module = new Module(new ArrayList<>());
-    tokenizer.module.modules.addAll(Module.allModules.values());
+    tokenizer.module = new QuplaModule(new ArrayList<>());
+    tokenizer.module.modules.addAll(QuplaModule.allModules.values());
     tokenizer.nextToken();
     final FuncExpr expr = (FuncExpr) new MergeExpr(tokenizer).optimize();
     expr.analyze();
@@ -326,11 +326,11 @@ public class Qupla
     log("Test: " + exec.expected + " = " + exec.expr);
 
     final QuplaEvalContext context = new QuplaEvalContext();
-    final AbraEvalContext abraEvalContext = new AbraEvalContext();
 
     long mSec = System.currentTimeMillis();
     if (options.contains("-abra"))
     {
+      final AbraEvalContext abraEvalContext = new AbraEvalContext();
       abraEvalContext.eval(quplaToAbraContext, exec.expr);
       context.value = abraEvalContext.value;
     }
@@ -354,7 +354,7 @@ public class Qupla
   private static void runTests()
   {
     long mSec = System.currentTimeMillis();
-    for (final Module module : Module.allModules.values())
+    for (final QuplaModule module : QuplaModule.allModules.values())
     {
       for (final ExecStmt exec : module.execs)
       {

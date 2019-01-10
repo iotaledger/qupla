@@ -5,15 +5,3 @@ template abs<T> {
     return isNegative[sign<T>(val)] ? neg<T>(val) : val
   }
 }
-
-use abs<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use abs<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>
-
-
-test 0 = abs<Tiny>(0)
-test 1 = abs<Tiny>(1)
-test 1 = abs<Tiny>(-1)
-test 2 = abs<Tiny>(2)
-test 2 = abs<Tiny>(-2)
-test 999 = abs<Tiny>(999)
-test 999 = abs<Tiny>(-999)

@@ -17,6 +17,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class FuncStmt extends BaseExpr
 {
+  public boolean analyzed;
   public boolean anyNull;
   public final ArrayList<BaseExpr> assignExprs = new ArrayList<>();
   public final ArrayList<BaseExpr> envExprs = new ArrayList<>();
@@ -27,7 +28,6 @@ public class FuncStmt extends BaseExpr
   public BaseExpr returnType;
   public final ArrayList<BaseExpr> stateExprs = new ArrayList<>();
   public UseStmt use;
-  public int useIndex;
 
   public FuncStmt(UseStmt use)
   {
@@ -41,6 +41,7 @@ public class FuncStmt extends BaseExpr
   {
     super(copy);
 
+    analyzed = copy.analyzed;
     anyNull = copy.anyNull;
     returnType = clone(copy.returnType);
     cloneArray(funcTypes, copy.funcTypes);
@@ -100,42 +101,22 @@ public class FuncStmt extends BaseExpr
   @Override
   public void analyze()
   {
+    if (wasAnalyzed())
+    {
+      return;
+    }
+
+    analyzed = true;
+
     callNr = 0;
 
     // if this function has an associated use statement
     // then we should replace placeholders with actual types
+    final UseStmt oldUse = currentUse;
     currentUse = use;
-    currentUseIndex = useIndex;
 
-    if (use != null)
-    {
-      // find the template types we created during signature analysis
-      for (final BaseExpr type : use.template.types)
-      {
-        String typeName = use.template.name;
-        final ArrayList<BaseExpr> typeArgs = use.typeInstantiations.get(currentUseIndex);
-        for (final BaseExpr typeArg : typeArgs)
-        {
-          typeName += SEPARATOR + typeArg.name;
-        }
-
-        typeName += SEPARATOR + type.name;
-        type.typeInfo = null;
-        for (final TypeStmt moduleType : use.module.types)
-        {
-          if (moduleType.name.equals(typeName))
-          {
-            type.typeInfo = moduleType;
-            break;
-          }
-        }
-
-        if (type.typeInfo == null)
-        {
-          error("WTF? failed finding type: " + typeName + " in " + use.module);
-        }
-      }
-    }
+    final ArrayList<BaseExpr> oldScope = scope;
+    scope = new ArrayList<>();
 
     scope.addAll(params);
 
@@ -163,10 +144,9 @@ public class FuncStmt extends BaseExpr
       returnExpr.error("Return type size mismatch");
     }
 
-    scope.clear();
+    scope = oldScope;
 
-    currentUse = null;
-    currentUseIndex = 0;
+    currentUse = oldUse;
   }
 
   public void analyzeSignature()
@@ -203,43 +183,10 @@ public class FuncStmt extends BaseExpr
     return new FuncStmt(this);
   }
 
-  public void copyFrom(final FuncStmt copy)
-  {
-    // replace placeholder with template function instantiated by UseStmt
-    // constructor FuncStmt(final FuncStmt copy) cannot be used here, as that would create a new object
-    module = copy.module;
-    name = copy.name;
-    origin = copy.origin;
-    size = copy.size;
-    stackIndex = copy.stackIndex;
-    typeInfo = copy.typeInfo;
-    anyNull = copy.anyNull;
-    use = copy.use;
-    useIndex = copy.useIndex;
-    returnType = clone(copy.returnType);
-    nullReturn = copy.nullReturn;
-    cloneArray(funcTypes, copy.funcTypes);
-    cloneArray(params, copy.params);
-    cloneArray(envExprs, copy.envExprs);
-    cloneArray(stateExprs, copy.stateExprs);
-    cloneArray(assignExprs, copy.assignExprs);
-    returnExpr = clone(copy.returnExpr);
-  }
-
   @Override
   public void eval(final QuplaBaseContext context)
   {
-    for (final BaseExpr stateExpr : stateExprs)
-    {
-      stateExpr.eval(context);
-    }
-
-    for (final BaseExpr assignExpr : assignExprs)
-    {
-      assignExpr.eval(context);
-    }
-
-    returnExpr.eval(context);
+    context.evalFuncBody(this);
   }
 
   private void parseBody(final Tokenizer tokenizer)
@@ -287,5 +234,11 @@ public class FuncStmt extends BaseExpr
   public void toStringify()
   {
     printer.evalFuncBodySignature(this);
+  }
+
+  @Override
+  public boolean wasAnalyzed()
+  {
+    return analyzed;
   }
 }

@@ -1,13 +1,13 @@
 package org.iota.qupla.qupla.statement;
 
 import org.iota.qupla.qupla.expression.base.BaseExpr;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class ImportStmt extends BaseExpr
 {
-  public Module importModule;
+  public QuplaModule importModule;
 
   public ImportStmt(final ImportStmt copy)
   {
@@ -28,7 +28,7 @@ public class ImportStmt extends BaseExpr
   @Override
   public void analyze()
   {
-    importModule = Module.parse(name);
+    importModule = QuplaModule.parse(name);
     size = 1;
   }
 

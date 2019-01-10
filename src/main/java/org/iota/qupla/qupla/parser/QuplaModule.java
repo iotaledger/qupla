@@ -17,33 +17,33 @@ import org.iota.qupla.qupla.statement.TemplateStmt;
 import org.iota.qupla.qupla.statement.TypeStmt;
 import org.iota.qupla.qupla.statement.UseStmt;
 
-public class Module extends BaseExpr
+public class QuplaModule extends BaseExpr
 {
-  public static final HashMap<String, Module> allModules = new HashMap<>();
-  public static final HashMap<String, Module> loading = new HashMap<>();
+  public static final HashMap<String, QuplaModule> allModules = new HashMap<>();
+  public static final HashMap<String, QuplaModule> loading = new HashMap<>();
   public static String projectRoot;
 
-  public Source currentSource;
+  public QuplaSource currentSource;
 
   public final ArrayList<ExecStmt> execs = new ArrayList<>();
   public final ArrayList<FuncStmt> funcs = new ArrayList<>();
   public final ArrayList<ImportStmt> imports = new ArrayList<>();
   public final ArrayList<LutStmt> luts = new ArrayList<>();
-  public final ArrayList<Module> modules = new ArrayList<>();
-  public final ArrayList<Source> sources = new ArrayList<>();
+  public final ArrayList<QuplaModule> modules = new ArrayList<>();
+  public final ArrayList<QuplaSource> sources = new ArrayList<>();
   public final ArrayList<TemplateStmt> templates = new ArrayList<>();
   public final ArrayList<TypeStmt> types = new ArrayList<>();
   public final ArrayList<UseStmt> uses = new ArrayList<>();
 
-  public Module(final String name)
+  public QuplaModule(final String name)
   {
     this.name = name;
     currentModule = this;
   }
 
-  public Module(final Collection<Module> subModules)
+  public QuplaModule(final Collection<QuplaModule> subModules)
   {
-    for (final Module subModule : subModules)
+    for (final QuplaModule subModule : subModules)
     {
       funcs.addAll(subModule.funcs);
       imports.addAll(subModule.imports);
@@ -80,7 +80,7 @@ public class Module extends BaseExpr
     }
   }
 
-  public static Module parse(final String name)
+  public static QuplaModule parse(final String name)
   {
     final File library = new File(name);
     if (!library.exists() || !library.isDirectory())
@@ -89,20 +89,20 @@ public class Module extends BaseExpr
     }
 
     final String pathName = getPathName(library);
-    final Module existingModule = allModules.get(pathName);
+    final QuplaModule existingModule = allModules.get(pathName);
     if (existingModule != null)
     {
       // already loaded library module, do nothing
       return existingModule;
     }
 
-    logLine("Module: " + pathName);
+    logLine("QuplaModule: " + pathName);
     if (loading.containsKey(pathName))
     {
       throw new CodeException("Import dependency cycle detected");
     }
 
-    final Module module = new Module(pathName);
+    final QuplaModule module = new QuplaModule(pathName);
     loading.put(pathName, module);
     module.parseSources(library);
     module.analyze();
@@ -111,14 +111,14 @@ public class Module extends BaseExpr
     return module;
   }
 
-  private void addReferencedModules(final Module module)
+  private void addReferencedModules(final QuplaModule module)
   {
     if (!modules.contains(module))
     {
       modules.add(module);
     }
 
-    for (final Module referenced : module.modules)
+    for (final QuplaModule referenced : module.modules)
     {
       if (!modules.contains(referenced))
       {
@@ -160,22 +160,23 @@ public class Module extends BaseExpr
       template.analyze();
     }
 
-    // this will instantiate the templated types/functions
+    // this will explicitly instantiate the templated types/functions
     for (final UseStmt use : uses)
     {
       use.analyze();
     }
 
-    // now that we know all functions and their properties
-    // we can finally analyze their bodies
-    for (final FuncStmt func : funcs)
-    {
-      func.analyze();
-    }
-
     for (final ExecStmt exec : execs)
     {
       exec.analyze();
+    }
+
+    // now that we know all functions and their properties
+    // we can finally analyze their bodies
+    for (int i = 0; i < funcs.size(); i++)
+    {
+      final FuncStmt func = funcs.get(i);
+      func.analyze();
     }
 
     // determine which functions short-circuit on any null parameter
@@ -232,11 +233,11 @@ public class Module extends BaseExpr
   private void parseSource(final File source)
   {
     final String pathName = getPathName(source);
-    logLine("Source: " + pathName);
+    logLine("QuplaSource: " + pathName);
     final Tokenizer tokenizer = new Tokenizer();
     tokenizer.module = this;
     tokenizer.readFile(source);
-    sources.add(new Source(tokenizer, pathName));
+    sources.add(new QuplaSource(tokenizer, pathName));
   }
 
   private void parseSources(final File library)

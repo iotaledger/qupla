@@ -11,6 +11,3 @@ template break<T> {
     return val
   }
 }
-
-use break<Trit>, <Tryte>, <Tiny>, <Int>, <Huge>, <Hash>
-use break<Tryte2>, <Tiny2>, <Tiny4>, <Int2>, <Huge2>, <Hash2>

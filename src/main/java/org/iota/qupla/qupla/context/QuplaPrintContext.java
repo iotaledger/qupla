@@ -1,7 +1,5 @@
 package org.iota.qupla.qupla.context;
 
-import java.util.ArrayList;
-
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AffectExpr;
 import org.iota.qupla.qupla.expression.AssignExpr;
@@ -9,7 +7,6 @@ import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
 import org.iota.qupla.qupla.expression.FieldExpr;
 import org.iota.qupla.qupla.expression.FuncExpr;
-import org.iota.qupla.qupla.expression.IntegerExpr;
 import org.iota.qupla.qupla.expression.JoinExpr;
 import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
@@ -18,6 +15,7 @@ import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
 import org.iota.qupla.qupla.expression.SubExpr;
 import org.iota.qupla.qupla.expression.TypeExpr;
+import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseBinaryExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.expression.base.BaseSubExpr;
@@ -25,7 +23,7 @@ import org.iota.qupla.qupla.expression.constant.ConstFactor;
 import org.iota.qupla.qupla.expression.constant.ConstNumber;
 import org.iota.qupla.qupla.expression.constant.ConstSubExpr;
 import org.iota.qupla.qupla.expression.constant.ConstTypeName;
-import org.iota.qupla.qupla.parser.Module;
+import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.statement.ExecStmt;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.ImportStmt;
@@ -40,7 +38,7 @@ import org.iota.qupla.qupla.statement.helper.TritVectorDef;
 public class QuplaPrintContext extends QuplaBaseContext
 {
   @Override
-  public void eval(final Module module)
+  public void eval(final QuplaModule module)
   {
     fileOpen("Qupla.txt");
 
@@ -59,16 +57,19 @@ public class QuplaPrintContext extends QuplaBaseContext
     for (final TemplateStmt template : module.templates)
     {
       evalTemplateDefinition(template);
+      newline();
     }
 
     for (final UseStmt use : module.uses)
     {
       evalUseDefinition(use);
+      newline();
     }
 
     for (final ExecStmt exec : module.execs)
     {
       evalExec(exec);
+      newline();
     }
 
     fileClose();
@@ -93,7 +94,13 @@ public class QuplaPrintContext extends QuplaBaseContext
   @Override
   public void evalBaseExpr(final BaseExpr expr)
   {
-    if (expr instanceof ConstTypeName || expr instanceof ConstNumber)
+    if (expr instanceof ConstTypeName)
+    {
+      append(expr.name);
+      return;
+    }
+
+    if (expr instanceof ConstNumber)
     {
       append(expr.name);
       return;
@@ -236,7 +243,7 @@ public class QuplaPrintContext extends QuplaBaseContext
 
     for (final BaseExpr stateExpr : func.stateExprs)
     {
-      evalState((StateExpr) stateExpr);
+      stateExpr.eval(this);
       newline();
     }
 
@@ -429,11 +436,23 @@ public class QuplaPrintContext extends QuplaBaseContext
 
     if (sub instanceof ConstFactor)
     {
-      append(((ConstFactor) sub).negative ? "-" : "");
+      final ConstFactor constFactor = (ConstFactor) sub;
+      append(constFactor.negative ? "-" : "");
+      super.evalSubExpr(constFactor);
+
+      for (final BaseExpr field : constFactor.fields)
+      {
+        append(".").append(field.name);
+      }
+
+      return;
     }
-    else if (sub instanceof FieldExpr)
+
+    if (sub instanceof FieldExpr)
     {
       append(sub.name).append(" = ");
+      super.evalSubExpr(sub);
+      return;
     }
 
     super.evalSubExpr(sub);
@@ -529,25 +548,18 @@ public class QuplaPrintContext extends QuplaBaseContext
   {
     append("use ").append(use.name);
 
-    boolean next = false;
-    for (final ArrayList<BaseExpr> typeArgs : use.typeInstantiations)
+    boolean first = true;
+    for (final BaseExpr typeArg : use.typeArgs)
     {
-      append(next ? ", " : "");
-      next = true;
-
-      boolean first = true;
-      for (final BaseExpr typeArg : typeArgs)
-      {
-        append(first ? "<" : ", ").append(typeArg.name);
-        first = false;
-      }
-
-      append(">");
+      append(first ? "<" : ", ").append(typeArg.name);
+      first = false;
     }
+
+    append(">");
   }
 
   @Override
-  public void evalVector(final IntegerExpr integer)
+  public void evalVector(final VectorExpr integer)
   {
     append(integer.name);
   }

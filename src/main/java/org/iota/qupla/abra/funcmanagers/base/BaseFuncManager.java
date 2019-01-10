@@ -85,6 +85,7 @@ public class BaseFuncManager
 
     if (lut == null)
     {
+      // no lut generated? then don't bother
       return;
     }
 
@@ -96,16 +97,16 @@ public class BaseFuncManager
 
     // for higher powers of 3 and their double sizes
     // functions are composed of smaller functions
-    for (int i = 3; i <= 2187; i *= 3)
+    for (int power = 3; power < 81; power *= 3)
     {
-      saveBranch(generateFuncFunc(i * 2, new Integer[] {
-          i,
-          i
+      saveBranch(generateFuncFunc(power * 2, new Integer[] {
+          power,
+          power
       }));
-      saveBranch(generateFuncFunc(i * 3, new Integer[] {
-          i,
-          i,
-          i
+      saveBranch(generateFuncFunc(power * 3, new Integer[] {
+          power,
+          power,
+          power
       }));
     }
   }

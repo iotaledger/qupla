@@ -25,25 +25,14 @@ public class PostfixExpr extends BaseSubExpr
     case Token.TOK_FLOAT:
     case Token.TOK_NUMBER:
     case Token.TOK_MINUS:
-      expr = new IntegerExpr(tokenizer);
+      expr = new VectorExpr(tokenizer);
       return;
     }
 
     final Token varName = expect(tokenizer, Token.TOK_NAME, "variable name");
     name = varName.text;
 
-    switch (tokenizer.tokenId())
-    {
-    case Token.TOK_TEMPL_OPEN:
-    case Token.TOK_FUNC_OPEN:
-      expr = new FuncExpr(tokenizer, varName);
-      return;
-
-    case Token.TOK_GROUP_OPEN:
-      expr = new TypeExpr(tokenizer, varName);
-      return;
-    }
-
+    // local scope variable name supersedes outer scope name
     for (int i = scope.size() - 1; i >= 0; i--)
     {
       final BaseExpr var = scope.get(i);
@@ -54,7 +43,23 @@ public class PostfixExpr extends BaseSubExpr
       }
     }
 
-    expr = new LutExpr(tokenizer, varName);
+    switch (tokenizer.tokenId())
+    {
+    case Token.TOK_TEMPL_OPEN:
+    case Token.TOK_FUNC_OPEN:
+      expr = new FuncExpr(tokenizer, varName);
+      return;
+
+    case Token.TOK_ARRAY_OPEN:
+      expr = new LutExpr(tokenizer, varName);
+      return;
+
+    case Token.TOK_GROUP_OPEN:
+      expr = new TypeExpr(tokenizer, varName);
+      return;
+    }
+
+    expect(tokenizer, 0, "'{', '(', '<', or '['");
   }
 
   @Override

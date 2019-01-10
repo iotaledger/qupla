@@ -3,25 +3,29 @@
 // range to reduce energy requirements accordingly, but for
 // simplicity we'll only define power-of-3 sized types for now
 
-type Trit [1]           // -1 to +1
-type Tryte [3]          // -13 to +13
-type Tiny [9]           // -9,841 to +9,841
-type Int [27]           // -3,812,798,742,493 to +3,812,798,742,493
-type Huge [81]          // -/+ 221,713,244,121,518,884,974,124,815,309,574,946,401
-type Hash [243]         // standard 81 trytes hash value
-type Hash3 [3 * Hash]
-type Hash9 [9 * Hash]
-type Signature [27 * Hash]
+type Trit  [1]        // -/+ 1
+type Tryte [3]        // -/+ 13
+type Tiny  [9]        // -/+ 9,841
+type Int   [27]       // -/+ 3,812,798,742,493
+type Huge  [81]       // -/+ 221,713,244,121,518,884,974,124,815,309,574,946,401
+type Hash  [243]      // standard 81 trytes hash value
+type Hash3 [729]
+type Hash9 [2187]
+type Signature [6561]
 
 // double-width integer types for use in mul/div/mod operations
-type Trit2 [Trit * 2]   // -/+ 4
-type Tryte2 [Tryte * 2] // -/+ 364
-type Tiny2 [Tiny * 2]   // -/+ 193,710,244
-type Tiny4 [Tiny * 4]   // -/+ 75,047,317,648,499,560
-type Int2 [Int * 2]     // -/+ 29,074,868,501,520,029,845,195,084
-type Int4 [Int * 4]
-type Huge2 [Huge * 2]
-type Hash2 [Hash * 2]
+type Trit2  [2]       // -/+ 4
+type Trit4  [4]       // -/+ 40
+type Tryte2 [6]       // -/+ 364
+type Tryte4 [12]      // -/+ 265,720
+type Tiny2  [18]      // -/+ 193,710,244
+type Tiny4  [36]      // -/+ 75,047,317,648,499,560
+type Int2   [54]      // -/+ 29,074,868,501,520,029,845,195,084
+type Int4   [108]
+type Huge2  [162]
+type Huge4  [324]
+type Hash2  [486]
+type Hash4  [972]
 
 // define a convenience type to make code more readable
 // should always be a binary boolean value - (false) or 1 (true)
@@ -31,10 +35,32 @@ type Bool [Trit]
 
 type Carry [Trit]
 
+type TritCarry {
+  value [Trit]
+  carry [Carry]
+}
+
 // here's how to define a named structured trit vector
 // it consists of the concatenation of all sub-vectors
 // its total size is the sum of all sub-vector sizes
 // note that structures themselves can contain structures
+
+type TinyFloat {
+  mantissa [Tiny]   // -/+ 9,841
+  exponent [Tryte]  // -/+ 3^13
+}
+type Float {        // slightly larger than IEEE 754 32-bit float
+  mantissa [Tiny2]  // -/+ 193,710,244
+  exponent [Tryte2] // -/+ 3^364
+}
+type Double {       // slightly larger than IEEE 754 64-bit double
+  mantissa [Tiny4]  // -/+ 75,047,317,648,499,560
+  exponent [Tiny]   // -/+ 3^9,841
+}
+type HugeFloat {
+  mantissa [Int2]   // -/+ 29,074,868,501,520,029,845,195,084
+  exponent [Tiny2]  // -/+ 3^193,710,244
+}
 
 // attachment sub-structure layout
 type Attachment {

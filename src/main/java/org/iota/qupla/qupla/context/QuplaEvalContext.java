@@ -14,12 +14,12 @@ import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
 import org.iota.qupla.qupla.expression.FuncExpr;
-import org.iota.qupla.qupla.expression.IntegerExpr;
 import org.iota.qupla.qupla.expression.LutExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.SliceExpr;
 import org.iota.qupla.qupla.expression.StateExpr;
 import org.iota.qupla.qupla.expression.TypeExpr;
+import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.LutStmt;
@@ -214,6 +214,17 @@ public class QuplaEvalContext extends QuplaBaseContext
   @Override
   public void evalFuncBody(final FuncStmt func)
   {
+    for (final BaseExpr stateExpr : func.stateExprs)
+    {
+      stateExpr.eval(this);
+    }
+
+    for (final BaseExpr assignExpr : func.assignExprs)
+    {
+      assignExpr.eval(this);
+    }
+
+    func.returnExpr.eval(this);
   }
 
   @Override
@@ -353,11 +364,13 @@ public class QuplaEvalContext extends QuplaBaseContext
   @Override
   public void evalType(final TypeExpr type)
   {
+    // type expression is a concatenation, but in declared field order
+    // analyze will have sorted the fields in order already
     evalConcatExprs(type.fields);
   }
 
   @Override
-  public void evalVector(final IntegerExpr integer)
+  public void evalVector(final VectorExpr integer)
   {
     value = integer.vector;
   }

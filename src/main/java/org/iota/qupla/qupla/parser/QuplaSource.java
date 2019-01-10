@@ -9,11 +9,11 @@ import org.iota.qupla.qupla.statement.TemplateStmt;
 import org.iota.qupla.qupla.statement.TypeStmt;
 import org.iota.qupla.qupla.statement.UseStmt;
 
-public class Source extends BaseExpr
+public class QuplaSource extends BaseExpr
 {
   public String pathName;
 
-  public Source(final Tokenizer tokenizer, final String pathName)
+  public QuplaSource(final Tokenizer tokenizer, final String pathName)
   {
     super(tokenizer);
 

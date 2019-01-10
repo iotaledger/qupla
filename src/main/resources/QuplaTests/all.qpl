@@ -1,0 +1,9 @@
+import Qupla
+
+test 1 = all<Trit>(1)
+test 13 = all<Tryte>(1)
+test 9841 = all<Tiny>(1)
+test 3812798742493 = all<Int>(1)
+test -221713244121518884974124815309574946401 = all<Huge>(-)
+test 0 = all<Huge>(0)
+test 221713244121518884974124815309574946401 = all<Huge>(1)
