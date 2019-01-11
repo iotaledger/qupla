@@ -1,8 +1,7 @@
 package org.iota.qupla.qupla.parser;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -156,12 +155,7 @@ public class Tokenizer
       lines.clear();
       if (in.exists())
       {
-        final BufferedReader br = new BufferedReader(new FileReader(in));
-        for (String line = br.readLine(); line != null; line = br.readLine())
-        {
-          lines.add(line);
-        }
-        br.close();
+        lines.addAll(Files.readAllLines(in.toPath()));
       }
     }
     catch (final Exception e)
