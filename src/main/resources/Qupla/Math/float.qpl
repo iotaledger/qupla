@@ -4,6 +4,8 @@
 // significant trit is never zero except when the value is exactly zero
 
 
+// note that this only works for structured vectors
+// consisting solely of a mantissa and exponent field
 template float<T> = M + E {
   type M [T.mantissa]
   type E [T.exponent]

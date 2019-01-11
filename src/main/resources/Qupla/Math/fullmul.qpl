@@ -55,10 +55,13 @@ func TritCarry fullMulNonZero<Trit> (Trit lhs, Trit rhs) {
 //-------------
 
 
-//TODO depends on P being T / 3
+//TODO depends on P being T / 3 or T / 2
+//     need to make it work for all T
 
 // note that a fullMul() function will return double the width
 // of its parameters so as not to lose any precision
+
+// this template only works for multiples of 3
 template fullMul3<T> = P + P + P {
   type T2 [T * 2]
   type P [T / 3]
@@ -148,6 +151,7 @@ template fullMul3<T> = P + P + P {
 }
 
 
+// this template only works for multiples of 2
 template fullMul<T> = P + P {
   type T2 [T * 2]
   type P [T / 2]
@@ -165,8 +169,3 @@ template fullMul<T> = P + P {
     return product[0 : T2]
   }
 }
-
-use fullMul<Tryte2>
-use fullMul<Tiny2>
-use fullMul<Int2>
-use fullMul<Huge2>

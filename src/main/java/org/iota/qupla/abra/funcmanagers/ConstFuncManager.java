@@ -63,7 +63,7 @@ public class ConstFuncManager extends BaseFuncManager
       // need to concatenate rest of zeroes
       zeroes = new AbraSiteKnot();
       zeroes.inputs.add(input);
-      zeroes.block = zeroManager.find(context, size);
+      zeroes.block = zeroManager.find(context, size - trits.size());
       zeroes.size = zeroes.block.size();
       branch.sites.add(zeroes);
     }

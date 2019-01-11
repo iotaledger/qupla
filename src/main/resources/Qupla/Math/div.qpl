@@ -1,23 +1,28 @@
 // returns lhs / rhs
 
 template div<T> {
+  type T2 {
+    quotient [T]
+    remainder [T]
+  }
+
   func T div<T> (T lhs, T rhs) {
     ret = divMod<T>(lhs, rhs)
-    return ret[0 : T]
+    return ret.quotient
   }
 
   func T ceilDiv<T> (T lhs, T rhs) {
     ret = ceilDivMod<T>(lhs, rhs)
-    return ret[0 : T]
+    return ret.quotient
   }
 
   func T floorDiv<T> (T lhs, T rhs) {
     ret = floorDivMod<T>(lhs, rhs)
-    return ret[0 : T]
+    return ret.quotient
   }
 
   func T roundDiv<T> (T lhs, T rhs) {
     ret = roundDivMod<T>(lhs, rhs)
-    return ret[0 : T]
+    return ret.quotient
   }
 }

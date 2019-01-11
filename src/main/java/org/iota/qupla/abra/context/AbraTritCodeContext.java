@@ -63,7 +63,6 @@ public class AbraTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalLatch(final AbraSiteLatch latch)
   {
-
   }
 
   @Override
@@ -86,7 +85,7 @@ public class AbraTritCodeContext extends AbraTritCodeBaseContext
     putInt(param.size);
   }
 
-  public void putSiteInputs(final AbraSiteMerge merge)
+  private void putSiteInputs(final AbraSiteMerge merge)
   {
     putInt(merge.inputs.size());
     for (final AbraBaseSite input : merge.inputs)

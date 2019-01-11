@@ -58,7 +58,6 @@ public class Verilog
     {
       context.append("reg " + size(sizes[i]) + " p" + i + ";").newline();
     }
-    context.append("reg " + size(size) + " ret;").newline();
 
     context.append("begin").newline().indent();
 
@@ -74,7 +73,7 @@ public class Verilog
       offset -= length;
     }
 
-    context.append("ret = { ");
+    context.append(funcName).append(" = { ");
     boolean first = true;
     for (int i = 0; i < sizes.length; i++)
     {
@@ -82,8 +81,7 @@ public class Verilog
       first = false;
     }
 
-    context.append(" };").newline();
-    context.append(funcName).append(" = ret;").newline().undent();
+    context.append(" };").newline().undent();
     context.append("end").newline().undent();
     context.append("endfunction").newline();
   }
@@ -148,7 +146,7 @@ public class Verilog
 
   private void generateMergeLut(final BaseContext context)
   {
-    context.newline().append("x reg [0:0];").newline();
+    context.newline().append("reg [0:0] x;").newline();
     context.newline().append("function [1:0] merge__1(").newline().indent();
     context.append("  input [1:0] input1").newline();
     context.append(", input [1:0] input2").newline();
@@ -165,8 +163,10 @@ public class Verilog
     context.append("4'b0101: merge__1 = 2'b01;").newline();
     context.append("4'b1010: merge__1 = 2'b10;").newline();
     context.append("4'b1111: merge__1 = 2'b11;").newline();
-    context.append("default: merge__1 = 2'b00;").newline();
-    context.append("         x <= 1;").newline();
+    context.append("default: begin").newline();
+    context.append("           merge__1 = 2'b00;").newline();
+    context.append("           x = 1;").newline();
+    context.append("         end").newline();
     context.append("endcase").newline().undent();
     context.append("end").newline().undent();
     context.append("endfunction").newline();
