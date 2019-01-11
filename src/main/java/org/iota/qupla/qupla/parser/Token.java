@@ -45,11 +45,8 @@ public class Token
   public static final int TOK_TEST = TOK_TEMPL_OPEN + 1;
   public static final int TOK_TYPE = TOK_TEST + 1;
   public static final int TOK_USE = TOK_TYPE + 1;
-
-  public static final int UNKNOWN_SYMBOL = -1;
   public static final int UNKNONW_ID = -1;
-
-
+  public static final int UNKNOWN_SYMBOL = -1;
   public final int colNr;
   public final int id;
   public final int lineNr;
@@ -57,7 +54,8 @@ public class Token
   public final int symbol;
   public final String text;
 
-  public Token(int lineNr, int colNr, QuplaSource source, int id, int symbol, String text) {
+  public Token(final int lineNr, final int colNr, final QuplaSource source, final int id, final int symbol, final String text)
+  {
     this.colNr = colNr;
     this.id = id;
     this.lineNr = lineNr;
@@ -66,20 +64,24 @@ public class Token
     this.text = text;
   }
 
-  public Token resetId(int tokenId) {
-    return new Token(lineNr,colNr,source,tokenId,symbol,text);
+  public Token resetId(final int tokenId)
+  {
+    return new Token(lineNr, colNr, source, tokenId, symbol, text);
   }
 
-  public Token resetText(String text, Integer tokenId, int colNr) {
-    return new Token(lineNr,colNr,source,tokenId,symbol,text);
+  public Token resetSymbol(final int symbol)
+  {
+    return new Token(lineNr, colNr, source, id, symbol, text);
   }
 
-  public Token resetText(String text) {
-    return new Token(lineNr,colNr,source,id,symbol,text);
+  public Token resetText(final String text)
+  {
+    return new Token(lineNr, colNr, source, id, symbol, text);
   }
 
-  public Token resetSymbol(Integer symbol) {
-    return new Token(lineNr,colNr,source,id,symbol,text);
+  public Token resetText(final String text, final int tokenId, final int colNr)
+  {
+    return new Token(lineNr, colNr, source, tokenId, symbol, text);
   }
 
   @Override
