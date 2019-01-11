@@ -122,44 +122,11 @@ template defIterate<CH, CW> {
     }
 }
 
-use defIterateLine<T3>
-use defIterateLine<T9>
-use defIterateLine<T27>
-use defIterateLine<T81>
-use defIterateLine<T243>
-use defIterateLine<T729>
-use defIterateLine<T2187>
+use defIterateLine<T3>, <T9>, <T27>, <T81>, <T243>, <T729>, <T2187>
 
-use defIterate<T3, T9>
-use defIterate<T9, T9>
-
-use defIterate<T3, T27>
-use defIterate<T9, T27>
-use defIterate<T27, T27>
-
-use defIterate<T3, T81>
-use defIterate<T9, T81>
-use defIterate<T27, T81>
-use defIterate<T81, T81>
-
-use defIterate<T3, T243>
-use defIterate<T9, T243>
-use defIterate<T27, T243>
-use defIterate<T81, T243>
-use defIterate<T243, T243>
-
-use defIterate<T3, T729>
-use defIterate<T9, T729>
-use defIterate<T27, T729>
-use defIterate<T81, T729>
-use defIterate<T243, T729>
-use defIterate<T729, T729>
-use defIterate<T2187, T729>
-
-use defIterate<T3, T2187>
-use defIterate<T9, T2187>
-use defIterate<T27, T2187>
-use defIterate<T81, T2187>
-use defIterate<T243, T2187>
-use defIterate<T729, T2187>
-use defIterate<T2187, T2187>
+use defIterate<T3, T9>, <T9, T9>
+use defIterate<T3, T27>, <T9, T27>, <T27, T27>
+use defIterate<T3, T81>, <T9, T81>, <T27, T81>, <T81, T81>
+use defIterate<T3, T243>, <T9, T243>, <T27, T243>, <T81, T243>, <T243, T243>
+use defIterate<T3, T729>, <T9, T729>, <T27, T729>, <T81, T729>, <T243, T729>, <T729, T729>, <T2187, T729>
+use defIterate<T3, T2187>, <T9, T2187>, <T27, T2187>, <T81, T2187>, <T243, T2187>, <T729, T2187>, <T2187, T2187>

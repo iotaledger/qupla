@@ -12,6 +12,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 public class UseStmt extends BaseExpr
 {
   public boolean automatic;
+  public UseStmt nextUse; //TODO linked list for multi-use statement
   public TemplateStmt template;
   public final ArrayList<BaseExpr> typeArgs = new ArrayList<>();
   public final ArrayList<BaseExpr> types = new ArrayList<>();
@@ -32,18 +33,14 @@ public class UseStmt extends BaseExpr
     final Token templateName = expect(tokenizer, Token.TOK_NAME, "template name");
     name = templateName.text;
 
-    expect(tokenizer, Token.TOK_TEMPL_OPEN, "'<'");
+    parseTypeArgs(tokenizer, templateName);
+  }
 
-    typeArgs.add(new ConstTypeName(tokenizer));
+  protected UseStmt(final Tokenizer tokenizer, final Token templateName)
+  {
+    super(tokenizer, templateName);
 
-    while (tokenizer.tokenId() == Token.TOK_COMMA)
-    {
-      tokenizer.nextToken();
-
-      typeArgs.add(new ConstTypeName(tokenizer));
-    }
-
-    expect(tokenizer, Token.TOK_TEMPL_CLOSE, "',' or '>'");
+    parseTypeArgs(tokenizer, templateName);
   }
 
   public UseStmt(final TemplateStmt template, final FuncExpr func)
@@ -153,11 +150,39 @@ public class UseStmt extends BaseExpr
 
     currentModule = oldModule;
     currentUse = oldUse;
+
+    if (nextUse != null)
+    {
+      nextUse.analyze();
+    }
   }
 
   @Override
   public BaseExpr clone()
   {
     return new UseStmt(this);
+  }
+
+  private void parseTypeArgs(final Tokenizer tokenizer, final Token templateName)
+  {
+    expect(tokenizer, Token.TOK_TEMPL_OPEN, "'<'");
+
+    typeArgs.add(new ConstTypeName(tokenizer));
+
+    while (tokenizer.tokenId() == Token.TOK_COMMA)
+    {
+      tokenizer.nextToken();
+
+      typeArgs.add(new ConstTypeName(tokenizer));
+    }
+
+    expect(tokenizer, Token.TOK_TEMPL_CLOSE, "',' or '>'");
+
+    if (tokenizer.tokenId() == Token.TOK_COMMA)
+    {
+      tokenizer.nextToken();
+
+      nextUse = new UseStmt(tokenizer, templateName);
+    }
   }
 }
