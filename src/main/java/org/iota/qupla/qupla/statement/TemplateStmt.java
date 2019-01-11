@@ -122,6 +122,7 @@ public class TemplateStmt extends BaseExpr
     if (funcs.size() == 1)
     {
       FuncStmt func = (FuncStmt) funcs.get(0);
+      printer.append(" ");
       printer.evalFuncBodySignature(func);
       return;
     }
@@ -129,7 +130,7 @@ public class TemplateStmt extends BaseExpr
     final boolean first = true;
     for (final BaseExpr func : funcs)
     {
-      printer.append(first ? "{ " : ", ").append(func.name);
+      printer.append(first ? " { " : ", ").append(func.name);
     }
 
     printer.append(" }");
