@@ -36,7 +36,7 @@ public class Tokenizer
     // end of file?
     if (lineNr == lines.size())
     {
-      token = new Token(lineNr,colNr,module.currentSource,Token.TOK_EOF, Token.UNKNOWN_SYMBOL,"");
+      token = new Token(lineNr, colNr, module.currentSource, Token.TOK_EOF, Token.UNKNOWN_SYMBOL, "");
       return token;
     }
 
@@ -58,7 +58,7 @@ public class Tokenizer
     }
 
     // found start of next token
-    token = new Token(lineNr,colNr,module.currentSource, Token.UNKNONW_ID,Token.UNKNOWN_SYMBOL,line.substring(colNr));
+    token = new Token(lineNr, colNr, module.currentSource, Token.UNKNONW_ID, Token.UNKNOWN_SYMBOL, line.substring(colNr));
     // first parse multi-character tokens
 
     // skip comment-to-end-of-line
@@ -73,7 +73,8 @@ public class Tokenizer
     final Integer tokenId = tokenMap.get(token.text.substring(0, 1));
     if (tokenId != null)
     {
-      return token.resetText(tokens[tokenId], tokenId, colNr++);
+      token = token.resetText(tokens[tokenId], tokenId, colNr++);
+      return token;
     }
 
     // number?
@@ -125,7 +126,7 @@ public class Tokenizer
       final Integer keyword = tokenMap.get(token.text);
       if (keyword != null)
       {
-        token.resetId(keyword);
+        token = token.resetId(keyword);
         return token;
       }
 
@@ -137,7 +138,7 @@ public class Tokenizer
       }
       else
       {
-        token = token.resetSymbol(symbol);
+        token = token.resetSymbol(symbols.size());
         symbolMap.put(token.text, token.symbol);
         symbols.add(token.text);
       }
