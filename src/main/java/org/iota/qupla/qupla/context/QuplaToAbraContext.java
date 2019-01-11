@@ -13,9 +13,11 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.AbraAnalyzeContext;
 import org.iota.qupla.abra.context.AbraDebugTritCodeContext;
+import org.iota.qupla.abra.context.AbraOrderBlockContext;
 import org.iota.qupla.abra.context.AbraPrintContext;
 import org.iota.qupla.abra.context.AbraToVerilogContext;
 import org.iota.qupla.abra.context.AbraTritCodeContext;
+import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.ConcatExpr;
@@ -71,6 +73,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
     abraModule.optimize(this);
 
+    new AbraOrderBlockContext().eval(abraModule);
     new AbraPrintContext().eval(abraModule);
     new AbraToVerilogContext().eval(abraModule);
     new AbraAnalyzeContext().eval(abraModule);
@@ -224,6 +227,11 @@ public class QuplaToAbraContext extends QuplaBaseContext
     }
 
     site.branch(this);
+    if (site.block == null)
+    {
+      throw new CodeException("Cannot find block: " + site.name);
+    }
+
     addSite(site);
   }
 
@@ -299,6 +307,11 @@ public class QuplaToAbraContext extends QuplaBaseContext
       }
 
       site.lut(this);
+      if (site.block == null)
+      {
+        throw new CodeException("Cannot find lut: " + site.name);
+      }
+
       addSite(site);
 
       concat.size += 1;

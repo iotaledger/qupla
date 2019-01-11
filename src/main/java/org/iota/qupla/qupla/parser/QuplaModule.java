@@ -50,6 +50,7 @@ public class QuplaModule extends BaseExpr
       luts.addAll(subModule.luts);
       types.addAll(subModule.types);
       execs.addAll(subModule.execs);
+      templates.addAll(subModule.templates);
     }
 
     name = "{SINGLE_MODULE}";
@@ -130,46 +131,27 @@ public class QuplaModule extends BaseExpr
   @Override
   public void analyze()
   {
+    analyzeEntities(imports);
     for (final ImportStmt imp : imports)
     {
-      imp.analyze();
       addReferencedModules(imp.importModule);
     }
 
-    for (final TypeStmt type : types)
-    {
-      type.analyze();
-    }
-
-    for (final LutStmt lut : luts)
-    {
-      lut.analyze();
-    }
+    analyzeEntities(types);
+    analyzeEntities(luts);
 
     // first analyze all normal function signatures
     for (final FuncStmt func : funcs)
     {
-      if (func.use == null)
+      if (!func.wasAnalyzed() && func.use == null)
       {
         func.analyzeSignature();
       }
     }
 
-    for (final TemplateStmt template : templates)
-    {
-      template.analyze();
-    }
-
-    // this will explicitly instantiate the templated types/functions
-    for (final UseStmt use : uses)
-    {
-      use.analyze();
-    }
-
-    for (final ExecStmt exec : execs)
-    {
-      exec.analyze();
-    }
+    analyzeEntities(templates);
+    analyzeEntities(uses);
+    analyzeEntities(execs);
 
     // now that we know all functions and their properties
     // we can finally analyze their bodies
@@ -181,6 +163,17 @@ public class QuplaModule extends BaseExpr
 
     // determine which functions short-circuit on any null parameter
     new QuplaAnyNullContext().eval(this);
+  }
+
+  public void analyzeEntities(final ArrayList<? extends BaseExpr> items)
+  {
+    for (final BaseExpr item : items)
+    {
+      if (!item.wasAnalyzed())
+      {
+        item.analyze();
+      }
+    }
   }
 
   public void checkDuplicateName(final ArrayList<? extends BaseExpr> items, final BaseExpr symbol)

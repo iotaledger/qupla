@@ -36,6 +36,18 @@ public class Qupla
       };
   private static final HashSet<String> options = new HashSet<>();
   private static QuplaToAbraContext quplaToAbraContext;
+  private static QuplaModule singleModule;
+
+  private static BaseExpr analyzeExpression(final String statement)
+  {
+    final Tokenizer tokenizer = new Tokenizer();
+    tokenizer.lines.add(statement);
+    tokenizer.module = singleModule;
+    tokenizer.nextToken();
+    final BaseExpr expr = new MergeExpr(tokenizer).optimize();
+    expr.analyze();
+    return expr;
+  }
 
   public static void codeException(final CodeException ex)
   {
@@ -82,14 +94,7 @@ public class Qupla
   private static void evalExpression(final String statement)
   {
     log("\nEvaluate: " + statement);
-    final Tokenizer tokenizer = new Tokenizer();
-    tokenizer.lines.add(statement);
-    tokenizer.module = new QuplaModule(new ArrayList<>());
-    tokenizer.module.modules.addAll(QuplaModule.allModules.values());
-    tokenizer.nextToken();
-    final BaseExpr expr = new MergeExpr(tokenizer).optimize();
-    expr.analyze();
-    runEval(expr);
+    runEval(analyzeExpression(statement));
   }
 
   public static void log(final String text)
@@ -132,6 +137,20 @@ public class Qupla
 
           QuplaModule.parse(arg);
         }
+
+        singleModule = new QuplaModule(QuplaModule.allModules.values());
+
+        for (final String arg : args)
+        {
+          // interpret as expression to be evaluated
+          // can be a function call, but also an expression surrounded by ( and )
+          if (arg.contains("("))
+          {
+            analyzeExpression(arg);
+          }
+        }
+
+        singleModule.analyze();
 
         processOptions();
 
@@ -203,7 +222,6 @@ public class Qupla
   private static void runAbraGenerator()
   {
     log("Run Abra generator");
-    final QuplaModule singleModule = new QuplaModule(QuplaModule.allModules.values());
     quplaToAbraContext = new QuplaToAbraContext();
     quplaToAbraContext.eval(singleModule);
   }
@@ -211,7 +229,6 @@ public class Qupla
   private static void runEchoSource()
   {
     log("Generate Qupla.txt");
-    final QuplaModule singleModule = new QuplaModule(QuplaModule.allModules.values());
     new QuplaPrintContext().eval(singleModule);
   }
 
@@ -269,7 +286,6 @@ public class Qupla
   private static void runFpgaGenerator()
   {
     log("Run Verilog compiler");
-    final QuplaModule singleModule = new QuplaModule(QuplaModule.allModules.values());
     new QuplaToVerilogContext().eval(singleModule);
   }
 
@@ -300,8 +316,7 @@ public class Qupla
     long mSec = System.currentTimeMillis();
     final Tokenizer tokenizer = new Tokenizer();
     tokenizer.lines.add(statement);
-    tokenizer.module = new QuplaModule(new ArrayList<>());
-    tokenizer.module.modules.addAll(QuplaModule.allModules.values());
+    tokenizer.module = singleModule;
     tokenizer.nextToken();
     final FuncExpr expr = (FuncExpr) new MergeExpr(tokenizer).optimize();
     expr.analyze();

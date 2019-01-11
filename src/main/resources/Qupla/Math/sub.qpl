@@ -7,6 +7,6 @@ template sub<T> {
   func T sub<T> (T lhs, T rhs) {
     // use full adder but don't return the carry trit
     sum = fullAdd<T>(lhs, neg<T>(rhs), 0)
-    return sum[0 : T]
+    return sum.value
   }
 }

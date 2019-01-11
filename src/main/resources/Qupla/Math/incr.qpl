@@ -3,6 +3,6 @@
 template incr<T> {
   func T incr<T> (T val) {
     halfSum = halfAdd<T>(val, 1)
-    return halfSum[0 : T]
+    return halfSum.value
   }
 }

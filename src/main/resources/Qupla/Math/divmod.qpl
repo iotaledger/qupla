@@ -1,15 +1,18 @@
 // returns lhs / rhs
 
 template divMod<T> {
-  type T2 [T * 2]
+  type T2 {
+    quotient [T]
+    remainder [T]
+  }
   
   // quotient truncated to nearest integer that is closest to zero
   func T2 divMod<T> (T lhs, T rhs) {
     absLhs = abs<T>(lhs)
     absRhs = abs<T>(rhs)
     quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
-    quo = quorem[0 : T]
-    rem = quorem[T : T]
+    quo = quorem.quotient
+    rem = quorem.remainder
 
     // truncate downward if rem < 0
     fix = isNegative[sign<T>(rem)]
@@ -24,8 +27,8 @@ template divMod<T> {
     absLhs = abs<T>(lhs)
     absRhs = abs<T>(rhs)
     quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
-    quo = quorem[0 : T]
-    rem = quorem[T : T]
+    quo = quorem.quotient
+    rem = quorem.remainder
 
     lhsSign = sign<T>(lhs)
     rhsSign = sign<T>(rhs)
@@ -54,8 +57,8 @@ template divMod<T> {
     absLhs = abs<T>(lhs)
     absRhs = abs<T>(rhs)
     quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
-    quo = quorem[0 : T]
-    rem = quorem[T : T]
+    quo = quorem.quotient
+    rem = quorem.remainder
 
     lhsSign = sign<T>(lhs)
     rhsSign = sign<T>(rhs)
@@ -85,8 +88,8 @@ template divMod<T> {
     absLhs = abs<T>(lhs)
     absRhs = abs<T>(rhs)
     quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
-    quo = quorem[0 : T]
-    rem = quorem[T : T]
+    quo = quorem.quotient
+    rem = quorem.remainder
 
     return fixSign<T>(lhs, rhs, quo, rem)
   }
@@ -125,21 +128,19 @@ template divMod<T> {
   //  }
 
   func T2 roundDivModLoop<T> (T quo, T rem, T div, T shf) {
-    newShf = rshift<T>(shf)
-    zero = isZero[sign<T>(newShf)]
-
     quorem = roundDivModPass<T>(quo, rem, div)
 
-    quo1 = quorem[0 : T]
-    rem1 = quorem[T : T]
-
+    newShf = rshift<T>(shf)
+    zero = isZero[sign<T>(newShf)]
+    quo1 = quorem.quotient
+    rem1 = quorem.remainder
     return zero ? quorem : roundDivModLoop<T>(quo1, rem1, div, newShf)
   }
 
   func T2 roundDivModPass<T> (T quo, T rem, T div) {
-    quorem = rshift<T2>(quo & rem)
-    quo0 = quorem[0 : T]
-    rem0 = quorem[T : T]
+    quorem = as<T2>(rshift<T2>(quo & rem))
+    quo0 = quorem.quotient
+    rem0 = quorem.remainder
     remSign = sign<T>(rem0)
     quoSign = sign<T>(quo0)
 
@@ -157,8 +158,14 @@ template divMod<T> {
     negQuo = isNegative[quoSign]
     test2 = and[negRem, or[isGreater[cmp2], and[isEqual[cmp2], negQuo]]]
 
-    quorem1 = incr<T>(quo0) & low
-    quorem2 = decr<T>(quo0) & high
+    quorem1 = T2 {
+      quotient = incr<T>(quo0)
+      remainder = low
+    }
+    quorem2 = T2 {
+      quotient = decr<T>(quo0)
+      remainder = high
+    }
     return test1 ? quorem1 : test2 ? quorem2 : quorem
   }
 
@@ -171,6 +178,9 @@ template divMod<T> {
 
     quo1 = negQuo ? neg<T>(quo) : quo
     rem1 = negRem ? neg<T>(rem) : rem
-    return quo1 & rem1
+    return T2 {
+      quotient = quo1
+      remainder = rem1
+    }
   }
 }

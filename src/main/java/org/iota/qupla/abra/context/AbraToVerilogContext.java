@@ -82,8 +82,6 @@ public class AbraToVerilogContext extends AbraBaseContext
       append("reg " + size(site.size) + " ").append(site.varName).append(";").newline();
     }
 
-    append("reg " + size(branch.size) + " ").append(funcName).append("_ret;").newline();
-
     if (branch.sites.size() != 0)
     {
       newline();
@@ -105,7 +103,7 @@ public class AbraToVerilogContext extends AbraBaseContext
       append(";").newline();
     }
 
-    append(funcName).append("_ret = ");
+    append(funcName).append(" = ");
     if (branch.outputs.size() != 1)
     {
       append("{ ");
@@ -125,8 +123,6 @@ public class AbraToVerilogContext extends AbraBaseContext
     }
 
     append(";").newline();
-
-    append(funcName).append(" = ").append(funcName).append("_ret;").newline();
 
     undent().append("end").newline().undent();
     append("endfunction").newline();
