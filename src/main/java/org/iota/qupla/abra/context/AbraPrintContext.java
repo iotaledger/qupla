@@ -17,6 +17,7 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraPrintContext extends AbraBaseContext
 {
+  public String fileName = "Abra.txt";
   public String type = "site";
 
   public void appendSiteInputs(final AbraSiteMerge merge)
@@ -38,7 +39,7 @@ public class AbraPrintContext extends AbraBaseContext
     module.blockNr = 0;
     module.numberBlocks(module.blocks);
 
-    fileOpen("Abra.txt");
+    fileOpen(fileName);
 
     evalBlocks(module.imports);
     evalBlocks(module.luts);
@@ -140,7 +141,7 @@ public class AbraPrintContext extends AbraBaseContext
   {
     for (BaseExpr stmt = site.stmt; stmt != null; stmt = stmt.next)
     {
-      newline().append("" + stmt).newline();
+      newline().append(stmt.toString()).newline();
     }
 
     String nullifyIndex = " ";

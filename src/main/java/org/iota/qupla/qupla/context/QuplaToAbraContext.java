@@ -12,11 +12,13 @@ import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.AbraAnalyzeContext;
-import org.iota.qupla.abra.context.AbraDebugTritCodeContext;
 import org.iota.qupla.abra.context.AbraOrderBlockContext;
 import org.iota.qupla.abra.context.AbraPrintContext;
+import org.iota.qupla.abra.context.AbraReadDebugInfoContext;
+import org.iota.qupla.abra.context.AbraReadTritCodeContext;
 import org.iota.qupla.abra.context.AbraToVerilogContext;
-import org.iota.qupla.abra.context.AbraTritCodeContext;
+import org.iota.qupla.abra.context.AbraWriteDebugInfoContext;
+import org.iota.qupla.abra.context.AbraWriteTritCodeContext;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
@@ -77,8 +79,24 @@ public class QuplaToAbraContext extends QuplaBaseContext
     new AbraPrintContext().eval(abraModule);
     new AbraToVerilogContext().eval(abraModule);
     new AbraAnalyzeContext().eval(abraModule);
-    new AbraDebugTritCodeContext().eval(abraModule);
-    new AbraTritCodeContext().eval(abraModule);
+
+    final AbraWriteTritCodeContext codeWriter = new AbraWriteTritCodeContext();
+    codeWriter.eval(abraModule);
+    final AbraWriteDebugInfoContext debugWriter = new AbraWriteDebugInfoContext();
+    debugWriter.eval(abraModule);
+
+    final AbraModule newAbraModule = new AbraModule();
+    final AbraReadTritCodeContext codeReader = new AbraReadTritCodeContext();
+    codeReader.buffer = new String(codeWriter.buffer, 0, codeWriter.bufferOffset).toCharArray();
+    codeReader.eval(newAbraModule);
+    final AbraReadDebugInfoContext debugReader = new AbraReadDebugInfoContext();
+    debugReader.buffer = new String(debugWriter.buffer, 0, debugWriter.bufferOffset).toCharArray();
+    debugReader.eval(newAbraModule);
+    new AbraAnalyzeContext().eval(newAbraModule);
+
+    final AbraPrintContext printer = new AbraPrintContext();
+    printer.fileName = "NewAbra.txt";
+    printer.eval(newAbraModule);
   }
 
   @Override

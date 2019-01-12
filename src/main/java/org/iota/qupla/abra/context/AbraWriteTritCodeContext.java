@@ -4,7 +4,6 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteMerge;
@@ -12,19 +11,21 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
 
-public class AbraTritCodeContext extends AbraTritCodeBaseContext
+public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
 {
   @Override
   public void eval(final AbraModule module)
   {
     module.numberBlocks();
 
-    putInt(0); // version
+    putInt(module.version);
+
     putInt(module.luts.size());
-    evalBlocks(module.luts);
     putInt(module.branches.size());
-    evalBlocks(module.branches);
     putInt(module.imports.size());
+
+    evalBlocks(module.luts);
+    evalBlocks(module.branches);
     evalBlocks(module.imports);
   }
 
@@ -33,7 +34,7 @@ public class AbraTritCodeContext extends AbraTritCodeBaseContext
   {
     // we need a separate temporary buffer to gather everything
     // before we can add the accumulated length and data
-    final AbraTritCodeContext branchTritCode = new AbraTritCodeContext();
+    final AbraWriteTritCodeContext branchTritCode = new AbraWriteTritCodeContext();
     branchTritCode.evalBranchSites(branch);
 
     // now copy the temporary buffer length and contents
@@ -44,12 +45,12 @@ public class AbraTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalImport(final AbraBlockImport imp)
   {
-    putTrits(imp.hash);
-    putInt(imp.blocks.size());
-    for (final AbraBaseBlock block : imp.blocks)
-    {
-      putInt(block.index);
-    }
+    //    putTrits(imp.hash);
+    //    putInt(imp.blocks.size());
+    //    for (final AbraBaseBlock block : imp.blocks)
+    //    {
+    //      putInt(block.index);
+    //    }
   }
 
   @Override
@@ -90,7 +91,14 @@ public class AbraTritCodeContext extends AbraTritCodeBaseContext
     putInt(merge.inputs.size());
     for (final AbraBaseSite input : merge.inputs)
     {
-      putInt(merge.refer(input.index));
+      //TODO can refer relative to merge.index here
+      // if (input.index < merge.index)
+      // {
+      //   putInt(merge.index - 1 - input.index);
+      //   continue;
+      // }
+
+      putInt(input.index);
     }
   }
 }

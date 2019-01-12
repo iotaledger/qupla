@@ -6,7 +6,9 @@ import org.iota.qupla.abra.context.base.AbraBaseContext;
 //TODO merge identical LUTs
 public class AbraBlockLut extends AbraBaseBlock
 {
-  public String lookup = "@@@@@@@@@@@@@@@@@@@@@@@@@@@";
+  public static final String NULL_LUT = "@@@@@@@@@@@@@@@@@@@@@@@@@@@";
+
+  public String lookup = NULL_LUT;
 
   public static String unnamed(final String lookupTable)
   {
