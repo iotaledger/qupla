@@ -4,7 +4,7 @@ Java reference implementation of Qupla (QUbic Programming LAnguage) with sample 
 * Qupla source code parser
 * Qupla interpreter
 * Qupla to Abra tritcode translator (mostly done)
-* Qupla Debug Info tritcode generator (TBD)
+* Qupla Debug Info tritcode generator
 * Qupla JIT compilation (TBD)
 * Qupla Verilog generator (mostly done)
 * Abra tritcode interpreter
@@ -125,6 +125,5 @@ Wishlist for changes to the language:
 * Implement entity aliases for type/lut
 * Arithmetic operators (to increase readability)
 * Automatic detection of type specifiers on function calls (same)
-* Type slice operator. Instead of var\[Tryte * n : Tryte\] we could maybe use var@Tryte\[n\].
 
 

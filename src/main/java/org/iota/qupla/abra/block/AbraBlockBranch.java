@@ -47,6 +47,14 @@ public class AbraBlockBranch extends AbraBaseBlock
     return inputSite;
   }
 
+  private void clearReferences(final ArrayList<? extends AbraBaseSite> sites)
+  {
+    for (final AbraBaseSite site : sites)
+    {
+      site.references = 0;
+    }
+  }
+
   @Override
   public void eval(final AbraBaseContext context)
   {
@@ -56,6 +64,11 @@ public class AbraBlockBranch extends AbraBaseBlock
   @Override
   public void markReferences()
   {
+    clearReferences(inputs);
+    clearReferences(sites);
+    clearReferences(outputs);
+    clearReferences(latches);
+
     markReferences(inputs);
     markReferences(sites);
     markReferences(outputs);

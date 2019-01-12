@@ -46,16 +46,6 @@ public abstract class AbraBaseSite
     }
   }
 
-  public int refer(final int site)
-  {
-    //    if (site < index)
-    //    {
-    //      return index - 1 - site;
-    //    }
-
-    return site;
-  }
-
   @Override
   public String toString()
   {

@@ -27,6 +27,12 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext
     super.eval(module);
 
     module.branches = output;
+
+    module.blocks.clear();
+    module.blocks.addAll(module.luts);
+    module.blocks.addAll(module.branches);
+    module.blocks.addAll(module.imports);
+
     module.numberBlocks();
   }
 

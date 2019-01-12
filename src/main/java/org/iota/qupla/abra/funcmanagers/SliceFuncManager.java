@@ -31,6 +31,7 @@ public class SliceFuncManager extends BaseFuncManager
     final AbraSiteMerge merge = new AbraSiteMerge();
     merge.size = size;
     merge.inputs.add(inputSite);
+    inputSite.references++;
 
     branch.specialType = AbraBaseBlock.TYPE_SLICE;
     branch.offset = start;

@@ -12,7 +12,6 @@ import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
-import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.helper.BaseContext;
 import org.iota.qupla.qupla.context.QuplaToAbraContext;
@@ -90,14 +89,6 @@ public abstract class AbraBaseContext extends BaseContext
   public abstract void evalMerge(final AbraSiteMerge merge);
 
   public abstract void evalParam(final AbraSiteParam param);
-
-  protected void evalSites(final ArrayList<? extends AbraBaseSite> sites)
-  {
-    for (final AbraBaseSite site : sites)
-    {
-      site.eval(this);
-    }
-  }
 
   static
   {

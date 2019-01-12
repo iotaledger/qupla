@@ -15,6 +15,7 @@ public class AbraModule
   public ArrayList<AbraBlockBranch> branches = new ArrayList<>();
   public ArrayList<AbraBlockImport> imports = new ArrayList<>();
   public ArrayList<AbraBlockLut> luts = new ArrayList<>();
+  public int version;
 
   public void addBranch(final AbraBlockBranch branch)
   {

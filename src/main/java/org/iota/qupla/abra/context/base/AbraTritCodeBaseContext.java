@@ -1,6 +1,9 @@
 package org.iota.qupla.abra.context.base;
 
+import java.util.ArrayList;
+
 import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.exception.CodeException;
 
 public abstract class AbraTritCodeBaseContext extends AbraBaseContext
@@ -24,18 +27,28 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
   public char[] buffer = new char[32];
   public int bufferOffset;
 
-  public void evalBranchSites(final AbraBlockBranch branch)
+  protected void evalBranchSites(final AbraBlockBranch branch)
   {
+    // make sure sites are numbered correctly
     branch.numberSites();
 
     putInt(branch.inputs.size());
-    evalSites(branch.inputs);
     putInt(branch.sites.size());
     putInt(branch.outputs.size());
     putInt(branch.latches.size());
+
+    evalSites(branch.inputs);
     evalSites(branch.sites);
     evalSites(branch.outputs);
     evalSites(branch.latches);
+  }
+
+  protected void evalSites(final ArrayList<? extends AbraBaseSite> sites)
+  {
+    for (final AbraBaseSite site : sites)
+    {
+      site.eval(this);
+    }
   }
 
   public char getChar()
@@ -63,7 +76,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
 
   private char getChar(final int codePageNr)
   {
-    int index = 0;
+    int index = 13;
     int power = 1;
     for (int i = 0; i < 3; i++)
     {
@@ -82,15 +95,15 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
   public int getInt()
   {
     int value = 0;
+    int mask = 1;
     for (char trit = getTrit(); trit != '0'; trit = getTrit())
     {
-      if (trit == '-')
+      if (trit == '1')
       {
-        value <<= 1;
-        continue;
+        value |= mask;
       }
 
-      value = (value << 1) | 1;
+      mask <<= 1;
     }
 
     return value;
