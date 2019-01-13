@@ -10,6 +10,35 @@ public class TritConverter
   private static final ArrayList<Integer> powerDigits = new ArrayList<>();
   private static final ArrayList<BigInteger> powers = new ArrayList<>();
   private static final BigInteger three = new BigInteger("3");
+  public static final String[] tryteValue = {
+      "---",
+      "0--",
+      "1--",
+      "-0-",
+      "00-",
+      "10-",
+      "-1-",
+      "01-",
+      "11-",
+      "--0",
+      "0-0",
+      "1-0",
+      "-00",
+      "000",
+      "100",
+      "-10",
+      "010",
+      "110",
+      "--1",
+      "0-1",
+      "1-1",
+      "-01",
+      "001",
+      "101",
+      "-11",
+      "011",
+      "111"
+  };
 
   public static String fromDecimal(final String decimal)
   {

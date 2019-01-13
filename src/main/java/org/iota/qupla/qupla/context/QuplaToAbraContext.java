@@ -85,18 +85,19 @@ public class QuplaToAbraContext extends QuplaBaseContext
     final AbraWriteDebugInfoContext debugWriter = new AbraWriteDebugInfoContext();
     debugWriter.eval(abraModule);
 
-    final AbraModule newAbraModule = new AbraModule();
+    // we start a new AbraModule from the generated tritcode
+    abraModule = new AbraModule();
     final AbraReadTritCodeContext codeReader = new AbraReadTritCodeContext();
     codeReader.buffer = new String(codeWriter.buffer, 0, codeWriter.bufferOffset).toCharArray();
-    codeReader.eval(newAbraModule);
+    codeReader.eval(abraModule);
     final AbraReadDebugInfoContext debugReader = new AbraReadDebugInfoContext();
     debugReader.buffer = new String(debugWriter.buffer, 0, debugWriter.bufferOffset).toCharArray();
-    debugReader.eval(newAbraModule);
-    new AbraAnalyzeContext().eval(newAbraModule);
+    debugReader.eval(abraModule);
+    new AbraAnalyzeContext().eval(abraModule);
 
     final AbraPrintContext printer = new AbraPrintContext();
     printer.fileName = "NewAbra.txt";
-    printer.eval(newAbraModule);
+    printer.eval(abraModule);
   }
 
   @Override
