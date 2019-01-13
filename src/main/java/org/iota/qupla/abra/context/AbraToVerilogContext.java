@@ -14,6 +14,7 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.helper.BaseContext;
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.Verilog;
 
 public class AbraToVerilogContext extends AbraBaseContext
@@ -242,7 +243,7 @@ public class AbraToVerilogContext extends AbraBaseContext
         continue;
       }
 
-      appendVector(lutIndexes[i]).append(": ").append(lutName).append(" = ");
+      appendVector(TritConverter.tryteValue[i]).append(": ").append(lutName).append(" = ");
       appendVector("" + trit).append(";").newline();
     }
 

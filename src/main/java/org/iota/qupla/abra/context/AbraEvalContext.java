@@ -46,7 +46,7 @@ public class AbraEvalContext extends AbraBaseContext
       final FuncExpr funcExpr = (FuncExpr) expr;
       for (final AbraBlockBranch branch : context.abraModule.branches)
       {
-        if (branch.origin == funcExpr.func)
+        if (branch.name.equals(funcExpr.name))
         {
           args.clear();
           for (final BaseExpr arg : funcExpr.args)
@@ -225,7 +225,8 @@ public class AbraEvalContext extends AbraBaseContext
       error("LUT needs exactly 3 inputs");
     }
 
-    char trits[] = new char[3];
+    int index = 13;
+    int power = 1;
     for (int i = 0; i < 3; i++)
     {
       final TritVector arg = args.get(i);
@@ -234,26 +235,40 @@ public class AbraEvalContext extends AbraBaseContext
         error("LUT inputs need to be exactly 1 trit");
       }
 
-      trits[i] = arg.trit(0);
-    }
-
-    final Integer index = indexFromTrits.get(new String(trits));
-    if (index != null)
-    {
-      switch (lut.lookup.charAt(index))
+      switch (arg.trit(0))
       {
+      case '-':
+        index -= power;
+        break;
+
       case '0':
-        value = tritZero;
-        return;
+        break;
 
       case '1':
-        value = tritOne;
-        return;
+        index += power;
+        break;
 
-      case '-':
-        value = tritMin;
+      default:
+        value = tritNull;
         return;
       }
+
+      power *= 3;
+    }
+
+    switch (lut.lookup.charAt(index))
+    {
+    case '0':
+      value = tritZero;
+      return;
+
+    case '1':
+      value = tritOne;
+      return;
+
+    case '-':
+      value = tritMin;
+      return;
     }
 
     value = tritNull;

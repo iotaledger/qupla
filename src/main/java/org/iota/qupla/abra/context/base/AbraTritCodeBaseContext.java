@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.exception.CodeException;
+import org.iota.qupla.helper.TritConverter;
 
 public abstract class AbraTritCodeBaseContext extends AbraBaseContext
 {
@@ -155,7 +156,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
       int index = codePage[page].indexOf(c);
       if (index >= 0)
       {
-        return putTrits(codePageId[page]).putTrits(lutIndexes[index]);
+        return putTrits(codePageId[page]).putTrits(TritConverter.tryteValue[index]);
       }
     }
 
