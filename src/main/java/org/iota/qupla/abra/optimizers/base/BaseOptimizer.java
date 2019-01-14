@@ -2,22 +2,22 @@ package org.iota.qupla.abra.optimizers.base;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class BaseOptimizer
 {
   public AbraBlockBranch branch;
-  public QuplaToAbraContext context;
   public int index;
+  public AbraModule module;
   public boolean reverse;
 
-  public BaseOptimizer(final QuplaToAbraContext context, final AbraBlockBranch branch)
+  public BaseOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {
-    this.context = context;
+    this.module = module;
     this.branch = branch;
   }
 

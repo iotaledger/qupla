@@ -550,8 +550,8 @@ public class QuplaPrintContext extends QuplaBaseContext
   }
 
   @Override
-  public void evalVector(final VectorExpr integer)
+  public void evalVector(final VectorExpr vector)
   {
-    append(integer.name);
+    append(vector.name);
   }
 }

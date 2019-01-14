@@ -3,30 +3,32 @@ package org.iota.qupla.abra.optimizers;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class MultiLutOptimizer extends BaseOptimizer
 {
   public HashMap<AbraBaseSite, Character> values = new HashMap<>();
 
-  public MultiLutOptimizer(final QuplaToAbraContext context, final AbraBlockBranch branch)
+  public MultiLutOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {
-    super(context, branch);
+    super(module, branch);
     reverse = true;
   }
 
   private AbraBaseBlock generateLookupTable(final AbraSiteKnot master, final AbraSiteKnot slave, final ArrayList<AbraBaseSite> inputs)
   {
     // initialize with 27 null trits
-    final char[] lookup = "@@@@@@@@@@@@@@@@@@@@@@@@@@@".toCharArray();
+    final char[] lookup = AbraBlockLut.NULL_LUT.toCharArray();
 
-    final int lookupSize = QuplaToAbraContext.powers[inputs.size()];
+    // powers of 3:              1     3     9    27
+    final int lookupSize = "\u0001\u0003\u0009\u001b".charAt(inputs.size());
+
     for (int v = 0; v < lookupSize; v++)
     {
       int value = v;
@@ -61,7 +63,7 @@ public class MultiLutOptimizer extends BaseOptimizer
 
     final AbraSiteKnot tmp = new AbraSiteKnot();
     tmp.name = AbraBlockLut.unnamed(lookupTable);
-    tmp.lut(context);
+    tmp.lut(module);
 
     // already exists?
     if (tmp.block != null)
@@ -70,17 +72,22 @@ public class MultiLutOptimizer extends BaseOptimizer
     }
 
     // new LUT, create it
-    return context.abraModule.addLut(tmp.name, lookupTable);
+    return module.addLut(tmp.name, lookupTable);
   }
 
   private char lookupTrit(final AbraSiteKnot lut)
   {
     int index = 0;
+    int power = 1;
     for (int i = 0; i < lut.inputs.size(); i++)
     {
       final char trit = values.get(lut.inputs.get(i));
-      final int val = trit == '-' ? 0 : trit == '0' ? 1 : 2;
-      index += val * QuplaToAbraContext.powers[i];
+      if (trit != '-')
+      {
+        index += trit == '1' ? power * 2 : power;
+      }
+
+      power *= 3;
     }
 
     // look up the trit in the lut lookup table

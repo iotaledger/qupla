@@ -6,7 +6,6 @@ import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class AbraModule
 {
@@ -54,7 +53,7 @@ public class AbraModule
     }
   }
 
-  public void optimize(final QuplaToAbraContext context)
+  public void optimize()
   {
     // determine reference counts for branches and sites
     for (final AbraBaseBlock branch : branches)
@@ -65,7 +64,7 @@ public class AbraModule
     for (int i = 0; i < branches.size(); i++)
     {
       final AbraBaseBlock branch = branches.get(i);
-      branch.optimize(context);
+      branch.optimize(this);
     }
   }
 }

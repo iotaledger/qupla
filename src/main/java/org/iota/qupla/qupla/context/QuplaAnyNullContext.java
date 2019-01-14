@@ -264,7 +264,7 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   }
 
   @Override
-  public void evalVector(final VectorExpr integer)
+  public void evalVector(final VectorExpr vector)
   {
     // of course this is non-null
     isNull = false;

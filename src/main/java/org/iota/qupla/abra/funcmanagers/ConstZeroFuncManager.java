@@ -43,7 +43,7 @@ public class ConstZeroFuncManager extends BaseFuncManager
     {
       final AbraSiteKnot knot = new AbraSiteKnot();
       knot.inputs.add(inputValue);
-      knot.block = manager.find(context, inputSizes[i]);
+      knot.block = manager.find(module, inputSizes[i]);
       knot.size = knot.block.size();
       branch.outputs.add(knot);
     }
@@ -57,7 +57,7 @@ public class ConstZeroFuncManager extends BaseFuncManager
   @Override
   protected void generateLut()
   {
-    lut = context.abraModule.addLut("constZero" + SEPARATOR, "000000000000000000000000000");
+    lut = module.addLut("constZero" + SEPARATOR, "000000000000000000000000000");
     lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
     lut.constantValue = new TritVector(1, '0');
   }

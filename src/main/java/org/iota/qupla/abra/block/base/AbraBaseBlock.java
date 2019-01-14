@@ -1,8 +1,8 @@
 package org.iota.qupla.abra.block.base;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public abstract class AbraBaseBlock
@@ -25,7 +25,7 @@ public abstract class AbraBaseBlock
   {
   }
 
-  public void optimize(final QuplaToAbraContext context)
+  public void optimize(final AbraModule module)
   {
   }
 

@@ -13,6 +13,7 @@ import org.iota.qupla.qupla.context.QuplaEvalContext;
 import org.iota.qupla.qupla.context.QuplaPrintContext;
 import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.context.QuplaToVerilogContext;
+import org.iota.qupla.qupla.context.QuplaTreeViewerContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.VectorExpr;
@@ -194,7 +195,7 @@ public class Qupla
       runFpgaGenerator();
     }
 
-    // display the syntax tree
+    // display the code tree
     if (options.contains("-tree"))
     {
       runTreeViewer();
@@ -242,7 +243,7 @@ public class Qupla
     if (options.contains("-abra"))
     {
       final AbraEvalContext abraEvalContext = new AbraEvalContext();
-      abraEvalContext.eval(quplaToAbraContext, expr);
+      abraEvalContext.eval(quplaToAbraContext.abraModule, expr);
       context.value = abraEvalContext.value;
     }
     else
@@ -346,7 +347,7 @@ public class Qupla
     if (options.contains("-abra"))
     {
       final AbraEvalContext abraEvalContext = new AbraEvalContext();
-      abraEvalContext.eval(quplaToAbraContext, exec.expr);
+      abraEvalContext.eval(quplaToAbraContext.abraModule, exec.expr);
       context.value = abraEvalContext.value;
     }
     else
@@ -386,6 +387,7 @@ public class Qupla
 
   private static void runTreeViewer()
   {
-    //TODO
+    log("Run Tree Viewer");
+    new QuplaTreeViewerContext().eval(singleModule);
   }
 }

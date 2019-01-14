@@ -49,7 +49,7 @@ public class NullifyFuncManager extends BaseFuncManager
       final AbraSiteKnot slice = new AbraSiteKnot();
       slice.inputs.add(inputValue);
       inputValue.references++;
-      slice.block = AbraSiteKnot.slicers.find(context, inputSizes[i], offset);
+      slice.block = AbraSiteKnot.slicers.find(module, inputSizes[i], offset);
       slice.size = slice.block.size();
       branch.sites.add(slice);
 
@@ -58,7 +58,7 @@ public class NullifyFuncManager extends BaseFuncManager
       inputFlag.references++;
       nullify.inputs.add(slice);
       slice.references++;
-      nullify.block = manager.find(context, inputSizes[i]);
+      nullify.block = manager.find(module, inputSizes[i]);
       nullify.size = nullify.block.size();
       branch.outputs.add(nullify);
 
@@ -75,7 +75,7 @@ public class NullifyFuncManager extends BaseFuncManager
   {
     final String trueTrits = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
     final String falseTrits = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
-    lut = context.abraModule.addLut(funcName + SEPARATOR, trueFalse ? trueTrits : falseTrits);
+    lut = module.addLut(funcName + SEPARATOR, trueFalse ? trueTrits : falseTrits);
     lut.specialType = trueFalse ? AbraBaseBlock.TYPE_NULLIFY_TRUE : AbraBaseBlock.TYPE_NULLIFY_FALSE;
     lut.constantValue = new TritVector(1, '@');
   }
@@ -95,7 +95,7 @@ public class NullifyFuncManager extends BaseFuncManager
       final AbraSiteKnot slice = new AbraSiteKnot();
       slice.inputs.add(inputValue);
       inputValue.references++;
-      slice.block = AbraSiteKnot.slicers.find(context, 1, i);
+      slice.block = AbraSiteKnot.slicers.find(module, 1, i);
       slice.size = slice.block.size();
       branch.sites.add(slice);
 

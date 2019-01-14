@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
@@ -16,7 +17,6 @@ import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.helper.StateValue;
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
 import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
@@ -31,20 +31,19 @@ public class AbraEvalContext extends AbraBaseContext
   private static final TritVector tritOne = new TritVector(1, '1');
   private static final TritVector tritZero = new TritVector(1, '0');
 
-  public QuplaToAbraContext abra;
   public ArrayList<TritVector> args = new ArrayList<>();
   public int callNr;
   public byte[] callTrail = new byte[4096];
   public TritVector[] stack;
   public TritVector value;
 
-  public void eval(final QuplaToAbraContext context, final BaseExpr expr)
+  @Override
+  public void eval(final AbraModule module, final BaseExpr expr)
   {
-    abra = context;
     if (expr instanceof FuncExpr)
     {
       final FuncExpr funcExpr = (FuncExpr) expr;
-      for (final AbraBlockBranch branch : context.abraModule.branches)
+      for (final AbraBlockBranch branch : module.branches)
       {
         if (branch.name.equals(funcExpr.name))
         {

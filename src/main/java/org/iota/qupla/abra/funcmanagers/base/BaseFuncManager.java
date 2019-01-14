@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class BaseFuncManager
 {
   protected static final String SEPARATOR = "_";
   public AbraBlockBranch branch;
-  public QuplaToAbraContext context;
   public String funcName;
   public HashMap<String, AbraBlockBranch> instances = new HashMap<>();
   public AbraBlockLut lut;
+  public AbraModule module;
   public String name;
   private int reuse;
   public int size;
@@ -111,9 +111,9 @@ public class BaseFuncManager
     }
   }
 
-  public AbraBlockBranch find(final QuplaToAbraContext context, final int size)
+  public AbraBlockBranch find(final AbraModule module, final int size)
   {
-    this.context = context;
+    this.module = module;
     this.size = size;
     name = funcName + SEPARATOR + size;
     return findInstance();
@@ -162,7 +162,7 @@ public class BaseFuncManager
     instances.put(branch.name, branch);
     sorted.add(branch.size);
     Collections.sort(sorted);
-    context.abraModule.addBranch(branch);
+    module.addBranch(branch);
     return branch;
   }
 }
