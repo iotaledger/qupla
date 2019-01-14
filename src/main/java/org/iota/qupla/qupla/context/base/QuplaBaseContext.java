@@ -82,5 +82,5 @@ public abstract class QuplaBaseContext extends BaseContext
     evalBaseExpr(type);
   }
 
-  public abstract void evalVector(VectorExpr integer);
+  public abstract void evalVector(VectorExpr vector);
 }

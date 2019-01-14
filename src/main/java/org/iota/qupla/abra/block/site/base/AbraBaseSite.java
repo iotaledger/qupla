@@ -6,7 +6,7 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public abstract class AbraBaseSite
 {
-  private static AbraPrintContext printer = new AbraPrintContext();
+  public static AbraPrintContext printer = new AbraPrintContext();
 
   public int index;
   public boolean isLatch;

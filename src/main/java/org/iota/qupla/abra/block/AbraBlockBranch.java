@@ -2,6 +2,7 @@ package org.iota.qupla.abra.block;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
@@ -16,7 +17,6 @@ import org.iota.qupla.abra.optimizers.NullifyOptimizer;
 import org.iota.qupla.abra.optimizers.SingleInputMergeOptimizer;
 import org.iota.qupla.abra.optimizers.SlicedInputOptimizer;
 import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class AbraBlockBranch extends AbraBaseBlock
 {
@@ -103,52 +103,52 @@ public class AbraBlockBranch extends AbraBaseBlock
   }
 
   @Override
-  public void optimize(final QuplaToAbraContext context)
+  public void optimize(final AbraModule module)
   {
     // first move the nullifies up the chain as far as possible
-    new NullifyOptimizer(context, this).run();
+    new NullifyOptimizer(module, this).run();
 
     // then insert actual nullify operations and rewire accordingly
-    new NullifyInserter(context, this).run();
+    new NullifyInserter(module, this).run();
 
     // remove some obvious nonsense before doing more complex analysis
-    optimizeCleanup(context);
+    optimizeCleanup(module);
 
     // run the set of actual optimizations
-    optimizePass(context);
+    optimizePass(module);
 
     // and finally one last cleanup
-    optimizeCleanup(context);
+    optimizeCleanup(module);
   }
 
-  private void optimizeCleanup(final QuplaToAbraContext context)
+  private void optimizeCleanup(final AbraModule module)
   {
     // bypass superfluous single-input merges
-    new SingleInputMergeOptimizer(context, this).run();
+    new SingleInputMergeOptimizer(module, this).run();
 
     // and remove all unreferenced sites
-    new UnreferencedSiteRemover(context, this).run();
+    new UnreferencedSiteRemover(module, this).run();
   }
 
-  private void optimizePass(final QuplaToAbraContext context)
+  private void optimizePass(final AbraModule module)
   {
     // bypass all function calls that do nothing
-    new EmptyFunctionOptimizer(context, this).run();
+    new EmptyFunctionOptimizer(module, this).run();
 
     // replace lut wrapper function with direct lut operations
-    new LutFunctionWrapperOptimizer(context, this).run();
+    new LutFunctionWrapperOptimizer(module, this).run();
 
     // pre-slice inputs that will be sliced later on
-    new SlicedInputOptimizer(context, this).run();
+    new SlicedInputOptimizer(module, this).run();
 
     // replace concatenation knot that is passed as input to a knot
-    new ConcatenationOptimizer(context, this).run();
+    new ConcatenationOptimizer(module, this).run();
 
     // if possible, replace lut calling lut with a single lut that does it all
-    new MultiLutOptimizer(context, this).run();
+    new MultiLutOptimizer(module, this).run();
 
     // move concatenated sites from body to outputs
-    new ConcatenatedOutputOptimizer(context, this).run();
+    new ConcatenatedOutputOptimizer(module, this).run();
   }
 
   @Override

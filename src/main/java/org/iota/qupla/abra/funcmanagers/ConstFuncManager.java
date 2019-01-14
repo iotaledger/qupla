@@ -1,5 +1,6 @@
 package org.iota.qupla.abra.funcmanagers;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
@@ -7,7 +8,6 @@ import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.funcmanagers.base.BaseFuncManager;
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class ConstFuncManager extends BaseFuncManager
 {
@@ -33,15 +33,15 @@ public class ConstFuncManager extends BaseFuncManager
     }
 
     // make sure zeroManager is initialized
-    zeroManager.find(context, 1);
+    zeroManager.find(module, 1);
 
     constZero = zeroManager.lut;
 
-    constOne = context.abraModule.addLut("constOne" + SEPARATOR, "111111111111111111111111111");
+    constOne = module.addLut("constOne" + SEPARATOR, "111111111111111111111111111");
     constOne.specialType = AbraBaseBlock.TYPE_CONSTANT;
     constOne.constantValue = new TritVector(1, '1');
 
-    constMin = context.abraModule.addLut("constMin" + SEPARATOR, "---------------------------");
+    constMin = module.addLut("constMin" + SEPARATOR, "---------------------------");
     constMin.specialType = AbraBaseBlock.TYPE_CONSTANT;
     constMin.constantValue = new TritVector(1, '-');
   }
@@ -63,7 +63,7 @@ public class ConstFuncManager extends BaseFuncManager
       // need to concatenate rest of zeroes
       zeroes = new AbraSiteKnot();
       zeroes.inputs.add(input);
-      zeroes.block = zeroManager.find(context, size - trits.size());
+      zeroes.block = zeroManager.find(module, size - trits.size());
       zeroes.size = zeroes.block.size();
       branch.sites.add(zeroes);
     }
@@ -81,7 +81,7 @@ public class ConstFuncManager extends BaseFuncManager
       constant.inputs.add(zeroes);
     }
 
-    constant.concat(context);
+    constant.concat(module);
 
     branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = value;
@@ -89,9 +89,9 @@ public class ConstFuncManager extends BaseFuncManager
     branch.outputs.add(constant);
   }
 
-  public AbraBlockBranch find(final QuplaToAbraContext context, final TritVector value)
+  public AbraBlockBranch find(final AbraModule module, final TritVector value)
   {
-    this.context = context;
+    this.module = module;
     this.value = value;
     size = value.size();
 
@@ -109,7 +109,7 @@ public class ConstFuncManager extends BaseFuncManager
     if (trits == null || trits.size() == 0)
     {
       // all zeroes, pass it on to zero manager
-      return zeroManager.find(context, size);
+      return zeroManager.find(module, size);
     }
 
     name = funcName + SEPARATOR + size + SEPARATOR + trits.trits().replace('-', 'T');

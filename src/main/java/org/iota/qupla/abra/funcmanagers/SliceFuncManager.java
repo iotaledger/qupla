@@ -1,11 +1,11 @@
 package org.iota.qupla.abra.funcmanagers;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.funcmanagers.base.BaseFuncManager;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class SliceFuncManager extends BaseFuncManager
 {
@@ -38,9 +38,9 @@ public class SliceFuncManager extends BaseFuncManager
     branch.outputs.add(merge);
   }
 
-  public AbraBlockBranch find(final QuplaToAbraContext context, final int size, final int start)
+  public AbraBlockBranch find(final AbraModule module, final int size, final int start)
   {
-    this.context = context;
+    this.module = module;
     this.size = size;
     this.start = start;
     name = funcName + SEPARATOR + size + SEPARATOR + start;

@@ -1,16 +1,16 @@
 package org.iota.qupla.abra.optimizers;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
 
 public class ConcatenatedOutputOptimizer extends BaseOptimizer
 {
-  public ConcatenatedOutputOptimizer(final QuplaToAbraContext context, final AbraBlockBranch branch)
+  public ConcatenatedOutputOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {
-    super(context, branch);
+    super(module, branch);
   }
 
   @Override
