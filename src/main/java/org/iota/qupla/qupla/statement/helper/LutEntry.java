@@ -9,7 +9,7 @@ public class LutEntry extends BaseExpr
   public final String inputs;
   public final String outputs;
 
-  public LutEntry(final LutEntry copy)
+  private LutEntry(final LutEntry copy)
   {
     super(copy);
 

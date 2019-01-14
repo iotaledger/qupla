@@ -15,7 +15,7 @@ public class BaseOptimizer
   public AbraModule module;
   public boolean reverse;
 
-  public BaseOptimizer(final AbraModule module, final AbraBlockBranch branch)
+  protected BaseOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {
     this.module = module;
     this.branch = branch;

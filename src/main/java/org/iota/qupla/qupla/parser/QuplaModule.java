@@ -165,7 +165,7 @@ public class QuplaModule extends BaseExpr
     new QuplaAnyNullContext().eval(this);
   }
 
-  public void analyzeEntities(final ArrayList<? extends BaseExpr> items)
+  private void analyzeEntities(final ArrayList<? extends BaseExpr> items)
   {
     for (final BaseExpr item : items)
     {

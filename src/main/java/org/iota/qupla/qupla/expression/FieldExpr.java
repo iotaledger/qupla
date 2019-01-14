@@ -7,7 +7,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class FieldExpr extends BaseSubExpr
 {
-  public FieldExpr(final FieldExpr copy)
+  private FieldExpr(final FieldExpr copy)
   {
     super(copy);
   }

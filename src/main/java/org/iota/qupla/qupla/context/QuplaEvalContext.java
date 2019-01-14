@@ -33,10 +33,10 @@ public class QuplaEvalContext extends QuplaBaseContext
   private static final boolean usePrint = true;
   private static final boolean varNamesOnStack = true;
 
-  public int callNr;
-  public byte[] callTrail = new byte[4096];
-  public final Stack<TritVector> stack = new Stack<>();
-  public int stackFrame;
+  private int callNr;
+  private final byte[] callTrail = new byte[4096];
+  private final Stack<TritVector> stack = new Stack<>();
+  private int stackFrame;
   public TritVector value;
 
   public QuplaEvalContext()

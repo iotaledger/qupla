@@ -18,7 +18,7 @@ public abstract class BaseExpr
   public static TypeStmt constTypeInfo;
   public static QuplaModule currentModule;
   public static UseStmt currentUse;
-  protected static QuplaPrintContext printer = new QuplaPrintContext();
+  protected static final QuplaPrintContext printer = new QuplaPrintContext();
   public static ArrayList<BaseExpr> scope = new ArrayList<>();
 
   public QuplaModule module;
@@ -37,6 +37,7 @@ public abstract class BaseExpr
   {
     module = currentModule;
     name = copy.name;
+    next = null;
     origin = copy.origin;
     size = copy.size;
     stackIndex = copy.stackIndex;
@@ -63,14 +64,14 @@ public abstract class BaseExpr
 
   public abstract void analyze();
 
-  public BaseExpr clone(final BaseExpr expr)
+  protected BaseExpr clone(final BaseExpr expr)
   {
     return expr == null ? null : expr.clone();
   }
 
   public abstract BaseExpr clone();
 
-  public void cloneArray(final ArrayList<BaseExpr> lhs, final ArrayList<BaseExpr> rhs)
+  protected void cloneArray(final ArrayList<BaseExpr> lhs, final ArrayList<BaseExpr> rhs)
   {
     for (final BaseExpr expr : rhs)
     {
@@ -84,7 +85,7 @@ public abstract class BaseExpr
     return null;
   }
 
-  public CodeException error(final Token token, final String message)
+  protected void error(final Token token, final String message)
   {
     throw new CodeException(token, message);
   }
@@ -111,7 +112,7 @@ public abstract class BaseExpr
     return token;
   }
 
-  public BaseExpr findEntity(final Class classId, final String what)
+  protected BaseExpr findEntity(final Class classId, final String what)
   {
     for (final BaseExpr entity : module.entities(classId))
     {
@@ -147,7 +148,7 @@ public abstract class BaseExpr
     return externEntity != null ? externEntity : entityNotFound(what);
   }
 
-  public void log(final String text)
+  protected void log(final String text)
   {
     final String name = getClass().getName();
     logLine(name.substring(name.lastIndexOf(".") + 1) + ": " + text);
@@ -169,7 +170,7 @@ public abstract class BaseExpr
     return ret;
   }
 
-  public void toStringify()
+  protected void toStringify()
   {
     eval(printer);
   }

@@ -8,7 +8,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class ConcatExpr extends BaseBinaryExpr
 {
-  public ConcatExpr(final ConcatExpr copy)
+  private ConcatExpr(final ConcatExpr copy)
   {
     super(copy);
   }

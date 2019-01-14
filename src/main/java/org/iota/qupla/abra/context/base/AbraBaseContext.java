@@ -23,10 +23,6 @@ public abstract class AbraBaseContext extends BaseContext
     throw new CodeException(text);
   }
 
-  public void eval(final AbraModule module, final BaseExpr expr)
-  {
-  }
-
   public void eval(final AbraModule module)
   {
     module.numberBlocks();

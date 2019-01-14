@@ -16,7 +16,7 @@ public class SliceExpr extends BaseExpr
   public BaseExpr startOffset;
   public int varSize;
 
-  public SliceExpr(final SliceExpr copy)
+  private SliceExpr(final SliceExpr copy)
   {
     super(copy);
 
@@ -120,6 +120,7 @@ public class SliceExpr extends BaseExpr
     error("Cannot find variable: " + name);
   }
 
+  //TODO var is never used????
   private void analyzeVarFields(final BaseExpr var)
   {
     // start with entire vector

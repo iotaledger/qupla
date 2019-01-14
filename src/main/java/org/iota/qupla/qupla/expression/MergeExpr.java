@@ -8,7 +8,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class MergeExpr extends BaseBinaryExpr
 {
-  public MergeExpr(final MergeExpr copy)
+  private MergeExpr(final MergeExpr copy)
   {
     super(copy);
   }

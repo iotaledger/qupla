@@ -17,7 +17,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class FuncStmt extends BaseExpr
 {
-  public boolean analyzed;
+  private boolean analyzed;
   public boolean anyNull;
   public final ArrayList<BaseExpr> assignExprs = new ArrayList<>();
   public final ArrayList<BaseExpr> envExprs = new ArrayList<>();

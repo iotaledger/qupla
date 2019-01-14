@@ -7,8 +7,8 @@ import java.util.HashSet;
 
 public class Verilog
 {
-  public ArrayList<Integer> addedFuncs = new ArrayList<>();
-  public HashSet<Integer> mergeFuncs = new HashSet<>();
+  public final ArrayList<Integer> addedFuncs = new ArrayList<>();
+  public final HashSet<Integer> mergeFuncs = new HashSet<>();
   public final String prefix = "merge__";
 
   public BaseContext appendVector(final BaseContext context, final String trits)

@@ -66,7 +66,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
     append(" }");
   }
 
-  public void evalConcatExprs(final ArrayList<BaseExpr> exprs)
+  private void evalConcatExprs(final ArrayList<BaseExpr> exprs)
   {
     if (exprs.size() == 1)
     {

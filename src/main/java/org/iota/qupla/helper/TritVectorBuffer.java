@@ -30,10 +30,7 @@ public class TritVectorBuffer
       }
 
       final char[] newBuffer = new char[newSize];
-      for (int i = 0; i < used; i++)
-      {
-        newBuffer[i] = buffer[i];
-      }
+      System.arraycopy(buffer, 0, newBuffer, 0, used);
 
       buffer = newBuffer;
     }

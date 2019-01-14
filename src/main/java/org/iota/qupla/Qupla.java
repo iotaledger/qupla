@@ -50,7 +50,7 @@ public class Qupla
     return expr;
   }
 
-  public static void codeException(final CodeException ex)
+  private static void codeException(final CodeException ex)
   {
     final Token token = ex.token;
     if (token == null)
@@ -98,6 +98,7 @@ public class Qupla
     runEval(analyzeExpression(statement));
   }
 
+  //TODO make this the default instead of BaseExpr
   public static void log(final String text)
   {
     BaseExpr.logLine(text);

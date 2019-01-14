@@ -10,10 +10,10 @@ import org.iota.qupla.abra.block.base.AbraBaseBlock;
 public class AbraModule
 {
   public int blockNr;
-  public ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
+  public final ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
   public ArrayList<AbraBlockBranch> branches = new ArrayList<>();
-  public ArrayList<AbraBlockImport> imports = new ArrayList<>();
-  public ArrayList<AbraBlockLut> luts = new ArrayList<>();
+  public final ArrayList<AbraBlockImport> imports = new ArrayList<>();
+  public final ArrayList<AbraBlockLut> luts = new ArrayList<>();
   public int version;
 
   public void addBranch(final AbraBlockBranch branch)
@@ -22,7 +22,7 @@ public class AbraModule
     blocks.add(branch);
   }
 
-  public void addLut(final AbraBlockLut lut)
+  private void addLut(final AbraBlockLut lut)
   {
     luts.add(lut);
     blocks.add(lut);

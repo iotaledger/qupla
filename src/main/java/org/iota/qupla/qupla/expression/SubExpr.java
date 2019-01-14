@@ -7,7 +7,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class SubExpr extends BaseSubExpr
 {
-  public SubExpr(final SubExpr copy)
+  private SubExpr(final SubExpr copy)
   {
     super(copy);
   }

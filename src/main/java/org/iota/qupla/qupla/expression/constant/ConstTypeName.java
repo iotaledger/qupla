@@ -7,7 +7,7 @@ import org.iota.qupla.qupla.statement.TypeStmt;
 
 public class ConstTypeName extends BaseExpr
 {
-  public ConstTypeName(final ConstTypeName copy)
+  private ConstTypeName(final ConstTypeName copy)
   {
     super(copy);
   }

@@ -11,7 +11,7 @@ public class VectorExpr extends BaseExpr
 {
   public TritVector vector;
 
-  public VectorExpr(final VectorExpr copy)
+  private VectorExpr(final VectorExpr copy)
   {
     super(copy);
 

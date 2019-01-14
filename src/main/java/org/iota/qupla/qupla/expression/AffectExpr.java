@@ -9,7 +9,7 @@ public class AffectExpr extends BaseExpr
 {
   public BaseExpr delay;
 
-  public AffectExpr(final AffectExpr copy)
+  private AffectExpr(final AffectExpr copy)
   {
     super(copy);
 

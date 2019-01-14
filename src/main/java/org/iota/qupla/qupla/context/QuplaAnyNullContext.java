@@ -21,13 +21,13 @@ import org.iota.qupla.qupla.statement.LutStmt;
 
 public class QuplaAnyNullContext extends QuplaBaseContext
 {
-  private static boolean allowLog = false;
+  private static final boolean allowLog = false;
   private static final HashSet<FuncStmt> inspected = new HashSet<>();
   private static final HashSet<FuncStmt> inspecting = new HashSet<>();
 
-  public boolean isNull;
-  public final Stack<Boolean> stack = new Stack<>();
-  public int stackFrame;
+  private boolean isNull;
+  private final Stack<Boolean> stack = new Stack<>();
+  private int stackFrame;
 
   public QuplaAnyNullContext()
   {

@@ -13,7 +13,7 @@ public class LutExpr extends BaseExpr
   public final ArrayList<BaseExpr> args = new ArrayList<>();
   public LutStmt lut;
 
-  public LutExpr(final LutExpr copy)
+  private LutExpr(final LutExpr copy)
   {
     super(copy);
 

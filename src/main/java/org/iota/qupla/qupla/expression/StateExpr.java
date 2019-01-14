@@ -12,7 +12,7 @@ public class StateExpr extends BaseExpr
   public BaseExpr stateType;
   public TritVector zero;
 
-  public StateExpr(final StateExpr copy)
+  private StateExpr(final StateExpr copy)
   {
     super(copy);
 

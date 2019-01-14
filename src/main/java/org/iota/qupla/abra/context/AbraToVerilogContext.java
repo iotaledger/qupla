@@ -19,7 +19,7 @@ import org.iota.qupla.helper.Verilog;
 
 public class AbraToVerilogContext extends AbraBaseContext
 {
-  public ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
+  public final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
   private final Verilog verilog = new Verilog();
 
   private BaseContext appendVector(final String trits)

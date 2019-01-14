@@ -9,7 +9,7 @@ import org.iota.qupla.abra.funcmanagers.base.BaseFuncManager;
 
 public class SliceFuncManager extends BaseFuncManager
 {
-  public int start;
+  private int start;
 
   public SliceFuncManager()
   {

@@ -41,14 +41,15 @@ import org.iota.qupla.qupla.statement.helper.LutEntry;
 public class QuplaToAbraContext extends QuplaBaseContext
 {
   public AbraModule abraModule = new AbraModule();
-  public int bodies;
-  public AbraBlockBranch branch;
-  public AbraBaseSite lastSite;
-  public Stack<AbraBaseSite> stack = new Stack<>();
-  public BaseExpr stmt;
+  private int bodies;
+  private AbraBlockBranch branch;
+  private AbraBaseSite lastSite;
+  private final Stack<AbraBaseSite> stack = new Stack<>();
+  private BaseExpr stmt;
 
   public QuplaToAbraContext()
   {
+    //TODO pass in AbraModule?
   }
 
   private void addSite(final AbraBaseSite site)
@@ -129,7 +130,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
     evalConcatExprs(exprs);
   }
 
-  public void evalConcatExprs(final ArrayList<BaseExpr> exprs)
+  private void evalConcatExprs(final ArrayList<BaseExpr> exprs)
   {
     final AbraSiteKnot site = new AbraSiteKnot();
     for (final BaseExpr expr : exprs)
@@ -294,10 +295,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
       // repeat the entries across the entire table if necessary
       for (int offset = lookupSize; offset < 27; offset += lookupSize)
       {
-        for (int i = 0; i < lookupSize; i++)
-        {
-          lookup[offset + i] = lookup[i];
-        }
+        System.arraycopy(lookup, 0, lookup, offset, lookupSize);
       }
 
       final AbraBlockLut block = abraModule.addLut(lut.name + "_" + tritNr, new String(lookup));

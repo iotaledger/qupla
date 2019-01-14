@@ -21,7 +21,7 @@ public class BaseFuncManager
   public int size;
   public ArrayList<Integer> sorted = new ArrayList<>();
 
-  public BaseFuncManager(final String funcName)
+  protected BaseFuncManager(final String funcName)
   {
     this.funcName = funcName;
   }
