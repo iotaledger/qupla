@@ -7,7 +7,6 @@ import java.io.IOException;
 
 public abstract class BaseContext extends Indentable
 {
-  private File file;
   protected BufferedWriter out;
   public String string;
   private FileWriter writer;
@@ -51,7 +50,7 @@ public abstract class BaseContext extends Indentable
   {
     try
     {
-      file = new File(fileName);
+      final File file = new File(fileName);
       writer = new FileWriter(file);
       out = new BufferedWriter(writer);
     }

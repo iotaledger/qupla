@@ -5,6 +5,8 @@ import java.util.HashSet;
 
 import org.iota.qupla.abra.context.AbraEvalContext;
 import org.iota.qupla.dispatcher.Dispatcher;
+import org.iota.qupla.dispatcher.Entity;
+import org.iota.qupla.dispatcher.FuncEntity;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.exception.ExitException;
 import org.iota.qupla.helper.TritConverter;
@@ -50,7 +52,7 @@ public class Qupla
     return expr;
   }
 
-  public static void codeException(final CodeException ex)
+  private static void codeException(final CodeException ex)
   {
     final Token token = ex.token;
     if (token == null)
@@ -100,7 +102,7 @@ public class Qupla
 
   public static void log(final String text)
   {
-    BaseExpr.logLine(text);
+    System.out.println(text);
   }
 
   public static void main(final String[] args)
@@ -258,11 +260,21 @@ public class Qupla
 
     if (expr instanceof FuncExpr)
     {
-      final Dispatcher dispatcher = new Dispatcher(QuplaModule.allModules.values());
       final FuncExpr funcExpr = (FuncExpr) expr;
-      context.createEntityEffects(funcExpr.func);
-      dispatcher.runQuants();
-      dispatcher.finished();
+      if (funcExpr.func.envExprs.size() != 0)
+      {
+        // there may be affect statements in there
+        final Dispatcher dispatcher = new Dispatcher();
+        FuncEntity.addEntities(dispatcher, QuplaModule.allModules.values());
+
+        // note that this is a dummy entity, only used to send effects
+        // any returned effects will be picked up by the instance that
+        // was created by FuncEntity.addEntities()
+        final Entity entity = new FuncEntity(funcExpr.func, 0, dispatcher);
+        entity.queueEffectEvents(context.value);
+        dispatcher.runQuants();
+        dispatcher.finished();
+      }
     }
   }
 

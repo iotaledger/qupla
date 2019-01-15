@@ -19,7 +19,7 @@ public class FuncExpr extends BaseExpr
   public FuncStmt func;
   public final ArrayList<BaseExpr> funcTypes = new ArrayList<>();
 
-  public FuncExpr(final FuncExpr copy)
+  private FuncExpr(final FuncExpr copy)
   {
     super(copy);
 

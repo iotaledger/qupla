@@ -4,9 +4,9 @@ import org.iota.qupla.exception.CodeException;
 
 public class TritVector
 {
-  private static TritVectorBuffer nulls = new TritVectorBuffer(0);
-  private static TritVectorBuffer singleTrits = new TritVectorBuffer(2);
-  private static TritVectorBuffer zeroes = new TritVectorBuffer(0);
+  private static final TritVectorBuffer nulls = new TritVectorBuffer(0);
+  private static final TritVectorBuffer singleTrits = new TritVectorBuffer(2);
+  private static final TritVectorBuffer zeroes = new TritVectorBuffer(0);
 
   public String name;
   private int offset;
@@ -16,10 +16,11 @@ public class TritVector
 
   public TritVector(final TritVector copy)
   {
-    vector = copy.vector;
+    name = null;
     offset = copy.offset;
     size = copy.size;
     valueTrits = copy.valueTrits;
+    vector = copy.vector;
   }
 
   public TritVector(final String trits)

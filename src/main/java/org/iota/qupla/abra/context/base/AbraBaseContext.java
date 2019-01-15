@@ -13,7 +13,6 @@ import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.helper.BaseContext;
-import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public abstract class AbraBaseContext extends BaseContext
 {
@@ -21,10 +20,6 @@ public abstract class AbraBaseContext extends BaseContext
   protected void error(final String text)
   {
     throw new CodeException(text);
-  }
-
-  public void eval(final AbraModule module, final BaseExpr expr)
-  {
   }
 
   public void eval(final AbraModule module)

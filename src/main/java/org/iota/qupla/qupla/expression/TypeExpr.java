@@ -13,7 +13,7 @@ public class TypeExpr extends BaseExpr
   public final ArrayList<BaseExpr> fields = new ArrayList<>();
   public BaseExpr type;
 
-  public TypeExpr(final TypeExpr copy)
+  private TypeExpr(final TypeExpr copy)
   {
     super(copy);
 

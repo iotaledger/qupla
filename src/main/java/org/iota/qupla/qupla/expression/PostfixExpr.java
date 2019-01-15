@@ -7,7 +7,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class PostfixExpr extends BaseSubExpr
 {
-  public PostfixExpr(final PostfixExpr copy)
+  private PostfixExpr(final PostfixExpr copy)
   {
     super(copy);
   }

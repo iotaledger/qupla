@@ -10,7 +10,7 @@ import org.iota.qupla.qupla.statement.helper.LutEntry;
 
 public class LutStmt extends BaseExpr
 {
-  private static int[] tableSize = {
+  private static final int[] tableSize = {
       0,
       3,
       9,

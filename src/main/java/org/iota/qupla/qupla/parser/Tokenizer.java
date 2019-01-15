@@ -14,8 +14,8 @@ public class Tokenizer
   private static final HashMap<String, Integer> tokenMap = new HashMap<>();
   private static final String[] tokens = new String[50];
 
-  public int colNr;
-  public int lineNr;
+  private int colNr;
+  private int lineNr;
   public final ArrayList<String> lines = new ArrayList<>();
   public QuplaModule module;
   private Token token;

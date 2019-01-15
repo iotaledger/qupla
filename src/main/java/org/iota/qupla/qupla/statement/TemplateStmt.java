@@ -9,7 +9,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class TemplateStmt extends BaseExpr
 {
-  public ArrayList<BaseExpr> funcs = new ArrayList<>();
+  public final ArrayList<BaseExpr> funcs = new ArrayList<>();
   public final ArrayList<BaseExpr> params = new ArrayList<>();
   public final ArrayList<BaseExpr> relations = new ArrayList<>();
   public final ArrayList<BaseExpr> types = new ArrayList<>();
@@ -127,10 +127,11 @@ public class TemplateStmt extends BaseExpr
       return;
     }
 
-    final boolean first = true;
+    boolean first = true;
     for (final BaseExpr func : funcs)
     {
       printer.append(first ? " { " : ", ").append(func.name);
+      first = false;
     }
 
     printer.append(" }");

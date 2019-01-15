@@ -9,7 +9,7 @@ import org.iota.qupla.helper.TritVector;
 
 public class NullifyFuncManager extends BaseFuncManager
 {
-  public boolean trueFalse;
+  private boolean trueFalse;
 
   public NullifyFuncManager(final boolean trueFalse)
   {

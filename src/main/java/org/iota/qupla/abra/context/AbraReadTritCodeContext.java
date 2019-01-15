@@ -21,7 +21,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   public final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
   private int totalSites;
 
-  public void check(final boolean condition, final String errorText)
+  private void check(final boolean condition, final String errorText)
   {
     if (!condition)
     {
@@ -76,7 +76,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
     branchTritCode.evalBranchBuffer(branch);
   }
 
-  public void evalBranchBuffer(final AbraBlockBranch branch)
+  private void evalBranchBuffer(final AbraBlockBranch branch)
   {
     final int inputSites = getInt();
     final int bodySites = getInt();

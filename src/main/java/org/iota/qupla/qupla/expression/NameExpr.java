@@ -8,7 +8,7 @@ public class NameExpr extends BaseExpr
 {
   public BaseExpr type;
 
-  public NameExpr(final NameExpr copy)
+  private NameExpr(final NameExpr copy)
   {
     super(copy);
 

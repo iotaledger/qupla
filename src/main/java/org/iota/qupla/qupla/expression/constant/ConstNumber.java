@@ -6,7 +6,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class ConstNumber extends BaseExpr
 {
-  public ConstNumber(final ConstNumber copy)
+  private ConstNumber(final ConstNumber copy)
   {
     super(copy);
   }

@@ -7,7 +7,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class ConstTerm extends BaseBinaryExpr
 {
-  public ConstTerm(final ConstTerm copy)
+  private ConstTerm(final ConstTerm copy)
   {
     super(copy);
   }

@@ -9,7 +9,7 @@ public class ImportStmt extends BaseExpr
 {
   public QuplaModule importModule;
 
-  public ImportStmt(final ImportStmt copy)
+  private ImportStmt(final ImportStmt copy)
   {
     super(copy);
     importModule = copy.importModule;

@@ -21,7 +21,7 @@ public class AbraPrintContext extends AbraBaseContext
   public boolean statements = true;
   public String type = "site";
 
-  public void appendSiteInputs(final AbraSiteMerge merge)
+  private void appendSiteInputs(final AbraSiteMerge merge)
   {
     append("(");
 

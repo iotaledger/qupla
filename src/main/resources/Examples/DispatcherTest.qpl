@@ -1,5 +1,15 @@
 // tests Entity-Environment-Effect processing by the Qubic Dispatcher
-//
+
+// note that it is common sense to create specific functions when you
+// want to use them in combination with environments and have them wrap
+// the more generic, reusable functions. This keeps the generic functions
+// 'clean' and also will allow you to have a more specific structured trit
+// vector as input that provides more info you can filter on, like an
+// invocation id which would allow you to discern between return values
+// from a shared environment so that you only process results that were
+// intended for you
+
+
 // note that we have two environments: 'first' and 'second'
 
 // this function will be called from the top level
@@ -17,7 +27,7 @@ func Int firstOne (Int val) {
 func Int nextOne (Int val) {
   join first
   affect second
-  return val
+  return fibonacci2<Int>(val)
 }
 
 // finally, this function joins environment 'second',  which means it will get sent
@@ -28,4 +38,4 @@ func Int lastOne (Int val) {
   return val
 }
 
-eval firstOne(123)
+eval firstOne(12)

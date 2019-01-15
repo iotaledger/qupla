@@ -1,0 +1,137 @@
+import Qupla
+
+// Fibonacci: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...
+
+// returns the n-th Fibonacci number,
+// shitty version due to 2^n function calls
+// acts as if it hangs due to exponential amount of calls for n=30
+// Java equivalent:
+// return (n < 2) ? n : (fib(n - 1) + fib(n - 2))
+
+template fibonacci1<T> {
+  func T fibonacci1<T> (T n) {
+    // check if n < 2, which means return n, otherwise recurse
+    retN = isLess[cmp<T>(n, 2)]
+
+    // recursion case
+    nMin1 = decr<T>(n)
+    nMin2 = sub<T>(n, 2)
+    return retN ? n : add<T>(fibonacci1<T>(nMin1), fibonacci1<T>(nMin2))
+  }
+}
+
+
+// returns the n-th Fibonacci number,
+// smart version, using n function calls
+// can easily go up to n=180 when using a Huge
+// Java equivalent:
+// return (n == 0 || n == 1) ? n : fibPart2(n - 2, 0, 1)
+
+template fibonacci2<T> {
+  func T fibonacci2<T> (T n) {
+    // check if n equals 0 or 1, which means return n, otherwise recurse
+    retN = isLess[cmp<T>(n, 2)]
+    return retN ? n : fibPart2<T>(sub<T>(n, 2), 0, 1)
+  }
+
+  // helper function
+  // Java equivalent:
+  // fib2 = fib0 + fib1
+  // return (n == 0) ? fib2 : fibPart2(n - 1, fib1, fib2)
+
+  func T fibPart2<T> (T n, T fib0, T fib1) {
+    // check if n equals 0, which means return fib2, otherwise recurse
+    retFib2 = isZero[sign<T>(n)]
+    fib2 = add<T>(fib0, fib1)
+    return retFib2 ? fib2 : fibPart2<T>(decr<T>(n), fib1, fib2)
+  }
+}
+
+// returns the n-th Fibonacci number,
+// non-recursive (looping) version, using n function calls through QCM
+// can easily go up to n=180 when using a Huge
+// Java equivalent:
+//int fib1 = 0;
+//int fib2 = 1;
+//for (int i = n; n > 0; n--)
+//{
+//  int next = fib1 + fib2;
+//  fib1 = fib2;
+//  fib2 = next;
+//}
+//return fib1;
+
+template fibonacci3<T> {
+  type LoopInfo {
+    n [T]
+    fib1 [T]
+    fib2 [T]
+    sign [Trit]
+  }
+
+  func LoopInfo fibonacci3<T> (T n) {
+    affect fibLoop
+
+    // pass this to fibFilter as well in case n equals 0
+    return LoopInfo {
+      n = n
+      fib1 = as<T>(0)
+      fib2 = as<T>(1)
+      sign = sign<T>(n)
+    }
+  }
+
+  func LoopInfo fibLoop<T> (LoopInfo info) {
+    join fibLoop
+    affect fibLoop
+
+    nMinOne = decr<T>(info.n)
+    nextInfo = LoopInfo {
+      n = nMinOne
+      fib1 = info.fib2
+      fib2 = add<T>(info.fib1, info.fib2)
+      sign = sign<T>(nMinOne)
+    }
+
+    // only loop and pass to fibFilter when n > 0
+    return isPositive[info.sign] ? nextInfo : null
+  }
+
+  func T fibFilter<T> (LoopInfo info)
+  {
+    join fibLoop
+    affect fibResult
+
+    // only produce result in fibResult when n equals zero
+    return isZero[info.sign] ? info.fib1 : null
+  }
+
+  func T fibResult<T> (T result)
+  {
+    join fibResult
+
+    return print<T>(result)
+  }
+}
+
+test  0 = fibonacci1<Int>(0)
+test  1 = fibonacci1<Int>(1)
+test  1 = fibonacci1<Int>(2)
+test  2 = fibonacci1<Int>(3)
+test  3 = fibonacci1<Int>(4)
+test  5 = fibonacci1<Int>(5)
+test  8 = fibonacci1<Int>(6)
+test 55 = fibonacci1<Int>(10)
+
+test  0 = fibonacci2<Int>(0)
+test  1 = fibonacci2<Int>(1)
+test  1 = fibonacci2<Int>(2)
+test  2 = fibonacci2<Int>(3)
+test  3 = fibonacci2<Int>(4)
+test  5 = fibonacci2<Int>(5)
+test  8 = fibonacci2<Int>(6)
+test 55 = fibonacci2<Int>(10)
+
+eval fibonacci2<Huge>(180)
+
+eval fibonacci3<Int>(10)

@@ -20,11 +20,11 @@ import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
 
 public class AbraBlockBranch extends AbraBaseBlock
 {
-  public ArrayList<AbraBaseSite> inputs = new ArrayList<>();
-  public ArrayList<AbraBaseSite> latches = new ArrayList<>();
+  public final ArrayList<AbraBaseSite> inputs = new ArrayList<>();
+  public final ArrayList<AbraBaseSite> latches = new ArrayList<>();
   public int offset;
-  public ArrayList<AbraBaseSite> outputs = new ArrayList<>();
-  public ArrayList<AbraBaseSite> sites = new ArrayList<>();
+  public final ArrayList<AbraBaseSite> outputs = new ArrayList<>();
+  public final ArrayList<AbraBaseSite> sites = new ArrayList<>();
   public int size;
 
   public void addInput(final AbraSiteParam inputSite)

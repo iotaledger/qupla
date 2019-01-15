@@ -52,7 +52,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     }
   }
 
-  public char getChar()
+  protected char getChar()
   {
     switch (getTrit())
     {
@@ -93,7 +93,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return codePage[codePageNr].charAt(index);
   }
 
-  public int getInt()
+  protected int getInt()
   {
     int value = 0;
     int mask = 1;
@@ -110,7 +110,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return value;
   }
 
-  public String getString()
+  protected String getString()
   {
     if (getTrit() == '0')
     {
@@ -127,7 +127,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return new String(buffer);
   }
 
-  public char getTrit()
+  protected char getTrit()
   {
     if (bufferOffset >= buffer.length)
     {
@@ -137,7 +137,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return buffer[bufferOffset++];
   }
 
-  public String getTrits(final int size)
+  protected String getTrits(final int size)
   {
     bufferOffset += size;
     if (bufferOffset > buffer.length)
@@ -148,7 +148,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return new String(buffer, bufferOffset - size, size);
   }
 
-  public AbraTritCodeBaseContext putChar(final char c)
+  protected AbraTritCodeBaseContext putChar(final char c)
   {
     // encode ASCII as efficient as possible
     for (int page = 0; page < codePage.length; page++)
@@ -163,7 +163,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return putTrits("--").putInt(c);
   }
 
-  public AbraTritCodeBaseContext putInt(final int value)
+  protected AbraTritCodeBaseContext putInt(final int value)
   {
     sizes[value < 0 ? 299 : value < 298 ? value : 298]++;
 
@@ -199,7 +199,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     //    return putTrit('0');
   }
 
-  public AbraTritCodeBaseContext putString(final String text)
+  protected AbraTritCodeBaseContext putString(final String text)
   {
     if (text == null)
     {
@@ -216,7 +216,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return this;
   }
 
-  public AbraTritCodeBaseContext putTrit(final char trit)
+  protected AbraTritCodeBaseContext putTrit(final char trit)
   {
     if (bufferOffset < buffer.length)
     {
@@ -228,7 +228,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return putTrits("" + trit);
   }
 
-  public AbraTritCodeBaseContext putTrits(final String trits)
+  protected AbraTritCodeBaseContext putTrits(final String trits)
   {
     if (bufferOffset + trits.length() <= buffer.length)
     {

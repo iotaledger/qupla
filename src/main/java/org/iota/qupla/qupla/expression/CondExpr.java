@@ -12,7 +12,7 @@ public class CondExpr extends BaseExpr
   public BaseExpr falseBranch;
   public BaseExpr trueBranch;
 
-  public CondExpr(final CondExpr copy)
+  private CondExpr(final CondExpr copy)
   {
     super(copy);
 

@@ -9,7 +9,7 @@ public class JoinExpr extends BaseExpr
 {
   public BaseExpr limit;
 
-  public JoinExpr(final JoinExpr copy)
+  private JoinExpr(final JoinExpr copy)
   {
     super(copy);
 

@@ -7,14 +7,14 @@ public abstract class BaseSubExpr extends BaseExpr
 {
   public BaseExpr expr;
 
-  public BaseSubExpr(final BaseSubExpr copy)
+  protected BaseSubExpr(final BaseSubExpr copy)
   {
     super(copy);
 
     expr = clone(copy.expr);
   }
 
-  public BaseSubExpr(final Tokenizer tokenizer)
+  protected BaseSubExpr(final Tokenizer tokenizer)
   {
     super(tokenizer);
   }

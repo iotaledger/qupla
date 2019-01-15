@@ -13,7 +13,7 @@ import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
 
 public class MultiLutOptimizer extends BaseOptimizer
 {
-  public HashMap<AbraBaseSite, Character> values = new HashMap<>();
+  private final HashMap<AbraBaseSite, Character> values = new HashMap<>();
 
   public MultiLutOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {
@@ -53,10 +53,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     // repeat the entries across the entire table if necessary
     for (int offset = lookupSize; offset < 27; offset += lookupSize)
     {
-      for (int i = 0; i < lookupSize; i++)
-      {
-        lookup[offset + i] = lookup[i];
-      }
+      System.arraycopy(lookup, 0, lookup, offset, lookupSize);
     }
 
     final String lookupTable = new String(lookup);
@@ -104,7 +101,6 @@ public class MultiLutOptimizer extends BaseOptimizer
       if (input != slave && !inputs.contains(input))
       {
         inputs.add(input);
-        continue;
       }
     }
 

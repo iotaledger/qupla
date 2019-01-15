@@ -2,6 +2,7 @@ package org.iota.qupla.abra.context;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.Qupla;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
@@ -14,7 +15,6 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraAnalyzeContext extends AbraBaseContext
 {
@@ -27,7 +27,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
   public int missing;
   public int offset;
 
-  public void check(final boolean condition)
+  private void check(final boolean condition)
   {
     if (sanityCheck && !condition)
     {
@@ -43,7 +43,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     }
   }
 
-  public void clearSizes(final AbraModule module)
+  private void clearSizes(final AbraModule module)
   {
     for (final AbraBlockBranch branch : module.branches)
     {
@@ -58,7 +58,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     }
   }
 
-  public void ensure(final boolean condition)
+  private void ensure(final boolean condition)
   {
     if (!condition)
     {
@@ -125,7 +125,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     branch.analyzed = true;
   }
 
-  public int evalBranchSites(int index, final ArrayList<AbraBaseSite> sites)
+  private int evalBranchSites(int index, final ArrayList<AbraBaseSite> sites)
   {
     for (final AbraBaseSite site : sites)
     {
@@ -489,7 +489,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     offset += param.size;
   }
 
-  public void resolveRecursions(final AbraModule module)
+  private void resolveRecursions(final AbraModule module)
   {
     // did we encounter any missing branch sizes?
     int lastMissing = 0;
@@ -511,7 +511,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       {
         if (branch.size() == 0)
         {
-          BaseExpr.logLine("Unresolved trit vector size in branch: " + branch.name);
+          Qupla.log("Unresolved trit vector size in branch: " + branch.name);
         }
       }
 

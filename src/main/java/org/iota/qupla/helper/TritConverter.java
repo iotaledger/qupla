@@ -232,6 +232,7 @@ public class TritConverter
     return result;
   }
 
+  //TODO expSize is never used???
   public static String toFloat(final String trits, final int manSize, final int expSize)
   {
     // find first significant trit

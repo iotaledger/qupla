@@ -17,7 +17,7 @@ public class UseStmt extends BaseExpr
   public final ArrayList<BaseExpr> typeArgs = new ArrayList<>();
   public final ArrayList<BaseExpr> types = new ArrayList<>();
 
-  public UseStmt(final UseStmt copy)
+  private UseStmt(final UseStmt copy)
   {
     super(copy);
 
@@ -36,7 +36,7 @@ public class UseStmt extends BaseExpr
     parseTypeArgs(tokenizer, templateName);
   }
 
-  protected UseStmt(final Tokenizer tokenizer, final Token templateName)
+  private UseStmt(final Tokenizer tokenizer, final Token templateName)
   {
     super(tokenizer, templateName);
 

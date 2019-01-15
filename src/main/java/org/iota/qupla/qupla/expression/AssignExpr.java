@@ -7,12 +7,10 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class AssignExpr extends BaseExpr
 {
-  private static final boolean useBreak = false;
-
   public BaseExpr expr;
   public int stateIndex;
 
-  public AssignExpr(final AssignExpr copy)
+  private AssignExpr(final AssignExpr copy)
   {
     super(copy);
 

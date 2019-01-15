@@ -10,10 +10,10 @@ import org.iota.qupla.helper.TritVector;
 
 public class AbraSiteKnot extends AbraSiteMerge
 {
-  public static ConstFuncManager constants = new ConstFuncManager();
-  public static NullifyFuncManager nullifyFalse = new NullifyFuncManager(false);
-  public static NullifyFuncManager nullifyTrue = new NullifyFuncManager(true);
-  public static SliceFuncManager slicers = new SliceFuncManager();
+  public static final ConstFuncManager constants = new ConstFuncManager();
+  public static final NullifyFuncManager nullifyFalse = new NullifyFuncManager(false);
+  public static final NullifyFuncManager nullifyTrue = new NullifyFuncManager(true);
+  public static final SliceFuncManager slicers = new SliceFuncManager();
 
   public AbraBaseBlock block;
 
@@ -60,6 +60,7 @@ public class AbraSiteKnot extends AbraSiteMerge
 
   public void slice(final AbraModule module, final int inputSize, final int start)
   {
+    //TODO inputSize is not used?????
     block = slicers.find(module, size, start);
   }
 

@@ -14,7 +14,7 @@ public class ConstFuncManager extends BaseFuncManager
   private static AbraBlockLut constMin;
   private static AbraBlockLut constOne;
   private static AbraBlockLut constZero;
-  private static ConstZeroFuncManager zeroManager = new ConstZeroFuncManager();
+  private static final ConstZeroFuncManager zeroManager = new ConstZeroFuncManager();
   public TritVector trits;
   public TritVector value;
 

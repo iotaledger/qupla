@@ -31,13 +31,12 @@ public class AbraEvalContext extends AbraBaseContext
   private static final TritVector tritOne = new TritVector(1, '1');
   private static final TritVector tritZero = new TritVector(1, '0');
 
-  public ArrayList<TritVector> args = new ArrayList<>();
+  public final ArrayList<TritVector> args = new ArrayList<>();
   public int callNr;
-  public byte[] callTrail = new byte[4096];
+  public final byte[] callTrail = new byte[4096];
   public TritVector[] stack;
   public TritVector value;
 
-  @Override
   public void eval(final AbraModule module, final BaseExpr expr)
   {
     if (expr instanceof FuncExpr)

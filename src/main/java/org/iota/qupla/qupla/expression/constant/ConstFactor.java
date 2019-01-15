@@ -13,7 +13,7 @@ public class ConstFactor extends BaseSubExpr
   public final ArrayList<BaseExpr> fields = new ArrayList<>();
   public boolean negative;
 
-  public ConstFactor(final ConstFactor copy)
+  private ConstFactor(final ConstFactor copy)
   {
     super(copy);
 
