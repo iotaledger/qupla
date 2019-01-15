@@ -6,7 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Stack;
 
-import org.iota.qupla.dispatcher.Entity;
+import org.iota.qupla.Qupla;
+import org.iota.qupla.dispatcher.FuncEntity;
 import org.iota.qupla.helper.StateValue;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
@@ -41,12 +42,6 @@ public class QuplaEvalContext extends QuplaBaseContext
 
   public QuplaEvalContext()
   {
-  }
-
-  public void createEntityEffects(final FuncStmt func)
-  {
-    final Entity entity = new Entity(func, 1);
-    entity.queueEffectEvents(value);
   }
 
   @Override
@@ -191,9 +186,10 @@ public class QuplaEvalContext extends QuplaBaseContext
     value = new TritVector(conditional.size, '@');
   }
 
-  public TritVector evalEntity(final Entity entity, final TritVector vector)
+  public TritVector evalEntity(final FuncEntity entity, final TritVector vector)
   {
-    log("effect ", vector, entity.func);
+    // avoid converting vector to string, which is slow
+    Qupla.log("effect " + vector + " : " + entity.func);
 
     int start = 0;
     for (final BaseExpr param : entity.func.params)
@@ -205,7 +201,8 @@ public class QuplaEvalContext extends QuplaBaseContext
     }
 
     entity.func.eval(this);
-    log("     return ", value, entity.func.returnExpr);
+    // avoid converting vector to string, which is slow
+    Qupla.log("     return " + value + " : " + entity.func.returnExpr);
 
     stack.clear();
     return value;
@@ -380,13 +377,13 @@ public class QuplaEvalContext extends QuplaBaseContext
     if (usePrint && call.name.startsWith("print_"))
     {
       final BaseExpr arg = call.args.get(0);
-      BaseExpr.logLine("" + arg.typeInfo.display(value));
+      Qupla.log("" + arg.typeInfo.display(value));
     }
 
     if (useBreak && call.name.startsWith("break"))
     {
       final BaseExpr arg = call.args.get(0);
-      BaseExpr.logLine("" + arg.typeInfo.display(value));
+      Qupla.log("" + arg.typeInfo.display(value));
     }
   }
 
@@ -403,7 +400,7 @@ public class QuplaEvalContext extends QuplaBaseContext
   {
     if (allowLog)
     {
-      BaseExpr.logLine(text);
+      Qupla.log(text);
     }
   }
 

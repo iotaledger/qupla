@@ -3,6 +3,7 @@ package org.iota.qupla.qupla.context;
 import java.util.HashSet;
 import java.util.Stack;
 
+import org.iota.qupla.Qupla;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.ConcatExpr;
@@ -274,7 +275,7 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   {
     if (allowLog)
     {
-      BaseExpr.logLine(text);
+      Qupla.log(text);
     }
   }
 

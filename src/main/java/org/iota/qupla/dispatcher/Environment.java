@@ -3,7 +3,6 @@ package org.iota.qupla.dispatcher;
 import java.util.ArrayList;
 
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.qupla.statement.FuncStmt;
 
 public class Environment
 {
@@ -16,10 +15,8 @@ public class Environment
     this.name = name;
   }
 
-  public void addEntity(final FuncStmt func, final int limit)
+  public void addEntity(final Entity entity)
   {
-    final Entity entity = new Entity(func, limit);
-
     //TODO insert ordered by entity id to be deterministic
     synchronized (entities)
     {

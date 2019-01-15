@@ -35,16 +35,16 @@ lut binSum {
 // input trit 3: old cell state (0 = dead, 1 = alive)
 // output: new cell state acording to GoL rules
 lut newCellState {
-    -,-,0 = 0 // overflow: >3 neighbors -> suffocate cell
-    -,-,1 = 0
-    0,0,0 = 0 // <3 neighbors -> starve cell
-    0,0,1 = 0
-    0,1,0 = 0
-    0,1,1 = 0
-    1,0,0 = 0
-    1,0,1 = 1 // 2 neighbors + alive -> stay alive
-    1,1,0 = 1 // 3 neighbors + dead  -> spawn alive
-    1,1,1 = 1 // 3 neighbors + alive -> stay alive
+  -,-,0 = 0 // overflow: >3 neighbors -> suffocate cell
+  -,-,1 = 0
+  0,0,0 = 0 // <3 neighbors -> starve cell
+  0,0,1 = 0
+  0,1,0 = 0
+  0,1,1 = 0
+  1,0,0 = 0
+  1,0,1 = 1 // 2 neighbors + alive -> stay alive
+  1,1,0 = 1 // 3 neighbors + dead  -> spawn alive
+  1,1,1 = 1 // 3 neighbors + alive -> stay alive
 }
 
 func C1x1 iterate<T1, T1>(T9 old) {
@@ -58,68 +58,65 @@ func C1x1 iterate<T1, T1>(T9 old) {
   sum7 = binSum[sum6[0], sum6[1], old[7]]
   sum8 = binSum[sum7[0], sum7[1], old[8]]
 
-  return newCellState[sum8[0],sum8[1], old[4]]
+  return newCellState[sum8[0], sum8[1], old[4]]
 }
 
 template defIterateLine<CW> {
+  type CH [1] // content height
+  type CM [CW*CH] // content map
 
-    type CH [1] // content height
-    type CM [CW*CH] // content map
+  type HW [CW+2] // holo width
+  type HH [CH+2] // holo height
+  type HM [HW*HH] // holo map
 
-    type HW [CW+2] // holo width
-    type HH [CH+2] // holo height
-    type HM [HW*HH] // holo map
+  type SCW [CW/3] // sub content width
+  type SCH [CH] // sub content height
+  type SCM [SCH*SCW] // sub content map
 
-    type SCW [CW/3] // sub content width
-    type SCH [CH] // sub content height
-    type SCM [SCH*SCW] // sub content map
+  type SHW [SCW+2] // sub holo width
+  type SHH [HH] // sub holo height
+  type SHM [SHW*SHH] // sub holo map
 
-    type SHW [SCW+2] // sub holo width
-    type SHH [HH] // sub holo height
-    type SHM [SHW*SHH] // sub holo map
+  func CM iterate<CH, CW>(HM old) {
+    // old holos
+    ohl = old[0*HW + 0*SCW : SHW] & old[1*HW + 0*SCW : SHW] & old[2*HW + 0*SCW : SHW]
+    ohm = old[0*HW + 1*SCW : SHW] & old[1*HW + 1*SCW : SHW] & old[2*HW + 1*SCW : SHW]
+    ohr = old[0*HW + 2*SCW : SHW] & old[1*HW + 2*SCW : SHW] & old[2*HW + 2*SCW : SHW]
 
-    func CM iterate<CH, CW>(HM old) {
+    // new holos
+    nhl = iterate<SCH, SCW>(ohl)
+    nhm = iterate<SCH, SCW>(ohm)
+    nhr = iterate<SCH, SCW>(ohr)
 
-        // old holos
-        ohl = old[0*HW + 0*SCW : SHW] & old[1*HW + 0*SCW : SHW] & old[2*HW + 0*SCW : SHW]
-        ohm = old[0*HW + 1*SCW : SHW] & old[1*HW + 1*SCW : SHW] & old[2*HW + 1*SCW : SHW]
-        ohr = old[0*HW + 2*SCW : SHW] & old[1*HW + 2*SCW : SHW] & old[2*HW + 2*SCW : SHW]
-
-        // new holos
-        nhl = iterate<SCH, SCW>(ohl)
-        nhm = iterate<SCH, SCW>(ohm)
-        nhr = iterate<SCH, SCW>(ohr)
-
-        return nhl & nhm & nhr
-    }
+    return nhl & nhm & nhr
+  }
 }
 
 template defIterate<CH, CW> {
+  type CM [CH*CW] // content map
 
-    type CM [CH*CW] // content map
+  type HW [CW+2] // holo width
+  type HH [CH+2] // holo height
+  type HM [HH*HW] // holo map
 
-    type HW [CW+2] // holo width
-    type HH [CH+2] // holo height
-    type HM [HH*HW] // holo map
+  type SCW [CW] // sub content width
+  type SCH [CH/3] // sub content height
+  type SCM [SCH*SCW] // sub content map
 
-    type SCW [CW] // sub content width
-    type SCH [CH/3] // sub content height
-    type SCM [SCH*SCW] // sub content map
+  type SHW [HW] // sub holo width
+  type SHH [SCH+2] // sub holo height
+  type SHM [SHW*SHH] // sub holo map
 
-    type SHW [HW] // sub holo width
-    type SHH [SCH+2] // sub holo height
-    type SHM [SHW*SHH] // sub holo map
+  type OFFSET [SHM-2*SHW]
 
-    type OFFSET [SHM-2*SHW]
-
-    func CM iterate<CH, CW>(HM old) {
-        ht = old[0*OFFSET : SHM]
-        hm = old[1*OFFSET : SHM]
-        hb = old[2*OFFSET : SHM]
-        return iterate<SCH, SCW>(ht)
-             & iterate<SCH, SCW>(hm)
-             & iterate<SCH, SCW>(hb)
-    }
+  func CM iterate<CH, CW>(HM old) {
+    ht = old[0*OFFSET : SHM]
+    hm = old[1*OFFSET : SHM]
+    hb = old[2*OFFSET : SHM]
+    return iterate<SCH, SCW>(ht)
+         & iterate<SCH, SCW>(hm)
+         & iterate<SCH, SCW>(hb)
+  }
 }
 
 use defIterateLine<T3>, <T9>, <T27>, <T81>, <T243>, <T729>, <T2187>

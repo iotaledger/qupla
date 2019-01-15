@@ -43,6 +43,7 @@ public class Event
         {
           queue.remove(i);
         }
+
         event.dispatch();
         continue;
       }
@@ -56,6 +57,6 @@ public class Event
 
   public void dispatch()
   {
-    entity.runWave(value);
+    entity.runOneWave(value);
   }
 }

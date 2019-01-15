@@ -2,6 +2,7 @@ package org.iota.qupla.qupla.expression.base;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.Qupla;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.qupla.context.QuplaPrintContext;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
@@ -55,11 +56,6 @@ public abstract class BaseExpr
     module = tokenizer.module;
     origin = identifier;
     name = identifier.text;
-  }
-
-  public static void logLine(final String text)
-  {
-    System.out.println(text);
   }
 
   public abstract void analyze();
@@ -151,7 +147,7 @@ public abstract class BaseExpr
   protected void log(final String text)
   {
     final String name = getClass().getName();
-    logLine(name.substring(name.lastIndexOf(".") + 1) + ": " + text);
+    Qupla.log(name.substring(name.lastIndexOf(".") + 1) + ": " + text);
   }
 
   public BaseExpr optimize()

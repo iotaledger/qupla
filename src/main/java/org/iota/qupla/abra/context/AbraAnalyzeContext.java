@@ -2,6 +2,7 @@ package org.iota.qupla.abra.context;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.Qupla;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
@@ -14,7 +15,6 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraAnalyzeContext extends AbraBaseContext
 {
@@ -511,7 +511,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       {
         if (branch.size() == 0)
         {
-          BaseExpr.logLine("Unresolved trit vector size in branch: " + branch.name);
+          Qupla.log("Unresolved trit vector size in branch: " + branch.name);
         }
       }
 
