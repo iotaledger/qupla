@@ -1,0 +1,35 @@
+import Qupla
+
+// ThreeXplusOne calculates and prints sequence x(n+1) = isEven(x(n)) ? x(n)/2 : 3*x(n)+1
+// It is a proven fact (by experiment) that with any positive integer x(0) < 5 x 2^60
+// this sequence always reaches 1 after a finite number of steps.
+// Maybe someone already proved it for any positive integer :)
+// E.g. starting with x(0) = 27 sequence comes to value 1 after 110 steps.
+// Run with -eval
+// (c) lunfardo
+
+// check this video, too: https://www.youtube.com/watch?v=m4CjXk_b8zo
+
+template ThreeXplusOne<T> {
+  func T threeXplusOne<T>(T n){
+    dummy = print<T>(n)
+    is2 = equal<T>(n, 2)
+    return is2 ? 1 : threeXplusOneDo<T>(n)
+  }
+
+  func T threeXplusOneDo<T>(T n){
+    isEven = even<T>(n)
+    return threeXplusOne<T>(isEven ? div<T>(n, 2) : mul3add1(n))
+  }
+
+  func T mul3add1(T n){
+    mul3 = rshift<T>(n)
+    return incr<T>(mul3)
+  }
+}
+
+// 110 steps
+eval threeXplusOne<Int>(27)
+
+//169 steps
+eval threeXplusOne<Int>(26171)
