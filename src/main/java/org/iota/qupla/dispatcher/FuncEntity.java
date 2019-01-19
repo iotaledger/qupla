@@ -9,6 +9,7 @@ import org.iota.qupla.qupla.expression.JoinExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.statement.FuncStmt;
+import org.iota.qupla.qupla.statement.TypeStmt;
 
 public class FuncEntity extends Entity
 {
@@ -28,9 +29,9 @@ public class FuncEntity extends Entity
       if (envExpr instanceof AffectExpr)
       {
         final AffectExpr affect = (AffectExpr) envExpr;
-        final Environment env = dispatcher.getEnvironment(affect.name);
+        final Environment env = dispatcher.getEnvironment(affect.name, func.typeInfo);
         final int delay = affect.delay == null ? 0 : affect.delay.size;
-        addEffect(env, delay);
+        affect(env, delay);
       }
     }
   }
@@ -49,10 +50,11 @@ public class FuncEntity extends Entity
           if (envExpr instanceof JoinExpr)
           {
             final JoinExpr join = (JoinExpr) envExpr;
-            final Environment environment = dispatcher.getEnvironment(join.name);
+            final TypeStmt typeInfo = func.params.get(0).typeInfo;
+            final Environment environment = dispatcher.getEnvironment(join.name, typeInfo);
             final int limit = join.limit == null ? 1 : join.limit.size;
             final Entity entity = new FuncEntity(func, limit, dispatcher);
-            environment.addEntity(entity);
+            environment.join(entity);
           }
         }
       }

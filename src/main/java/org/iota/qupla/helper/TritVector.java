@@ -134,32 +134,6 @@ public class TritVector
     }
   }
 
-  public String display(final int mantissa, final int exponent)
-  {
-    final String varName = name != null ? name + ": " : "";
-    if (isValue())
-    {
-      return varName + "(" + displayValue(mantissa, exponent) + ") " + trits();
-    }
-
-    if (isNull())
-    {
-      return varName + "(NULL) " + trits();
-    }
-
-    return varName + "(***SOME NULL TRITS***) " + trits();
-  }
-
-  public String displayValue(final int mantissa, final int exponent)
-  {
-    if (exponent > 0 && mantissa > 0)
-    {
-      return TritConverter.toFloat(trits(), mantissa, exponent);
-    }
-
-    return TritConverter.toDecimal(trits()).toString();
-  }
-
   @Override
   public boolean equals(final Object o)
   {
@@ -286,7 +260,8 @@ public class TritVector
   @Override
   public String toString()
   {
-    return display(0, 0);
+    final String varName = name != null ? name + ": " : "";
+    return varName + "(" + TritConverter.toDecimal(trits()).toString() + ") " + trits();
   }
 
   public char trit(final int index)

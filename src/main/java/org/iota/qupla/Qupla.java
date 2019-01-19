@@ -7,6 +7,8 @@ import org.iota.qupla.abra.context.AbraEvalContext;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.dispatcher.Entity;
 import org.iota.qupla.dispatcher.FuncEntity;
+import org.iota.qupla.dispatcher.GameOfLifeEntity;
+import org.iota.qupla.dispatcher.ViewEntity;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.exception.ExitException;
 import org.iota.qupla.helper.TritConverter;
@@ -24,6 +26,7 @@ import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 import org.iota.qupla.qupla.statement.ExecStmt;
+import org.iota.qupla.qupla.statement.TypeStmt;
 import org.iota.qupla.qupla.statement.UseStmt;
 
 public class Qupla
@@ -36,6 +39,7 @@ public class Qupla
       "-math",
       "-test",
       "-tree",
+      "-view",
       };
   private static final HashSet<String> options = new HashSet<>();
   private static QuplaToAbraContext quplaToAbraContext;
@@ -147,6 +151,7 @@ public class Qupla
         {
           // interpret as expression to be evaluated
           // can be a function call, but also an expression surrounded by ( and )
+          // here we make sure that all necessary template instantiations are pulled in
           if (arg.contains("("))
           {
             analyzeExpression(arg);
@@ -255,7 +260,7 @@ public class Qupla
 
     mSec = System.currentTimeMillis() - mSec;
 
-    log("  ==> " + expr.typeInfo.display(context.value));
+    log("  ==> " + toString(context.value, expr.typeInfo));
     log("Time: " + mSec + " ms");
 
     if (expr instanceof FuncExpr)
@@ -264,16 +269,31 @@ public class Qupla
       if (funcExpr.func.envExprs.size() != 0)
       {
         // there may be affect statements in there
-        final Dispatcher dispatcher = new Dispatcher();
+        final Dispatcher dispatcher = Dispatcher.getInstance();
         FuncEntity.addEntities(dispatcher, QuplaModule.allModules.values());
 
+        if (options.contains("-view"))
+        {
+          // add a viewer for every known environment
+          for (final String envName : dispatcher.listEnvironments())
+          {
+            new ViewEntity(dispatcher, envName);
+            if (envName.equals("gameOfLife"))
+            {
+              new GameOfLifeEntity();
+              new GameOfLifeEntity();
+              new GameOfLifeEntity();
+            }
+          }
+        }
+
         // note that this is a dummy entity, only used to send effects
-        // any returned effects will be picked up by the instance that
-        // was created by FuncEntity.addEntities()
+        // it will only affect its associated environments but does not
+        // join any environments to receive resulting effects
+        // any resulting effects will be picked up by the instance that
+        // was previously created by FuncEntity.addEntities()
         final Entity entity = new FuncEntity(funcExpr.func, 0, dispatcher);
         entity.queueEffectEvents(context.value);
-        dispatcher.runQuants();
-        dispatcher.finished();
       }
     }
   }
@@ -311,12 +331,12 @@ public class Qupla
 
     expr.eval(context);
 
-    final String value = context.value.displayValue(0, 0);
+    final String value = TritConverter.toDecimal(context.value.trits()).toString();
     if (!value.equals(Integer.toString(result)))
     {
       lhsArg.name = Integer.toString(lhs);
       rhsArg.name = Integer.toString(rhs);
-      log(expr + " = " + result + ", found: " + context.value + ", inputs: " + lhsArg.vector + " and " + rhsArg.vector);
+      log(expr + " = " + result + ", found: " + value + ", inputs: " + lhs + " and " + rhs);
     }
   }
 
@@ -371,8 +391,8 @@ public class Qupla
 
     if (!exec.succeed(context.value))
     {
-      final String lhs = exec.expr.typeInfo.displayValue(exec.expected.vector);
-      final String rhs = exec.expr.typeInfo.displayValue(context.value);
+      final String lhs = exec.expr.typeInfo.toString(exec.expected.vector);
+      final String rhs = exec.expr.typeInfo.toString(context.value);
       exec.error("Test expected " + lhs + " but found " + rhs);
     }
 
@@ -401,5 +421,11 @@ public class Qupla
   {
     log("Run Tree Viewer");
     new QuplaTreeViewerContext().eval(singleModule);
+  }
+
+  public static String toString(final TritVector value, final TypeStmt typeInfo)
+  {
+    final String varName = value.name != null ? value.name + ": " : "";
+    return varName + "(" + typeInfo.toString(value) + ") " + value.trits();
   }
 }

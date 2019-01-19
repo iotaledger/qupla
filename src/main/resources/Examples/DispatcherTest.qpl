@@ -27,7 +27,7 @@ func Int firstOne (Int val) {
 func Int nextOne (Int val) {
   join first
   affect second
-  return fibonacci2<Int>(val)
+  return val
 }
 
 // finally, this function joins environment 'second',  which means it will get sent

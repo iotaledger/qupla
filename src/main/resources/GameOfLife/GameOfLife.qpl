@@ -1,0 +1,137 @@
+import Qupla
+
+// input trit 1 & 2: amount of neighbors in binary (-- for overflow)
+// input 3: cell state (0 = dead, 1 = alive)
+// output: new amount of neighbors in binary (-- when >3)
+lut binSum {
+  0,0,0 = 0,0  //  0 neighbors
+  0,0,1 = 1,0  //  1 neighbor
+  1,0,0 = 1,0  //  1 neighbor
+  1,0,1 = 0,1  //  2 neighbors
+  0,1,0 = 0,1  //  2 neighbors
+  0,1,1 = 1,1  //  3 neighbors
+  1,1,0 = 1,1  //  3 neighbors
+  1,1,1 = -,-  // >3 neighbors
+  -,-,0 = -,-  // >3 neighbors
+  -,-,1 = -,-  // >3 neighbors
+}
+
+// input trit 1 & 2: amount of neighbors in binary (-- when >3)
+// input trit 3: old cell state (0 = dead, 1 = alive)
+// output: new cell state acording to GoL rules
+lut newCellState {
+  0,0,0 = 0  //  0 neighbors + dead  -> stay dead
+  0,0,1 = 0  //  0 neighbors + alive -> starve cell
+  1,0,0 = 0  //  1 neighbor  + dead  -> stay dead
+  1,0,1 = 0  //  1 neighbor  + alive -> starve cell
+  0,1,0 = 0  //  2 neighbors + dead  -> stay dead
+  0,1,1 = 1  //  2 neighbors + alive -> stay alive
+  1,1,0 = 1  //  3 neighbors + dead  -> spawn cell
+  1,1,1 = 1  //  3 neighbors + alive -> stay alive
+  -,-,0 = 0  // >3 neighbors + dead  -> suffocate cell, stay dead
+  -,-,1 = 0  // >3 neighbors + alive -> suffocate cell
+}
+
+template gameOfLife<T> {
+  type Cell [1]
+  type Col [T]
+  type Row [T]
+  type Map [Row * Col]
+  type BorderedMap [Row + Map + Row]
+  type BorderedRow [Cell + Row + Cell]
+  type NeighborRows [BorderedRow * 3]
+  type Info {
+    id [Tiny]
+    map [Map]
+  }
+
+  func Info gameOfLife<T> (Info info) {
+    // sandwich map between two dummy zero border rows
+    borderRow = as<Row>(0)
+    borderedMap = borderRow & info.map & borderRow
+    
+    // loop over all map rows, rowShifter starts at first position
+    newBorderedMap = golLoopRows<T>(borderedMap, 1)
+    
+    // extract new map from tail end
+    return Info {
+      id = info.id
+      map = newBorderedMap[BorderedMap - Map : Map]
+    }
+  }
+
+  func BorderedMap golLoopRows<T> (BorderedMap map, Row rowShifter) {
+    // check if row shifter is done
+    rowShifterIsDone = isZero[sign<Row>(rowShifter)]
+    return rowShifterIsDone ? map : golProcessRows<T>(map, rowShifter)
+  }
+
+  func BorderedMap golProcessRows<T> (BorderedMap map, Row rowShifter) {
+    // extract current row and neighbor rows
+    // and sandwich them between dummy zero border cells
+    borderCell = as<Cell>(0)
+    rows = borderCell & map[Row * 0 : Row] & borderCell
+         & borderCell & map[Row * 1 : Row] & borderCell
+         & borderCell & map[Row * 2 : Row] & borderCell
+    
+    // loop over all row columns, colShifter starts at first position    
+    newRows = golLoopCols<T>(rows, 1)
+
+    // extract new row from tail of newRows
+    newRow = newRows[NeighborRows - Row : Row]
+
+    // shift map one row and append new row at end.
+    // when done iterating (shifter runs out) the
+    // tail end of newMap will hold the new map
+    newMap = map[Row : BorderedMap - Row] & newRow
+    
+    // one more row iteration done
+    newRowShifter = rshift<Row>(rowShifter)
+    return golLoopRows<T>(newMap, newRowShifter)
+  }
+
+  func NeighborRows golLoopCols<T> (NeighborRows rows, Col colShifter) {
+    // check if col shifter is done
+    colShifterIsDone = isZero[sign<Col>(colShifter)]
+    return colShifterIsDone ? rows : golProcessCols<T>(rows, colShifter)
+  }
+
+  func NeighborRows golProcessCols<T> (NeighborRows rows, Col colShifter) {
+    // calculate number of alive neighbours for current cell
+    alive0 = binSum[      0,       0, rows[0 * BorderedRow + 0]]
+    alive1 = binSum[alive0[0], alive0[1], rows[0 * BorderedRow + 1]]
+    alive2 = binSum[alive1[0], alive1[1], rows[0 * BorderedRow + 2]]
+    alive3 = binSum[alive2[0], alive2[1], rows[1 * BorderedRow + 0]]
+    alive5 = binSum[alive3[0], alive3[1], rows[1 * BorderedRow + 2]]
+    alive6 = binSum[alive5[0], alive5[1], rows[2 * BorderedRow + 0]]
+    alive7 = binSum[alive6[0], alive6[1], rows[2 * BorderedRow + 1]]
+    alive8 = binSum[alive7[0], alive7[1], rows[2 * BorderedRow + 2]]
+
+    // determine new cell state for current cell
+    newCell = newCellState[alive8[0], alive8[1], rows[1 * BorderedRow + 1]]
+
+    // shift rows 1 cell and append new cell at end.
+    // when done iterating (shifter runs out) the tail
+    // end of newRows will hold the new row of cells
+    newRows = rows[Cell : NeighborRows - Cell] & newCell
+    
+    // one more col iteration done
+    newColShifter = rshift<Col>(colShifter)
+    return golLoopCols<T>(newRows, newColShifter)
+  }
+}
+
+
+type GolSize [Huge]
+type GolMap [GolSize * GolSize]
+type GolInfo {
+  id [Tiny]
+  map [GolMap]
+}
+
+func GolInfo gameOfLife(GolInfo info) {
+  join gameOfLife
+  affect gameOfLifeResult
+
+  return gameOfLife<GolSize>(info)
+}

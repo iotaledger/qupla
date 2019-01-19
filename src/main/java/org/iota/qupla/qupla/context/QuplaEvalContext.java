@@ -189,7 +189,7 @@ public class QuplaEvalContext extends QuplaBaseContext
   public TritVector evalEntity(final FuncEntity entity, final TritVector vector)
   {
     // avoid converting vector to string, which is slow
-    Qupla.log("effect " + vector + " : " + entity.func);
+    Qupla.log("effect " + entity.func.params.get(0).typeInfo.toString(vector) + " : " + entity.func);
 
     int start = 0;
     for (final BaseExpr param : entity.func.params)
@@ -202,7 +202,7 @@ public class QuplaEvalContext extends QuplaBaseContext
 
     entity.func.eval(this);
     // avoid converting vector to string, which is slow
-    Qupla.log("     return " + value + " : " + entity.func.returnExpr);
+    Qupla.log("     return " + entity.func.returnExpr.typeInfo.toString(value) + " : " + entity.func.returnExpr);
 
     stack.clear();
     return value;
@@ -377,19 +377,19 @@ public class QuplaEvalContext extends QuplaBaseContext
     if (usePrint && call.name.startsWith("print_"))
     {
       final BaseExpr arg = call.args.get(0);
-      Qupla.log("" + arg.typeInfo.display(value));
+      Qupla.log(Qupla.toString(value, arg.typeInfo));
     }
 
-    if (useBreak && call.name.startsWith("break"))
+    if (useBreak && call.name.startsWith("break_"))
     {
       final BaseExpr arg = call.args.get(0);
-      Qupla.log("" + arg.typeInfo.display(value));
+      Qupla.log(Qupla.toString(value, arg.typeInfo));
     }
   }
 
   public void log(final String text, final TritVector vector, final BaseExpr expr)
   {
-    // avoid converting vector to string, which is slow
+    // this logger avoids converting vector to string immediately, which is slow
     if (allowLog)
     {
       log(text + vector + " : " + expr);
