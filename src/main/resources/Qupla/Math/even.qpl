@@ -1,0 +1,104 @@
+// LUT logic: return (Bool) (((trit1 + trit2 + trit3) & 1) == 0 ? 1 : 0)
+lut even {
+  -,-,- = -
+  0,-,- = 1
+  1,-,- = -
+  -,0,- = 1
+  0,0,- = -
+  1,0,- = 1
+  -,1,- = -
+  0,1,- = 1
+  1,1,- = -
+  -,-,0 = 1
+  0,-,0 = -
+  1,-,0 = 1
+  -,0,0 = -
+  0,0,0 = 1
+  1,0,0 = -
+  -,1,0 = 1
+  0,1,0 = -
+  1,1,0 = 1
+  -,-,1 = -
+  0,-,1 = 1
+  1,-,1 = -
+  -,0,1 = 1
+  0,0,1 = -
+  1,0,1 = 1
+  -,1,1 = -
+  0,1,1 = 1
+  1,1,1 = -
+}
+
+// returns (Bool) ((val & 1) == 0 ? 1 : 0)
+
+func Trit even<Trit> (Trit val) {
+  return even[val, 0, 0]
+}
+
+func Trit even<Tryte> (Tryte val) {
+  return even[val[0], val[1], val[2]]
+}
+
+template even3<T> = A + B + C {
+  type A [T / 3]
+  type B [T / 3]
+  type C [T / 3]
+
+  func Trit even<T> (T val) {
+    val0 = even<A>(val[0 : A])
+    val1 = even<B>(val[A : B])
+    val2 = even<C>(val[A + B : C])
+    return xor3[val0, val1, val2]
+  }
+}
+
+template even<T> {
+  type A [T - T / 2]
+  type B [T - A]
+
+  func Trit even<T> (T val) {
+    val0 = even<A>(val[0 : A])
+    val1 = even<B>(val[A : B])
+    return xor[val0, val1]
+  }
+}
+
+test 1 = even<Int>(0)
+test 0 = even<Int>(1)
+test 1 = even<Int>(2)
+test 0 = even<Int>(3)
+test 1 = even<Int>(4)
+test 0 = even<Int>(5)
+test 1 = even<Int>(6)
+test 0 = even<Int>(7)
+test 1 = even<Int>(8)
+test 0 = even<Int>(9)
+test 1 = even<Int>(10)
+test 0 = even<Int>(11)
+test 1 = even<Int>(12)
+test 0 = even<Int>(13)
+test 1 = even<Int>(14)
+test 0 = even<Int>(15)
+test 1 = even<Int>(16)
+test 0 = even<Int>(17)
+test 1 = even<Int>(18)
+test 0 = even<Int>(19)
+test 0 = even<Int>(-1)
+test 1 = even<Int>(-2)
+test 0 = even<Int>(-3)
+test 1 = even<Int>(-4)
+test 0 = even<Int>(-5)
+test 1 = even<Int>(-6)
+test 0 = even<Int>(-7)
+test 1 = even<Int>(-8)
+test 0 = even<Int>(-9)
+test 1 = even<Int>(-10)
+test 0 = even<Int>(-11)
+test 1 = even<Int>(-12)
+test 0 = even<Int>(-13)
+test 1 = even<Int>(-14)
+test 0 = even<Int>(-15)
+test 1 = even<Int>(-16)
+test 0 = even<Int>(-17)
+test 1 = even<Int>(-18)
+test 0 = even<Int>(-19)
