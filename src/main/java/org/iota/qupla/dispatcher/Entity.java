@@ -6,6 +6,8 @@ import org.iota.qupla.helper.TritVector;
 
 public abstract class Entity
 {
+  public static final TritVector nullVector = new TritVector(1, '@');
+
   public final ArrayList<Effect> effects = new ArrayList<>();
   public String id;
   public int invoked;
@@ -16,12 +18,17 @@ public abstract class Entity
     this.limit = limit;
   }
 
-  public void addEffect(final Environment env, final int delay)
+  public void affect(final Environment env, final int delay)
   {
     final Effect effect = new Effect(env, delay);
 
     //TODO insert ordered by env id to be deterministic
     effects.add(effect);
+  }
+
+  public void join(final Environment env)
+  {
+    env.join(this);
   }
 
   public void queueEffectEvents(final TritVector value)

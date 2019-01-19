@@ -1,5 +1,6 @@
 package org.iota.qupla.qupla.statement;
 
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
@@ -78,34 +79,54 @@ public class TypeStmt extends BaseExpr
     return new TypeStmt(this);
   }
 
-  public String display(final TritVector value)
-  {
-    if (!isFloat)
-    {
-      return value.display(0, 0);
-    }
-
-    final BaseExpr mantissa = struct.fields.get(0);
-    final BaseExpr exponent = struct.fields.get(1);
-    return value.display(mantissa.size, exponent.size);
-  }
-
-  public String displayValue(final TritVector value)
-  {
-    if (!isFloat)
-    {
-      return value.displayValue(0, 0);
-    }
-
-    final BaseExpr mantissa = struct.fields.get(0);
-    final BaseExpr exponent = struct.fields.get(1);
-    return value.displayValue(mantissa.size, exponent.size);
-  }
-
   @Override
   public void eval(final QuplaBaseContext context)
   {
     context.evalTypeDefinition(this);
+  }
+
+  public String toString(final TritVector value)
+  {
+    if (value.isNull())
+    {
+      return "NULL";
+    }
+
+    if (!value.isValue())
+    {
+      return "***SOME NULL TRITS***";
+    }
+
+    if (isFloat)
+    {
+      final BaseExpr mantissa = struct.fields.get(0);
+      final BaseExpr exponent = struct.fields.get(1);
+      return TritConverter.toFloat(value.trits(), mantissa.size, exponent.size);
+    }
+
+    if (struct == null)
+    {
+      if (size > 81)
+      {
+        return value.trits();
+      }
+
+      return TritConverter.toDecimal(value.trits()).toString();
+    }
+
+    String result = "{ ";
+    int offset = 0;
+    boolean first = true;
+    for (final BaseExpr field : struct.fields)
+    {
+      result += first ? "" : ", ";
+      first = false;
+      final TritVector slice = value.slice(offset, field.size);
+      result += field.name + " = " + TritConverter.toDecimal(slice.trits()).toString();
+      offset += field.size;
+    }
+
+    return result + " }";
   }
 
   @Override

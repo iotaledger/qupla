@@ -3,19 +3,22 @@ package org.iota.qupla.dispatcher;
 import java.util.ArrayList;
 
 import org.iota.qupla.helper.TritVector;
+import org.iota.qupla.qupla.statement.TypeStmt;
 
 public class Environment
 {
   private final ArrayList<Entity> entities = new ArrayList<>();
   public String id;
   public String name;
+  public TypeStmt typeInfo;
 
-  public Environment(final String name)
+  public Environment(final String name, final TypeStmt typeInfo)
   {
     this.name = name;
+    this.typeInfo = typeInfo;
   }
 
-  public void addEntity(final Entity entity)
+  public void join(final Entity entity)
   {
     //TODO insert ordered by entity id to be deterministic
     synchronized (entities)
