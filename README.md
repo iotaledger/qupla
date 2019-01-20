@@ -25,10 +25,13 @@ Current command line flags
 
 -fpga  Emits Verilog HDL for further compiling to FPGA as resources/Verilog.txt (requires -trit)
 
+-math  Special test flag to verify results of specific math functions
+
 -test  Runs all test statements (unit tests)
 
 -tree  Generates a textual representation of the Qupla code tree
 
+-view  Start QCM viewers for every environment
 
 
 Example of Java compilation and running Qupla on Windows command line after extracting sources into \Qupla folder:
@@ -125,5 +128,5 @@ Wishlist for changes to the language:
 * Implement entity aliases for type/lut
 * Arithmetic operators (to increase readability)
 * Automatic detection of type specifiers on function calls (same)
-
+* Strings?
 
