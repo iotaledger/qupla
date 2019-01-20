@@ -108,6 +108,7 @@ public class FuncStmt extends BaseExpr
 
     analyzed = true;
 
+    final int saveCallNr = callNr;
     callNr = 0;
 
     // if this function has an associated use statement
@@ -147,6 +148,8 @@ public class FuncStmt extends BaseExpr
     scope = oldScope;
 
     currentUse = oldUse;
+
+    callNr = saveCallNr;
   }
 
   public void analyzeSignature()
