@@ -41,7 +41,6 @@ public class ExecStmt extends BaseExpr
   {
     // make sure we always start at call index zero,
     // or else state variables won't work correctly
-    final int saveCallNr = callNr;
     callNr = 0;
 
     expr.analyze();
@@ -54,8 +53,6 @@ public class ExecStmt extends BaseExpr
       expected.analyze();
       constTypeInfo = null;
     }
-
-    callNr = saveCallNr;
   }
 
   @Override
