@@ -6,7 +6,7 @@ import Qupla
 // Maybe someone already proved it for any positive integer :)
 // E.g. starting with x(0) = 27 sequence comes to value 1 after 110 steps.
 // Run with -eval
-// (c) lunfardo
+// Idea by lunfardo
 
 // check this video, too: https://www.youtube.com/watch?v=m4CjXk_b8zo
 
