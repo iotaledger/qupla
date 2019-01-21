@@ -325,6 +325,24 @@ public class TritConverter
     return result;
   }
 
+  public static long toLong(final String trits)
+  {
+    long result = 0;
+    long power = 1;
+    for (int i = 0; i < trits.length(); i++)
+    {
+      final char trit = trits.charAt(i);
+      if (trit != '0')
+      {
+        result += trit == '-' ? -power : power;
+      }
+
+      power *= 3;
+    }
+
+    return result;
+  }
+
   private static String zeroes(final int size)
   {
     return new TritVector(size, '0').trits();

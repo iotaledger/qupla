@@ -10,6 +10,8 @@ import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
+import org.iota.qupla.helper.TritConverter;
+import org.iota.qupla.helper.TritVector;
 
 public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
 {
@@ -69,8 +71,33 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    //TODO convert 27 bct lookup 'trits' to 35 trits
-    putTrits(lut.lookup);
+    // encode 27 bct trits as 54-bit long value, and convert to 35 trits
+    long value = 0;
+    for (int i = 26; i >= 0; i--)
+    {
+      value <<= 2;
+      switch (lut.lookup.charAt(i))
+      {
+      case '0':
+        value += 1;
+        break;
+      case '1':
+        value += 2;
+        break;
+      case '-':
+        value += 3;
+        break;
+      case '@':
+        break;
+      }
+    }
+
+    final String trits = TritConverter.fromLong(value);
+    putTrits(trits);
+    if (trits.length() < 35)
+    {
+      putTrits(new TritVector(35 - trits.length(), '0').trits());
+    }
   }
 
   @Override
