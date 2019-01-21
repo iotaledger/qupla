@@ -1,6 +1,14 @@
 # qupla
 
 Java reference implementation of Qupla (QUbic Programming LAnguage) with sample code and initial standard libraries.
+
+The goal of Qupla is twofold:
+
+1. Provide a trinary computer language that implements the Abra specification so that it can function as the programming language for Qubic
+
+2. Lower the barrier for programmers by leveraging existing knowledge as much as possible. This means that we try to keep the language and its behavior as familiar as possible while still providing access to the new and unfamiliar functionality of the Qubic Computation Model.
+
+This repository will provide:
 * Qupla source code parser
 * Qupla interpreter
 * Qupla to Abra tritcode translator (mostly done)
