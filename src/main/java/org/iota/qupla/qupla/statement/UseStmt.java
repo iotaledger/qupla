@@ -12,7 +12,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 public class UseStmt extends BaseExpr
 {
   public boolean automatic;
-  public UseStmt nextUse; //TODO linked list for multi-use statement
+  public UseStmt nextUse;
   public TemplateStmt template;
   public final ArrayList<BaseExpr> typeArgs = new ArrayList<>();
   public final ArrayList<BaseExpr> types = new ArrayList<>();
