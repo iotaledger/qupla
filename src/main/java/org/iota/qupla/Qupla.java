@@ -182,16 +182,6 @@ public class Qupla
     catch (final ExitException ex)
     {
     }
-
-    try
-    {
-      sleep(1000);
-      Dispatcher.getInstance().cancel();
-    }
-    catch (InterruptedException e)
-    {
-      e.printStackTrace();
-    }
   }
 
   private static void processOptions()
