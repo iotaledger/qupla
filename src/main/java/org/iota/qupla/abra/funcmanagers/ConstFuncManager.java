@@ -87,6 +87,9 @@ public class ConstFuncManager extends BaseFuncManager
     branch.constantValue = value;
 
     branch.outputs.add(constant);
+
+    //TODO if all inputs are body sites and referenced only once then
+    //     replace with a sequence of output sites in correct order
   }
 
   public AbraBlockBranch find(final AbraModule module, final TritVector value)

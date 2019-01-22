@@ -166,7 +166,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
       return false;
     }
 
-    TritVector constant = null;
     for (final AbraBaseSite site : branch.sites)
     {
       if (!(site instanceof AbraSiteKnot))
@@ -188,8 +187,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
           return false;
         }
       }
-
-      constant = TritVector.concat(constant, knot.block.constantValue);
     }
 
     final AbraBaseSite output = branch.outputs.get(0);
@@ -208,8 +205,15 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     check(branch.name != null && branch.name.startsWith("const_"));
 
-    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
+    TritVector constant = null;
+    for (final AbraBaseSite site : knot.inputs)
+    {
+      final AbraSiteKnot siteKnot = (AbraSiteKnot) site;
+      constant = TritVector.concat(constant, siteKnot.block.constantValue);
+    }
+
     branch.constantValue = constant.slice(0, knot.size);
+    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     return true;
   }
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.iota.qupla.Qupla;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
@@ -30,6 +31,8 @@ public class AbraEvalContext extends AbraBaseContext
   private static final TritVector tritNull = new TritVector(1, '@');
   private static final TritVector tritOne = new TritVector(1, '1');
   private static final TritVector tritZero = new TritVector(1, '0');
+  private static final boolean useBreak = true;
+  private static final boolean usePrint = true;
 
   public final ArrayList<TritVector> args = new ArrayList<>();
   public int callNr;
@@ -105,6 +108,8 @@ public class AbraEvalContext extends AbraBaseContext
         return;
       }
     }
+
+    interceptCall(branch);
 
     final TritVector[] oldStack = stack;
     stack = new TritVector[branch.totalSites()];
@@ -334,6 +339,22 @@ public class AbraEvalContext extends AbraBaseContext
     }
 
     stack[latch.index] = new TritVector(latch.size, '0');
+  }
+
+  private void interceptCall(final AbraBlockBranch branch)
+  {
+    if (branch.name != null)
+    {
+      if (usePrint && branch.name.startsWith("print_"))
+      {
+        Qupla.log(args.get(0).toString());
+      }
+
+      if (useBreak && branch.name.startsWith("break_"))
+      {
+        Qupla.log(args.get(0).toString());
+      }
+    }
   }
 
   private void updateLatch(final AbraBaseSite latch)
