@@ -67,6 +67,15 @@ public class EmptyFunctionOptimizer extends BaseOptimizer
       return;
     }
 
+    if (knot.name != null)
+    {
+      if (knot.name.startsWith("print_") || knot.name.startsWith("break_"))
+      {
+        // keep dummy print/break functions, even though they are empty
+        return;
+      }
+    }
+
     // well, looks like we have a candidate
     replaceSite(knot, knotInput);
   }

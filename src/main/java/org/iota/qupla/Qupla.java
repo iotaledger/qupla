@@ -29,8 +29,6 @@ import org.iota.qupla.qupla.statement.ExecStmt;
 import org.iota.qupla.qupla.statement.TypeStmt;
 import org.iota.qupla.qupla.statement.UseStmt;
 
-import static java.lang.Thread.sleep;
-
 public class Qupla
 {
   private static final String[] flags = {
@@ -182,6 +180,19 @@ public class Qupla
     catch (final ExitException ex)
     {
     }
+
+    //    if (!options.contains("-view"))
+    //    {
+    //      try
+    //      {
+    //        sleep(1000);
+    //        Dispatcher.getInstance().cancel();
+    //      }
+    //      catch (InterruptedException e)
+    //      {
+    //        e.printStackTrace();
+    //      }
+    //    }
   }
 
   private static void processOptions()
