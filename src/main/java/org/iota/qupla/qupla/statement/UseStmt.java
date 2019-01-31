@@ -12,6 +12,7 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 public class UseStmt extends BaseExpr
 {
   public boolean automatic;
+  public String funcName;
   public UseStmt nextUse;
   public TemplateStmt template;
   public final ArrayList<BaseExpr> typeArgs = new ArrayList<>();
@@ -49,6 +50,8 @@ public class UseStmt extends BaseExpr
     module = func.module;
     origin = func.origin;
     name = template.name;
+
+    funcName = func.name;
 
     for (final BaseExpr funcType : func.funcTypes)
     {
@@ -136,6 +139,9 @@ public class UseStmt extends BaseExpr
       }
     }
 
+
+    boolean found = false;
+    final ArrayList<FuncStmt> funcs = new ArrayList<>();
     for (final BaseExpr func : template.funcs)
     {
       final FuncStmt useFunc = new FuncStmt((FuncStmt) func);
@@ -143,8 +149,22 @@ public class UseStmt extends BaseExpr
       useFunc.module = module;
       useFunc.use = this;
       useFunc.analyzeSignature();
-      module.funcs.add(useFunc);
+      funcs.add(useFunc);
+      if (automatic && useFunc.name.equals(funcName))
+      {
+        found = true;
+      }
     }
+
+    if (automatic && !found)
+    {
+      // wrong template, do not instantiate any functions
+      currentModule = oldModule;
+      currentUse = oldUse;
+      return;
+    }
+
+    module.funcs.addAll(funcs);
 
     size = template.funcs.size();
 

@@ -193,6 +193,7 @@ public class Tokenizer
     addToken(Token.TOK_LUT, "lut");
     addToken(Token.TOK_NULL, "null");
     addToken(Token.TOK_RETURN, "return");
+    addToken(Token.TOK_SIZEOF, "sizeof");
     addToken(Token.TOK_STATE, "state");
     addToken(Token.TOK_TEMPLATE, "template");
     addToken(Token.TOK_TEST, "test");

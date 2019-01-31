@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import org.iota.qupla.Qupla;
-import org.iota.qupla.dispatcher.FuncEntity;
+import org.iota.qupla.dispatcher.entity.FuncEntity;
 import org.iota.qupla.helper.StateValue;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;

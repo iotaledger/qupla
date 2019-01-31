@@ -1,0 +1,57 @@
+// returns n < 0 ? val >> -n : val << n
+
+template lshiftN<T> {
+  // P is largest power of 3 smaller than T
+  type P [pow3<Int>(log3<Int>(decr<Int>(sizeof T)))]
+
+  func T lshiftN<T> (T val, Tiny n)
+  {
+    // if n is negative do shift right instead
+    flip = isNegative[sign<Tiny>(n)]
+    return flip ? rshiftNLimit<T>(val, neg<Tiny>(n)) : lshiftNLimit<T>(val, n)
+  }
+
+  func T lshiftNLimit<T> (T val, Tiny n)
+  {
+    // if we shift out all trits return zero
+    zero = notLess[cmp<Tiny>(n, sizeof T)]
+    return zero ? 0 : lshiftN2<T, P>(val, n)
+  }
+}
+
+// make sure we first match against the Trit version of lshiftN2()
+// so that we instantiate this one in favor of the one in lshiftN3
+// note that P is not used but we're matching against 2 template
+// parameters (T and Q) in lshiftN2<T, Q>(val, n)
+template lshiftN2<T, P> {
+  func T lshiftN2<T, Trit> (T val, Tiny n)
+  {
+    // n can only be 0, 1, or 2, in which case trit 0 is 0, 1, or -
+    n0 = n[0]
+    zero = isZero[n0] ? val : null
+    one  = n0 ? val[1 : T - 1] & 0 : null
+    two  = isMin[n0] ? val[2 : T - 2] & 0 & 0 : null
+    return zero | one | two
+  }
+}
+
+template lshiftN3<T, P> {
+  type Q [P / 3]
+
+  func T lshiftN2<T, P> (T val, Tiny n)
+  {
+    // go to next-lower power of 3?
+    //TODO use 1 trit of n to determine this once we know log3(P)
+    //     similar to how we do it in lshiftN2<T, Trit>() above
+    less = isLess[cmp<Tiny>(n, sizeof P)]
+    return less ? lshiftN2<T, Q>(val, n) : lshiftN2Shift<T, P>(val, n)
+  }
+
+  func T lshiftN2Shift<T, P> (T val, Tiny n)
+  {
+    // shift val by current power of 3
+    newVal = val[P : T - P] & as<P>(0)
+    newN = sub<Tiny>(n, sizeof P)
+    return lshiftN2<T, P>(newVal, newN)
+  }
+}

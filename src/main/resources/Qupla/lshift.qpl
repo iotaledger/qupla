@@ -1,4 +1,4 @@
-// return val << 1
+// returns val << 1
 
 template lshift<T> {
   func T lshift<T> (T val) {

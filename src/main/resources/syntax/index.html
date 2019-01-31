@@ -3,7 +3,7 @@
 <html>
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <meta name="generator" content="Railroad Diagram Generator 1.55.1750">
+      <meta name="generator" content="Railroad Diagram Generator 1.56.1774">
       <style type="text/css" xml:space="preserve">
     ::-moz-selection
     {
@@ -617,7 +617,7 @@
             
             <li><a href="#MergeExpr" title="MergeExpr">MergeExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="PostfixExpr">PostfixExpr:</a></p><img border="0" src="diagram/PostfixExpr.png" height="257" width="187" usemap="#PostfixExpr.map"><map name="PostfixExpr.map"><area shape="rect" coords="49,1,121,33" href="#SubExpr" title="SubExpr"><area shape="rect" coords="49,45,137,77" href="#VectorExpr" title="VectorExpr"><area shape="rect" coords="49,89,125,121" href="#SliceExpr" title="SliceExpr"><area shape="rect" coords="49,133,125,165" href="#FuncExpr" title="FuncExpr"><area shape="rect" coords="49,177,117,209" href="#LutExpr" title="LutExpr"><area shape="rect" coords="49,221,127,253" href="#TypeExpr" title="TypeExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="PostfixExpr">PostfixExpr:</a></p><img border="0" src="diagram/PostfixExpr.png" height="301" width="187" usemap="#PostfixExpr.map"><map name="PostfixExpr.map"><area shape="rect" coords="49,1,121,33" href="#SubExpr" title="SubExpr"><area shape="rect" coords="49,45,137,77" href="#VectorExpr" title="VectorExpr"><area shape="rect" coords="49,89,125,121" href="#SliceExpr" title="SliceExpr"><area shape="rect" coords="49,133,125,165" href="#FuncExpr" title="FuncExpr"><area shape="rect" coords="49,177,117,209" href="#LutExpr" title="LutExpr"><area shape="rect" coords="49,221,135,253" href="#SizeofExpr" title="SizeofExpr"><area shape="rect" coords="49,265,127,297" href="#TypeExpr" title="TypeExpr"></map><p>
          
          <div class="ebnf"><code>
                
@@ -632,6 +632,8 @@
                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#FuncExpr" title="FuncExpr" shape="rect">FuncExpr</a></div>
                
                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#LutExpr" title="LutExpr" shape="rect">LutExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#SizeofExpr" title="SizeofExpr" shape="rect">SizeofExpr</a></div>
                
                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#TypeExpr" title="TypeExpr" shape="rect">TypeExpr</a></div></code></div>
          </p>
@@ -702,6 +704,8 @@
          
          <ul>
             
+            <li><a href="#ConstFuncExpr" title="ConstFuncExpr">ConstFuncExpr</a></li>
+            
             <li><a href="#ExecStmt" title="ExecStmt">ExecStmt</a></li>
             
             <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
@@ -711,6 +715,21 @@
          <div class="ebnf"><code>
                
                <div><a href="#LutExpr" title="LutExpr" shape="rect">LutExpr</a>&nbsp;&nbsp;::= <a href="#lutName" title="lutName" shape="rect">lutName</a> '[' <a href="#MergeExpr" title="MergeExpr" shape="rect">MergeExpr</a> ( ',' <a href="#MergeExpr" title="MergeExpr" shape="rect">MergeExpr</a> )* ']'</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="SizeofExpr">SizeofExpr:</a></p><img border="0" src="diagram/SizeofExpr.png" height="37" width="263" usemap="#SizeofExpr.map"><map name="SizeofExpr.map"><area shape="rect" coords="109,1,233,33" href="#ConstTypeName" title="ConstTypeName"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#SizeofExpr" title="SizeofExpr" shape="rect">SizeofExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'sizeof' <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a></div></code></div>
          </p>
       
       <p>referenced by:
@@ -781,7 +800,7 @@
             
             <li><a href="#ConstExpr" title="ConstExpr">ConstExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConstFactor">ConstFactor:</a></p><img border="0" src="diagram/ConstFactor.png" height="207" width="451" usemap="#ConstFactor.map"><map name="ConstFactor.map"><area shape="rect" coords="49,1,157,33" href="#ConstSubExpr" title="ConstSubExpr"><area shape="rect" coords="95,45,191,77" href="#ConstFactor" title="ConstFactor"><area shape="rect" coords="49,89,155,121" href="#ConstNumber" title="ConstNumber"><area shape="rect" coords="49,155,173,187" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="277,155,361,187" href="#NameExpr" title="NameExpr"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConstFactor">ConstFactor:</a></p><img border="0" src="diagram/ConstFactor.png" height="257" width="451" usemap="#ConstFactor.map"><map name="ConstFactor.map"><area shape="rect" coords="49,1,157,33" href="#ConstSubExpr" title="ConstSubExpr"><area shape="rect" coords="95,45,191,77" href="#ConstFactor" title="ConstFactor"><area shape="rect" coords="49,89,155,121" href="#ConstNumber" title="ConstNumber"><area shape="rect" coords="49,155,173,187" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="277,155,361,187" href="#NameExpr" title="NameExpr"><area shape="rect" coords="49,221,163,253" href="#ConstFuncExpr" title="ConstFuncExpr"></map><p>
          
          <div class="ebnf"><code>
                
@@ -793,7 +812,9 @@
                
                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#ConstNumber" title="ConstNumber" shape="rect">ConstNumber</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> ( '.' <a href="#NameExpr" title="NameExpr" shape="rect">NameExpr</a> )*</div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> ( '.' <a href="#NameExpr" title="NameExpr" shape="rect">NameExpr</a> )*</div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#ConstFuncExpr" title="ConstFuncExpr" shape="rect">ConstFuncExpr</a></div></code></div>
          </p>
       
       <p>referenced by:
@@ -855,6 +876,8 @@
             
             <li><a href="#FuncExpr" title="FuncExpr">FuncExpr</a></li>
             
+            <li><a href="#SizeofExpr" title="SizeofExpr">SizeofExpr</a></li>
+            
             <li><a href="#StateExpr" title="StateExpr">StateExpr</a></li>
             
             <li><a href="#TypeExpr" title="TypeExpr">TypeExpr</a></li>
@@ -879,6 +902,21 @@
             <li><a href="#ConstFactor" title="ConstFactor">ConstFactor</a></li>
             
             <li><a href="#SliceExpr" title="SliceExpr">SliceExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ConstFuncExpr">ConstFuncExpr:</a></p><img border="0" src="diagram/ConstFuncExpr.png" height="37" width="135" usemap="#ConstFuncExpr.map"><map name="ConstFuncExpr.map"><area shape="rect" coords="29,1,105,33" href="#FuncExpr" title="FuncExpr"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#ConstFuncExpr" title="ConstFuncExpr" shape="rect">ConstFuncExpr</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#FuncExpr" title="FuncExpr" shape="rect">FuncExpr</a></div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ConstFactor" title="ConstFactor">ConstFactor</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="trit">trit:</a></p><img border="0" src="diagram/trit.png" height="125" width="127"><p>
          
@@ -963,10 +1001,10 @@
                
                <td valign="top">
                   
-                  <nobr class="signature">... generated by <a name="Railroad-Diagram-Generator" class="signature" title="http://www.bottlecaps.de/rr/ui" href="http://www.bottlecaps.de/rr/ui" target="_blank">Railroad Diagram Generator</a></nobr>
+                  <nobr class="signature">... generated by <a name="Railroad-Diagram-Generator" class="signature" title="https://www.bottlecaps.de/rr/ui" href="https://www.bottlecaps.de/rr/ui" target="_blank">Railroad Diagram Generator</a></nobr>
                   </td>
                
-               <td><a name="Railroad-Diagram-Generator" title="http://www.bottlecaps.de/rr/ui" href="http://www.bottlecaps.de/rr/ui" target="_blank"><img border="0" src="diagram/rr-1.55.1750.png" height="16" width="16"></a></td>
+               <td><a name="Railroad-Diagram-Generator" title="https://www.bottlecaps.de/rr/ui" href="https://www.bottlecaps.de/rr/ui" target="_blank"><img border="0" src="diagram/rr-1.56.1774.png" height="16" width="16"></a></td>
                </tr>
             </table>
          </p>

@@ -111,7 +111,7 @@ public class TypeStmt extends BaseExpr
         return value.trits();
       }
 
-      return TritConverter.toDecimal(value.trits()).toString();
+      return value.toDecimal();
     }
 
     String result = "{ ";
@@ -122,7 +122,7 @@ public class TypeStmt extends BaseExpr
       result += first ? "" : ", ";
       first = false;
       final TritVector slice = value.slice(offset, field.size);
-      result += field.name + " = " + TritConverter.toDecimal(slice.trits()).toString();
+      result += field.name + " = " + slice.toDecimal();
       offset += field.size;
     }
 

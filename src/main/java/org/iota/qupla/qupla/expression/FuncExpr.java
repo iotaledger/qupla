@@ -19,7 +19,7 @@ public class FuncExpr extends BaseExpr
   public FuncStmt func;
   public final ArrayList<BaseExpr> funcTypes = new ArrayList<>();
 
-  private FuncExpr(final FuncExpr copy)
+  protected FuncExpr(final FuncExpr copy)
   {
     super(copy);
 
@@ -118,10 +118,9 @@ public class FuncExpr extends BaseExpr
   @Override
   protected BaseExpr entityNotFound(final String what)
   {
-    //TODO for now we don't do automatic multi-parameter template instantiation
     if (funcTypes.size() != 1)
     {
-      return super.entityNotFound(what);
+      return multiParameterInstantiation(what);
     }
 
     int triplet = funcTypes.get(0).size;
@@ -203,5 +202,64 @@ public class FuncExpr extends BaseExpr
   public void eval(final QuplaBaseContext context)
   {
     context.evalFuncCall(this);
+  }
+
+  private BaseExpr multiParameterInstantiation(final String what)
+  {
+    final String funcName = origin.text;
+
+    // find a template that can instantiate this function
+    for (final TemplateStmt template : module.templates)
+    {
+      for (final BaseExpr func : template.funcs)
+      {
+        if (((FuncStmt) func).funcTypes.size() != funcTypes.size())
+        {
+          continue;
+        }
+
+        if (!func.name.equals(funcName))
+        {
+          continue;
+        }
+
+        final UseStmt autoUse = new UseStmt(template, this);
+        autoUse.analyze();
+        if (autoUse.wasAnalyzed())
+        {
+          // this template was acceptable
+          return findEntity(FuncStmt.class, what);
+        }
+      }
+    }
+
+    for (final QuplaModule extern : module.modules)
+    {
+      for (final TemplateStmt template : extern.templates)
+      {
+        for (final BaseExpr func : template.funcs)
+        {
+          if (((FuncStmt) func).funcTypes.size() != funcTypes.size())
+          {
+            continue;
+          }
+
+          if (!func.name.equals(funcName))
+          {
+            continue;
+          }
+
+          final UseStmt autoUse = new UseStmt(template, this);
+          autoUse.analyze();
+          if (autoUse.wasAnalyzed())
+          {
+            // this template was acceptable
+            return findEntity(FuncStmt.class, what);
+          }
+        }
+      }
+    }
+
+    return super.entityNotFound(what);
   }
 }

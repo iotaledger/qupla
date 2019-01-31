@@ -38,7 +38,8 @@ public class Token
   public static final int TOK_PLUS = TOK_NUMBER + 1;
   public static final int TOK_QUESTION = TOK_PLUS + 1;
   public static final int TOK_RETURN = TOK_QUESTION + 1;
-  public static final int TOK_STATE = TOK_RETURN + 1;
+  public static final int TOK_SIZEOF = TOK_RETURN + 1;
+  public static final int TOK_STATE = TOK_SIZEOF + 1;
   public static final int TOK_TEMPLATE = TOK_STATE + 1;
   public static final int TOK_TEMPL_CLOSE = TOK_TEMPLATE + 1;
   public static final int TOK_TEMPL_OPEN = TOK_TEMPL_CLOSE + 1;

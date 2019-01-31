@@ -1,0 +1,24 @@
+// returns (int) floor(log3(val))
+
+template log3<T> {
+  func Tiny log3<T> (T val) {
+    // only defined for val > 0
+    return sign<T>(val) ? log3check<T>(val, 3, 0) : null
+  }
+
+  func Tiny log3check<T> (T val, T power, Tiny log) {
+    // if the power trit has shifted enough we are done
+    done = isLess[cmp<T>(val, power)]
+    return done ? log : log3checkMore<T>(val, power, log)
+  }
+
+  func Tiny log3checkMore<T> (T val, T power, Tiny log) {
+    // when power trit shifted out of T entirely we are done as well
+    done = isZero[sign<T>(power)]
+    return done ? log : log3checkNext<T>(val, power, log)
+  }
+
+  func Tiny log3checkNext<T>(T val, T power, Tiny log) {
+    return log3check<T>(val, rshift<T>(power), incr<Tiny>(log))
+  }
+}

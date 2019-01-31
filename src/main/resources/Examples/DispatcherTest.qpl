@@ -39,3 +39,4 @@ func Int lastOne (Int val) {
 }
 
 eval firstOne(12)
+eval firstOne(13)

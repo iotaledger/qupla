@@ -156,7 +156,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
       int index = codePage[page].indexOf(c);
       if (index >= 0)
       {
-        return putTrits(codePageId[page]).putTrits(TritConverter.tryteValue[index]);
+        return putTrits(codePageId[page]).putTrits(TritConverter.TRYTE_TRITS[index]);
       }
     }
 

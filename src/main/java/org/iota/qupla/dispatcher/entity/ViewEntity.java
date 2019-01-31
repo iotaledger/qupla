@@ -1,4 +1,6 @@
-package org.iota.qupla.dispatcher;
+package org.iota.qupla.dispatcher.entity;
+
+import java.awt.event.WindowAdapter;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -8,10 +10,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import org.iota.qupla.dispatcher.Dispatcher;
+import org.iota.qupla.dispatcher.Entity;
+import org.iota.qupla.dispatcher.Environment;
+import org.iota.qupla.dispatcher.entity.helper.ViewModel;
 import org.iota.qupla.helper.TritVector;
 
 public class ViewEntity extends Entity
 {
+  public static WindowAdapter windowAdapter;
   public String envName;
   public JFrame frame;
   public ViewModel input;
@@ -59,6 +66,7 @@ public class ViewEntity extends Entity
     mainPanel.add(scroller);
 
     frame = new JFrame(envName);
+    frame.addWindowListener(windowAdapter);
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.add(mainPanel);
     frame.pack();
@@ -72,7 +80,7 @@ public class ViewEntity extends Entity
     model.fireTableRowsInserted(size, size);
 
     // return null, no need to propagate, we only log inputValue
-    return nullVector;
+    return null;
   }
 
   public void updateWidths(final JTable table, final ViewModel model)

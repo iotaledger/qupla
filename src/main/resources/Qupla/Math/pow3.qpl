@@ -1,0 +1,12 @@
+// returns 3^power
+
+template pow3<T> {
+  func T pow3<T> (Tiny power) {
+    // only defined for power >= 0
+    return notNegative[sign<Tiny>(power)] ? pow3loop<T>(1, power) : null
+  }
+
+  func T pow3loop<T> (T val, Tiny power) {
+    return isZero[sign<Tiny>(power)] ? val : pow3loop<T>(rshift<T>(val), decr<Tiny>(power))
+  }
+}

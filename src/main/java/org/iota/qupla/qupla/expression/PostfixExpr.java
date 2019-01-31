@@ -25,7 +25,11 @@ public class PostfixExpr extends BaseSubExpr
     case Token.TOK_FLOAT:
     case Token.TOK_NUMBER:
     case Token.TOK_MINUS:
-      expr = new VectorExpr(tokenizer);
+      expr = new ValueExpr(tokenizer);
+      return;
+
+    case Token.TOK_SIZEOF:
+      expr = new SizeofExpr(tokenizer);
       return;
     }
 

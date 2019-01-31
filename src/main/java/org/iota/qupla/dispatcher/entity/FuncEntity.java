@@ -1,7 +1,10 @@
-package org.iota.qupla.dispatcher;
+package org.iota.qupla.dispatcher.entity;
 
 import java.util.Collection;
 
+import org.iota.qupla.dispatcher.Dispatcher;
+import org.iota.qupla.dispatcher.Entity;
+import org.iota.qupla.dispatcher.Environment;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.QuplaEvalContext;
 import org.iota.qupla.qupla.expression.AffectExpr;

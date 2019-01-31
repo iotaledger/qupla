@@ -2,6 +2,7 @@ package org.iota.qupla.qupla.statement;
 
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.expression.FuncExpr;
+import org.iota.qupla.qupla.expression.ValueExpr;
 import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
@@ -28,7 +29,7 @@ public class ExecStmt extends BaseExpr
 
     if (test)
     {
-      expected = new VectorExpr(tokenizer);
+      expected = new ValueExpr(tokenizer);
       expected.expect(tokenizer, Token.TOK_EQUAL, "'='");
     }
 
