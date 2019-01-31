@@ -1,9 +1,8 @@
-package org.iota.qupla.dispatcher;
+package org.iota.qupla.dispatcher.entity.helper;
 
 import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
-import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.statement.TypeStmt;
@@ -13,7 +12,7 @@ public class ViewModel extends AbstractTableModel
   public int columns;
   public boolean edit;
   public TypeStmt typeInfo;
-  final ArrayList<TritVector> vectors = new ArrayList<>();
+  public final ArrayList<TritVector> vectors = new ArrayList<>();
 
   public ViewModel(final TypeStmt typeInfo)
   {
@@ -78,7 +77,7 @@ public class ViewModel extends AbstractTableModel
 
     final BaseExpr field = typeInfo.struct.fields.get(col);
     final TritVector slice = vector.slice(offset, field.size);
-    return TritConverter.toDecimal(slice.trits()).toString();
+    return slice.toDecimal();
   }
 
   @Override

@@ -39,20 +39,23 @@ public class ConstFactor extends BaseSubExpr
     case Token.TOK_NUMBER:
       expr = new ConstNumber(tokenizer);
       return;
+    }
 
-    case Token.TOK_NAME:
-      expr = new ConstTypeName(tokenizer);
-      while (tokenizer.tokenId() == Token.TOK_DOT)
-      {
-        tokenizer.nextToken();
-
-        fields.add(new NameExpr(tokenizer, "field name"));
-      }
+    final Token varName = expect(tokenizer, Token.TOK_NAME, "variable name");
+    name = varName.text;
+    if (tokenizer.tokenId() == Token.TOK_FUNC_OPEN || tokenizer.tokenId() == Token.TOK_TEMPL_OPEN)
+    {
+      expr = new ConstFuncExpr(tokenizer, varName);
       return;
     }
 
-    expect(tokenizer, 0, "name, number, '-', or '('");
+    expr = new ConstTypeName(tokenizer, varName);
+    while (tokenizer.tokenId() == Token.TOK_DOT)
+    {
+      tokenizer.nextToken();
 
+      fields.add(new NameExpr(tokenizer, "field name"));
+    }
   }
 
   @Override

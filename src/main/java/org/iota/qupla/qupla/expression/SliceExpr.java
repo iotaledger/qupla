@@ -67,7 +67,7 @@ public class SliceExpr extends BaseExpr
     startOffset.analyze();
     if (startOffset.size < 0 || startOffset.size >= size)
     {
-      startOffset.error("Invalid slice start offset");
+      startOffset.error("Invalid slice start offset: " + startOffset.size);
     }
 
     // at least a single indexed trit

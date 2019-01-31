@@ -243,7 +243,7 @@ public class AbraToVerilogContext extends AbraBaseContext
         continue;
       }
 
-      appendVector(TritConverter.tryteValue[i]).append(": ").append(lutName).append(" = ");
+      appendVector(TritConverter.TRYTE_TRITS[i]).append(": ").append(lutName).append(" = ");
       appendVector("" + trit).append(";").newline();
     }
 

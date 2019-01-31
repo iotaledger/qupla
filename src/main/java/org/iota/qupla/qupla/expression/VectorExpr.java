@@ -4,14 +4,13 @@ import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
-import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 
-public class VectorExpr extends BaseExpr
+public abstract class VectorExpr extends BaseExpr
 {
   public TritVector vector;
 
-  private VectorExpr(final VectorExpr copy)
+  protected VectorExpr(final VectorExpr copy)
   {
     super(copy);
 
@@ -25,24 +24,11 @@ public class VectorExpr extends BaseExpr
     vector = new TritVector(0, '@');
 
     name = "";
-    if (tokenizer.tokenId() == Token.TOK_MINUS)
-    {
-      name = "-";
-      tokenizer.nextToken();
-    }
-
-    if (tokenizer.tokenId() == Token.TOK_NUMBER || tokenizer.tokenId() == Token.TOK_FLOAT)
-    {
-      name += tokenizer.currentToken().text;
-      tokenizer.nextToken();
-    }
   }
 
   @Override
   public void analyze()
   {
-    removeLeadingZeroes();
-
     // are we assigning to a known type?
     if (constTypeInfo == null)
     {
@@ -81,65 +67,8 @@ public class VectorExpr extends BaseExpr
   }
 
   @Override
-  public BaseExpr clone()
-  {
-    return new VectorExpr(this);
-  }
-
-  @Override
   public void eval(final QuplaBaseContext context)
   {
     context.evalVector(this);
-  }
-
-  private void removeLeadingZeroes()
-  {
-    if (name.equals("-"))
-    {
-      // just a single trit
-      return;
-    }
-
-    // strip and save starting minus sign
-    final boolean negative = name.startsWith("-");
-    if (negative)
-    {
-      name = name.substring(1);
-    }
-
-    // strip leading zeroes
-    while (name.startsWith("0"))
-    {
-      name = name.substring(1);
-    }
-
-    // decimal point?
-    final int dot = name.indexOf('.');
-    if (dot >= 0)
-    {
-      // strip trailing zeroes
-      while (name.endsWith("0"))
-      {
-        name = name.substring(0, name.length() - 1);
-      }
-
-      // strip trailing dot
-      if (name.endsWith("."))
-      {
-        name = name.substring(0, name.length() - 1);
-      }
-    }
-
-    // re-insert at least one leading zero?
-    if (name.length() == 0 || name.startsWith("."))
-    {
-      name = "0" + name;
-    }
-
-    // restore minus sign?
-    if (negative && !name.equals("0"))
-    {
-      name = "-" + name;
-    }
   }
 }

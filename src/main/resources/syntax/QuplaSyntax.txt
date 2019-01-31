@@ -63,7 +63,7 @@ MergeExpr ::= ConcatExpr ('|' ConcatExpr)*
 
 ConcatExpr ::= PostfixExpr ('&' PostfixExpr)*
 
-PostfixExpr ::= SubExpr | VectorExpr | SliceExpr | FuncExpr | LutExpr | TypeExpr
+PostfixExpr ::= SubExpr | VectorExpr | SliceExpr | FuncExpr | LutExpr | SizeofExpr | TypeExpr
 
 SubExpr ::= '(' CondExpr ')'
 
@@ -74,6 +74,8 @@ SliceExpr ::= (varName | paramName) ('.' NameExpr)* ('[' ConstExpr (':' ConstExp
 FuncExpr ::= funcName ('<' ConstTypeName (',' ConstTypeName)* '>')? '(' (CondExpr (',' CondExpr)*) ')'
 
 LutExpr ::= lutName '[' (MergeExpr (',' MergeExpr)*) ']'
+
+SizeofExpr ::= 'sizeof' ConstTypeName
 
 TypeExpr ::= ConstTypeName '{' FieldExpr+ '}'
 

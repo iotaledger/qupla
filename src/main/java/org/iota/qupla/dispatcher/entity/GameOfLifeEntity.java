@@ -1,4 +1,4 @@
-package org.iota.qupla.dispatcher;
+package org.iota.qupla.dispatcher.entity;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,6 +21,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.text.NumberFormatter;
+import org.iota.qupla.dispatcher.Dispatcher;
+import org.iota.qupla.dispatcher.Entity;
+import org.iota.qupla.dispatcher.Environment;
 import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 
@@ -66,6 +69,7 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
     idPanel.add(entry);
 
     frame = new JFrame("Game of Life");
+    frame.addWindowListener(ViewEntity.windowAdapter);
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setLayout(new BorderLayout());
     frame.add(idPanel, BorderLayout.PAGE_START);
@@ -202,6 +206,6 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
     }
 
     // return null, no need to propagate, we only log inputValue
-    return nullVector;
+    return null;
   }
 }

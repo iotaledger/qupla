@@ -6,8 +6,6 @@ import org.iota.qupla.helper.TritVector;
 
 public abstract class Entity
 {
-  public static final TritVector nullVector = new TritVector(1, '@');
-
   public final ArrayList<Effect> effects = new ArrayList<>();
   public String id;
   public int invoked;
@@ -66,7 +64,7 @@ public abstract class Entity
   {
     // have the entity process the value
     final TritVector returnValue = runWave(inputValue);
-    if (returnValue.isNull())
+    if (returnValue == null || returnValue.isNull())
     {
       // propagation stops if null is returned (no data flow)
       return;

@@ -1,65 +1,4 @@
-type State [Hash3]
-
-// this is a function that takes a trit vector of State [729],
-// but we don't need to constantly repeat that size since we
-// already established the size at the top of the file
-
-// a function returns the value of its last statement,
-// which in this case is a concatenation (comma operator)
-// of the input state and the result of the transform() function
-
-// note that this function does not need curly braces around its single statement
-//      curly braces are only necessary when grouping multiple statements
-type State2 [State * 2]
-func State2 digest(State s) {
-  return s & transform(s, 81)
-}
-
-
-
-func State transform(State s, Tiny round) {
-  // assume subXxx() is a function that performs subtraction on
-  // trit vectors of size X and also returns a trit vector size X
-  roundMinusOne = decr<Tiny>(round)
-
-  // assume equalXxx() is a function that performs comparison on
-  // trit vectors of size X and returns a trit containing a binary
-  // boolean value of 0 (false) or 1 (true)
-  roundZero = equal<Tiny>(roundMinusOne, 0)
-
-  // calculate the new state for this round
-  newState = curlRound(s)
-
-  // here comes the interesting part, we're going to use a merger operation,
-  // which is an operation that returns the single operand that is non-null
-  // note that a merger will fail when multiple operands are non-null
-
-  // this line will return newState when roundMinusOne was determined
-  // to be zero and null otherwise
-  stateOut = roundZero ? newState : null
-
-  // this line will return newState when roundMinusOne was determined
-  // to be non-zero and null otherwise
-  stateNext = not[roundZero] ? newState : null
-
-  // this line will only return roundMinusone when it was non-zero
-  // and otherwise returns null
-  roundNext = not[roundZero] ? roundMinusOne : null
-
-  // recursively call transform to execute the next round
-  // note that this will only execute if either of stateNext and roundNext
-  // are non-null, otherwise it will not execute and a null return value
-  // is assumed, so this is essentially a conditional execution
-  stateFinal = transform(stateNext, roundNext)
-
-  // merge the two branches by returning the one that is non-null
-  // so this is kind of an implied if-then-else, because it will
-  // either return stateOut or stateFinal
-  return stateOut | stateFinal
-}
-
-
-// now follows the actual implementation of a single Curl round
+import Qupla
 
 // LUT logic: curl the 2 input trits onto an output trit
 lut curl {
@@ -74,8 +13,39 @@ lut curl {
   1,1 = 0
 }
 
+type CurlState [Hash3]
+type CurlResult {
+  curlState [CurlState]
+  hash [Hash]
+}
+
+func CurlState curlAbsorb(CurlState curlState, Hash hash, Tiny rounds)
+{
+  return curlTransform(hash & curlState[Hash : CurlState - Hash], rounds)
+}
+
+func CurlResult curlSqueeze(CurlState curlState, Tiny rounds)
+{
+  return CurlResult {
+    curlState = curlTransform(curlState, rounds)
+    hash = curlState[0 : Hash]
+  }
+}
+
+func CurlState curlTransform(CurlState curlState, Tiny rounds) {
+  zero = isZero[sign<Tiny>(rounds)]
+  return zero ? curlState : curlTransformLoop(curlState, rounds)
+}
+
+func CurlState curlTransformLoop(CurlState scratch, Tiny rounds)
+{
+  nextState = curlTransformRound(scratch)
+  nextRound = decr<Tiny>(rounds)
+  return curlTransform(nextState, nextRound)
+}
+
 // a very dumb and straightforward implementation that curls all 729 state trits
-func State curlRound(State s) {
+func CurlState curlTransformRound(CurlState s) {
   // we use the curl LUT for each of the 729 individual pairs of trits,
   // and concatenate the resulting trits into a 729 trit return value
   return curl[s[  0], s[364]] &
@@ -809,6 +779,19 @@ func State curlRound(State s) {
     curl[s[365], s[  0]]
 }
 
+test 0 = curlTransform(0, 81)
 
-// do an 81-round Curl hash on 123456
-eval transform(123456, 81)
+eval curlTransform(123456, 0)
+eval curlTransform(123456, 1)
+eval curlTransform(123456, 2)
+eval curlTransform(123456, 3)
+eval curlTransform(123456, 4)
+eval curlTransform(123456, 5)
+eval curlTransform(123456, 6)
+eval curlTransform(123456, 7)
+eval curlTransform(123456, 8)
+eval curlTransform(123456, 9)
+eval curlTransform(123456, 27)
+
+// do an 81-round Curl hash
+eval curlTransform(123456, 81)

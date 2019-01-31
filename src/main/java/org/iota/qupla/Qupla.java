@@ -1,14 +1,16 @@
 package org.iota.qupla;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.iota.qupla.abra.context.AbraEvalContext;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.dispatcher.Entity;
-import org.iota.qupla.dispatcher.FuncEntity;
-import org.iota.qupla.dispatcher.GameOfLifeEntity;
-import org.iota.qupla.dispatcher.ViewEntity;
+import org.iota.qupla.dispatcher.entity.FuncEntity;
+import org.iota.qupla.dispatcher.entity.GameOfLifeEntity;
+import org.iota.qupla.dispatcher.entity.ViewEntity;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.exception.ExitException;
 import org.iota.qupla.helper.TritConverter;
@@ -31,6 +33,8 @@ import org.iota.qupla.qupla.statement.UseStmt;
 
 public class Qupla
 {
+  private static Dispatcher dispatcher;
+  private static ArrayList<BaseExpr> expressions = new ArrayList<>();
   private static final String[] flags = {
       "-abra",
       "-echo",
@@ -41,11 +45,12 @@ public class Qupla
       "-tree",
       "-view",
       };
+  private static int openWindows;
   private static final HashSet<String> options = new HashSet<>();
   private static QuplaToAbraContext quplaToAbraContext;
   private static QuplaModule singleModule;
 
-  private static BaseExpr analyzeExpression(final String statement)
+  private static void analyzeExpression(final String statement)
   {
     final Tokenizer tokenizer = new Tokenizer();
     tokenizer.lines.add(statement);
@@ -53,7 +58,7 @@ public class Qupla
     tokenizer.nextToken();
     final BaseExpr expr = new MergeExpr(tokenizer).optimize();
     expr.analyze();
-    return expr;
+    expressions.add(expr);
   }
 
   private static void codeException(final CodeException ex)
@@ -98,10 +103,13 @@ public class Qupla
     throw new ExitException();
   }
 
-  private static void evalExpression(final String statement)
+  private static void evalExpressions()
   {
-    log("\nEvaluate: " + statement);
-    runEval(analyzeExpression(statement));
+    for (final BaseExpr expr : expressions)
+    {
+      log("\nEvaluate: " + expr);
+      runEval(expr);
+    }
   }
 
   public static void log(final String text)
@@ -111,6 +119,8 @@ public class Qupla
 
   public static void main(final String[] args)
   {
+    setupWindowAdapter();
+
     try
     {
       try
@@ -160,17 +170,13 @@ public class Qupla
 
         singleModule.analyze();
 
-        processOptions();
+        log("Start dispatcher");
+        dispatcher = Dispatcher.getInstance();
+        FuncEntity.addEntities(dispatcher, QuplaModule.allModules.values());
 
-        for (final String arg : args)
-        {
-          // interpret as expression to be evaluated
-          // can be a function call, but also an expression surrounded by ( and )
-          if (arg.contains("("))
-          {
-            evalExpression(arg);
-          }
-        }
+        processOptions();
+        evalExpressions();
+        stopDispatcher();
       }
       catch (final CodeException ex)
       {
@@ -281,10 +287,6 @@ public class Qupla
       final FuncExpr funcExpr = (FuncExpr) expr;
       if (funcExpr.func.envExprs.size() != 0)
       {
-        // there may be affect statements in there
-        final Dispatcher dispatcher = Dispatcher.getInstance();
-        FuncEntity.addEntities(dispatcher, QuplaModule.allModules.values());
-
         if (options.contains("-view"))
         {
           // add a viewer for every known environment
@@ -344,7 +346,7 @@ public class Qupla
 
     expr.eval(context);
 
-    final String value = TritConverter.toDecimal(context.value.trits()).toString();
+    final String value = context.value.toDecimal();
     if (!value.equals(Integer.toString(result)))
     {
       lhsArg.name = Integer.toString(lhs);
@@ -434,6 +436,35 @@ public class Qupla
   {
     log("Run Tree Viewer");
     new QuplaTreeViewerContext().eval(singleModule);
+  }
+
+  private static void setupWindowAdapter()
+  {
+    ViewEntity.windowAdapter = new WindowAdapter()
+    {
+      @Override
+      public void windowClosed(final WindowEvent windowEvent)
+      {
+        openWindows--;
+        stopDispatcher();
+      }
+
+      @Override
+      public void windowOpened(final WindowEvent windowEvent)
+      {
+        openWindows++;
+      }
+    };
+  }
+
+  private static void stopDispatcher()
+  {
+    if (openWindows == 0)
+    {
+      log("Stop dispatcher");
+      dispatcher.cancel();
+    }
+
   }
 
   public static String toString(final TritVector value, final TypeStmt typeInfo)

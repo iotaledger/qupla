@@ -1,5 +1,3 @@
-use map<Hash, Transaction>
-
 func Transaction keyValue(Trit cmd, Hash key, Transaction value) {
   return map<Hash, Transaction>(cmd, key, value)
 }

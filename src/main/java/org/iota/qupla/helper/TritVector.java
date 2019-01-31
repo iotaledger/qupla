@@ -23,11 +23,27 @@ public class TritVector
     vector = copy.vector;
   }
 
-  public TritVector(final String trits)
+  public TritVector(final int size)
   {
-    size = trits.length();
+    this.size = size;
     valueTrits = size;
     vector = new TritVectorBuffer(size);
+  }
+
+  public TritVector(final int[] trits)
+  {
+    this(trits.length);
+
+    for (int i = 0; i < size; i++)
+    {
+      vector.buffer[i] = "-01".charAt(trits[i] + 1);
+    }
+  }
+
+  public TritVector(final String trits)
+  {
+    this(trits.length());
+
     for (int i = 0; i < size; i++)
     {
       vector.buffer[i] = trits.charAt(i);
@@ -72,12 +88,12 @@ public class TritVector
 
   private TritVector(final TritVector lhs, final TritVector rhs)
   {
-    size = lhs.size() + rhs.size();
-    valueTrits = lhs.valueTrits + rhs.valueTrits;
-    vector = new TritVectorBuffer(size);
+    this(lhs.size() + rhs.size());
 
     copy(lhs, 0);
     copy(rhs, lhs.size());
+
+    valueTrits = lhs.valueTrits + rhs.valueTrits;
   }
 
   public static TritVector concat(final TritVector lhs, final TritVector rhs)
@@ -123,6 +139,26 @@ public class TritVector
     final TritVector result = new TritVector(lhs);
     result.size += rhs.size();
     result.valueTrits += rhs.valueTrits;
+    return result;
+  }
+
+  public static TritVector fromTrytes(final String trytes)
+  {
+    final TritVector result = new TritVector(trytes.length() * 3);
+
+    int offset = 0;
+    for (int i = 0; i < trytes.length(); i++)
+    {
+      final int index = TritConverter.TRYTES.indexOf(trytes.charAt(i));
+      final String trits = TritConverter.TRYTE_TRITS[index];
+      for (int j = 0; j < 3; j++)
+      {
+        result.vector.buffer[offset + j] = trits.charAt(j);
+      }
+
+      offset += 3;
+    }
+
     return result;
   }
 
@@ -257,11 +293,50 @@ public class TritVector
     return TritVector.concat(slice(start, remain), paddedZeroes);
   }
 
+  public String toDecimal()
+  {
+    return TritConverter.toDecimal(trits()).toString();
+  }
+
   @Override
   public String toString()
   {
     final String varName = name != null ? name + ": " : "";
-    return varName + "(" + TritConverter.toDecimal(trits()).toString() + ") " + trits();
+    return varName + "(" + toDecimal() + ") " + trits();
+  }
+
+  public String toTrytes()
+  {
+    final char[] buffer = new char[(size + 2) / 3];
+    int start = offset;
+    final char[] trits = new char[3];
+    final int trytes = size / 3;
+    for (int i = 0; i < trytes; i++)
+    {
+      for (int j = 0; j < 3; j++)
+      {
+        trits[j] = vector.buffer[start + j];
+      }
+
+      buffer[i] = tryte(trits);
+      start += 3;
+    }
+
+    if (buffer.length > trytes)
+    {
+      // do remaining 1 or 2 trits
+      trits[1] = '0';
+      trits[2] = '0';
+      final int end = trytes * 3;
+      for (int i = end; i < size; i++)
+      {
+        trits[i - end] = vector.buffer[offset + i];
+      }
+
+      buffer[trytes] = tryte(trits);
+    }
+
+    return new String(buffer);
   }
 
   public char trit(final int index)
@@ -277,6 +352,47 @@ public class TritVector
   public String trits()
   {
     return new String(vector.buffer, offset, size());
+  }
+
+  private char tryte(final char[] trits)
+  {
+    // unroll 3-char loop with multiplications
+
+    int value = 13;
+    switch (trits[0])
+    {
+    case '-':
+      value--;
+      break;
+
+    case '1':
+      value++;
+      break;
+    }
+
+    switch (trits[1])
+    {
+    case '-':
+      value -= 3;
+      break;
+
+    case '1':
+      value += 3;
+      break;
+    }
+
+    switch (trits[2])
+    {
+    case '-':
+      value -= 9;
+      break;
+
+    case '1':
+      value += 9;
+      break;
+    }
+
+    return TritConverter.TRYTES.charAt(value);
   }
 
   static

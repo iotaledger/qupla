@@ -7,10 +7,8 @@ import org.iota.qupla.exception.CodeException;
 
 public class TritConverter
 {
-  private static final ArrayList<Integer> powerDigits = new ArrayList<>();
-  private static final ArrayList<BigInteger> powers = new ArrayList<>();
-  private static final BigInteger three = new BigInteger("3");
-  public static final String[] tryteValue = {
+  public static final String TRYTES = "NOPQRSTUVWXYZ0ABCDEFGHIJKLM";
+  public static final String[] TRYTE_TRITS = {
       "---",
       "0--",
       "1--",
@@ -39,6 +37,9 @@ public class TritConverter
       "011",
       "111"
   };
+  private static final ArrayList<Integer> powerDigits = new ArrayList<>();
+  private static final ArrayList<BigInteger> powers = new ArrayList<>();
+  private static final BigInteger three = new BigInteger("3");
 
   public static String fromDecimal(final String decimal)
   {
@@ -341,6 +342,84 @@ public class TritConverter
     }
 
     return result;
+  }
+
+  public static String tritsToTrytes(final int[] trits)
+  {
+    final int size = trits.length / 3;
+    final char[] buffer = new char[size];
+    int offset = 0;
+    for (int i = 0; i < size; i++)
+    {
+      final int index = trits[offset] + trits[offset + 1] * 3 + trits[offset + 2] * 9;
+      buffer[i] = TRYTES.charAt(index + 13);
+      offset += 3;
+    }
+
+    return new String(buffer);
+  }
+
+  public static TritVector tritsToVector(final int[] trits)
+  {
+    return new TritVector(trits);
+  }
+
+  public static int[] trytesToTrits(final String trytes)
+  {
+    final int[] result = new int[trytes.length() * 3];
+    int offset = 0;
+    for (int i = 0; i < trytes.length(); i++)
+    {
+      final int index = TRYTES.indexOf(trytes.charAt(i));
+      final String trits = TRYTE_TRITS[index];
+      for (int j = 0; j < 3; j++)
+      {
+        switch (trits.charAt(j))
+        {
+        case '1':
+          result[offset + j] = 1;
+          break;
+
+        case '-':
+          result[offset + j] = -1;
+          break;
+        }
+      }
+
+      offset += 3;
+    }
+
+    return result;
+  }
+
+  public static TritVector trytesToVector(final String trytes)
+  {
+    return TritVector.fromTrytes(trytes);
+  }
+
+  public static int[] vectorToTrits(final TritVector vector)
+  {
+    final int[] result = new int[vector.size()];
+    for (int i = 0; i < result.length; i++)
+    {
+      switch (vector.trit(i))
+      {
+      case '1':
+        result[i] = 1;
+        break;
+
+      case '-':
+        result[i] = -1;
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  public static String vectorToTrytes(final TritVector vector)
+  {
+    return vector.toTrytes();
   }
 
   private static String zeroes(final int size)
