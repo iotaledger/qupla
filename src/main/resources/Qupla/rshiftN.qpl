@@ -1,5 +1,7 @@
 // returns n < 0 ? val << -n : val >> n
 
+// special thanks to our community member hello_world for the inspiration
+
 template rshiftN<T> {
   // P is largest power of 3 smaller than T
   type P [pow3<Int>(log3<Int>(decr<Int>(sizeof T)))]
@@ -39,7 +41,7 @@ template rshiftN3<T, P> {
   func T rshiftN2<T, P> (T val, Tiny n)
   {
     // go to next-lower power of 3?
-    //TODO use 1 trit of n to determine this once we know log3(P)
+    //TODO use 1 or 2 trits of n to determine this once we know log3(P)
     //     similar to how we do it in rshiftN2<T, Trit>() above
     less = isLess[cmp<Tiny>(n, sizeof P)]
     return less ? rshiftN2<T, Q>(val, n) : rshiftN2Shift<T, P>(val, n)

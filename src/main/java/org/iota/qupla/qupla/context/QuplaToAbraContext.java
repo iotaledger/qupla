@@ -42,8 +42,9 @@ public class QuplaToAbraContext extends QuplaBaseContext
 {
   public AbraModule abraModule = new AbraModule();
   private int bodies;
-  private AbraBlockBranch branch;
+  public AbraBlockBranch branch;
   private AbraBaseSite lastSite;
+  private AbraBaseSite nullifySite;
   private final Stack<AbraBaseSite> stack = new Stack<>();
   private BaseExpr stmt;
 
@@ -62,6 +63,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
     branch.sites.add(site);
     lastSite = site;
+    nullifySite = site;
   }
 
   @Override
@@ -169,7 +171,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
     // note that actual insertion of nullifyTrue(condition, ...)
     // is done after nullify position has been optimized
-    trueBranch.nullifyTrue = condition;
+    nullifySite.nullifyTrue = condition;
 
     // create a site for trueBranch ( | falseBranch)
     final AbraSiteMerge merge = new AbraSiteMerge();
@@ -183,12 +185,14 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
       // note that actual insertion of nullifyFalse(condition, ...)
       // is done after nullify position has been optimized
-      falseBranch.nullifyFalse = condition;
+      nullifySite.nullifyFalse = condition;
 
       merge.inputs.add(falseBranch);
     }
 
     addSite(merge);
+
+    nullifySite = condition;
   }
 
   @Override

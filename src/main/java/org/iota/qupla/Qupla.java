@@ -269,7 +269,7 @@ public class Qupla
     if (options.contains("-abra"))
     {
       final AbraEvalContext abraEvalContext = new AbraEvalContext();
-      abraEvalContext.eval(quplaToAbraContext.abraModule, expr);
+      abraEvalContext.eval(quplaToAbraContext, expr);
       context.value = abraEvalContext.value;
     }
     else
@@ -394,7 +394,7 @@ public class Qupla
     if (options.contains("-abra"))
     {
       final AbraEvalContext abraEvalContext = new AbraEvalContext();
-      abraEvalContext.eval(quplaToAbraContext.abraModule, exec.expr);
+      abraEvalContext.eval(quplaToAbraContext, exec.expr);
       context.value = abraEvalContext.value;
     }
     else

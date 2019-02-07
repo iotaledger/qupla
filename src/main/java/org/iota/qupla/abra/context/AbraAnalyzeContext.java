@@ -145,24 +145,26 @@ public class AbraAnalyzeContext extends AbraBaseContext
       return false;
     }
 
-    return evalBranchSpecialConstantZero(branch) || //
+    final boolean special = evalBranchSpecialConstantZero(branch) || //
         evalBranchSpecialConstantNonZero(branch) || //
         evalBranchSpecialNullify(branch) || //
         evalBranchSpecialSlice(branch);
+
+    return special;
   }
 
   private boolean evalBranchSpecialConstantNonZero(final AbraBlockBranch branch)
   {
-    // nonzero constant function has 1 input, multiple sites, and 1 output
-    if (branch.inputs.size() != 1 || branch.sites.size() < 2 || branch.outputs.size() != 1)
+    if (branch.inputs.size() != 1 || branch.sites.size() == 0 || branch.outputs.size() != 1)
     {
+      // nonzero constant function has 1 input, one or more sites, and 1 output
       return false;
     }
 
-    // input is any single trit that triggers data flow
-    final AbraBaseSite inputTrit = branch.inputs.get(0);
-    if (inputTrit.size != 1)
+    final AbraBaseSite singleTrit = branch.inputs.get(0);
+    if (singleTrit.size != 1)
     {
+      //  input must be a single trit
       return false;
     }
 
@@ -182,7 +184,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       // all inputs triggered by input trit
       for (final AbraBaseSite input : knot.inputs)
       {
-        if (input != inputTrit)
+        if (input != singleTrit)
         {
           return false;
         }
@@ -200,8 +202,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
     {
       return false;
     }
-
-    //TODO could verify that all knot.inputs are all branch.sites
 
     check(branch.name != null && branch.name.startsWith("const_"));
 
@@ -224,10 +224,10 @@ public class AbraAnalyzeContext extends AbraBaseContext
       return false;
     }
 
-    // input is any single trit that triggers data flow
-    final AbraBaseSite inputTrit = branch.inputs.get(0);
-    if (inputTrit.size != 1)
+    final AbraBaseSite singleTrit = branch.inputs.get(0);
+    if (singleTrit.size != 1)
     {
+      //  input must be a single trit
       return false;
     }
 
@@ -248,7 +248,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       // all inputs triggered by input trit
       for (final AbraBaseSite input : knot.inputs)
       {
-        if (input != inputTrit)
+        if (input != singleTrit)
         {
           return false;
         }
@@ -266,21 +266,46 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
   private boolean evalBranchSpecialNullify(final AbraBlockBranch branch)
   {
-    if (branch.sites.size() != 0 || branch.outputs.size() == 0)
+    if (branch.inputs.size() != 2)
     {
       return false;
     }
 
-    // nullify function has 1 input more than outputs
-    if (branch.inputs.size() != branch.outputs.size() + 1)
-    {
-      return false;
-    }
-
-    // first input is the boolean flag
     final AbraBaseSite inputFlag = branch.inputs.get(0);
     if (inputFlag.size != 1)
     {
+      // first input must be a Bool flag
+      return false;
+    }
+
+    switch (branch.outputs.size())
+    {
+    case 1:
+      if (branch.sites.size() != 0)
+      {
+        // nullifyXxx_1 has no sites
+        return false;
+      }
+      break;
+
+    case 2:
+      if (branch.sites.size() != 2)
+      {
+        // nullifyXxx_N where N != 1 has 2 sites
+        return false;
+      }
+      break;
+
+    case 3:
+      if (branch.sites.size() != 3)
+      {
+        // nullifyXxx_N where N != 1 has 3 sites
+        return false;
+      }
+      break;
+
+    default:
+      // no other possibilities
       return false;
     }
 
@@ -298,7 +323,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     for (int i = 0; i < branch.outputs.size(); i++)
     {
-      final AbraBaseSite output = branch.outputs.get(0);
+      final AbraBaseSite output = branch.outputs.get(i);
       if (!(output instanceof AbraSiteKnot))
       {
         return false;
@@ -307,13 +332,34 @@ public class AbraAnalyzeContext extends AbraBaseContext
       final AbraSiteKnot knot = (AbraSiteKnot) output;
       if (knot.block.specialType != type)
       {
-        // must be same nullify type
+        // must all be same nullify type
         return false;
       }
 
-      if (knot.inputs.get(0) != inputFlag || knot.inputs.get(1) != branch.inputs.get(i + 1))
+      if (knot.inputs.get(0) != inputFlag)
       {
+        // everyone should refer the input flag
         return false;
+      }
+
+      if (branch.sites.size() != 0)
+      {
+        final AbraBaseSite slice = branch.sites.get(i);
+        if (knot.inputs.get(1) != slice)
+        {
+          // should refer a specific slice operation
+          return false;
+        }
+
+        //TODO verify that this is a slice operation
+      }
+      else
+      {
+        if (knot.inputs.get(1) != branch.inputs.get(i + 1))
+        {
+          // should refer a specific input
+          return false;
+        }
       }
 
       //TODO double-check number of knot inputs (2 or 3) against knot type (branch or lut)?

@@ -1,0 +1,103 @@
+import Qupla
+
+// sqrtFloor(n) returns floor(sqrt(n))
+// Does trichotomise-and-merge-branches search
+// by @lunfardo
+
+template sqrtfloor<T>{
+  type T2[T * 2]
+    // returns if x*x <= n
+    func Bool sqrtCheckBound<T>(T n, T x){
+        return notGreater[cmp<T2>(fullMul<T>(x, x), n & as<T>(0))]
+    }
+
+    // returns lower*lower <= n < upper*upper
+    func Bool sqrtInInterval<T>(T n, T lower, T upper){
+        return not[sqrtCheckBound<T>(n, lower)]
+                 ? -
+                 : not[sqrtCheckBound<T>(n, upper)]
+    }
+
+    // performs trichotomised search
+    // in the interval [lower, upper)
+    // if not in the interval, results null
+
+    func T sqrtFindInInterval<T>(T n, T lower, T upper){
+        len = sub<T>(upper, lower)
+        return sqrtInInterval<T>(n, lower, upper)
+                 ? (equal<T>(len, 1)
+                     ? lower
+                     : equal<T>(len, 2)
+                         ? sqrtCheck2values<T>(n, lower)
+                         : sqrtTrichotomy<T>(n, lower, upper)
+                    )
+                 : null
+    }
+
+    // len == 2
+    // checks values lower and lower + 1 if equal to sqrtfloor(n)
+
+    func T sqrtCheck2values<T>(T n, T lower){
+        i1 = incr<T>(lower)
+        i2 = incr<T>(i1)
+        return sqrtFindInInterval<T>(n, lower, i1) | sqrtFindInInterval<T>(n, i1, i2)
+    }
+
+    // len >= 3
+
+    func T sqrtTrichotomy<T>(T n, T lower, T upper){
+        // divide interval into 3
+        div3 = lshift<T>(sub<T>(upper, lower))
+        i1 = add<T>(lower, div3)
+        i2 = add<T>(i1, div3)
+        return sqrtFindInInterval<T>(n, lower, i1)
+            | sqrtFindInInterval<T>(n, i1, i2)
+            | sqrtFindInInterval<T>(n, i2, upper)
+    }
+
+    func T sqrtFloor<T>(T n){
+        return
+             equal<T>(n, 0)
+                ? 0
+                : equal<T>(n, 1)
+                     ? 1
+                     : sqrtFindInInterval<T>(n, 1, n)
+    }
+}
+
+test 0 = sqrtFloor<Int>(0)
+test 1 = sqrtFloor<Int>(1)
+test 1 = sqrtFloor<Int>(2)
+test 1 = sqrtFloor<Int>(3)
+
+test 2 = sqrtFloor<Int>(4)
+test 2 = sqrtFloor<Int>(5)
+test 2 = sqrtFloor<Int>(6)
+test 2 = sqrtFloor<Int>(7)
+test 2 = sqrtFloor<Int>(8)
+
+test 3 = sqrtFloor<Int>(9)
+test 4 = sqrtFloor<Int>(16)
+test 4 = sqrtFloor<Int>(17)
+test 4 = sqrtFloor<Int>(23)
+
+test 5 = sqrtFloor<Int>(25)
+test 5 = sqrtFloor<Int>(26)
+
+test 13 = sqrtFloor<Int>(169)
+
+test 314159 = sqrtFloor<Huge>(add<Huge>(mul<Huge>(314159, 314159), 271828))
+
+test 1 = sqrtFloor<Int>(1)
+test 3 = sqrtFloor<Int>(10)
+test 10 = sqrtFloor<Int>(100)
+test 31 = sqrtFloor<Int>(1000)
+test 100 = sqrtFloor<Int>(10000)
+test 316 = sqrtFloor<Int>(100000)
+test 1000 = sqrtFloor<Int>(1000000)
+test 3162 = sqrtFloor<Int>(10000000)
+test 10000 = sqrtFloor<Int>(100000000)
+test 31622 = sqrtFloor<Int>(1000000000)
+test 100000 = sqrtFloor<Int>(10000000000)
+test 316227 = sqrtFloor<Int>(100000000000)
+test 1000000 = sqrtFloor<Int>(1000000000000)
