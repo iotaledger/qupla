@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.iota.qupla.Qupla;
-import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
@@ -18,8 +17,8 @@ import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.helper.StateValue;
 import org.iota.qupla.helper.TritVector;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
-import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraEvalContext extends AbraBaseContext
@@ -40,30 +39,24 @@ public class AbraEvalContext extends AbraBaseContext
   public TritVector[] stack;
   public TritVector value;
 
-  public void eval(final AbraModule module, final BaseExpr expr)
+  public void eval(final QuplaToAbraContext context, final BaseExpr expr)
   {
     if (expr instanceof FuncExpr)
     {
+      context.abraModule.numberBlocks();
       final FuncExpr funcExpr = (FuncExpr) expr;
-      for (final AbraBlockBranch branch : module.branches)
-      {
-        if (branch.name.equals(funcExpr.name))
-        {
-          args.clear();
-          for (final BaseExpr arg : funcExpr.args)
-          {
-            if (arg instanceof VectorExpr)
-            {
-              args.add(((VectorExpr) arg).vector);
-              continue;
-            }
-
-            error("Expected constant value");
-          }
-
-          branch.eval(this);
-        }
-      }
+      final AbraBlockBranch branch = new AbraBlockBranch();
+      branch.addInputParam(1);
+      context.branch = branch;
+      context.evalFuncCall(funcExpr);
+      final AbraBaseSite site = branch.sites.remove(branch.sites.size() - 1);
+      branch.outputs.add(site);
+      args.clear();
+      args.add(new TritVector(1, '0'));
+      branch.numberSites();
+      branch.eval(this);
+      args.clear();
+      context.branch = null;
     }
   }
 
@@ -133,6 +126,19 @@ public class AbraEvalContext extends AbraBaseContext
         input.eval(this);
       }
     }
+
+    //    if (branch.name != null && branch.name.startsWith("sqrt"))
+    //    {
+    //      String callSign = branch.name;
+    //      boolean first = true;
+    //      for (final AbraBaseSite input : branch.inputs)
+    //      {
+    //        callSign += first ? "(" : ", ";
+    //        first = false;
+    //        callSign += stack[input.index].toDecimal();
+    //      }
+    //      Qupla.log(callSign + ")");
+    //    }
 
     // initialize latches with old values
     for (final AbraBaseSite latch : branch.latches)

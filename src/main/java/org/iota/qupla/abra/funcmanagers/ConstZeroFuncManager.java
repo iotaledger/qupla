@@ -49,7 +49,7 @@ public class ConstZeroFuncManager extends BaseFuncManager
     }
 
     branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
-    branch.constantValue = new TritVector(size, '0');
+    branch.constantValue = new TritVector(inputSize, '0');
 
     return branch;
   }
@@ -82,7 +82,7 @@ public class ConstZeroFuncManager extends BaseFuncManager
     }
 
     branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
-    branch.constantValue = new TritVector(size, '0');
+    branch.constantValue = new TritVector(inputSize, '0');
 
     saveBranch(branch);
   }

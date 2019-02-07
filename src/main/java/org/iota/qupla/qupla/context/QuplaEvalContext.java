@@ -211,6 +211,19 @@ public class QuplaEvalContext extends QuplaBaseContext
   @Override
   public void evalFuncBody(final FuncStmt func)
   {
+    //    if (func.name.startsWith("sqrt"))
+    //    {
+    //      String callSign = func.name;
+    //      boolean first = true;
+    //      for (int i = 0; i <  func.params.size(); i++)
+    //      {
+    //        callSign += first ? "(" : ", ";
+    //        first = false;
+    //        callSign += stack.get(stackFrame + i).toDecimal();
+    //      }
+    //      Qupla.log(callSign + ")");
+    //    }
+
     for (final BaseExpr stateExpr : func.stateExprs)
     {
       stateExpr.eval(this);

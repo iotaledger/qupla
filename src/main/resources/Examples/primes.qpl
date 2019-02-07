@@ -1,0 +1,94 @@
+import Qupla
+
+// checking if a given number is prime
+// need O(sqrt(n)) divMods and multiplications if n is prime
+// by @lunfardo
+
+template Primes<T>{
+    // true if has divisor in the interval [from, to]
+    func  Bool hasDivisor<T> (T n, T from, T to){
+        // we can limit seach of divisors up to sqrtFloor(n)
+        sqrfrom = mul<T>(from, from)
+        compare = cmp<T>(sqrfrom, n)
+        return  isZero[compare]
+                    ? 1
+                    : notGreater[compare]  // <=
+                         ? hasDivisorCheckAll<T>(n, from, to)
+                         : -   // if from*from > n, n has no divisors in the interval [from, to)
+    }
+
+    func Bool isDivisor<T>(T n, T divisor){
+        t = divMod<T>(n, divisor)
+        return equal<T>(t.remainder, 0)
+    }
+
+    func Bool hasDivisorCheckAll<T>(T n, T from, T to){
+        len = sub<T>(to, from)
+        return equal<T>(len, 0)
+                 ? isDivisor<T>(n, from)
+                 : equal<T>(len, 1)
+                     ? (isDivisor<T>(n, from)
+                            ? 1
+                            : isDivisor<T>(n, to)
+                        )
+                     : lookDeeperForDivisors<T>(n, from, to)
+    }
+    // to - from >= 3
+    // does trichotomy
+    func Bool lookDeeperForDivisors<T>(T n, T from, T to){
+        div3 = lshift<T>(sub<T>(to, from))
+        i1 = add<T>(from, div3)
+        i2 = add<T>(i1, div3)
+        return hasDivisor<T>(n, from, i1)
+                 ? 1
+                 : hasDivisor<T>(n, i1, i2)
+                    ? hasDivisor<T>(n, i2, to)
+                    : -
+    }
+
+    func Bool isPrime<T>(T n){
+        return or[equal<T>(n, 1), or[equal<T>(n, 2), equal<T>(n, 3)]]
+                 ? 1
+                 : not[hasDivisor<T>(n, 2, sub<T>(n, 1))]
+                 // : not[hasDivisor<T>(n, 2, sqrtFloor<T>(n))]    // this is correct but not necessary
+    }
+
+    func T primesList<T>(T from, T to){
+        dummy = ( isPrime<T>(from) ? print<T>(from) : as<T>(0)) //
+        return equal<T>(from, to)
+                  ? dummy
+                  : primesList<T>(incr<T>(from), to)
+    }
+}
+
+test 1 = hasDivisor<Int>(8, 1, 3)
+test - = hasDivisor<Int>(8, 3, 4)
+
+test 1 = isPrime<Int>(2)
+test 1 = isPrime<Int>(3)
+test - = isPrime<Int>(4)
+test 1 = isPrime<Int>(5)
+test - = isPrime<Int>(6)
+test 1 = isPrime<Int>(7)
+test - = isPrime<Int>(8)
+test - = isPrime<Int>(9)
+test - = isPrime<Int>(10)
+test 1 = isPrime<Int>(11)
+test - = isPrime<Int>(12)
+test 1 = isPrime<Int>(13)
+test - = isPrime<Int>(14)
+test - = isPrime<Int>(15)
+test - = isPrime<Int>(16)
+test 1 = isPrime<Int>(17)
+test - = isPrime<Int>(18)
+test 1 = isPrime<Int>(19)
+test - = isPrime<Int>(20)
+test - = isPrime<Huge>(1000000)
+test - = isPrime<Huge>(10000000)
+test - = isPrime<Huge>(100000000)
+test - = isPrime<Huge>(1000000000)
+test - = isPrime<Huge>(10000000000)
+test - = isPrime<Huge>(100000000000)
+
+// eval primes<Huge>(1000000, 1000050)
+eval primesList<Int>(1, 100)
