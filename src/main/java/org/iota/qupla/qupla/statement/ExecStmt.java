@@ -12,6 +12,7 @@ public class ExecStmt extends BaseExpr
 {
   public VectorExpr expected;
   public BaseExpr expr;
+  public int type;
 
   private ExecStmt(final ExecStmt copy)
   {
@@ -20,14 +21,14 @@ public class ExecStmt extends BaseExpr
     expr = copy.expr;
   }
 
-  public ExecStmt(final Tokenizer tokenizer, final boolean test)
+  public ExecStmt(final Tokenizer tokenizer)
   {
     super(tokenizer);
 
+    type = tokenizer.tokenId();
     tokenizer.nextToken();
-    this.module = tokenizer.module;
 
-    if (test)
+    if (type == Token.TOK_TEST)
     {
       expected = new ValueExpr(tokenizer);
       expected.expect(tokenizer, Token.TOK_EQUAL, "'='");

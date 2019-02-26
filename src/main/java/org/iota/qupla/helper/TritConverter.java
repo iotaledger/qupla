@@ -7,7 +7,9 @@ import org.iota.qupla.exception.CodeException;
 
 public class TritConverter
 {
-  public static final String TRYTES = "NOPQRSTUVWXYZ0ABCDEFGHIJKLM";
+  public static final char BOOL_FALSE = '0';
+  public static final char BOOL_TRUE = '1';
+  public static final String TRYTES = "NOPQRSTUVWXYZ9ABCDEFGHIJKLM";
   public static final String[] TRYTE_TRITS = {
       "---",
       "0--",

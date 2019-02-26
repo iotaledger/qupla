@@ -1,5 +1,3 @@
-import Qupla
-
 // input trit 1 & 2: amount of neighbors in binary (-- for overflow)
 // input 3: cell state (0 = dead, 1 = alive)
 // output: new amount of neighbors in binary (-- when >3)
@@ -40,24 +38,17 @@ template gameOfLife<T> {
   type BorderedMap [Row + Map + Row]
   type BorderedRow [Cell + Row + Cell]
   type NeighborRows [BorderedRow * 3]
-  type Info {
-    id [Tiny]
-    map [Map]
-  }
 
-  func Info gameOfLife<T> (Info info) {
+  func Map gameOfLife<T> (Map map) {
     // sandwich map between two dummy zero border rows
     borderRow = as<Row>(0)
-    borderedMap = borderRow & info.map & borderRow
+    borderedMap = borderRow & map & borderRow
     
     // loop over all map rows, rowShifter starts at first position
     newBorderedMap = golLoopRows<T>(borderedMap, 1)
-    
+
     // extract new map from tail end
-    return Info {
-      id = info.id
-      map = newBorderedMap[BorderedMap - Map : Map]
-    }
+    return newBorderedMap[BorderedMap - Map : Map]
   }
 
   func BorderedMap golLoopRows<T> (BorderedMap map, Row rowShifter) {
@@ -119,19 +110,4 @@ template gameOfLife<T> {
     newColShifter = rshift<Col>(colShifter)
     return golLoopCols<T>(newRows, newColShifter)
   }
-}
-
-
-type GolSize [Huge]
-type GolMap [GolSize * GolSize]
-type GolInfo {
-  id [Tiny]
-  map [GolMap]
-}
-
-func GolInfo gameOfLife(GolInfo info) {
-  join gameOfLife
-  affect gameOfLifeResult
-
-  return gameOfLife<GolSize>(info)
 }

@@ -3,6 +3,7 @@ package org.iota.qupla.qupla.context;
 import java.util.ArrayList;
 
 import org.iota.qupla.helper.BaseContext;
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.helper.Verilog;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
@@ -89,10 +90,10 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   @Override
   public void evalConditional(final CondExpr conditional)
   {
-    //TODO proper handling of nullify when condition not in [1, -]
+    //TODO proper handling of nullify when condition not in [false, true]
     conditional.condition.eval(this);
     append(" == ");
-    appendVector("1").append(" ? ");
+    appendVector("" + TritConverter.BOOL_TRUE).append(" ? ");
     conditional.trueBranch.eval(this);
     append(" : ");
     if (conditional.falseBranch == null)
@@ -254,7 +255,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   public void evalSlice(final SliceExpr slice)
   {
     append(slice.name);
-    if (slice.startOffset == null && slice.fields.size() == 0)
+    if (slice.sliceStart == null && slice.fields.size() == 0)
     {
       return;
     }

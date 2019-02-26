@@ -1,0 +1,26 @@
+// retrieve hash key 123456 from initial state
+test 0 = arcmap<Hash, Transaction>(0, 123456, 0)
+
+// store 999999 under hash key 123456
+test 0 = arcmap<Hash, Transaction>(1, 123456, 999999)
+
+// verify hash key 123456 was set
+test 999999 = arcmap<Hash, Transaction>(0, 123456, 0)
+
+// store 999999 under hash key 123456 again
+test 999999 = arcmap<Hash, Transaction>(1, 123456, 999999)
+
+// verify hash key 123456 was set
+test 999999 = arcmap<Hash, Transaction>(0, 123456, 0)
+
+// remove hash key 123456
+test 999999 = arcmap<Hash, Transaction>(-, 123456, 0)
+
+// verify hash key 123456 still set
+test 999999 = arcmap<Hash, Transaction>(0, 123456, 0)
+
+// remove hash key 123456 again
+test 999999 = arcmap<Hash, Transaction>(-, 123456, 0)
+
+// verify hash key 123456 was removed
+test 0 = arcmap<Hash, Transaction>(0, 123456, 0)

@@ -18,16 +18,7 @@ public class Environment
     this.typeInfo = typeInfo;
   }
 
-  public void join(final Entity entity)
-  {
-    //TODO insert ordered by entity id to be deterministic
-    synchronized (entities)
-    {
-      entities.add(entity);
-    }
-  }
-
-  public void queueEntityEvents(final TritVector value, final int delay)
+  public void affect(final TritVector value, final int delay)
   {
     synchronized (entities)
     {
@@ -36,6 +27,15 @@ public class Environment
       {
         entity.queueEvent(value, delay);
       }
+    }
+  }
+
+  public void join(final Entity entity)
+  {
+    //TODO insert ordered by entity id to be deterministic
+    synchronized (entities)
+    {
+      entities.add(entity);
     }
   }
 

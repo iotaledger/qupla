@@ -16,6 +16,6 @@ public class Effect
   public void queueEnvironmentEvents(final TritVector value)
   {
     // transform the effect into one or more entity events in the event queue
-    environment.queueEntityEvents(value, delay);
+    environment.affect(value, delay);
   }
 }

@@ -26,6 +26,7 @@ import org.iota.qupla.qupla.expression.constant.ConstNumber;
 import org.iota.qupla.qupla.expression.constant.ConstSubExpr;
 import org.iota.qupla.qupla.expression.constant.ConstTypeName;
 import org.iota.qupla.qupla.parser.QuplaModule;
+import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.statement.ExecStmt;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.ImportStmt;
@@ -220,7 +221,7 @@ public class QuplaPrintContext extends QuplaBaseContext
 
   private void evalExec(final ExecStmt exec)
   {
-    if (exec.expected == null)
+    if (exec.type == Token.TOK_EVAL)
     {
       append("eval ");
       exec.expr.eval(this);
@@ -402,15 +403,15 @@ public class QuplaPrintContext extends QuplaBaseContext
       append(".").append(field.name);
     }
 
-    if (slice.startOffset != null)
+    if (slice.sliceStart != null)
     {
       append("[");
-      slice.startOffset.eval(this);
+      slice.sliceStart.eval(this);
 
-      if (slice.endOffset != null)
+      if (slice.sliceSize != null)
       {
         append(" : ");
-        slice.endOffset.eval(this);
+        slice.sliceSize.eval(this);
       }
 
       append("]");
@@ -552,6 +553,20 @@ public class QuplaPrintContext extends QuplaBaseContext
   @Override
   public void evalVector(final VectorExpr vector)
   {
+    if (vector.origin != null)
+    {
+      switch (vector.origin.id)
+      {
+      case Token.TOK_FALSE:
+        append("false");
+        return;
+
+      case Token.TOK_TRUE:
+        append("true");
+        return;
+      }
+    }
+
     append(vector.name);
   }
 }

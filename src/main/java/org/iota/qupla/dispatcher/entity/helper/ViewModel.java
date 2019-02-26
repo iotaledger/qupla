@@ -76,7 +76,7 @@ public class ViewModel extends AbstractTableModel
     }
 
     final BaseExpr field = typeInfo.struct.fields.get(col);
-    final TritVector slice = vector.slice(offset, field.size);
+    final TritVector slice = vector.slicePadded(offset, field.size);
     return slice.toDecimal();
   }
 

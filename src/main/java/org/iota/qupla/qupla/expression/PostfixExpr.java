@@ -22,6 +22,8 @@ public class PostfixExpr extends BaseSubExpr
       expr = new SubExpr(tokenizer);
       return;
 
+    case Token.TOK_FALSE:
+    case Token.TOK_TRUE:
     case Token.TOK_FLOAT:
     case Token.TOK_NUMBER:
     case Token.TOK_MINUS:

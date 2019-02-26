@@ -389,7 +389,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
   {
     final AbraBaseSite varSite = stack.get(slice.stackIndex);
 
-    if (slice.startOffset == null && slice.fields.size() == 0)
+    if (slice.sliceStart == null && slice.fields.size() == 0)
     {
       // entire variable, use single-input merge
       final AbraSiteMerge site = new AbraSiteMerge();

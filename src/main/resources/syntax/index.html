@@ -3,7 +3,7 @@
 <html>
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <meta name="generator" content="Railroad Diagram Generator 1.56.1774">
+      <meta name="generator" content="Railroad Diagram Generator 1.58.1777">
       <style type="text/css" xml:space="preserve">
     ::-moz-selection
     {
@@ -317,11 +317,11 @@
             
             <li><a href="#LutStmt" title="LutStmt">LutStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="tritList">tritList:</a></p><img border="0" src="diagram/tritList.png" height="81" width="137" usemap="#tritList.map"><map name="tritList.map"><area shape="rect" coords="49,45,87,77" href="#trit" title="trit"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="tritList">tritList:</a></p><img border="0" src="diagram/tritList.png" height="81" width="179" usemap="#tritList.map"><map name="tritList.map"><area shape="rect" coords="49,45,129,77" href="#tritOrBool" title="tritOrBool"></map><p>
          
          <div class="ebnf"><code>
                
-               <div><a href="#tritList" title="tritList" shape="rect">tritList</a>&nbsp;::= <a href="#trit" title="trit" shape="rect">trit</a> ( ',' <a href="#trit" title="trit" shape="rect">trit</a> )*</div></code></div>
+               <div><a href="#tritList" title="tritList" shape="rect">tritList</a>&nbsp;::= <a href="#tritOrBool" title="tritOrBool" shape="rect">tritOrBool</a> ( ',' <a href="#tritOrBool" title="tritOrBool" shape="rect">tritOrBool</a> )*</div></code></div>
          </p>
       
       <p>referenced by:
@@ -329,6 +329,23 @@
          <ul>
             
             <li><a href="#LutEntry" title="LutEntry">LutEntry</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="tritOrBool">tritOrBool:</a></p><img border="0" src="diagram/tritOrBool.png" height="81" width="145" usemap="#tritOrBool.map"><map name="tritOrBool.map"><area shape="rect" coords="49,1,87,33" href="#trit" title="trit"><area shape="rect" coords="49,45,95,77" href="#bool" title="bool"></map><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#tritOrBool" title="tritOrBool" shape="rect">tritOrBool</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#trit" title="trit" shape="rect">trit</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#bool" title="bool" shape="rect">bool</a></div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#tritList" title="tritList">tritList</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="FuncStmt">FuncStmt:</a></p><img border="0" src="diagram/FuncStmt.png" height="37" width="333" usemap="#FuncStmt.map"><map name="FuncStmt.map"><area shape="rect" coords="97,1,205,33" href="#funcSignature" title="funcSignature"><area shape="rect" coords="225,1,303,33" href="#funcBody" title="funcBody"></map><p>
          
@@ -657,13 +674,15 @@
             
             <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="VectorExpr">VectorExpr:</a></p><img border="0" src="diagram/VectorExpr.png" height="125" width="163" usemap="#VectorExpr.map"><map name="VectorExpr.map"><area shape="rect" coords="49,1,87,33" href="#trit" title="trit"><area shape="rect" coords="49,45,113,77" href="#integer" title="integer"><area shape="rect" coords="49,89,97,121" href="#float" title="float"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="VectorExpr">VectorExpr:</a></p><img border="0" src="diagram/VectorExpr.png" height="169" width="163" usemap="#VectorExpr.map"><map name="VectorExpr.map"><area shape="rect" coords="49,1,87,33" href="#trit" title="trit"><area shape="rect" coords="49,45,95,77" href="#bool" title="bool"><area shape="rect" coords="49,89,113,121" href="#integer" title="integer"><area shape="rect" coords="49,133,97,165" href="#float" title="float"></map><p>
          
          <div class="ebnf"><code>
                
                <div><a href="#VectorExpr" title="VectorExpr" shape="rect">VectorExpr</a></div>
                
                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= <a href="#trit" title="trit" shape="rect">trit</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#bool" title="bool" shape="rect">bool</a></div>
                
                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#integer" title="integer" shape="rect">integer</a></div>
                
@@ -931,7 +950,24 @@
             
             <li><a href="#VectorExpr" title="VectorExpr">VectorExpr</a></li>
             
-            <li><a href="#tritList" title="tritList">tritList</a></li>
+            <li><a href="#tritOrBool" title="tritOrBool">tritOrBool</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="bool">bool:</a></p><img border="0" src="diagram/bool.png" height="81" width="151"><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#bool" title="bool" shape="rect">bool</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= 'false'</div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 'true'</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#VectorExpr" title="VectorExpr">VectorExpr</a></li>
+            
+            <li><a href="#tritOrBool" title="tritOrBool">tritOrBool</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="name">name:</a></p><img border="0" src="diagram/name.png" height="247" width="283"><p>
          
@@ -1004,7 +1040,7 @@
                   <nobr class="signature">... generated by <a name="Railroad-Diagram-Generator" class="signature" title="https://www.bottlecaps.de/rr/ui" href="https://www.bottlecaps.de/rr/ui" target="_blank">Railroad Diagram Generator</a></nobr>
                   </td>
                
-               <td><a name="Railroad-Diagram-Generator" title="https://www.bottlecaps.de/rr/ui" href="https://www.bottlecaps.de/rr/ui" target="_blank"><img border="0" src="diagram/rr-1.56.1774.png" height="16" width="16"></a></td>
+               <td><a name="Railroad-Diagram-Generator" title="https://www.bottlecaps.de/rr/ui" href="https://www.bottlecaps.de/rr/ui" target="_blank"><img border="0" src="diagram/rr-1.58.1777.png" height="16" width="16"></a></td>
                </tr>
             </table>
          </p>

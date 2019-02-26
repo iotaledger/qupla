@@ -14,13 +14,7 @@ public class LutStmt extends BaseExpr
       0,
       3,
       9,
-      27,
-      81,
-      243,
-      729,
-      2187,
-      6561,
-      19683
+      27
   };
 
   public final ArrayList<LutEntry> entries = new ArrayList<>();

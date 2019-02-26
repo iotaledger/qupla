@@ -33,6 +33,13 @@ public class Dispatcher extends Thread
     {
       environments.clear();
     }
+
+    for (final Entity entity : Entity.entities)
+    {
+      entity.stop();
+    }
+
+    Entity.entities.clear();
   }
 
   public Environment getEnvironment(final String name, final TypeStmt typeInfo)

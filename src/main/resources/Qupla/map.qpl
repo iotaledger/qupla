@@ -28,23 +28,19 @@ template map<K, V>
 
     keyZero = isZero[sign<K>(param.key)]
 
-    // note that once our optimization for conditional expressions
-    // back-pushes nullify() we will not need the next line any more
-    altParam = not[keyZero] ? param : null
-
-    keyTrit = altParam.key[0]
-    nextParam = Traversal {
-      cmd = altParam.cmd
-      key = lshift<K>(altParam.key)
-      value = altParam.value
-    }
-
-    keyTritIs1  = isOne[keyTrit]
-    keyTritIs0 = isZero[keyTrit]
+    keyTrit = param.key[0]
     return keyZero ? leaf<K, V>(param) :
-             keyTritIs1 ? traverse<K, V>(nextParam) :
-               keyTritIs0 ? traverse<K, V>(nextParam) :
-                 traverse<K, V>(nextParam)
+           isOne [keyTrit] ? traverse<K, V>(traverseNext<K, V>(keyZero, param)) :
+           isZero[keyTrit] ? traverse<K, V>(traverseNext<K, V>(keyZero, param)) :
+           isMin [keyTrit] ? traverse<K, V>(traverseNext<K, V>(keyZero, param)) : null
+  }
+
+  func Traversal traverseNext<K, V> (Bool keyZero, Traversal param) {
+    return not[keyZero] ? Traversal {
+      cmd = param.cmd
+      key = lshift<K>(param.key)
+      value = param.value
+    } : null
   }
 
   func V leaf<K, V> (Traversal param) {
@@ -53,9 +49,7 @@ template map<K, V>
     oldValue = value
 
     cmd = param.cmd
-    get = isZero[cmd]
-    set = isOne[cmd]
-    value = get ? oldValue : set ? param.value : 0
+    value = isZero[cmd] ? oldValue : isOne[cmd] ? param.value : isMin[cmd] ? 0 : null
 
     return oldValue
   }

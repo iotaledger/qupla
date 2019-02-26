@@ -10,20 +10,20 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class SliceExpr extends BaseExpr
 {
-  public BaseExpr endOffset;
   public final ArrayList<BaseExpr> fields = new ArrayList<>();
+  public BaseExpr sliceSize;
+  public BaseExpr sliceStart;
   public int start;
-  public BaseExpr startOffset;
   public int varSize;
 
   private SliceExpr(final SliceExpr copy)
   {
     super(copy);
 
-    endOffset = clone(copy.endOffset);
+    sliceSize = clone(copy.sliceSize);
     fields.addAll(copy.fields);
     start = copy.start;
-    startOffset = clone(copy.startOffset);
+    sliceStart = clone(copy.sliceStart);
     varSize = copy.varSize;
   }
 
@@ -42,12 +42,12 @@ public class SliceExpr extends BaseExpr
     {
       tokenizer.nextToken();
 
-      startOffset = new ConstExpr(tokenizer).optimize();
+      sliceStart = new ConstExpr(tokenizer).optimize();
 
       if (tokenizer.tokenId() == Token.TOK_COLON)
       {
         tokenizer.nextToken();
-        endOffset = new ConstExpr(tokenizer).optimize();
+        sliceSize = new ConstExpr(tokenizer).optimize();
       }
 
       expect(tokenizer, Token.TOK_ARRAY_CLOSE, "']'");
@@ -59,34 +59,28 @@ public class SliceExpr extends BaseExpr
   {
     analyzeVar();
 
-    if (startOffset == null)
+    if (sliceStart == null)
     {
       return;
     }
 
-    startOffset.analyze();
-    if (startOffset.size < 0 || startOffset.size >= size)
+    sliceStart.analyze();
+    if (sliceStart.size < 0 || sliceStart.size >= size)
     {
-      startOffset.error("Invalid slice start offset: " + startOffset.size);
+      sliceStart.error("Invalid slice start: " + sliceStart.size);
     }
 
-    // at least a single indexed trit
-    int offset = startOffset.size;
-    int end = offset;
-
-    if (endOffset != null)
+    if (sliceSize != null)
     {
-      endOffset.analyze();
-      if (offset + endOffset.size > size)
+      sliceSize.analyze();
+      if (sliceStart.size + sliceSize.size > size)
       {
-        endOffset.error("Invalid slice size (" + offset + "+" + endOffset.size + ">" + size + ")");
+        sliceSize.error("Invalid slice size (" + sliceStart.size + "+" + sliceSize.size + ">" + size + ")");
       }
-
-      end = offset + endOffset.size - 1;
     }
 
-    start += offset;
-    size = end - offset + 1;
+    start += sliceStart.size;
+    size = sliceSize == null ? 1 : sliceSize.size;
   }
 
   private void analyzeVar()
