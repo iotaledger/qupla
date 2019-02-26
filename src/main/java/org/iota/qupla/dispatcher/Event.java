@@ -57,6 +57,6 @@ public class Event
 
   public void dispatch()
   {
-    entity.runOneWave(value);
+    entity.processEffect(value);
   }
 }

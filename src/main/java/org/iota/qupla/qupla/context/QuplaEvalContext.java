@@ -9,6 +9,7 @@ import java.util.Stack;
 import org.iota.qupla.Qupla;
 import org.iota.qupla.dispatcher.entity.FuncEntity;
 import org.iota.qupla.helper.StateValue;
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
@@ -169,13 +170,13 @@ public class QuplaEvalContext extends QuplaBaseContext
     }
 
     final char trit = value.trit(0);
-    if (trit == '1')
+    if (trit == TritConverter.BOOL_TRUE)
     {
       conditional.trueBranch.eval(this);
       return;
     }
 
-    if (conditional.falseBranch != null && trit == '-')
+    if (conditional.falseBranch != null && trit == TritConverter.BOOL_FALSE)
     {
       conditional.falseBranch.eval(this);
       return;
@@ -338,7 +339,7 @@ public class QuplaEvalContext extends QuplaBaseContext
   public void evalSlice(final SliceExpr slice)
   {
     final TritVector var = stack.get(stackFrame + slice.stackIndex);
-    if (slice.startOffset == null && slice.fields.size() == 0)
+    if (slice.sliceStart == null && slice.fields.size() == 0)
     {
       value = var;
       return;

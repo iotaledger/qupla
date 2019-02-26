@@ -73,10 +73,10 @@ public class ViewEntity extends Entity
     frame.setVisible(true);
   }
 
-  public TritVector runWave(final TritVector inputValue)
+  public TritVector onEffect(final TritVector effect)
   {
     int size = model.vectors.size();
-    model.vectors.add(inputValue);
+    model.vectors.add(effect);
     model.fireTableRowsInserted(size, size);
 
     // return null, no need to propagate, we only log inputValue

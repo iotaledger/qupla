@@ -9,7 +9,6 @@ import org.iota.qupla.abra.context.AbraEvalContext;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.dispatcher.Entity;
 import org.iota.qupla.dispatcher.entity.FuncEntity;
-import org.iota.qupla.dispatcher.entity.GameOfLifeEntity;
 import org.iota.qupla.dispatcher.entity.ViewEntity;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.exception.ExitException;
@@ -31,8 +30,11 @@ import org.iota.qupla.qupla.statement.ExecStmt;
 import org.iota.qupla.qupla.statement.TypeStmt;
 import org.iota.qupla.qupla.statement.UseStmt;
 
+import static java.lang.Thread.sleep;
+
 public class Qupla
 {
+  public static final ArrayList<String> config = new ArrayList<>();
   private static Dispatcher dispatcher;
   private static ArrayList<BaseExpr> expressions = new ArrayList<>();
   private static final String[] flags = {
@@ -170,12 +172,10 @@ public class Qupla
 
         singleModule.analyze();
 
-        log("Start dispatcher");
-        dispatcher = Dispatcher.getInstance();
-        FuncEntity.addEntities(dispatcher, QuplaModule.allModules.values());
-
+        startDispatcher();
         processOptions();
         evalExpressions();
+        waitOneSecond();
         stopDispatcher();
       }
       catch (final CodeException ex)
@@ -186,19 +186,6 @@ public class Qupla
     catch (final ExitException ex)
     {
     }
-
-    //    if (!options.contains("-view"))
-    //    {
-    //      try
-    //      {
-    //        sleep(1000);
-    //        Dispatcher.getInstance().cancel();
-    //      }
-    //      catch (InterruptedException e)
-    //      {
-    //        e.printStackTrace();
-    //      }
-    //    }
   }
 
   private static void processOptions()
@@ -293,12 +280,6 @@ public class Qupla
           for (final String envName : dispatcher.listEnvironments())
           {
             new ViewEntity(dispatcher, envName);
-            if (envName.equals("gameOfLife"))
-            {
-              new GameOfLifeEntity();
-              new GameOfLifeEntity();
-              new GameOfLifeEntity();
-            }
           }
         }
 
@@ -320,7 +301,7 @@ public class Qupla
     {
       for (final ExecStmt exec : module.execs)
       {
-        if (exec.expected == null)
+        if (exec.type == Token.TOK_EVAL)
         {
           runEval(exec.expr);
         }
@@ -421,7 +402,7 @@ public class Qupla
     {
       for (final ExecStmt exec : module.execs)
       {
-        if (exec.expected != null)
+        if (exec.type == Token.TOK_TEST)
         {
           runTest(exec);
         }
@@ -457,6 +438,22 @@ public class Qupla
     };
   }
 
+  private static void startDispatcher()
+  {
+    log("Start dispatcher");
+    dispatcher = Dispatcher.getInstance();
+
+    FuncEntity.addEntities(dispatcher, QuplaModule.allModules.values());
+
+    for (final String config : config)
+    {
+      if (config.startsWith("//#entity"))
+      {
+        Entity.start(config.split(" ")[1]);
+      }
+    }
+  }
+
   private static void stopDispatcher()
   {
     if (openWindows == 0)
@@ -464,12 +461,23 @@ public class Qupla
       log("Stop dispatcher");
       dispatcher.cancel();
     }
-
   }
 
   public static String toString(final TritVector value, final TypeStmt typeInfo)
   {
     final String varName = value.name != null ? value.name + ": " : "";
     return varName + "(" + typeInfo.toString(value) + ") " + value.trits();
+  }
+
+  private static void waitOneSecond()
+  {
+    try
+    {
+      sleep(1000);
+    }
+    catch (InterruptedException e)
+    {
+      e.printStackTrace();
+    }
   }
 }

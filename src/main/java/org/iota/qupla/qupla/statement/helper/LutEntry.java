@@ -1,5 +1,6 @@
 package org.iota.qupla.qupla.statement.helper;
 
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
@@ -40,13 +41,22 @@ public class LutEntry extends BaseExpr
   private String parseTrit(final Tokenizer tokenizer)
   {
     final Token trit = tokenizer.currentToken();
-    if (trit.id == Token.TOK_MINUS)
+    switch (trit.id)
     {
+    case Token.TOK_FALSE:
+      tokenizer.nextToken();
+      return "" + TritConverter.BOOL_FALSE;
+
+    case Token.TOK_TRUE:
+      tokenizer.nextToken();
+      return "" + TritConverter.BOOL_TRUE;
+
+    case Token.TOK_MINUS:
       tokenizer.nextToken();
       return trit.text;
     }
 
-    expect(tokenizer, Token.TOK_NUMBER, "trit value");
+    expect(tokenizer, Token.TOK_NUMBER, "trit value, 'false', or 'true'");
     if (trit.text.length() != 1 || trit.text.charAt(0) > '1')
     {
       error(trit, "Invalid trit value");

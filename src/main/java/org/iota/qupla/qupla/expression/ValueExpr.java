@@ -1,5 +1,6 @@
 package org.iota.qupla.qupla.expression;
 
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
@@ -15,10 +16,22 @@ public class ValueExpr extends VectorExpr
   {
     super(tokenizer);
 
-    if (tokenizer.tokenId() == Token.TOK_MINUS)
+    switch (tokenizer.tokenId())
     {
+    case Token.TOK_FALSE:
+      name = "" + TritConverter.BOOL_FALSE;
+      tokenizer.nextToken();
+      return;
+
+    case Token.TOK_TRUE:
+      name = "" + TritConverter.BOOL_TRUE;
+      tokenizer.nextToken();
+      return;
+
+    case Token.TOK_MINUS:
       name = "-";
       tokenizer.nextToken();
+      break;
     }
 
     if (tokenizer.tokenId() == Token.TOK_NUMBER || tokenizer.tokenId() == Token.TOK_FLOAT)

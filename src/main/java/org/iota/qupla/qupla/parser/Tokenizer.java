@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.iota.qupla.Qupla;
 import org.iota.qupla.exception.CodeException;
 
 public class Tokenizer
@@ -64,6 +65,12 @@ public class Tokenizer
     // skip comment-to-end-of-line
     if (token.text.startsWith("//"))
     {
+      // special config comment?
+      if (token.text.startsWith("//#"))
+      {
+        Qupla.config.add(token.text);
+      }
+
       lineNr++;
       colNr = 0;
       return nextToken();
@@ -186,6 +193,7 @@ public class Tokenizer
     addToken(Token.TOK_AFFECT, "affect");
     addToken(Token.TOK_DELAY, "delay");
     addToken(Token.TOK_EVAL, "eval");
+    addToken(Token.TOK_FALSE, "false");
     addToken(Token.TOK_FUNC, "func");
     addToken(Token.TOK_IMPORT, "import");
     addToken(Token.TOK_JOIN, "join");
@@ -197,6 +205,7 @@ public class Tokenizer
     addToken(Token.TOK_STATE, "state");
     addToken(Token.TOK_TEMPLATE, "template");
     addToken(Token.TOK_TEST, "test");
+    addToken(Token.TOK_TRUE, "true");
     addToken(Token.TOK_TYPE, "type");
     addToken(Token.TOK_USE, "use");
 

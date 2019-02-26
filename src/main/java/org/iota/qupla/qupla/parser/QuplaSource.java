@@ -27,7 +27,8 @@ public class QuplaSource extends BaseExpr
       switch (tokenizer.tokenId())
       {
       case Token.TOK_EVAL:
-        module.execs.add(new ExecStmt(tokenizer, false));
+      case Token.TOK_TEST:
+        module.execs.add(new ExecStmt(tokenizer));
         break;
 
       case Token.TOK_FUNC:
@@ -44,10 +45,6 @@ public class QuplaSource extends BaseExpr
 
       case Token.TOK_TEMPLATE:
         module.templates.add(new TemplateStmt(tokenizer));
-        break;
-
-      case Token.TOK_TEST:
-        module.execs.add(new ExecStmt(tokenizer, true));
         break;
 
       case Token.TOK_TYPE:

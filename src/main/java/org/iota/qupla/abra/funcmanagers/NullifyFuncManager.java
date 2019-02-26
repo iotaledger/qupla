@@ -9,6 +9,9 @@ import org.iota.qupla.helper.TritVector;
 
 public class NullifyFuncManager extends BaseFuncManager
 {
+  //private static final String FALSE_TRITS = "-@@0@@1@@-@@0@@1@@-@@0@@1@@"; //when false == '-'
+  private static final String FALSE_TRITS = "@-@@0@@1@@-@@0@@1@@-@@0@@1@"; //when false == '0'
+  private static final String TRUE_TRITS = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
   private boolean trueFalse;
 
   public NullifyFuncManager(final boolean trueFalse)
@@ -73,9 +76,7 @@ public class NullifyFuncManager extends BaseFuncManager
   @Override
   protected void generateLut()
   {
-    final String trueTrits = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
-    final String falseTrits = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
-    lut = module.addLut(funcName + SEPARATOR, trueFalse ? trueTrits : falseTrits);
+    lut = module.addLut(funcName + SEPARATOR, trueFalse ? TRUE_TRITS : FALSE_TRITS);
     lut.specialType = trueFalse ? AbraBaseBlock.TYPE_NULLIFY_TRUE : AbraBaseBlock.TYPE_NULLIFY_FALSE;
     lut.constantValue = new TritVector(1, '@');
   }

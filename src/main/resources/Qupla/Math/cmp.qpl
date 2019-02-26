@@ -13,44 +13,44 @@ lut cmp {
 
 // LUT logic: return (Bool) (trit1 < 0)
 lut isLess {
-  - = 1
-  0 = -
-  1 = -
+  - = true
+  0 = false
+  1 = false
 }
 
 // LUT logic: return (Bool) (trit1 > 0)
 lut isGreater {
-  - = -
-  0 = -
-  1 = 1
+  - = false
+  0 = false
+  1 = true
 }
 
 // LUT logic: return (Bool) (trit1 == 0)
 lut isEqual {
-  - = -
-  0 = 1
-  1 = -
+  - = false
+  0 = true
+  1 = false
 }
 
 // LUT logic: return (Bool) (trit1 >= 0)
 lut notLess {
-  - = -
-  0 = 1
-  1 = 1
+  - = false
+  0 = true
+  1 = true
 }
 
 // LUT logic: return (Bool) (trit1 <= 0)
 lut notGreater {
-  - = 1
-  0 = 1
-  1 = -
+  - = true
+  0 = true
+  1 = false
 }
 
 // LUT logic: return (Bool) (trit1 != 0)
 lut notEqual {
-  - = 1
-  0 = -
-  1 = 1
+  - = true
+  0 = false
+  1 = true
 }
 
 

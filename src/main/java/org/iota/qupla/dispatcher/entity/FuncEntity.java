@@ -64,8 +64,8 @@ public class FuncEntity extends Entity
     }
   }
 
-  public TritVector runWave(final TritVector inputValue)
+  public TritVector onEffect(final TritVector effect)
   {
-    return evalContext.evalEntity(this, inputValue);
+    return evalContext.evalEntity(this, effect);
   }
 }

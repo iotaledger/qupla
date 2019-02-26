@@ -18,7 +18,8 @@ public class Token
   public static final int TOK_EOF = TOK_DOT + 1;
   public static final int TOK_EQUAL = TOK_EOF + 1;
   public static final int TOK_EVAL = TOK_EQUAL + 1;
-  public static final int TOK_FLOAT = TOK_EVAL + 1;
+  public static final int TOK_FALSE = TOK_EVAL + 1;
+  public static final int TOK_FLOAT = TOK_FALSE + 1;
   public static final int TOK_FUNC = TOK_FLOAT + 1;
   public static final int TOK_FUNC_CLOSE = TOK_FUNC + 1;
   public static final int TOK_FUNC_OPEN = TOK_FUNC_CLOSE + 1;
@@ -44,7 +45,8 @@ public class Token
   public static final int TOK_TEMPL_CLOSE = TOK_TEMPLATE + 1;
   public static final int TOK_TEMPL_OPEN = TOK_TEMPL_CLOSE + 1;
   public static final int TOK_TEST = TOK_TEMPL_OPEN + 1;
-  public static final int TOK_TYPE = TOK_TEST + 1;
+  public static final int TOK_TRUE = TOK_TEST + 1;
+  public static final int TOK_TYPE = TOK_TRUE + 1;
   public static final int TOK_USE = TOK_TYPE + 1;
   public static final int UNKNONW_ID = -1;
   public static final int UNKNOWN_SYMBOL = -1;
@@ -63,6 +65,11 @@ public class Token
     this.source = source;
     this.symbol = symbol;
     this.text = text;
+  }
+
+  public boolean isIdentifier()
+  {
+    return text.matches("^[A-Za-z_]+$");
   }
 
   public Token resetId(final int tokenId)

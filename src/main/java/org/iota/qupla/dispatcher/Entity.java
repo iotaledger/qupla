@@ -2,10 +2,13 @@ package org.iota.qupla.dispatcher;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.helper.TritVector;
 
 public abstract class Entity
 {
+  public static final ArrayList<Entity> entities = new ArrayList<>();
+
   public final ArrayList<Effect> effects = new ArrayList<>();
   public String id;
   public int invoked;
@@ -14,6 +17,20 @@ public abstract class Entity
   public Entity(final int limit)
   {
     this.limit = limit;
+    entities.add(this);
+  }
+
+  public static void start(final String entityName)
+  {
+    try
+    {
+      final Class<?> entityClass = Class.forName(entityName);
+      entityClass.newInstance();
+    }
+    catch (final Exception e)
+    {
+      throw new CodeException("Cannot instantiate entity class name: " + entityName);
+    }
   }
 
   public void affect(final Environment env, final int delay)
@@ -27,6 +44,22 @@ public abstract class Entity
   public void join(final Environment env)
   {
     env.join(this);
+  }
+
+  public abstract TritVector onEffect(final TritVector effect);
+
+  public void processEffect(final TritVector effect)
+  {
+    // have the entity process the value
+    final TritVector returnValue = onEffect(effect);
+    if (returnValue == null || returnValue.isNull())
+    {
+      // propagation stops if null is returned (no data flow)
+      return;
+    }
+
+    // queue any effects that the entity triggered
+    queueEffectEvents(returnValue);
   }
 
   public void queueEffectEvents(final TritVector value)
@@ -60,19 +93,7 @@ public abstract class Entity
     invoked = 0;
   }
 
-  public void runOneWave(final TritVector inputValue)
+  public void stop()
   {
-    // have the entity process the value
-    final TritVector returnValue = runWave(inputValue);
-    if (returnValue == null || returnValue.isNull())
-    {
-      // propagation stops if null is returned (no data flow)
-      return;
-    }
-
-    // queue any effects that the entity triggered
-    queueEffectEvents(returnValue);
   }
-
-  public abstract TritVector runWave(final TritVector inputValue);
 }

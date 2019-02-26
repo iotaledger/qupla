@@ -1,0 +1,144 @@
+// Environment    Published data
+
+// GolView        id/map, ready for display, view should filter for id and display map
+
+// GolIds         cmd/id, cmd = - means a view no longer filters for this id
+//                        cmd = 1 means a view now filters for this id
+
+// GolAddress     cmd/id/address, calculates address by hashing id published at GolIds
+
+// GolAddressGet  cmd/id/address, tracks view ids for addresses through GolIds and GolAddress
+//                                cmd = 0 will publish id belonging to address
+//                                cmd = 1/- will not propagate
+
+// GolGen         id/map, calculates next generation of map and publish to GolSend
+
+// GolSend        id/map, calculate address and signature, post all info to GolView
+//                        and to GolMessage
+
+// GolMessage     id/map/address/signature, anything posted here goes out to the
+//                        external world (Tangle, Ict)
+
+// GolVerify      id/map/address/signature, verifies signature and if correct posts to GolView
+
+//TODO when to update gossip filter with new hash?
+//TODO how to remove old hash from gossip filter?
+//TODO can each view have a separate tangle listener?
+
+type GolSize [Huge]
+type GolMap [GolSize * GolSize]
+type GolAddress {
+  cmd [Trit]
+  id [Hash]
+  address [Hash]
+}
+
+type GolInfo {
+  id [Hash]
+  map [GolMap]
+  signature [Hash]
+  address [Hash]
+  cmd [Trit]
+}
+
+// type id -> get published cmd/id from GolIds -> publish cmd/id/address in GolAddress
+func GolAddress golAddress(GolAddress info) {
+  join GolIds
+  affect GolAddress
+
+  return GolAddress {
+    cmd = info.cmd
+    id = info.id
+    address = golHash<GolSize>(info.id)
+  }
+}
+
+// publish cmd/id/address after GET in GolAddressGet
+func GolAddress golAddressIdStore(GolAddress info) {
+  join GolAddress
+  affect GolAddressGet
+
+  id = arcmap<Hash, Hash>(info.cmd, info.address, info.id)
+
+  // note that we only return a value when the GET command is used
+  return isZero[info.cmd] ? GolAddress {
+    cmd = 0
+    id = id
+    address = info.address
+  } : null
+}
+
+// right click -> send id/map to golGen -> send info to GolSend
+func GolInfo golGen(GolInfo info) {
+  join GolGen
+  affect GolSend
+
+  return GolInfo {
+    id = info.id
+    map = gameOfLife<GolSize>(info.map)
+    signature = 0
+    address = 0
+    cmd = 0
+  }
+}
+
+// type name -> send id to GolHash -> put id/hash in GolStore
+func GolInfo golHash(GolInfo info) {
+  join GolHash
+  affect GolStore
+
+  return GolInfo {
+    id = info.id
+    map = 0
+    signature = 0
+    address = golHash<GolSize>(info.id)
+    cmd = 1 // put in store
+  }
+}
+
+// mouse up -> send id/map to GolSend -> send info to GolView and golMessage
+func GolInfo golSend(GolInfo info) {
+  join GolSend
+  affect GolView
+  affect GolMessage
+
+  return GolInfo {
+    id = info.id
+    map = info.map
+    signature = golSign<GolSize>(info.id, info.map)
+    address = golHash<GolSize>(info.id)
+    cmd = 0
+  }
+}
+
+// tangle msg -> get id from GolStore -> nullify when not found
+//               verify signature     -> nullify when no match
+//               send info to GolView
+func GolInfo golStore(GolInfo info) {
+  join GolStore
+  affect GolView
+  newInfo = GolInfo {
+    id = map<Hash, Hash>(info.cmd, info.address, info.id)
+    map = info.map
+    signature = info.signature
+    address = info.address
+    cmd = 0
+  }
+  return isZero[info.cmd] ? golStoreValidateId(newInfo) : null
+}
+
+func GolInfo golStoreValidateId(GolInfo info) {
+  // check if we previously stored an id for the address
+  return notZero[sign<Hash>(info.id)] ? golStoreVerifySignature(info) : null
+}
+
+func GolInfo golStoreVerifySignature(GolInfo info) {
+  signature = golSign<GolSize>(info.id, info.map)
+  same = equal<Hash>(info.signature, signature)
+  return same ? info : null
+}
+
+//#entity org.iota.qupla.dispatcher.entity.GameOfLifeEntity
+//#entity org.iota.qupla.dispatcher.entity.GameOfLifeEntity
+//#entity org.iota.qupla.dispatcher.entity.GameOfLifeEntity
+///#entity org.iota.qupla.dispatcher.entity.TangleEntity

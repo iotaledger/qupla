@@ -128,7 +128,7 @@ public class Verilog
       int remain = size;
       while (remain > 0)
       {
-        for (int i = addedFuncs.size() - 1; i > 0; i--)
+        for (int i = addedFuncs.size() - 1; i >= 0; i--)
         {
           int next = addedFuncs.get(i);
           if (next <= remain)

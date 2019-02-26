@@ -121,7 +121,7 @@ public class TypeStmt extends BaseExpr
     {
       result += first ? "" : ", ";
       first = false;
-      final TritVector slice = value.slice(offset, field.size);
+      final TritVector slice = value.slicePadded(offset, field.size);
       result += field.name + " = " + slice.toDecimal();
       offset += field.size;
     }

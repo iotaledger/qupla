@@ -1,0 +1,39 @@
+import Curl
+
+template golHash<T> {
+  type Col [T]
+  type Row [T]
+  type Map [Row * Col]
+  type Shift [Map / Hash]
+
+  func Hash golHash<T> (Hash id) {
+      curl = curlAbsorb(0, id, 27)
+      result = curlSqueeze(curl, 27)
+      return result.hash
+  }
+
+  func Hash golSign<T>(Hash id, Map map) {
+    curl = curlAbsorb(0, id, 27)
+    result = curlSqueeze(curl, 27)
+    return golHashMap<T>(map, result.curlState)
+  }
+
+  func Hash golHashMap<T>(Map map, CurlState scratch) {
+    result = curlSqueeze(golHashMapLoop<T>(map, scratch, 1), 27)
+    return result.hash
+  }
+
+  func CurlState golHashMapLoop<T>(Map map, CurlState curl, Shift rowShifter)
+  {
+    // check if row shifter is done
+    rowShifterIsDone = isZero[sign<Shift>(rowShifter)]
+    return rowShifterIsDone ? curl : golHashMapRow<T>(map, curl, rowShifter)
+  }
+
+  func CurlState golHashMapRow<T>(Map map, CurlState curl, Shift rowShifter)
+  {
+    newMap = map[Hash : Map - Hash] & as<Hash>(0)
+    newCurl = curlAbsorb(curl, map[0 : Hash], 27)
+    return golHashMapLoop<T>(newMap, newCurl, rshift<Shift>(rowShifter))
+  }
+}

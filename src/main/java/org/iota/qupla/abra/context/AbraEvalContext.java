@@ -16,6 +16,7 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.helper.StateValue;
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
@@ -71,7 +72,7 @@ public class AbraEvalContext extends AbraBaseContext
 
     if (branch.specialType == AbraBaseBlock.TYPE_NULLIFY_TRUE)
     {
-      if (args.get(0).trit(0) != '1')
+      if (args.get(0).trit(0) != TritConverter.BOOL_TRUE)
       {
         value = branch.constantValue;
         return;
@@ -83,7 +84,7 @@ public class AbraEvalContext extends AbraBaseContext
 
     if (branch.specialType == AbraBaseBlock.TYPE_NULLIFY_FALSE)
     {
-      if (args.get(0).trit(0) != '-')
+      if (args.get(0).trit(0) != TritConverter.BOOL_FALSE)
       {
         value = branch.constantValue;
         return;

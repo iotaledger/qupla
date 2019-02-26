@@ -7,6 +7,7 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.expression.constant.ConstTypeName;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
+import org.iota.qupla.qupla.statement.TypeStmt;
 
 public class TypeExpr extends BaseExpr
 {
@@ -50,16 +51,16 @@ public class TypeExpr extends BaseExpr
       error("Expected structured trit vector type name");
     }
 
+    final TypeStmt saved = constTypeInfo;
     for (final BaseExpr field : fields)
     {
-      field.analyze();
-
       // check that this is a field name
       boolean found = false;
       for (final BaseExpr structField : typeInfo.struct.fields)
       {
         if (field.name.equals(structField.name))
         {
+          constTypeInfo = structField.typeInfo;
           found = true;
           break;
         }
@@ -69,7 +70,11 @@ public class TypeExpr extends BaseExpr
       {
         field.error("Unknown field name: " + field.name);
       }
+
+      field.analyze();
     }
+
+    constTypeInfo = saved;
 
     // check that all subfields of the struct vector are assigned
     // also check the assigned size

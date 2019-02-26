@@ -9,34 +9,35 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.text.NumberFormat;
 
 import javax.swing.BoxLayout;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.MouseInputAdapter;
-import javax.swing.text.NumberFormatter;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.dispatcher.Entity;
 import org.iota.qupla.dispatcher.Environment;
 import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 
-public class GameOfLifeEntity extends Entity implements PropertyChangeListener
+public class GameOfLifeEntity extends Entity
 {
-  private static final int ID_SIZE = 9;
+  private static final int HASH_SIZE = 243;
   private static final int MAP_SIZE = 81;
 
-  public TritVector currentMap = new TritVector(ID_SIZE + MAP_SIZE * MAP_SIZE, '0');
+  public TritVector currentId = new TritVector(HASH_SIZE, '0');
+  public TritVector currentMap = new TritVector(MAP_SIZE * MAP_SIZE, '0');
   public JTextField entry;
   public JFrame frame;
-  public Environment gameOfLife;
-  public Environment gameOfLifeResult;
+  public Environment golGen;
+  public Environment golHash;
+  public Environment golIds;
+  public Environment golSend;
+  public Environment golView;
   public BufferedImage mapImage;
   public JPanel mapView;
 
@@ -45,10 +46,14 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
     super(0);
 
     final Dispatcher dispatcher = Dispatcher.getInstance();
-    gameOfLife = dispatcher.getEnvironment("gameOfLife", null);
-    gameOfLifeResult = dispatcher.getEnvironment("gameOfLifeResult", null);
-    affect(gameOfLife, 0);
-    join(gameOfLifeResult);
+    golGen = dispatcher.getEnvironment("GolGen", null);
+    golHash = dispatcher.getEnvironment("GolHash", null);
+    golIds = dispatcher.getEnvironment("GolIds", null);
+    golSend = dispatcher.getEnvironment("GolSend", null);
+    golView = dispatcher.getEnvironment("GolView", null);
+    join(golView);
+
+    mapImage = new BufferedImage(MAP_SIZE, MAP_SIZE, BufferedImage.TYPE_3BYTE_BGR);
 
     mapView = new JPanel();
     mapView.setPreferredSize(new Dimension(200, 200));
@@ -60,8 +65,8 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
     final JLabel label = new JLabel();
     label.setText("GoL ID:");
 
-    entry = new JFormattedTextField(getNumberFormatter());
-    entry.addPropertyChangeListener(this);
+    entry = new JTextField();
+    addChangeListener();
 
     final JPanel idPanel = new JPanel();
     idPanel.setLayout(new BoxLayout(idPanel, BoxLayout.X_AXIS));
@@ -85,17 +90,37 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
     frame.setSize(400, 400);
   }
 
+  private void addChangeListener()
+  {
+    entry.getDocument().addDocumentListener(new DocumentListener()
+    {
+      public void changedUpdate(DocumentEvent e)
+      {
+        onEntryChange();
+      }
+
+      public void insertUpdate(DocumentEvent e)
+      {
+        onEntryChange();
+      }
+
+      public void removeUpdate(DocumentEvent e)
+      {
+        onEntryChange();
+      }
+    });
+  }
+
   private void drawMapImage()
   {
-    mapImage = new BufferedImage(MAP_SIZE, MAP_SIZE, BufferedImage.TYPE_3BYTE_BGR);
     final Graphics graphics = mapImage.getGraphics();
     graphics.setColor(Color.WHITE);
     graphics.fillRect(0, 0, MAP_SIZE, MAP_SIZE);
     graphics.setColor(Color.DARK_GRAY);
     final String trits = currentMap.trits();
+    int offset = 0;
     for (int y = 0; y < MAP_SIZE; y++)
     {
-      final int offset = ID_SIZE + y * MAP_SIZE;
       for (int x = 0; x < MAP_SIZE; x++)
       {
         if (trits.charAt(offset + x) == '1')
@@ -103,6 +128,8 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
           graphics.drawRect(x, y, 0, 0);
         }
       }
+
+      offset += MAP_SIZE;
     }
 
     final Dimension size = mapView.getSize();
@@ -121,7 +148,7 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
         final Dimension size = mapView.getSize();
         final int x = MAP_SIZE * point.x / size.width;
         final int y = MAP_SIZE * point.y / size.height;
-        return ID_SIZE + y * MAP_SIZE + x;
+        return y * MAP_SIZE + x;
       }
 
       @Override
@@ -135,7 +162,7 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
         final int offset = getOffset(mouseEvent);
         final String trits = currentMap.trits();
         currentMap = new TritVector(trits.substring(0, offset) + cell + trits.substring(offset + 1));
-        gameOfLifeResult.queueEntityEvents(currentMap, 0);
+        golView.affect(TritVector.concat(currentId, currentMap), 0);
       }
 
       @Override
@@ -143,7 +170,7 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
       {
         if (mouseEvent.getButton() != 1)
         {
-          nextGeneration();
+          golGen.affect(TritVector.concat(currentId, currentMap), 0);
           return;
         }
 
@@ -162,50 +189,50 @@ public class GameOfLifeEntity extends Entity implements PropertyChangeListener
         }
 
         cell = 0;
+        golSend.affect(TritVector.concat(currentId, currentMap), 0);
       }
     };
   }
 
-  private NumberFormatter getNumberFormatter()
-  {
-    final NumberFormatter formatter = new NumberFormatter(NumberFormat.getInstance());
-    formatter.setValueClass(Integer.class);
-    formatter.setMinimum(0);
-    formatter.setMaximum(999);
-    formatter.setAllowsInvalid(false);
-    formatter.setCommitsOnValidEdit(true);
-    return formatter;
-  }
-
-  private void nextGeneration()
-  {
-    queueEffectEvents(currentMap);
-  }
-
   @Override
-  public void propertyChange(final PropertyChangeEvent propertyChangeEvent)
+  public TritVector onEffect(final TritVector effect)
   {
-    final int id = entry.getText().length() == 0 ? 0 : Integer.parseInt(entry.getText());
-    if (id >= 0 && id <= 999)
-    {
-      final String idTrits = TritConverter.fromLong(id);
-      final TritVector idVector = new TritVector(idTrits).slicePadded(0, ID_SIZE);
-      currentMap = TritVector.concat(idVector, currentMap.slice(ID_SIZE, MAP_SIZE * MAP_SIZE));
-    }
-  }
-
-  @Override
-  public TritVector runWave(final TritVector inputValue)
-  {
-    final String inputId = inputValue.slice(0, ID_SIZE).trits();
-    final String currentId = currentMap.slice(0, ID_SIZE).trits();
+    //TODO fix this
+    final TritVector inputId = effect.slice(0, HASH_SIZE);
     if (inputId.equals(currentId))
     {
-      currentMap = inputValue;
+      currentMap = effect.slice(HASH_SIZE, MAP_SIZE * MAP_SIZE);
       drawMapImage();
     }
 
-    // return null, no need to propagate, we only log inputValue
+    // return null, no need to propagate anything
     return null;
+  }
+
+  private void onEntryChange()
+  {
+    final String id = entry.getText();
+    String trytes = "";
+    for (int i = 0; i < id.length(); i++)
+    {
+      final char c = id.charAt(i);
+      trytes += "9ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(c & 0x0f);
+      trytes += "9ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt((c >> 4) & 0x0f);
+    }
+
+    // remove previous id
+    if (!currentId.isZero())
+    {
+      golIds.affect(TritVector.concat(new TritVector(1, '-'), currentId), 0);
+    }
+
+    // make new id
+    currentId = TritConverter.trytesToVector(trytes).slicePadded(0, 243);
+
+    // save new id
+    if (!currentId.isZero())
+    {
+      golIds.affect(TritVector.concat(new TritVector(1, '1'), currentId), 0);
+    }
   }
 }

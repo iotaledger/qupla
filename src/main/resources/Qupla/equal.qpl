@@ -1,70 +1,70 @@
 // LUT logic: return (Bool) (trit1 == trit2)
 lut equal {
-  -,- = 1
-  -,0 = -
-  -,1 = -
-  0,- = -
-  0,0 = 1
-  0,1 = -
-  1,- = -
-  1,0 = -
-  1,1 = 1
+  -,- = true
+  -,0 = false
+  -,1 = false
+  0,- = false
+  0,0 = true
+  0,1 = false
+  1,- = false
+  1,0 = false
+  1,1 = true
 }
 
 // LUT logic: return (Bool) (trit1 == -)
 lut isMin {
-  - = 1
-  0 = -
-  1 = -
+  - = true
+  0 = false
+  1 = false
 }
 
 // LUT logic: return (Bool) (trit1 < 0)
 lut isNegative {
-  - = 1
-  0 = -
-  1 = -
+  - = true
+  0 = false
+  1 = false
 }
 
 // LUT logic: return (Bool) (trit1 == 1)
 lut isOne {
-  - = -
-  0 = -
-  1 = 1
+  - = false
+  0 = false
+  1 = true
 }
 
 // LUT logic: return (Bool) (trit1 > 0)
 lut isPositive {
-  - = -
-  0 = -
-  1 = 1
+  - = false
+  0 = false
+  1 = true
 }
 
 // LUT logic: return (Bool) (trit1 == 0)
 lut isZero {
-  - = -
-  0 = 1
-  1 = -
+  - = false
+  0 = true
+  1 = false
 }
 
 // LUT logic: return (Bool) (trit1 >= 0)
 lut notNegative {
-  - = -
-  0 = 1
-  1 = 1
+  - = false
+  0 = true
+  1 = true
 }
 
 // LUT logic: return (Bool) (trit1 <= 0)
 lut notPositive {
-  - = 1
-  0 = 1
-  1 = -
+  - = true
+  0 = true
+  1 = false
 }
 
 // LUT logic: return (Bool) (trit1 != 0)
 lut notZero {
-  - = 1
-  0 = -
-  1 = 1
+  - = true
+  0 = false
+  1 = true
 }
 
 

@@ -20,11 +20,11 @@ dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 //    compile 'org.bytedeco.javacpp-presets:llvm-platform:6.0.1-1.4.2'
-//    compile 'com.github.iotaledger:iota-java:1.0.0-beta2'
-//    compile group: 'org.zeromq', name: 'jeromq', version: '0.4.3'
+    compile 'com.github.iotaledger:iota-java:1.0.0-beta2'
+    compile group: 'org.zeromq', name: 'jeromq', version: '0.4.3'
 //
 //    compile group: 'junit', name: 'junit', version: '4.12'
 //    compile group: 'pl.pragmatists', name: 'JUnitParams', version: '1.1.1'
 //    // prevents slf4j from printing to System.err, see https://www.slf4j.org/codes.html#StaticLoggerBinder
-//    compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.8.0-beta2'
+    compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.8.0-beta2'
 }

@@ -17,7 +17,9 @@ LutStmt ::= 'lut' lutName (('{' LutEntry+ '}') | entityAlias)
 
 LutEntry ::= tritList '=' tritList
 
-tritList ::= trit (',' trit)*
+tritList ::= tritOrBool (',' tritOrBool)*
+
+tritOrBool ::= trit | bool
 
 
 FuncStmt ::= 'func' funcSignature funcBody
@@ -67,7 +69,7 @@ PostfixExpr ::= SubExpr | VectorExpr | SliceExpr | FuncExpr | LutExpr | SizeofEx
 
 SubExpr ::= '(' CondExpr ')'
 
-VectorExpr ::= trit | integer | float
+VectorExpr ::= trit | bool | integer | float
 
 SliceExpr ::= (varName | paramName) ('.' NameExpr)* ('[' ConstExpr (':' ConstExpr)? ']')?
 
@@ -86,7 +88,7 @@ ConstExpr ::= ConstTerm ([-+] ConstTerm)*
 
 ConstTerm ::= ConstFactor ([*/%] ConstFactor)*
 
-ConstFactor ::= ConstSubExpr | ('-' ConstFactor) | ConstNumber | (ConstTypeName ('.' NameExpr)*)
+ConstFactor ::= ConstSubExpr | ('-' ConstFactor) | ConstNumber | (ConstTypeName ('.' NameExpr)*) | ConstFuncExpr
 
 ConstSubExpr ::= '(' ConstExpr ')'
 
@@ -96,8 +98,12 @@ ConstTypeName ::= typeName
 
 NameExpr ::= name
 
+ConstFuncExpr ::= FuncExpr
+
 
 trit ::= [-01]
+
+bool ::= 'false' | 'true'
 
 name ::= [a-zA-Z][0-9a-zA-Z_]*
 

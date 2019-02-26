@@ -1,14 +1,14 @@
 // LUT logic: return (Bool) (trit1 != trit2)
 lut unequal {
-  -,- = -
-  -,0 = 1
-  -,1 = 1
-  0,- = 1
-  0,0 = -
-  0,1 = 1
-  1,- = 1
-  1,0 = 1
-  1,1 = -
+  -,- = false
+  -,0 = true
+  -,1 = true
+  0,- = true
+  0,0 = false
+  0,1 = true
+  1,- = true
+  1,0 = true
+  1,1 = false
 }
 
 // returns (Bool) (lhs != rhs)
