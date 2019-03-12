@@ -14,11 +14,7 @@ import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.exception.ExitException;
 import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.qupla.context.QuplaEvalContext;
-import org.iota.qupla.qupla.context.QuplaPrintContext;
-import org.iota.qupla.qupla.context.QuplaToAbraContext;
-import org.iota.qupla.qupla.context.QuplaToVerilogContext;
-import org.iota.qupla.qupla.context.QuplaTreeViewerContext;
+import org.iota.qupla.qupla.context.*;
 import org.iota.qupla.qupla.expression.FuncExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.VectorExpr;
@@ -46,6 +42,7 @@ public class Qupla
       "-test",
       "-tree",
       "-view",
+      "-yaml"
       };
   private static int openWindows;
   private static final HashSet<String> options = new HashSet<>();
@@ -212,6 +209,12 @@ public class Qupla
     if (options.contains("-tree"))
     {
       runTreeViewer();
+    }
+
+    // emit YAML
+    if (options.contains("-yaml"))
+    {
+      runYAMLGenerator();
     }
 
     // run all unit test comments
@@ -417,6 +420,12 @@ public class Qupla
   {
     log("Run Tree Viewer");
     new QuplaTreeViewerContext().eval(singleModule);
+  }
+
+  private static void runYAMLGenerator()
+  {
+    log("Run YAML generator");
+    new QuplaToYAMLContext("Qupla.yml").eval(singleModule);
   }
 
   private static void setupWindowAdapter()
