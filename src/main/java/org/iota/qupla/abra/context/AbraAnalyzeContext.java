@@ -384,7 +384,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     final AbraSiteParam input = (AbraSiteParam) branch.inputs.get(branch.inputs.size() - 1);
 
     final AbraBaseSite output = branch.outputs.get(0);
-    if (!(output instanceof AbraSiteMerge))
+    if (output.getClass() != AbraSiteMerge.class)
     {
       return false;
     }
@@ -431,7 +431,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     }
 
     // knot.block is a lut
-    ensure(knot.inputs.size() == 3);
+    ensure(knot.inputs.size() <= 3);
 
     for (final AbraBaseSite input : knot.inputs)
     {

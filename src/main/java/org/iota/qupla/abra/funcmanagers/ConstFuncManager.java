@@ -37,11 +37,11 @@ public class ConstFuncManager extends BaseFuncManager
 
     constZero = zeroManager.lut;
 
-    constOne = module.addLut("constOne" + SEPARATOR, "111111111111111111111111111");
+    constOne = module.addLut("constOne" + AbraModule.SEPARATOR, "111111111111111111111111111");
     constOne.specialType = AbraBaseBlock.TYPE_CONSTANT;
     constOne.constantValue = new TritVector(1, '1');
 
-    constMin = module.addLut("constMin" + SEPARATOR, "---------------------------");
+    constMin = module.addLut("constMin" + AbraModule.SEPARATOR, "---------------------------");
     constMin.specialType = AbraBaseBlock.TYPE_CONSTANT;
     constMin.constantValue = new TritVector(1, '-');
   }
@@ -115,7 +115,7 @@ public class ConstFuncManager extends BaseFuncManager
       return zeroManager.find(module, size);
     }
 
-    name = funcName + SEPARATOR + size + SEPARATOR + trits.trits().replace('-', 'T');
+    name = funcName + AbraModule.SEPARATOR + size + AbraModule.SEPARATOR + trits.trits().replace('-', 'T');
     return findInstance();
   }
 
@@ -126,8 +126,12 @@ public class ConstFuncManager extends BaseFuncManager
     final AbraSiteKnot site = new AbraSiteKnot();
     site.name = tritLut.name;
     site.inputs.add(input);
-    site.inputs.add(input);
-    site.inputs.add(input);
+    if (AbraModule.lutAlways3)
+    {
+      site.inputs.add(input);
+      site.inputs.add(input);
+    }
+
     site.block = tritLut;
     site.size = site.block.size();
     branch.sites.add(site);

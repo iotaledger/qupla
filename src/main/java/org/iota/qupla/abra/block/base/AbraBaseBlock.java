@@ -11,7 +11,7 @@ public abstract class AbraBaseBlock
   public static final int TYPE_NULLIFY_FALSE = 2;
   public static final int TYPE_NULLIFY_TRUE = 1;
   public static final int TYPE_SLICE = 4;
-
+  private static final boolean showBlockIndex = false;
   public boolean analyzed;
   public TritVector constantValue;
   public int index;
@@ -37,6 +37,12 @@ public abstract class AbraBaseBlock
   @Override
   public String toString()
   {
-    return "block " + index + " // " + name;
+    if (showBlockIndex)
+    {
+      // index can be handy, but messes up easy comparison
+      return "block " + index + " // " + name;
+    }
+
+    return "block " + name;
   }
 }

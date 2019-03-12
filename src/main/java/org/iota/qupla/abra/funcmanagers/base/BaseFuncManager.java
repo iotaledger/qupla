@@ -10,7 +10,6 @@ import org.iota.qupla.abra.block.AbraBlockLut;
 
 public class BaseFuncManager
 {
-  protected static final String SEPARATOR = "_";
   public AbraBlockBranch branch;
   public String funcName;
   public HashMap<String, AbraBlockBranch> instances = new HashMap<>();
@@ -115,7 +114,7 @@ public class BaseFuncManager
   {
     this.module = module;
     this.size = size;
-    name = funcName + SEPARATOR + size;
+    name = funcName + AbraModule.SEPARATOR + size;
     return findInstance();
   }
 

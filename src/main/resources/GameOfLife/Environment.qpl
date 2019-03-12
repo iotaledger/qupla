@@ -58,7 +58,7 @@ func GolAddress golAddressIdStore(GolAddress info) {
   join GolAddress
   affect GolAddressGet
 
-  id = arcmap<Hash, Hash>(info.cmd, info.address, info.id)
+  id = arcRadixMap<Hash, Hash>(info.cmd, info.address, info.id)
 
   // note that we only return a value when the GET command is used
   return isZero[info.cmd] ? GolAddress {
@@ -118,7 +118,7 @@ func GolInfo golStore(GolInfo info) {
   join GolStore
   affect GolView
   newInfo = GolInfo {
-    id = map<Hash, Hash>(info.cmd, info.address, info.id)
+    id = radixMap<Hash, Hash>(info.cmd, info.address, info.id)
     map = info.map
     signature = info.signature
     address = info.address

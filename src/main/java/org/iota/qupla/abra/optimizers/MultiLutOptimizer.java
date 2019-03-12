@@ -123,17 +123,24 @@ public class MultiLutOptimizer extends BaseOptimizer
     // get lookup table for combined LUT
     master.block = generateLookupTable(master, slave, inputs);
 
-    // LUTs always need 3 inputs
-    while (inputs.size() < 3)
+    if (AbraModule.lutAlways3)
     {
-      inputs.add(inputs.get(0));
+      // LUTs always need 3 inputs
+      while (inputs.size() < 3)
+      {
+        inputs.add(inputs.get(0));
+      }
     }
 
     // update master with new inputs
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < master.inputs.size(); i++)
     {
       master.inputs.get(i).references--;
-      master.inputs.set(i, inputs.get(i));
+    }
+
+    master.inputs = inputs;
+    for (int i = 0; i < master.inputs.size(); i++)
+    {
       master.inputs.get(i).references++;
     }
 

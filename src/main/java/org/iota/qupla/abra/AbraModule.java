@@ -9,6 +9,8 @@ import org.iota.qupla.abra.block.base.AbraBaseBlock;
 
 public class AbraModule
 {
+  public static final String SEPARATOR = "_";
+  public static final boolean lutAlways3 = false;
   public int blockNr;
   public final ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
   public ArrayList<AbraBlockBranch> branches = new ArrayList<>();

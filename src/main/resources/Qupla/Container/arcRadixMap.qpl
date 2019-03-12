@@ -2,7 +2,7 @@
 // needs to be wrapped in an entity function and accessed through
 // sending effects to work correctly
 
-template arcmap<K, V>
+template arcRadixMap<K, V>
 {
   type Traversal {
     cmd [Trit]
@@ -15,16 +15,16 @@ template arcmap<K, V>
     count [Int]
   }
 
-  func V arcmap<K, V> (Trit cmd, K key, V value) {
+  func V arcRadixMap<K, V> (Trit cmd, K key, V value) {
     param = Traversal {
       cmd = cmd
       key = key
       value = value
     }
-    return arcTraverse<K, V>(param)
+    return arcRadixTraverse<K, V>(param)
   }
 
-  func V arcTraverse<K, V> (Traversal param) {
+  func V arcRadixTraverse<K, V> (Traversal param) {
     // note that for readability we should probably split this function
     // into two functions, one for the case where we call leaf() and one
     // for the case where we do the traverse() and determine nextParam,
@@ -34,13 +34,13 @@ template arcmap<K, V>
     keyZero = isZero[sign<K>(param.key)]
 
     keyTrit = param.key[0]
-    return keyZero ? arcLeaf<K, V>(param) :
-           isOne [keyTrit] ? arcTraverse<K, V>(arcTraverseNext<K, V>(keyZero, param)) :
-           isZero[keyTrit] ? arcTraverse<K, V>(arcTraverseNext<K, V>(keyZero, param)) :
-           isMin [keyTrit] ? arcTraverse<K, V>(arcTraverseNext<K, V>(keyZero, param)) : null
+    return keyZero ? arcRadixLeaf<K, V>(param) :
+           isOne [keyTrit] ? arcRadixTraverse<K, V>(arcRadixTraverseNext<K, V>(keyZero, param)) :
+           isZero[keyTrit] ? arcRadixTraverse<K, V>(arcRadixTraverseNext<K, V>(keyZero, param)) :
+           isMin [keyTrit] ? arcRadixTraverse<K, V>(arcRadixTraverseNext<K, V>(keyZero, param)) : null
   }
 
-  func Traversal arcTraverseNext<K, V> (Bool keyZero, Traversal param) {
+  func Traversal arcRadixTraverseNext<K, V> (Bool keyZero, Traversal param) {
     return not[keyZero] ? Traversal {
       cmd = param.cmd
       key = lshift<K>(param.key)
@@ -48,27 +48,27 @@ template arcmap<K, V>
     } : null
   }
 
-  func V arcLeaf<K, V> (Traversal param) {
+  func V arcRadixLeaf<K, V> (Traversal param) {
     state Arc arc
 
     oldValue = arc
 
     cmd = param.cmd
     arc = isZero[cmd] ? oldValue :
-          isOne [cmd] ? arcLeafSet<K, V>(oldValue, param.value) :
-          isMin [cmd] ? arcLeafRemove<K, V>(oldValue) : null
+          isOne [cmd] ? arcRadixLeafSet<K, V>(oldValue, param.value) :
+          isMin [cmd] ? arcRadixLeafRemove<K, V>(oldValue) : null
 
     return oldValue.value
   }
 
-  func Arc arcLeafSet<K, V> (Arc arc, V value) {
+  func Arc arcRadixLeafSet<K, V> (Arc arc, V value) {
     return Arc {
       value = value
       count = incr<Int>(arc.count)
     }
   }
 
-  func Arc arcLeafRemove<K, V> (Arc arc) {
+  func Arc arcRadixLeafRemove<K, V> (Arc arc) {
     count = decr<Int>(arc.count)
     sign = sign<Int>(count)
     return isZero[sign] ? 0 :
