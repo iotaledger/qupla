@@ -1,0 +1,39 @@
+// implements a simple key/value storage
+// needs to be wrapped in an entity function and accessed through
+// sending effects to work correctly
+
+template listMap<K, V>
+{
+  type State {
+    next [Trit]
+    key [K]
+    value [V]
+  }
+
+  type ReturnState {
+    s [State]
+    ret [V]
+  }
+
+  func V listMap<K, V> (Trit cmd, K key, V value) {
+    state State s
+
+    oldState = s
+    deeper = and[unequal<K>(key, oldState.key), isOne[oldState.next]]
+
+    newState = not[deeper] ? listMapProcess<K, V>(cmd, key, value, oldState) : null
+    s = deeper ? oldState : newState.s
+    return deeper ? listMap<K, V>(cmd, key, value) : newState.ret
+  }
+
+  func ReturnState listMapProcess<K, V> (Trit cmd, K key, V value, State s) {
+    return ReturnState {
+      s = State {
+        next = isOne [cmd] ? 1 : s.next
+        key = key
+        value = isOne [cmd] ? value : isMin[cmd] ? 0 : s.value
+      }
+      ret = s.value
+    }
+  }
+}

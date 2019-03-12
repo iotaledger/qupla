@@ -24,6 +24,7 @@ public class FuncStmt extends BaseExpr
   public final ArrayList<BaseExpr> funcTypes = new ArrayList<>();
   public TritVector nullReturn;
   public final ArrayList<BaseExpr> params = new ArrayList<>();
+  public int recursion;
   public BaseExpr returnExpr;
   public BaseExpr returnType;
   public final ArrayList<BaseExpr> stateExprs = new ArrayList<>();

@@ -2,7 +2,7 @@
 // needs to be wrapped in an entity function and accessed through
 // sending effects to work correctly
 
-template map<K, V>
+template radixMap<K, V>
 {
   type Traversal {
     cmd [Trit]
@@ -10,16 +10,16 @@ template map<K, V>
     value [V]
   }
 
-  func V map<K, V> (Trit cmd, K key, V value) {
+  func V radixMap<K, V> (Trit cmd, K key, V value) {
     param = Traversal {
       cmd = cmd
       key = key
       value = value
     }
-    return traverse<K, V>(param)
+    return radixMapTraverse<K, V>(param)
   }
 
-  func V traverse<K, V> (Traversal param) {
+  func V radixMapTraverse<K, V> (Traversal param) {
     // note that for readability we should probably split this function
     // into two functions, one for the case where we call leaf() and one
     // for the case where we do the traverse() and determine nextParam,
@@ -29,13 +29,13 @@ template map<K, V>
     keyZero = isZero[sign<K>(param.key)]
 
     keyTrit = param.key[0]
-    return keyZero ? leaf<K, V>(param) :
-           isOne [keyTrit] ? traverse<K, V>(traverseNext<K, V>(keyZero, param)) :
-           isZero[keyTrit] ? traverse<K, V>(traverseNext<K, V>(keyZero, param)) :
-           isMin [keyTrit] ? traverse<K, V>(traverseNext<K, V>(keyZero, param)) : null
+    return keyZero ? radixMapLeaf<K, V>(param) :
+           isOne [keyTrit] ? radixMapTraverse<K, V>(radixMapTraverseNext<K, V>(keyZero, param)) :
+           isZero[keyTrit] ? radixMapTraverse<K, V>(radixMapTraverseNext<K, V>(keyZero, param)) :
+           isMin [keyTrit] ? radixMapTraverse<K, V>(radixMapTraverseNext<K, V>(keyZero, param)) : null
   }
 
-  func Traversal traverseNext<K, V> (Bool keyZero, Traversal param) {
+  func Traversal radixMapTraverseNext<K, V> (Bool keyZero, Traversal param) {
     return not[keyZero] ? Traversal {
       cmd = param.cmd
       key = lshift<K>(param.key)
@@ -43,7 +43,7 @@ template map<K, V>
     } : null
   }
 
-  func V leaf<K, V> (Traversal param) {
+  func V radixMapLeaf<K, V> (Traversal param) {
     state V value
 
     oldValue = value

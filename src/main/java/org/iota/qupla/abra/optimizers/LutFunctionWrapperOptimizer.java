@@ -65,7 +65,7 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
     }
 
     final AbraSiteKnot output = (AbraSiteKnot) target.outputs.get(0);
-    if (output.inputs.size() != 3 || output.size != 1 || !(output.block instanceof AbraBlockLut))
+    if (output.inputs.size() > 3 || output.size != 1 || !(output.block instanceof AbraBlockLut))
     {
       // not a lut lookup
       return;

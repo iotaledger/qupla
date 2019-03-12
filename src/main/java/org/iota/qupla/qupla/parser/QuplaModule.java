@@ -9,6 +9,7 @@ import java.util.HashMap;
 import org.iota.qupla.Qupla;
 import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.qupla.context.QuplaAnyNullContext;
+import org.iota.qupla.qupla.context.QuplaRecursionContext;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.statement.ExecStmt;
 import org.iota.qupla.qupla.statement.FuncStmt;
@@ -161,6 +162,9 @@ public class QuplaModule extends BaseExpr
       final FuncStmt func = funcs.get(i);
       func.analyze();
     }
+
+    // determine which functions are recursive
+    new QuplaRecursionContext().eval(this);
 
     // determine which functions short-circuit on any null parameter
     new QuplaAnyNullContext().eval(this);

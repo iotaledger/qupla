@@ -230,16 +230,15 @@ public class AbraEvalContext extends AbraBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    if (args.size() != 3)
+    if (args.size() == 0 || args.size() > 3)
     {
-      error("LUT needs exactly 3 inputs");
+      error("LUT needs 1 - 3 inputs");
     }
 
     int index = 13;
     int power = 1;
-    for (int i = 0; i < 3; i++)
+    for (final TritVector arg : args)
     {
-      final TritVector arg = args.get(i);
       if (arg.size() != 1)
       {
         error("LUT inputs need to be exactly 1 trit");

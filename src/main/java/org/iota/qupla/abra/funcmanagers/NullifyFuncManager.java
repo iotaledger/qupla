@@ -1,5 +1,6 @@
 package org.iota.qupla.abra.funcmanagers;
 
+import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
@@ -41,7 +42,7 @@ public class NullifyFuncManager extends BaseFuncManager
     manager.sorted = sorted;
 
     final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = funcName + SEPARATOR + inputSize;
+    branch.name = funcName + AbraModule.SEPARATOR + inputSize;
     branch.size = inputSize;
 
     final AbraSiteParam inputFlag = branch.addInputParam(1);
@@ -76,7 +77,7 @@ public class NullifyFuncManager extends BaseFuncManager
   @Override
   protected void generateLut()
   {
-    lut = module.addLut(funcName + SEPARATOR, trueFalse ? TRUE_TRITS : FALSE_TRITS);
+    lut = module.addLut(funcName + AbraModule.SEPARATOR, trueFalse ? TRUE_TRITS : FALSE_TRITS);
     lut.specialType = trueFalse ? AbraBaseBlock.TYPE_NULLIFY_TRUE : AbraBaseBlock.TYPE_NULLIFY_FALSE;
     lut.constantValue = new TritVector(1, '@');
   }
@@ -86,7 +87,7 @@ public class NullifyFuncManager extends BaseFuncManager
   {
     // generate function that use LUTs
     final AbraBlockBranch branch = new AbraBlockBranch();
-    branch.name = funcName + SEPARATOR + inputSize;
+    branch.name = funcName + AbraModule.SEPARATOR + inputSize;
     branch.size = inputSize;
 
     final AbraSiteParam inputFlag = branch.addInputParam(1);
@@ -105,8 +106,12 @@ public class NullifyFuncManager extends BaseFuncManager
       inputFlag.references++;
       knot.inputs.add(slice);
       slice.references++;
-      knot.inputs.add(slice);
-      slice.references++;
+      if (AbraModule.lutAlways3)
+      {
+        knot.inputs.add(slice);
+        slice.references++;
+      }
+
       knot.block = lut;
       knot.size = knot.block.size();
       branch.outputs.add(knot);

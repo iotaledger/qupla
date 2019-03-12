@@ -14,7 +14,12 @@ import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.exception.ExitException;
 import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
-import org.iota.qupla.qupla.context.*;
+import org.iota.qupla.qupla.context.QuplaEvalContext;
+import org.iota.qupla.qupla.context.QuplaPrintContext;
+import org.iota.qupla.qupla.context.QuplaToAbraContext;
+import org.iota.qupla.qupla.context.QuplaToVerilogContext;
+import org.iota.qupla.qupla.context.QuplaToYAMLContext;
+import org.iota.qupla.qupla.context.QuplaTreeViewerContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
 import org.iota.qupla.qupla.expression.MergeExpr;
 import org.iota.qupla.qupla.expression.VectorExpr;
@@ -42,7 +47,7 @@ public class Qupla
       "-test",
       "-tree",
       "-view",
-      "-yaml"
+      "-yaml",
       };
   private static int openWindows;
   private static final HashSet<String> options = new HashSet<>();

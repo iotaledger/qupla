@@ -43,7 +43,7 @@ public class SliceFuncManager extends BaseFuncManager
     this.module = module;
     this.size = size;
     this.start = start;
-    name = funcName + SEPARATOR + size + SEPARATOR + start;
+    name = funcName + AbraModule.SEPARATOR + size + AbraModule.SEPARATOR + start;
     return findInstance();
   }
 }

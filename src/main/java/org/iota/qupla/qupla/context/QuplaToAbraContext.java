@@ -325,9 +325,12 @@ public class QuplaToAbraContext extends QuplaBaseContext
       site.name += "_" + i;
       site.size = 1;
       site.inputs.addAll(args.inputs);
-      while (site.inputs.size() < 3)
+      if (AbraModule.lutAlways3)
       {
-        site.inputs.add(site.inputs.get(0));
+        while (site.inputs.size() < 3)
+        {
+          site.inputs.add(site.inputs.get(0));
+        }
       }
 
       site.lut(abraModule);

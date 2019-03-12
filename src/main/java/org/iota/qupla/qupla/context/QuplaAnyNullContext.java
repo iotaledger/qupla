@@ -34,9 +34,12 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   {
   }
 
-  @Override
   public void eval(final QuplaModule module)
   {
+    for (final FuncStmt func : module.funcs)
+    {
+      evalFunc(func);
+    }
   }
 
   @Override
@@ -98,6 +101,7 @@ public class QuplaAnyNullContext extends QuplaBaseContext
     {
       // recursion detected, cannot determine
       // keep non-null to be on the safe side
+      log("RECURSION WARNING: " + func.name);
       return;
     }
 
@@ -201,7 +205,6 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   @Override
   public void evalFuncSignature(final FuncStmt func)
   {
-
   }
 
   @Override
@@ -247,6 +250,7 @@ public class QuplaAnyNullContext extends QuplaBaseContext
   public void evalState(final StateExpr state)
   {
     // of course this is non-null: state vars cannot be null
+    stack.push(false);
     isNull = false;
   }
 

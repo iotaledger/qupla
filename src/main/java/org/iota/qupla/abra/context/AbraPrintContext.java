@@ -116,9 +116,7 @@ public class AbraPrintContext extends AbraBaseContext
   {
     evalBlock(lut);
 
-    append("// lut block " + lut.index);
-    append(" // " + lut.lookup);
-    append(" // " + lut.name + "[]").newline();
+    append(" // lut " + lut.lookup);
   }
 
   @Override
@@ -157,6 +155,6 @@ public class AbraPrintContext extends AbraBaseContext
     }
 
     append("// " + site.index + " ").append(nullifyIndex);
-    append(" " + site.references + " " + type + "(" + site.size + "): ");
+    append(" " + site.references + " " + type + "[" + site.size + "]: ");
   }
 }
