@@ -5,9 +5,9 @@
 template radixMap<K, V>
 {
   type Traversal {
-    cmd [Trit]
-    key [K]
-    value [V]
+    Trit cmd
+    K key
+    V value
   }
 
   func V radixMap<K, V> (Trit cmd, K key, V value) {

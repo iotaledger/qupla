@@ -2,8 +2,8 @@
 
 template div<T> {
   type T2 {
-    quotient [T]
-    remainder [T]
+    T quotient
+    T remainder
   }
 
   func T div<T> (T lhs, T rhs) {

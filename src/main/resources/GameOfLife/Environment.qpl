@@ -28,17 +28,17 @@
 type GolSize [Huge]
 type GolMap [GolSize * GolSize]
 type GolAddress {
-  cmd [Trit]
-  id [Hash]
-  address [Hash]
+  Trit cmd
+  Hash id
+  Hash address
 }
 
 type GolInfo {
-  id [Hash]
-  map [GolMap]
-  signature [Hash]
-  address [Hash]
-  cmd [Trit]
+  Hash id
+  GolMap map
+  Hash signature
+  Hash address
+  Trit cmd
 }
 
 // type id -> get published cmd/id from GolIds -> publish cmd/id/address in GolAddress

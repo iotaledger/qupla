@@ -272,17 +272,15 @@
          
          <ul>
             
-            <li><a href="#TritStructDef" title="TritStructDef">TritStructDef</a></li>
-            
             <li><a href="#TypeStmt" title="TypeStmt">TypeStmt</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="TritStructDef">TritStructDef:</a></p><img border="0" src="diagram/TritStructDef.png" height="53" width="399" usemap="#TritStructDef.map"><map name="TritStructDef.map"><area shape="rect" coords="97,17,179,49" href="#fieldName" title="fieldName"><area shape="rect" coords="199,17,301,49" href="#TritVectorDef" title="TritVectorDef"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="TritStructDef">TritStructDef:</a></p><img border="0" src="diagram/TritStructDef.png" height="53" width="421" usemap="#TritStructDef.map"><map name="TritStructDef.map"><area shape="rect" coords="97,17,221,49" href="#ConstTypeName" title="ConstTypeName"><area shape="rect" coords="241,17,323,49" href="#fieldName" title="fieldName"></map><p>
          
          <div class="ebnf"><code>
                
                <div><a href="#TritStructDef" title="TritStructDef" shape="rect">TritStructDef</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '{' ( <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> <a href="#TritVectorDef" title="TritVectorDef" shape="rect">TritVectorDef</a> )+ '}'</div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '{' ( <a href="#ConstTypeName" title="ConstTypeName" shape="rect">ConstTypeName</a> <a href="#fieldName" title="fieldName" shape="rect">fieldName</a> )+ '}'</div></code></div>
          </p>
       
       <p>referenced by:
@@ -674,7 +672,7 @@
             
             <li><a href="#PostfixExpr" title="PostfixExpr">PostfixExpr</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="VectorExpr">VectorExpr:</a></p><img border="0" src="diagram/VectorExpr.png" height="169" width="163" usemap="#VectorExpr.map"><map name="VectorExpr.map"><area shape="rect" coords="49,1,87,33" href="#trit" title="trit"><area shape="rect" coords="49,45,95,77" href="#bool" title="bool"><area shape="rect" coords="49,89,113,121" href="#integer" title="integer"><area shape="rect" coords="49,133,97,165" href="#float" title="float"></map><p>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="VectorExpr">VectorExpr:</a></p><img border="0" src="diagram/VectorExpr.png" height="345" width="189" usemap="#VectorExpr.map"><map name="VectorExpr.map"><area shape="rect" coords="49,1,87,33" href="#trit" title="trit"><area shape="rect" coords="49,45,95,77" href="#bool" title="bool"><area shape="rect" coords="49,89,113,121" href="#integer" title="integer"><area shape="rect" coords="49,133,97,165" href="#float" title="float"><area shape="rect" coords="49,177,125,209" href="#bitLiteral" title="bitLiteral"><area shape="rect" coords="49,221,127,253" href="#tritLiteral" title="tritLiteral"><area shape="rect" coords="49,265,139,297" href="#tryteLiteral" title="tryteLiteral"><area shape="rect" coords="49,309,131,341" href="#hexLiteral" title="hexLiteral"></map><p>
          
          <div class="ebnf"><code>
                
@@ -686,7 +684,15 @@
                
                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#integer" title="integer" shape="rect">integer</a></div>
                
-               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#float" title="float" shape="rect">float</a></div></code></div>
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#float" title="float" shape="rect">float</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#bitLiteral" title="bitLiteral" shape="rect">bitLiteral</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#tritLiteral" title="tritLiteral" shape="rect">tritLiteral</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#tryteLiteral" title="tryteLiteral" shape="rect">tryteLiteral</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a href="#hexLiteral" title="hexLiteral" shape="rect">hexLiteral</a></div></code></div>
          </p>
       
       <p>referenced by:
@@ -899,6 +905,8 @@
             
             <li><a href="#StateExpr" title="StateExpr">StateExpr</a></li>
             
+            <li><a href="#TritStructDef" title="TritStructDef">TritStructDef</a></li>
+            
             <li><a href="#TypeExpr" title="TypeExpr">TypeExpr</a></li>
             
             <li><a href="#funcParam" title="funcParam">funcParam</a></li>
@@ -1017,6 +1025,66 @@
          <div class="ebnf"><code>
                
                <div><a href="#float" title="float" shape="rect">float</a>&nbsp;&nbsp;&nbsp;&nbsp;::= '-'? <a href="#number" title="number" shape="rect">number</a> '.' <a href="#number" title="number" shape="rect">number</a></div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#VectorExpr" title="VectorExpr">VectorExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="bitLiteral">bitLiteral:</a></p><img border="0" src="diagram/bitLiteral.png" height="97" width="223"><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#bitLiteral" title="bitLiteral" shape="rect">bitLiteral</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '0b' [0-1]+</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#VectorExpr" title="VectorExpr">VectorExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="tritLiteral">tritLiteral:</a></p><img border="0" src="diagram/tritLiteral.png" height="141" width="221"><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#tritLiteral" title="tritLiteral" shape="rect">tritLiteral</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '0t' [-01]+</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#VectorExpr" title="VectorExpr">VectorExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="tryteLiteral">tryteLiteral:</a></p><img border="0" src="diagram/tryteLiteral.png" height="97" width="255"><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#tryteLiteral" title="tryteLiteral" shape="rect">tryteLiteral</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '0t' [9A-Z]+</div></code></div>
+         </p>
+      
+      <p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#VectorExpr" title="VectorExpr">VectorExpr</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="hexLiteral">hexLiteral:</a></p><img border="0" src="diagram/hexLiteral.png" height="141" width="257"><p>
+         
+         <div class="ebnf"><code>
+               
+               <div><a href="#hexLiteral" title="hexLiteral" shape="rect">hexLiteral</a></div>
+               
+               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= '0x' [0-9a-fA-F]+</div></code></div>
          </p>
       
       <p>referenced by:

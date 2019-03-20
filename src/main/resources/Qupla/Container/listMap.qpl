@@ -5,14 +5,14 @@
 template listMap<K, V>
 {
   type State {
-    next [Trit]
-    key [K]
-    value [V]
+    Trit next
+    K key
+    V value
   }
 
   type ReturnState {
-    s [State]
-    ret [V]
+    State s
+    V ret
   }
 
   func V listMap<K, V> (Trit cmd, K key, V value) {

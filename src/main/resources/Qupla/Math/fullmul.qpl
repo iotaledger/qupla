@@ -67,8 +67,8 @@ template fullMul3<T> = P + P + P {
   type P [T / 3]
   type P2 [P * 2]
   type P2Carry {
-    value [P2]
-    carry [Carry]
+    P2 value
+    Carry carry
   }
 
   func T2 fullMul<T> (T lhs, T rhs) {
