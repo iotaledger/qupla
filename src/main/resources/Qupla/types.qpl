@@ -36,8 +36,8 @@ type Bool [Trit]
 type Carry [Trit]
 
 type TritCarry {
-  value [Trit]
-  carry [Carry]
+  Trit value
+  Carry carry
 }
 
 // here's how to define a named structured trit vector
@@ -46,42 +46,42 @@ type TritCarry {
 // note that structures themselves can contain structures
 
 type TinyFloat {
-  mantissa [Tiny]   // -/+ 9,841
-  exponent [Tryte]  // -/+ 3^13
+  Tiny mantissa   // -/+ 9,841
+  Tryte exponent  // -/+ 3^13
 }
-type Float {        // slightly larger than IEEE 754 32-bit float
-  mantissa [Tiny2]  // -/+ 193,710,244
-  exponent [Tryte2] // -/+ 3^364
+type Float {      // slightly larger than IEEE 754 32-bit float
+  Tiny2 mantissa  // -/+ 193,710,244
+  Tryte2 exponent // -/+ 3^364
 }
-type Double {       // slightly larger than IEEE 754 64-bit double
-  mantissa [Tiny4]  // -/+ 75,047,317,648,499,560
-  exponent [Tiny]   // -/+ 3^9,841
+type Double {     // slightly larger than IEEE 754 64-bit double
+  Tiny4 mantissa  // -/+ 75,047,317,648,499,560
+  Tiny exponent   // -/+ 3^9,841
 }
 type HugeFloat {
-  mantissa [Int2]   // -/+ 29,074,868,501,520,029,845,195,084
-  exponent [Tiny2]  // -/+ 3^193,710,244
+  Int2 mantissa   // -/+ 29,074,868,501,520,029,845,195,084
+  Tiny2 exponent  // -/+ 3^193,710,244
 }
 
 // attachment sub-structure layout
 type Attachment {
-  timestamp [Int]
-  timestampLowerBound [Int]
-  timestampUpperBound [Int]
+  Int timestamp
+  Int timestampLowerBound
+  Int timestampUpperBound
 }
 
 // sample future IOTA transaction layout
 type Transaction {
-  signature [Signature]
-  extraDataDigest [Hash]
-  address [Hash]
-  value [Huge]
-  issuanceTimestamp [Int]
-  timelockLowerBound [Int]
-  timelockUpperBound [Int]
-  bundle [Huge]
-  trunk [Hash]
-  branch [Hash]
-  tag [Huge]
-  attachment [Attachment]
-  nonce [Huge]
+  Signature signature
+  Hash extraDataDigest
+  Hash address
+  Huge value
+  Int issuanceTimestamp
+  Int timelockLowerBound
+  Int timelockUpperBound
+  Huge bundle
+  Hash trunk
+  Hash branch
+  Huge tag
+  Attachment attachment
+  Huge nonce
 }

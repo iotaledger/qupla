@@ -10,7 +10,7 @@ TypeStmt ::= 'type' typeName (TritVectorDef | TritStructDef | entityAlias)
 
 TritVectorDef ::= '[' ConstExpr ']'
 
-TritStructDef ::= '{' (fieldName TritVectorDef)+ '}'
+TritStructDef ::= '{' (ConstTypeName fieldName)+ '}'
 
 
 LutStmt ::= 'lut' lutName (('{' LutEntry+ '}') | entityAlias)
@@ -69,7 +69,7 @@ PostfixExpr ::= SubExpr | VectorExpr | SliceExpr | FuncExpr | LutExpr | SizeofEx
 
 SubExpr ::= '(' CondExpr ')'
 
-VectorExpr ::= trit | bool | integer | float
+VectorExpr ::= trit | bool | integer | float | bitLiteral | tritLiteral | tryteLiteral | hexLiteral
 
 SliceExpr ::= (varName | paramName) ('.' NameExpr)* ('[' ConstExpr (':' ConstExpr)? ']')?
 
@@ -112,3 +112,11 @@ number ::= [0-9]+
 integer ::= '-'? number
 
 float ::= '-'? number '.' number
+
+bitLiteral ::= '0b' [01]+
+
+tritLiteral ::= '0t' [-01]+
+
+tryteLiteral ::= '0t' [9A-Z]+
+
+hexLiteral ::= '0x' [0-9a-fA-F]+

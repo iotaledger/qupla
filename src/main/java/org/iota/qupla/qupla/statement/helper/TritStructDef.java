@@ -2,7 +2,9 @@ package org.iota.qupla.qupla.statement.helper;
 
 import java.util.ArrayList;
 
+import org.iota.qupla.qupla.expression.NameExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
+import org.iota.qupla.qupla.expression.constant.ConstTypeName;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
 
@@ -25,9 +27,12 @@ public class TritStructDef extends BaseExpr
 
     do
     {
-      final Token fieldName = expect(tokenizer, Token.TOK_NAME, "field name");
+      final ConstTypeName fieldType = new ConstTypeName(tokenizer);
 
-      fields.add(new TritVectorDef(tokenizer, fieldName));
+      final NameExpr field = new NameExpr(tokenizer, "field name");
+      field.type = fieldType;
+
+      fields.add(field);
     }
     while (tokenizer.tokenId() != Token.TOK_GROUP_CLOSE);
 

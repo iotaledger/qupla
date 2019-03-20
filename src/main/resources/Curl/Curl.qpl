@@ -15,8 +15,8 @@ lut curl {
 
 type CurlState [Hash3]
 type CurlResult {
-  curlState [CurlState]
-  hash [Hash]
+  CurlState curlState
+  Hash hash
 }
 
 func CurlState curlAbsorb(CurlState curlState, Hash hash, Tiny rounds)

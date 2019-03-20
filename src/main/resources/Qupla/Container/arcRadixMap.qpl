@@ -5,14 +5,14 @@
 template arcRadixMap<K, V>
 {
   type Traversal {
-    cmd [Trit]
-    key [K]
-    value [V]
+    Trit cmd
+    K key
+    V value
   }
 
   type Arc {
-    value [V]
-    count [Int]
+    V value
+    Int count
   }
 
   func V arcRadixMap<K, V> (Trit cmd, K key, V value) {

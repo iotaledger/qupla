@@ -63,13 +63,14 @@ template fibonacci2<T> {
 
 template fibonacci3<T> {
   type LoopInfo {
-    n [T]
-    fib1 [T]
-    fib2 [T]
-    sign [Trit]
+    T n
+    T fib1
+    T fib2
+    Trit sign
   }
 
   func LoopInfo fibonacci3<T> (T n) {
+    join fibInit
     affect fibLoop
 
     // pass this to fibFilter as well in case n equals 0

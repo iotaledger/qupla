@@ -1,6 +1,7 @@
 package org.iota.qupla.qupla.context;
 
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
+import org.iota.qupla.qupla.expression.AffectExpr;
 import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.ConcatExpr;
 import org.iota.qupla.qupla.expression.CondExpr;
@@ -264,7 +265,7 @@ public class QuplaToYAMLContext extends QuplaBaseContext
       int offset = 0;
       for (BaseExpr fe : constTypeName.typeInfo.struct.fields)
       {
-        TritVectorDef fld = (TritVectorDef) fe;
+        NameExpr fld = (NameExpr) fe;
         indent();
         append(fld.name + ": ");
         newline();
@@ -280,6 +281,8 @@ public class QuplaToYAMLContext extends QuplaBaseContext
         offset += fld.size;
       }
     }
+    //        appendStringAsComment("typeInfo: '" + constTypeName.typeInfo.toString().replaceAll("\n", "") + "'");
+    //        newline();
   }
 
   private void evalExec(final ExecStmt exec)
@@ -387,11 +390,33 @@ public class QuplaToYAMLContext extends QuplaBaseContext
       indent();
       for (final BaseExpr envExpr : func.envExprs)
       {
-        append("- name: " + envExpr.name);
+        append("- ");
         newline();
         indent();
-        append("join: " + (envExpr instanceof JoinExpr));
+        append("name: " + envExpr.name);
         newline();
+        if (envExpr instanceof JoinExpr)
+        {
+          append("type: join");
+          newline();
+          JoinExpr e = (JoinExpr) envExpr;
+          if (e.limit != null)
+          {
+            append("limit: " + e.limit);
+            newline();
+          }
+        }
+        if (envExpr instanceof AffectExpr)
+        {
+          append("type: affect");
+          newline();
+          AffectExpr e = (AffectExpr) envExpr;
+          if (e.delay != null)
+          {
+            append("delay: " + e.delay);
+            newline();
+          }
+        }
         undent();
       }
       undent();
@@ -646,7 +671,11 @@ public class QuplaToYAMLContext extends QuplaBaseContext
         append(field.name).append(": ").newline();
       }
       indent();
-      evalTritVector((TritVectorDef) field);
+      append("vector: ");
+      append(field.typeInfo.toString().trim());
+      newline();
+      append("size: '" + field.size + "'");
+      newline();
       undent();
 
       undent();
@@ -730,6 +759,3 @@ public class QuplaToYAMLContext extends QuplaBaseContext
     return expr.getClass().getSimpleName();
   }
 }
-
-
-

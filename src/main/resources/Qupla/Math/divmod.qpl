@@ -2,8 +2,8 @@
 
 template divMod<T> {
   type T2 {
-    quotient [T]
-    remainder [T]
+    T quotient
+    T remainder
   }
   
   // quotient truncated to nearest integer that is closest to zero

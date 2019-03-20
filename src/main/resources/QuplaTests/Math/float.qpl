@@ -3,8 +3,8 @@
 // which means that float.abra must be parsed before float constants can be used
 
 type TestFloat {
-  mantissa [Tiny2]
-  exponent [Tryte2]
+  Tiny2 mantissa
+  Tryte2 exponent
 }
 
 test  0 = floatAdd<TestFloat>( 0,  0)
