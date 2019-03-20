@@ -15,6 +15,7 @@ This repository will provide:
 * Qupla Debug Info tritcode generator
 * Qupla JIT compilation (TBD)
 * Qupla Verilog generator (mostly done)
+* Qupla to YAML translator (mostly done, thanks lunfardo)
 * Abra tritcode interpreter
 * Abra tritcode Verilog generator (mostly done)
 
@@ -40,6 +41,8 @@ Current command line flags
 -tree  Generates a textual representation of the Qupla code tree
 
 -view  Start QCM viewers for every environment
+
+-yaml  Generate YAML from Qupla into resources/Qupla.yml
 
 
 Example of Java compilation and running Qupla on Windows command line after extracting sources into \Qupla folder:

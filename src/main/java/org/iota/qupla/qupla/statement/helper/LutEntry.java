@@ -43,11 +43,11 @@ public class LutEntry extends BaseExpr
     final Token trit = tokenizer.currentToken();
     switch (trit.id)
     {
-    case Token.TOK_FALSE:
+    case Token.TOK_LITERAL_FALSE:
       tokenizer.nextToken();
       return "" + TritConverter.BOOL_FALSE;
 
-    case Token.TOK_TRUE:
+    case Token.TOK_LITERAL_TRUE:
       tokenizer.nextToken();
       return "" + TritConverter.BOOL_TRUE;
 
@@ -56,7 +56,7 @@ public class LutEntry extends BaseExpr
       return trit.text;
     }
 
-    expect(tokenizer, Token.TOK_NUMBER, "trit value, 'false', or 'true'");
+    expect(tokenizer, Token.TOK_LITERAL_NUMBER, "trit value, 'false', or 'true'");
     if (trit.text.length() != 1 || trit.text.charAt(0) > '1')
     {
       error(trit, "Invalid trit value");

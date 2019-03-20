@@ -557,11 +557,11 @@ public class QuplaPrintContext extends QuplaBaseContext
     {
       switch (vector.origin.id)
       {
-      case Token.TOK_FALSE:
+      case Token.TOK_LITERAL_FALSE:
         append("false");
         return;
 
-      case Token.TOK_TRUE:
+      case Token.TOK_LITERAL_TRUE:
         append("true");
         return;
       }

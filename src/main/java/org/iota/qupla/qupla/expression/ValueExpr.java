@@ -1,6 +1,7 @@
 package org.iota.qupla.qupla.expression;
 
 import org.iota.qupla.helper.TritConverter;
+import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.Token;
 import org.iota.qupla.qupla.parser.Tokenizer;
@@ -18,12 +19,22 @@ public class ValueExpr extends VectorExpr
 
     switch (tokenizer.tokenId())
     {
-    case Token.TOK_FALSE:
+    case Token.TOK_LITERAL_BITS:
+    case Token.TOK_LITERAL_FLOAT:
+    case Token.TOK_LITERAL_HEX:
+    case Token.TOK_LITERAL_NUMBER:
+    case Token.TOK_LITERAL_TRITS:
+    case Token.TOK_LITERAL_TRYTES:
+      name = tokenizer.currentToken().text;
+      tokenizer.nextToken();
+      return;
+
+    case Token.TOK_LITERAL_FALSE:
       name = "" + TritConverter.BOOL_FALSE;
       tokenizer.nextToken();
       return;
 
-    case Token.TOK_TRUE:
+    case Token.TOK_LITERAL_TRUE:
       name = "" + TritConverter.BOOL_TRUE;
       tokenizer.nextToken();
       return;
@@ -34,7 +45,7 @@ public class ValueExpr extends VectorExpr
       break;
     }
 
-    if (tokenizer.tokenId() == Token.TOK_NUMBER || tokenizer.tokenId() == Token.TOK_FLOAT)
+    if (tokenizer.tokenId() == Token.TOK_LITERAL_NUMBER || tokenizer.tokenId() == Token.TOK_LITERAL_FLOAT)
     {
       name += tokenizer.currentToken().text;
       tokenizer.nextToken();
@@ -44,9 +55,43 @@ public class ValueExpr extends VectorExpr
   @Override
   public void analyze()
   {
-    removeLeadingZeroes();
+    switch (origin.id)
+    {
+    case Token.TOK_LITERAL_FALSE:
+    case Token.TOK_LITERAL_FLOAT:
+    case Token.TOK_LITERAL_NUMBER:
+    case Token.TOK_LITERAL_TRUE:
+    case Token.TOK_MINUS:
+      removeLeadingZeroes();
+      super.analyze();
+      return;
 
-    super.analyze();
+    case Token.TOK_LITERAL_BITS:
+      vector = new TritVector(TritConverter.fromLong(Long.valueOf(name.substring(2), 2)));
+      break;
+
+    case Token.TOK_LITERAL_HEX:
+      vector = new TritVector(TritConverter.fromLong(Long.valueOf(name.substring(2), 16)));
+      break;
+
+    case Token.TOK_LITERAL_TRITS:
+      vector = new TritVector(name.substring(2));
+      break;
+
+    case Token.TOK_LITERAL_TRYTES:
+      vector = TritVector.fromTrytes(name.substring(2));
+      break;
+    }
+
+    size = vector.size();
+    if (constTypeInfo != null)
+    {
+      size = constTypeInfo.size;
+      if (vector.size() < size)
+      {
+        vector = TritVector.concat(vector, new TritVector(size - vector.size(), '0'));
+      }
+    }
   }
 
   @Override

@@ -15,7 +15,7 @@ public class ConstNumber extends BaseExpr
   {
     super(tokenizer);
 
-    final Token number = expect(tokenizer, Token.TOK_NUMBER, "number");
+    final Token number = expect(tokenizer, Token.TOK_LITERAL_NUMBER, "number");
     name = number.text;
   }
 

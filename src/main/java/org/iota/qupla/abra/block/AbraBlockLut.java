@@ -24,6 +24,6 @@ public class AbraBlockLut extends AbraBaseBlock
   @Override
   public String toString()
   {
-    return super.toString() + "[]";
+    return name + "[]";
   }
 }
