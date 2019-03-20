@@ -160,7 +160,7 @@ public class AbraBlockBranch extends AbraBaseBlock
   @Override
   public String toString()
   {
-    return super.toString() + "()";
+    return name + "()";
   }
 
   public int totalSites()

@@ -1,4 +1,5 @@
 // ************* BINARY OPERATORS *************
+// only defined for boolean inputs
 
 // LUT logic: binary NOT
 //            return !trit1
@@ -124,4 +125,17 @@ lut xnor {
   false, true  = false
   true,  false = false
   true,  true  = true 
+}
+
+// LUT logic: binary XNOR
+//            return !(trit1 ^ trit2 ^ trit3)
+lut xnor3 {
+  false, false, false = true
+  false, false, true  = false
+  false, true,  false = false
+  false, true,  true  = true
+  true,  false, false = false
+  true,  false, true  = true
+  true,  true,  false = true
+  true,  true,  true  = false
 }

@@ -36,7 +36,7 @@ public class ConstFactor extends BaseSubExpr
       expr = new ConstFactor(tokenizer);
       return;
 
-    case Token.TOK_NUMBER:
+    case Token.TOK_LITERAL_NUMBER:
       expr = new ConstNumber(tokenizer);
       return;
     }

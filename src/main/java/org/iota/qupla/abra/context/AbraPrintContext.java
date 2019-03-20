@@ -56,8 +56,6 @@ public class AbraPrintContext extends AbraBaseContext
     {
       append("" + block.origin).newline();
     }
-
-    append("// " + block.toString());
   }
 
   @Override
@@ -67,12 +65,14 @@ public class AbraPrintContext extends AbraBaseContext
 
     evalBlock(branch);
 
+    append("// branch " + branch.toString());
+
     newline().indent();
 
-    evalBranchSites(branch.inputs, "input");
-    evalBranchSites(branch.sites, "body");
+    evalBranchSites(branch.inputs, "input ");
+    evalBranchSites(branch.sites, "body  ");
     evalBranchSites(branch.outputs, "output");
-    evalBranchSites(branch.latches, "latch");
+    evalBranchSites(branch.latches, "latch ");
 
     undent();
   }
@@ -91,6 +91,8 @@ public class AbraPrintContext extends AbraBaseContext
   public void evalImport(final AbraBlockImport imp)
   {
     evalBlock(imp);
+
+    append("// import " + imp.toString());
   }
 
   @Override
@@ -114,9 +116,7 @@ public class AbraPrintContext extends AbraBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    evalBlock(lut);
-
-    append(" // lut " + lut.lookup);
+    append("// lut " + lut.lookup + " " + lut.toString()).newline();
   }
 
   @Override
@@ -154,7 +154,9 @@ public class AbraPrintContext extends AbraBaseContext
       nullifyIndex = "F" + site.nullifyFalse.index;
     }
 
-    append("// " + site.index + " ").append(nullifyIndex);
-    append(" " + site.references + " " + type + "[" + site.size + "]: ");
+    final String index = (site.index < 10 ? " " : "") + site.index;
+    final String size = (site.size < 10 ? " " : "") + site.size;
+    append("// " + index + " ").append(nullifyIndex);
+    append(" " + site.references + " " + type + "[" + size + "] ");
   }
 }

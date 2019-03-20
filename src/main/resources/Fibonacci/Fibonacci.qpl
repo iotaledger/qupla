@@ -22,7 +22,7 @@ template fibonacci1<T> {
 
 
 // returns the n-th Fibonacci number,
-// smart version, using n function calls
+// smarter version, using n function calls
 // can easily go up to n=180 when using a Huge
 // Java equivalent:
 // return (n == 0 || n == 1) ? n : fibPart2(n - 2, 0, 1)

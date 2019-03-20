@@ -22,10 +22,14 @@ public class PostfixExpr extends BaseSubExpr
       expr = new SubExpr(tokenizer);
       return;
 
-    case Token.TOK_FALSE:
-    case Token.TOK_TRUE:
-    case Token.TOK_FLOAT:
-    case Token.TOK_NUMBER:
+    case Token.TOK_LITERAL_BITS:
+    case Token.TOK_LITERAL_FALSE:
+    case Token.TOK_LITERAL_FLOAT:
+    case Token.TOK_LITERAL_HEX:
+    case Token.TOK_LITERAL_NUMBER:
+    case Token.TOK_LITERAL_TRITS:
+    case Token.TOK_LITERAL_TRUE:
+    case Token.TOK_LITERAL_TRYTES:
     case Token.TOK_MINUS:
       expr = new ValueExpr(tokenizer);
       return;

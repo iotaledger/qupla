@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.iota.qupla.Qupla;
 import org.iota.qupla.exception.CodeException;
+import org.iota.qupla.helper.TritConverter;
 
 public class Tokenizer
 {
@@ -30,6 +31,46 @@ public class Tokenizer
   public Token currentToken()
   {
     return token;
+  }
+
+  private boolean isLiteral(final int literalId, final String prefix, final String valid)
+  {
+    if (!token.text.startsWith(prefix))
+    {
+      return false;
+    }
+
+    if (token.text.length() == 2)
+    {
+      throw new CodeException(token, "Invalid literal: '" + prefix + "'");
+    }
+
+    char c = token.text.charAt(2);
+    if (valid.indexOf(c) < 0)
+    {
+      if (literalId == Token.TOK_LITERAL_TRITS)
+      {
+        // will try again as tryte string
+        return false;
+      }
+
+      throw new CodeException(token, "Invalid literal: '" + prefix + c + "'");
+    }
+
+    token = token.resetId(literalId);
+
+    for (int i = 3; i < token.text.length(); i++)
+    {
+      c = token.text.charAt(i);
+      if (valid.indexOf(c) < 0)
+      {
+        token = token.resetText(token.text.substring(0, i));
+        break;
+      }
+    }
+
+    colNr += token.text.length();
+    return true;
   }
 
   public Token nextToken()
@@ -60,6 +101,7 @@ public class Tokenizer
 
     // found start of next token
     token = new Token(lineNr, colNr, module.currentSource, Token.UNKNONW_ID, Token.UNKNOWN_SYMBOL, line.substring(colNr));
+
     // first parse multi-character tokens
 
     // skip comment-to-end-of-line
@@ -76,6 +118,23 @@ public class Tokenizer
       return nextToken();
     }
 
+    if (isLiteral(Token.TOK_LITERAL_BITS, "0b", "01") || isLiteral(Token.TOK_LITERAL_TRITS, "0t", "01-") || isLiteral(Token.TOK_LITERAL_TRYTES, "0t", TritConverter.TRYTES) || isLiteral(Token.TOK_LITERAL_HEX, "0x", "0123456789ABCDEFabcdef"))
+    {
+      return token;
+    }
+
+
+    if (token.text.startsWith("0t"))
+    {
+
+    }
+
+
+    if (token.text.startsWith("0x"))
+    {
+
+    }
+
     // parse single-character tokens
     final Integer tokenId = tokenMap.get(token.text.substring(0, 1));
     if (tokenId != null)
@@ -88,7 +147,7 @@ public class Tokenizer
     char c = token.text.charAt(0);
     if (Character.isDigit(c))
     {
-      token = token.resetId(Token.TOK_NUMBER);
+      token = token.resetId(Token.TOK_LITERAL_NUMBER);
       for (int i = 0; i < token.text.length(); i++)
       {
         c = token.text.charAt(i);
@@ -97,9 +156,9 @@ public class Tokenizer
           continue;
         }
 
-        if (token.id == Token.TOK_NUMBER && c == '.')
+        if (token.id == Token.TOK_LITERAL_NUMBER && c == '.')
         {
-          token = token.resetId(Token.TOK_FLOAT);
+          token = token.resetId(Token.TOK_LITERAL_FLOAT);
           continue;
         }
 
@@ -193,7 +252,7 @@ public class Tokenizer
     addToken(Token.TOK_AFFECT, "affect");
     addToken(Token.TOK_DELAY, "delay");
     addToken(Token.TOK_EVAL, "eval");
-    addToken(Token.TOK_FALSE, "false");
+    addToken(Token.TOK_LITERAL_FALSE, "false");
     addToken(Token.TOK_FUNC, "func");
     addToken(Token.TOK_IMPORT, "import");
     addToken(Token.TOK_JOIN, "join");
@@ -205,7 +264,7 @@ public class Tokenizer
     addToken(Token.TOK_STATE, "state");
     addToken(Token.TOK_TEMPLATE, "template");
     addToken(Token.TOK_TEST, "test");
-    addToken(Token.TOK_TRUE, "true");
+    addToken(Token.TOK_LITERAL_TRUE, "true");
     addToken(Token.TOK_TYPE, "type");
     addToken(Token.TOK_USE, "use");
 

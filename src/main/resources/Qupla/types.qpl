@@ -13,7 +13,7 @@ type Hash3 [729]
 type Hash9 [2187]
 type Signature [6561]
 
-// double-width integer types for use in mul/div/mod operations
+// double-width and quad-width integer types for use in mul/div/mod operations
 type Trit2  [2]       // -/+ 4
 type Trit4  [4]       // -/+ 40
 type Tryte2 [6]       // -/+ 364
@@ -28,9 +28,9 @@ type Hash2  [486]
 type Hash4  [972]
 
 // define a convenience type to make code more readable
-// should always be a binary boolean value - (false) or 1 (true)
-// should never be null or assume the value 0
-// (note: this convention is not enforced by Qupla)
+// should always be a binary boolean value 0 (false) or 1 (true)
+// should never assume the value -
+// (note: this convention is not (yet) enforced by Qupla)
 type Bool [Trit]
 
 type Carry [Trit]
