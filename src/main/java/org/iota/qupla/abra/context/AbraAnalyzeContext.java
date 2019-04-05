@@ -21,7 +21,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
   private static final String constMin = "---------------------------";
   private static final String constOne = "111111111111111111111111111";
   private static final String constZero = "000000000000000000000000000";
-  private static final String nullifyFalse = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
+  private static final String nullifyFalse = "@-@@0@@1@@-@@0@@1@@-@@0@@1@";
   private static final String nullifyTrue = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
   private static final boolean sanityCheck = true;
   public int missing;
@@ -198,7 +198,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     }
 
     final AbraSiteKnot knot = (AbraSiteKnot) output;
-    if (knot.block.specialType != AbraBaseBlock.TYPE_SLICE || knot.inputs.size() != branch.sites.size())
+    if (knot.block.specialType != AbraBaseBlock.TYPE_SLICE || knot.inputs.size() < branch.sites.size())
     {
       return false;
     }
@@ -209,6 +209,11 @@ public class AbraAnalyzeContext extends AbraBaseContext
     for (final AbraBaseSite site : knot.inputs)
     {
       final AbraSiteKnot siteKnot = (AbraSiteKnot) site;
+      if (site == singleTrit)
+      {
+        return false;
+      }
+
       constant = TritVector.concat(constant, siteKnot.block.constantValue);
     }
 
@@ -266,7 +271,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
   private boolean evalBranchSpecialNullify(final AbraBlockBranch branch)
   {
-    if (branch.inputs.size() != 2)
+    if (branch.inputs.size() <= 1 || branch.sites.size() != 0)
     {
       return false;
     }
@@ -275,37 +280,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
     if (inputFlag.size != 1)
     {
       // first input must be a Bool flag
-      return false;
-    }
-
-    switch (branch.outputs.size())
-    {
-    case 1:
-      if (branch.sites.size() != 0)
-      {
-        // nullifyXxx_1 has no sites
-        return false;
-      }
-      break;
-
-    case 2:
-      if (branch.sites.size() != 2)
-      {
-        // nullifyXxx_N where N != 1 has 2 sites
-        return false;
-      }
-      break;
-
-    case 3:
-      if (branch.sites.size() != 3)
-      {
-        // nullifyXxx_N where N != 1 has 3 sites
-        return false;
-      }
-      break;
-
-    default:
-      // no other possibilities
       return false;
     }
 
@@ -342,27 +316,11 @@ public class AbraAnalyzeContext extends AbraBaseContext
         return false;
       }
 
-      if (branch.sites.size() != 0)
+      if (knot.inputs.get(1) != branch.inputs.get(i + 1))
       {
-        final AbraBaseSite slice = branch.sites.get(i);
-        if (knot.inputs.get(1) != slice)
-        {
-          // should refer a specific slice operation
-          return false;
-        }
-
-        //TODO verify that this is a slice operation
+        // should refer a specific input
+        return false;
       }
-      else
-      {
-        if (knot.inputs.get(1) != branch.inputs.get(i + 1))
-        {
-          // should refer a specific input
-          return false;
-        }
-      }
-
-      //TODO double-check number of knot inputs (2 or 3) against knot type (branch or lut)?
     }
 
     check(branch.name != null && branch.name.startsWith("nullify"));

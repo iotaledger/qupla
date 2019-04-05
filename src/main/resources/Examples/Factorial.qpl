@@ -2,7 +2,7 @@
 // Java equivalent:
 // return (n == 0) ? 1 : (n * factorial(n - 1))
 
-// data point: the maximum value for n! which still fits
+// data point: the maximum value for n! which still fits:
 // in a Huge integer is 33: 8683317618811886495518194401280000000
 // in a Hash integer is 78: 11324281178206297831457521158732046228731749579488251990048962825668835325234200766245086213177344000000000000000000
 

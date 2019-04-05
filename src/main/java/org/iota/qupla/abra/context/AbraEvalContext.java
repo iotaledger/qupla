@@ -50,12 +50,16 @@ public class AbraEvalContext extends AbraBaseContext
       branch.addInputParam(1);
       context.branch = branch;
       context.evalFuncCall(funcExpr);
-      final AbraBaseSite site = branch.sites.remove(branch.sites.size() - 1);
-      branch.outputs.add(site);
+      final AbraSiteKnot knot = (AbraSiteKnot) branch.sites.remove(branch.sites.size() - 1);
+
+      branch.outputs.add(knot);
       args.clear();
       args.add(new TritVector(1, '0'));
       branch.numberSites();
+      callTrail[callNr++] = (byte) knot.block.index;
+      callTrail[callNr++] = (byte) (knot.block.index >> 8);
       branch.eval(this);
+      callNr = 0;
       args.clear();
       context.branch = null;
     }
@@ -214,6 +218,11 @@ public class AbraEvalContext extends AbraBaseContext
       return;
     }
 
+    if (callNr == 4000)
+    {
+      error("Exceeded function call nesting limit");
+    }
+
     callTrail[callNr++] = (byte) knot.index;
 
     knot.block.eval(this);
@@ -370,11 +379,18 @@ public class AbraEvalContext extends AbraBaseContext
       return;
     }
 
+    // evaluate latch but do not overwrite its stack value
+    // in case another latch uses this one as well
+    // it should always use the old value
+    final TritVector oldValue = stack[latch.index];
     latch.eval(this);
+    stack[latch.index] = oldValue;
 
-    // do NOT update latch site on stack with new value
-    // other latches may need the old value still
-    // again, do NOT add: stack[latch.index] = value;
+    if (value.isNull())
+    {
+      // do not overwrite with null trits
+      return;
+    }
 
     callTrail[callNr] = (byte) latch.index;
 
@@ -393,12 +409,26 @@ public class AbraEvalContext extends AbraBaseContext
         return;
       }
 
-      // overwrite state
-      stateValue.value = value;
+      // overwrite entire state?
+      if (value.isValue())
+      {
+        stateValue.value = value;
+        return;
+      }
+
+      // merge values by skipping null trits
+      final char[] buffer = new char[value.size()];
+      for (int i = 0; i < value.size(); i++)
+      {
+        final char trit = value.trit(i);
+        buffer[i] = trit == '@' ? stateValue.value.trit(i) : trit;
+      }
+
+      stateValue.value = new TritVector(new String(buffer));
       return;
     }
 
-    // state not saved yet
+    // state was not saved yet
 
     // reset state?
     if (value.isZero())
@@ -407,9 +437,9 @@ public class AbraEvalContext extends AbraBaseContext
       return;
     }
 
-    // save state
+    // save state, but replace nulls with zeroes
     call.path = Arrays.copyOf(callTrail, callNr + 1);
-    call.value = value;
+    call.value = value.isValue() ? value : new TritVector(value.trits().replace('@', '0'));
     stateValues.put(call, call);
   }
 }

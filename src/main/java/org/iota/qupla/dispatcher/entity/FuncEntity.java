@@ -16,8 +16,6 @@ import org.iota.qupla.qupla.statement.TypeStmt;
 
 public class FuncEntity extends Entity
 {
-  public static final QuplaEvalContext evalContext = new QuplaEvalContext();
-
   public FuncStmt func;
 
   public FuncEntity(final FuncStmt func, final int limit, final Dispatcher dispatcher)
@@ -66,6 +64,7 @@ public class FuncEntity extends Entity
 
   public TritVector onEffect(final TritVector effect)
   {
+    final QuplaEvalContext evalContext = new QuplaEvalContext();
     return evalContext.evalEntity(this, effect);
   }
 }

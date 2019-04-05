@@ -201,11 +201,14 @@ public class QuplaEvalContext extends QuplaBaseContext
       start += param.size;
     }
 
+    callTrail[callNr++] = (byte) entity.func.funcId;
+    callTrail[callNr++] = (byte) (entity.func.funcId >> 8);
     entity.func.eval(this);
     // avoid converting vector to string, which is slow
     Qupla.log("     return " + entity.func.returnExpr.typeInfo.toString(value) + " : " + entity.func.returnExpr);
 
     stack.clear();
+    callNr = 0;
     return value;
   }
 
@@ -241,13 +244,19 @@ public class QuplaEvalContext extends QuplaBaseContext
   @Override
   public void evalFuncCall(final FuncExpr call)
   {
-    //TODO initialize callTrail with some id to distinguish between
-    //     top level functions so that we don't accidentally use the same
-    //     call path from within different top level functions to store
-    //     state data in the stateValues HashMap when call path is short
-
-    if (callNr == 4000)
+    switch (callNr)
     {
+    case 0:
+      // initialize callTrail with unique func id to distinguish between
+      // top level functions so that we don't accidentally use the same
+      // call path from within different top level functions to store
+      // state data in the stateValues HashMap when call path is short
+      //TODO move this to initiator of first eval?
+      callTrail[callNr++] = (byte) call.func.funcId;
+      callTrail[callNr++] = (byte) (call.func.funcId >> 8);
+      break;
+
+    case 4000:
       call.error("Exceeded function call nesting limit");
     }
 

@@ -29,7 +29,7 @@ public class AbraViewTreeContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
-    newline().append("evalBranch: " + branch).newline();
+    newline().append("evalBranch: " + branch.name).newline();
     indent();
     evalBranchSites(branch.inputs, "input");
     evalBranchSites(branch.sites, "body");
@@ -76,7 +76,7 @@ public class AbraViewTreeContext extends AbraBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    append("evalLut: " + lut).newline();
+    append("evalLut: " + lut.name).newline();
   }
 
   @Override
