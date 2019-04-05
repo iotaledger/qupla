@@ -1,0 +1,12 @@
+test 0 = array<Tiny>(0, 0, 1)
+test 0 = array<Tiny>(1, 0, 1)
+test 1 = array<Tiny>(0, 0, 0)
+
+test 0 = array<Tiny>(0, 1, 2)
+test 0 = array<Tiny>(1, 1, 2)
+test 2 = array<Tiny>(0, 1, 0)
+test 1 = array<Tiny>(0, 0, 0)
+
+test 1 = array<Tiny>(1, 0, 3)
+test 3 = array<Tiny>(0, 0, 0)
+test 2 = array<Tiny>(0, 1, 0)

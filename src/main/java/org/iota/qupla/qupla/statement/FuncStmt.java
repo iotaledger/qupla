@@ -17,10 +17,13 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class FuncStmt extends BaseExpr
 {
+  private static int nextFuncId = 1;
+
   private boolean analyzed;
   public boolean anyNull;
   public final ArrayList<BaseExpr> assignExprs = new ArrayList<>();
   public final ArrayList<BaseExpr> envExprs = new ArrayList<>();
+  public int funcId;
   public final ArrayList<BaseExpr> funcTypes = new ArrayList<>();
   public TritVector nullReturn;
   public final ArrayList<BaseExpr> params = new ArrayList<>();
@@ -30,17 +33,11 @@ public class FuncStmt extends BaseExpr
   public final ArrayList<BaseExpr> stateExprs = new ArrayList<>();
   public UseStmt use;
 
-  public FuncStmt(UseStmt use)
-  {
-    // this FuncStmt is a placeholder for template function (required for make references before UseStmt is analyzed)
-    this.use = use;
-    this.module = use.module;
-    name = "";
-  }
-
   public FuncStmt(final FuncStmt copy)
   {
     super(copy);
+
+    funcId = nextFuncId++;
 
     analyzed = copy.analyzed;
     anyNull = copy.anyNull;
@@ -56,6 +53,8 @@ public class FuncStmt extends BaseExpr
   public FuncStmt(final Tokenizer tokenizer)
   {
     super(tokenizer);
+
+    funcId = nextFuncId++;
 
     expect(tokenizer, Token.TOK_FUNC, "func");
 

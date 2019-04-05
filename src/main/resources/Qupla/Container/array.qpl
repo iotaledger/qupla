@@ -1,0 +1,14 @@
+// implements a simple array storage
+// needs to be wrapped in an entity function and accessed through
+// sending effects to work correctly
+
+template array<T>
+{
+ func T array<T> (Trit cmd, Tiny index, T value) {
+    state T cell
+
+    found = isZero[sign<Tiny>(index)]
+    cell = and[found, isOne[cmd]] ? value : null
+    return found ? cell : array<T>(cmd, decr<Tiny>(index), value)
+  }
+}

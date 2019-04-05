@@ -42,7 +42,7 @@ public class AbraBlockBranch extends AbraBaseBlock
   {
     final AbraSiteParam inputSite = new AbraSiteParam();
     inputSite.size = inputSize;
-    inputSite.name = "P" + inputs.size();
+    inputSite.name = "p" + inputs.size();
     addInput(inputSite);
     return inputSite;
   }

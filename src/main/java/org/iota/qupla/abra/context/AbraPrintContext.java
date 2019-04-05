@@ -19,20 +19,21 @@ public class AbraPrintContext extends AbraBaseContext
 {
   public String fileName = "Abra.txt";
   public boolean statements = true;
-  public String type = "site";
+  public String type = "site ";
 
-  private void appendSiteInputs(final AbraSiteMerge merge)
+  private void appendSiteInputs(final String braces, final AbraSiteMerge merge)
   {
-    append("(");
+    append(braces.substring(0, 1));
 
     boolean first = true;
     for (AbraBaseSite input : merge.inputs)
     {
-      append(first ? "" : ", ").append("" + input.index);
+      final String name = input.varName == null ? "p" + input.index : input.varName;
+      append(first ? "" : ", ").append(name);
       first = false;
     }
 
-    append(")");
+    append(braces.substring(1, 2));
   }
 
   public void eval(final AbraModule module)
@@ -65,13 +66,31 @@ public class AbraPrintContext extends AbraBaseContext
 
     evalBlock(branch);
 
-    append("// branch " + branch.toString());
+    append("// branch " + branch.name);
+    switch (branch.specialType)
+    {
+    case AbraBaseBlock.TYPE_CONSTANT:
+      append(" // C");
+      break;
+
+    case AbraBaseBlock.TYPE_NULLIFY_FALSE:
+      append(" // F");
+      break;
+
+    case AbraBaseBlock.TYPE_NULLIFY_TRUE:
+      append(" // T");
+      break;
+
+    case AbraBaseBlock.TYPE_SLICE:
+      append(" // S");
+      break;
+    }
 
     newline().indent();
 
-    evalBranchSites(branch.inputs, "input ");
-    evalBranchSites(branch.sites, "body  ");
-    evalBranchSites(branch.outputs, "output");
+    evalBranchSites(branch.inputs, "in ");
+    evalBranchSites(branch.sites, "");
+    evalBranchSites(branch.outputs, "out ");
     evalBranchSites(branch.latches, "latch ");
 
     undent();
@@ -100,9 +119,9 @@ public class AbraPrintContext extends AbraBaseContext
   {
     evalSite(knot);
 
-    append("knot");
-    appendSiteInputs(knot);
-    append(" " + knot.block);
+    append(" = ").append(knot.block.name);
+    final String braces = (knot.block instanceof AbraBlockLut) ? "[]" : "()";
+    appendSiteInputs(braces, knot);
   }
 
   @Override
@@ -110,13 +129,13 @@ public class AbraPrintContext extends AbraBaseContext
   {
     evalSite(latch);
 
-    append("latch " + latch.name + "[" + latch.size + "]");
+    append(" = latch " + latch.name + "[" + latch.size + "]");
   }
 
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    append("// lut " + lut.lookup + " " + lut.toString()).newline();
+    append("// lut " + lut.lookup + " " + lut.name).newline();
   }
 
   @Override
@@ -124,16 +143,14 @@ public class AbraPrintContext extends AbraBaseContext
   {
     evalSite(merge);
 
-    append("merge");
-    appendSiteInputs(merge);
+    append(" = merge");
+    appendSiteInputs("{}", merge);
   }
 
   @Override
   public void evalParam(final AbraSiteParam param)
   {
     evalSite(param);
-
-    append("param " + param.name + "[" + param.size + "]");
   }
 
   private void evalSite(final AbraBaseSite site)
@@ -154,9 +171,9 @@ public class AbraPrintContext extends AbraBaseContext
       nullifyIndex = "F" + site.nullifyFalse.index;
     }
 
-    final String index = (site.index < 10 ? " " : "") + site.index;
+    final String name = site.varName == null ? "p" + site.index : site.varName;
     final String size = (site.size < 10 ? " " : "") + site.size;
-    append("// " + index + " ").append(nullifyIndex);
-    append(" " + site.references + " " + type + "[" + size + "] ");
+    append("// " + site.references + nullifyIndex);
+    append(" " + "[" + size + "] " + type + name);
   }
 }

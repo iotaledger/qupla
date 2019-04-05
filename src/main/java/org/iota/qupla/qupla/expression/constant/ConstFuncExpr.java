@@ -29,7 +29,6 @@ public class ConstFuncExpr extends FuncExpr
       return;
     }
 
-    //TODO execute function to calculate constant and put into size
     final QuplaEvalContext context = new QuplaEvalContext();
     eval(context);
     size = TritConverter.toInt(context.value.trits());

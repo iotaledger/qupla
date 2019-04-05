@@ -96,7 +96,7 @@ public class BaseFuncManager
 
     // for higher powers of 3 and their double sizes
     // functions are composed of smaller functions
-    for (int power = 3; power < 81; power *= 3)
+    for (int power = 3; power <= 243; power *= 3)
     {
       saveBranch(generateFuncFunc(power * 2, new Integer[] {
           power,
