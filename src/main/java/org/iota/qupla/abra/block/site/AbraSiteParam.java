@@ -12,4 +12,10 @@ public class AbraSiteParam extends AbraBaseSite
   {
     context.evalParam(this);
   }
+
+  @Override
+  public boolean isIdentical(final AbraBaseSite rhs)
+  {
+    return false;
+  }
 }

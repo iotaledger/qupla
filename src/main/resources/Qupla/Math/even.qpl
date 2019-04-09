@@ -32,7 +32,7 @@ lut even {
 // returns (Bool) ((val & 1) == 0 ? 1 : 0)
 
 func Bool even<Trit> (Trit val) {
-  return even[val, 0, 0]
+  return isZero[val]
 }
 
 func Bool even<Tryte> (Tryte val) {

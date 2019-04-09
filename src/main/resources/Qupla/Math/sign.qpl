@@ -31,6 +31,18 @@ lut sign {
   1,1,1 = 1
 }
 
+lut sign2 {
+  -,- = -
+  0,- = -
+  1,- = -
+  -,0 = -
+  0,0 = 0
+  1,0 = 1
+  -,1 = 1
+  0,1 = 1
+  1,1 = 1
+}
+
 // returns (val < 0) ? - : (val > 0) : 1 : 0
 
 func Trit sign<Trit> (Trit val) {
@@ -57,6 +69,6 @@ template sign<T> {
   func Trit sign<T> (T val) {
     val0 = sign<A>(val[0 : A])
     val1 = sign<B>(val[A : B])
-    return sign[val0, val1, 0]
+    return sign2[val0, val1]
   }
 }

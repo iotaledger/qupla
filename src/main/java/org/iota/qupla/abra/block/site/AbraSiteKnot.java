@@ -2,6 +2,7 @@ package org.iota.qupla.abra.block.site;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.abra.funcmanagers.ConstFuncManager;
 import org.iota.qupla.abra.funcmanagers.NullifyFuncManager;
@@ -38,6 +39,23 @@ public class AbraSiteKnot extends AbraSiteMerge
   public void eval(final AbraBaseContext context)
   {
     context.evalKnot(this);
+  }
+
+  @Override
+  public boolean isIdentical(final AbraBaseSite rhs)
+  {
+    if (!super.isIdentical(rhs))
+    {
+      return false;
+    }
+
+    final AbraSiteKnot knot = (AbraSiteKnot) rhs;
+    if (block != knot.block)
+    {
+      return false;
+    }
+
+    return true;
   }
 
   public void lut(final AbraModule module)

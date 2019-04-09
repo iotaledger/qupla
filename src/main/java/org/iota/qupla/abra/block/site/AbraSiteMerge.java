@@ -16,6 +16,31 @@ public class AbraSiteMerge extends AbraBaseSite
   }
 
   @Override
+  public boolean isIdentical(final AbraBaseSite rhs)
+  {
+    if (!super.isIdentical(rhs))
+    {
+      return false;
+    }
+
+    final AbraSiteMerge merge = (AbraSiteMerge) rhs;
+    if (inputs.size() != merge.inputs.size())
+    {
+      return false;
+    }
+
+    for (int i = 0; i < inputs.size(); i++)
+    {
+      if (inputs.get(i) != merge.inputs.get(i))
+      {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
   public void markReferences()
   {
     super.markReferences();

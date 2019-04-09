@@ -237,7 +237,7 @@ public class TritVector
   {
     if (start < 0 || length < 0 || start + length > size())
     {
-      throw new CodeException("Index out of range");
+      throw new CodeException("Slice out of range (" + size() + "): " + start + ":" + length);
     }
 
     if (start == 0 && length == size())

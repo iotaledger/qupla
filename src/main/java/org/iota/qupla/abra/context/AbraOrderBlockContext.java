@@ -1,12 +1,14 @@
 package org.iota.qupla.abra.context;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteMerge;
@@ -14,17 +16,59 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
 
-public class AbraOrderBlockContext extends AbraTritCodeBaseContext
+public class AbraOrderBlockContext extends AbraTritCodeBaseContext implements Comparator<AbraBlockBranch>
 {
-  private final HashSet<AbraBlockBranch> input = new HashSet<>();
+  private final TreeSet<AbraBlockBranch> input = new TreeSet<>(this);
   private final ArrayList<AbraBlockBranch> output = new ArrayList<>();
+
+  @Override
+  public int compare(final AbraBlockBranch lhs, final AbraBlockBranch rhs)
+  {
+    if (lhs.size != rhs.size)
+    {
+      return lhs.size < rhs.size ? -1 : 1;
+    }
+
+    if (lhs.offset != rhs.offset)
+    {
+      return lhs.offset < rhs.offset ? -1 : 1;
+    }
+
+    if (lhs.constantValue != null && rhs.constantValue != null)
+    {
+      return lhs.constantValue.trits().compareTo(rhs.constantValue.trits());
+    }
+
+    if (lhs.index != rhs.index)
+    {
+      return lhs.index < rhs.index ? -1 : 1;
+    }
+
+    return 0;
+  }
 
   @Override
   public void eval(final AbraModule module)
   {
-    input.addAll(module.branches);
+    module.numberBlocks();
+
+    evalConstant(module, true);
+    evalConstant(module, false);
+    evalSpecial(module, AbraBaseBlock.TYPE_NULLIFY_TRUE);
+    evalSpecial(module, AbraBaseBlock.TYPE_NULLIFY_FALSE);
+    evalSpecial(module, AbraBaseBlock.TYPE_SLICE);
+
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      if (branch.specialType == 0)
+      {
+        input.add(branch);
+      }
+    }
 
     super.eval(module);
+
+    input.clear();
 
     module.branches = output;
 
@@ -64,6 +108,21 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext
     output.add(branch);
   }
 
+  private void evalConstant(final AbraModule module, final boolean isZero)
+  {
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      if (branch.specialType == AbraBaseBlock.TYPE_CONSTANT && branch.constantValue.isZero() == isZero)
+      {
+        input.add(branch);
+      }
+    }
+
+    output.addAll(input);
+
+    input.clear();
+  }
+
   @Override
   public void evalImport(final AbraBlockImport imp)
   {
@@ -96,5 +155,20 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext
   @Override
   public void evalParam(final AbraSiteParam param)
   {
+  }
+
+  private void evalSpecial(final AbraModule module, final int specialType)
+  {
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      if (branch.specialType == specialType)
+      {
+        input.add(branch);
+      }
+    }
+
+    output.addAll(input);
+
+    input.clear();
   }
 }

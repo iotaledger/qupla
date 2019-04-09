@@ -33,6 +33,21 @@ public abstract class AbraBaseSite
     return nullifyFalse != null || nullifyTrue != null;
   }
 
+  public boolean isIdentical(final AbraBaseSite rhs)
+  {
+    if (getClass() != rhs.getClass())
+    {
+      return false;
+    }
+
+    if (size != rhs.size || isLatch != rhs.isLatch)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
   public void markReferences()
   {
     if (nullifyFalse != null)

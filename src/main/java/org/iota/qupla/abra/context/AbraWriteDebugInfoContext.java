@@ -10,6 +10,7 @@ import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
+import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraWriteDebugInfoContext extends AbraTritCodeBaseContext
@@ -81,9 +82,10 @@ public class AbraWriteDebugInfoContext extends AbraTritCodeBaseContext
     putString(site.name);
     for (BaseExpr stmt = site.stmt; stmt != null; stmt = stmt.next)
     {
-      putString(stmt.toString());
+      final String prefix = stmt instanceof AssignExpr ? "" : "return ";
+      putString(prefix + stmt);
     }
-    putString(null);
 
+    putString(null);
   }
 }

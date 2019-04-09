@@ -13,6 +13,8 @@ import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
+import org.iota.qupla.helper.DummyStmt;
+import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraPrintContext extends AbraBaseContext
@@ -21,6 +23,11 @@ public class AbraPrintContext extends AbraBaseContext
   public boolean statements = true;
   public String type = "site ";
 
+  private void appendSiteInput(final AbraBaseSite input)
+  {
+    append(input.varName == null ? "p" + input.index : input.varName);
+  }
+
   private void appendSiteInputs(final String braces, final AbraSiteMerge merge)
   {
     append(braces.substring(0, 1));
@@ -28,9 +35,9 @@ public class AbraPrintContext extends AbraBaseContext
     boolean first = true;
     for (AbraBaseSite input : merge.inputs)
     {
-      final String name = input.varName == null ? "p" + input.index : input.varName;
-      append(first ? "" : ", ").append(name);
+      append(first ? "" : ", ");
       first = false;
+      appendSiteInput(input);
     }
 
     append(braces.substring(1, 2));
@@ -143,6 +150,13 @@ public class AbraPrintContext extends AbraBaseContext
   {
     evalSite(merge);
 
+    if (merge.inputs.size() == 1)
+    {
+      append(" = ");
+      appendSiteInput(merge.inputs.get(0));
+      return;
+    }
+
     append(" = merge");
     appendSiteInputs("{}", merge);
   }
@@ -157,7 +171,9 @@ public class AbraPrintContext extends AbraBaseContext
   {
     for (BaseExpr stmt = site.stmt; stmt != null && statements; stmt = stmt.next)
     {
-      newline().append(stmt.toString()).newline();
+      newline();
+      final String prefix = stmt instanceof AssignExpr || stmt instanceof DummyStmt ? "" : "return ";
+      append(prefix + stmt).newline();
     }
 
     String nullifyIndex = " ";
