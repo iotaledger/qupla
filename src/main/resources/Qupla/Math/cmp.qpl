@@ -80,6 +80,6 @@ template cmp<T> {
   func Trit cmp<T> (T lhs, T rhs) {
     val0 = cmp<A>(lhs[0 : A], rhs[0 : A])
     val1 = cmp<B>(lhs[A : B], rhs[A : B])
-    return sign[val0, val1, 0]
+    return sign2[val0, val1]
   }
 }

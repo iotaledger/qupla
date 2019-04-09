@@ -145,26 +145,26 @@ public class AbraAnalyzeContext extends AbraBaseContext
       return false;
     }
 
-    final boolean special = evalBranchSpecialConstantZero(branch) || //
-        evalBranchSpecialConstantNonZero(branch) || //
-        evalBranchSpecialNullify(branch) || //
-        evalBranchSpecialSlice(branch);
+    final boolean special = //
+        evalBranchSpecialConstant(branch) || //
+            evalBranchSpecialNullify(branch) || //
+            evalBranchSpecialSlice(branch);
 
     return special;
   }
 
-  private boolean evalBranchSpecialConstantNonZero(final AbraBlockBranch branch)
+  private boolean evalBranchSpecialConstant(final AbraBlockBranch branch)
   {
-    if (branch.inputs.size() != 1 || branch.sites.size() == 0 || branch.outputs.size() != 1)
+    if (branch.inputs.size() != 1)
     {
-      // nonzero constant function has 1 input, one or more sites, and 1 output
+      // nonzero constant function has 1 input
       return false;
     }
 
     final AbraBaseSite singleTrit = branch.inputs.get(0);
     if (singleTrit.size != 1)
     {
-      //  input must be a single trit
+      // input must be a single trit
       return false;
     }
 
@@ -191,81 +191,55 @@ public class AbraAnalyzeContext extends AbraBaseContext
       }
     }
 
-    final AbraBaseSite output = branch.outputs.get(0);
-    if (!(output instanceof AbraSiteKnot))
-    {
-      return false;
-    }
-
-    final AbraSiteKnot knot = (AbraSiteKnot) output;
-    if (knot.block.specialType != AbraBaseBlock.TYPE_SLICE || knot.inputs.size() < branch.sites.size())
-    {
-      return false;
-    }
-
-    check(branch.name != null && branch.name.startsWith("const_"));
-
     TritVector constant = null;
-    for (final AbraBaseSite site : knot.inputs)
+    for (final AbraBaseSite site : branch.outputs)
     {
-      final AbraSiteKnot siteKnot = (AbraSiteKnot) site;
-      if (site == singleTrit)
+      if (site instanceof AbraSiteKnot)
       {
-        return false;
-      }
-
-      constant = TritVector.concat(constant, siteKnot.block.constantValue);
-    }
-
-    branch.constantValue = constant.slice(0, knot.size);
-    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
-    return true;
-  }
-
-  private boolean evalBranchSpecialConstantZero(final AbraBlockBranch branch)
-  {
-    if (branch.inputs.size() != 1 || branch.sites.size() != 0)
-    {
-      return false;
-    }
-
-    final AbraBaseSite singleTrit = branch.inputs.get(0);
-    if (singleTrit.size != 1)
-    {
-      //  input must be a single trit
-      return false;
-    }
-
-    TritVector constant = null;
-    for (final AbraBaseSite output : branch.outputs)
-    {
-      if (!(output instanceof AbraSiteKnot))
-      {
-        return false;
-      }
-
-      final AbraSiteKnot knot = (AbraSiteKnot) output;
-      if (knot.block.specialType != AbraBaseBlock.TYPE_CONSTANT)
-      {
-        return false;
-      }
-
-      // all inputs triggered by input trit
-      for (final AbraBaseSite input : knot.inputs)
-      {
-        if (input != singleTrit)
+        final AbraSiteKnot knot = (AbraSiteKnot) site;
+        if (knot.block.specialType != AbraBaseBlock.TYPE_CONSTANT)
         {
           return false;
         }
+
+        // all inputs triggered by input trit
+        for (final AbraBaseSite input : knot.inputs)
+        {
+          if (input != singleTrit)
+          {
+            return false;
+          }
+        }
+        constant = TritVector.concat(constant, knot.block.constantValue);
+        continue;
       }
 
-      constant = TritVector.concat(constant, knot.block.constantValue);
+      if (site instanceof AbraSiteMerge)
+      {
+        final AbraSiteMerge merge = (AbraSiteMerge) site;
+        if (merge.inputs.size() != 1)
+        {
+          return false;
+        }
+
+        final AbraBaseSite input = merge.inputs.get(0);
+        if (!branch.sites.contains(input))
+        {
+          return false;
+        }
+
+        constant = TritVector.concat(constant, ((AbraSiteKnot) input).block.constantValue);
+        continue;
+      }
+
+      return false;
     }
 
-    check(branch.name != null && branch.name.startsWith("constZero"));
+    final String prefix = constant.isZero() ? "constZero" : "const_";
+    check(branch.name != null && branch.name.startsWith(prefix));
 
-    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = constant;
+    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     return true;
   }
 

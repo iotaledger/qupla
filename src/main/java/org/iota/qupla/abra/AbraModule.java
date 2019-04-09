@@ -63,10 +63,24 @@ public class AbraModule
       branch.markReferences();
     }
 
+    // first optimize lut wrapper functions
     for (int i = 0; i < branches.size(); i++)
     {
       final AbraBaseBlock branch = branches.get(i);
-      branch.optimize(this);
+      if (branch.size() == 1)
+      {
+        branch.optimize(this);
+      }
+    }
+
+    // then optimize all other functions
+    for (int i = 0; i < branches.size(); i++)
+    {
+      final AbraBaseBlock branch = branches.get(i);
+      if (branch.size() != 1)
+      {
+        branch.optimize(this);
+      }
     }
   }
 }

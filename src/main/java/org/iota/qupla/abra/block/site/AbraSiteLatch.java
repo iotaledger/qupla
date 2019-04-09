@@ -12,4 +12,10 @@ public class AbraSiteLatch extends AbraBaseSite
   {
     context.evalLatch(this);
   }
+
+  @Override
+  public boolean isIdentical(final AbraBaseSite rhs)
+  {
+    return false;
+  }
 }

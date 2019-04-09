@@ -9,6 +9,7 @@ import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.abra.optimizers.ConcatenatedOutputOptimizer;
 import org.iota.qupla.abra.optimizers.ConcatenationOptimizer;
+import org.iota.qupla.abra.optimizers.DuplicateSiteOptimizer;
 import org.iota.qupla.abra.optimizers.EmptyFunctionOptimizer;
 import org.iota.qupla.abra.optimizers.LutFunctionWrapperOptimizer;
 import org.iota.qupla.abra.optimizers.MultiLutOptimizer;
@@ -20,7 +21,7 @@ import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
 
 public class AbraBlockBranch extends AbraBaseBlock
 {
-  public final ArrayList<AbraBaseSite> inputs = new ArrayList<>();
+  public ArrayList<AbraBaseSite> inputs = new ArrayList<>();
   public final ArrayList<AbraBaseSite> latches = new ArrayList<>();
   public int offset;
   public final ArrayList<AbraBaseSite> outputs = new ArrayList<>();
@@ -135,20 +136,26 @@ public class AbraBlockBranch extends AbraBaseBlock
     // bypass all function calls that do nothing
     new EmptyFunctionOptimizer(module, this).run();
 
-    // replace lut wrapper function with direct lut operations
-    new LutFunctionWrapperOptimizer(module, this).run();
-
     // pre-slice inputs that will be sliced later on
     new SlicedInputOptimizer(module, this).run();
+
+    // replace lut wrapper function with direct lut operations
+    new LutFunctionWrapperOptimizer(module, this).run();
 
     // replace concatenation knot that is passed as input to a knot
     new ConcatenationOptimizer(module, this).run();
 
-    // if possible, replace lut calling lut with a single lut that does it all
-    new MultiLutOptimizer(module, this).run();
+    // and remove all unreferenced sites
+    new UnreferencedSiteRemover(module, this).run();
+
+    // remove duplicate sites, only need to calculate once
+    new DuplicateSiteOptimizer(module, this).run();
 
     // move concatenated sites from body to outputs
     new ConcatenatedOutputOptimizer(module, this).run();
+
+    // if possible, replace lut calling lut with a single lut that does it all
+    new MultiLutOptimizer(module, this).run();
   }
 
   @Override
