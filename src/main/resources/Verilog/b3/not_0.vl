@@ -1,0 +1,9 @@
+function [1:0] not_0_lut(
+    input [0:0] a0
+  , input [0:0] a1
+  , input [0:0] a2
+  );
+  begin
+    not_0_lut = { a2, 1'b0, a0 };
+  end
+endfunction

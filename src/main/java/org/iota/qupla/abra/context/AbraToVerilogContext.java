@@ -19,12 +19,19 @@ import org.iota.qupla.helper.Verilog;
 
 public class AbraToVerilogContext extends AbraBaseContext
 {
+  private final static int lutSize[] = {
+      1,
+      3,
+      9,
+      27
+  };
   public final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
   private final Verilog verilog = new Verilog();
 
   private BaseContext appendVector(final String trits)
   {
-    return verilog.appendVector(this, trits);
+    append(verilog.vector(trits));
+    return this;
   }
 
   @Override
@@ -66,21 +73,21 @@ public class AbraToVerilogContext extends AbraBaseContext
     }
 
     final String funcName = branch.name;
-    append("function " + size(branch.size) + " ").append(funcName).append("(").newline().indent();
+    append("function ").append(size(branch.size)).append(" ").append(funcName).append("(").newline().indent();
 
     boolean first = true;
     for (final AbraBaseSite input : branch.inputs)
     {
       append(first ? "  " : ", ");
       first = false;
-      append("input " + size(input.size) + " ").append(input.varName).newline();
+      append("input ").append(size(input.size)).append(" ").append(input.varName).newline();
     }
 
     append(");").newline();
 
     for (final AbraBaseSite site : branch.sites)
     {
-      append("reg " + size(site.size) + " ").append(site.varName).append(";").newline();
+      append("reg ").append(size(site.size)).append(" ").append(site.varName).append(";").newline();
     }
 
     if (branch.sites.size() != 0)
@@ -205,9 +212,7 @@ public class AbraToVerilogContext extends AbraBaseContext
     final AbraSiteParam input = (AbraSiteParam) branch.inputs.get(branch.inputs.size() - 1);
     if (totalSize > input.size)
     {
-      final int start = (totalSize - input.offset) * 2 - 1;
-      final int end = start - input.size * 2 + 1;
-      append("[" + start + ":" + end + "]");
+      append(verilog.range(totalSize - input.offset, input.size));
     }
   }
 
@@ -219,23 +224,39 @@ public class AbraToVerilogContext extends AbraBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    final String lutName = lut.name + "_lut";
-    append("function [1:0] ").append(lutName).append("(").newline().indent();
+    final String code = verilog.file(lut.name);
+    if (code != null)
+    {
+      append(code).newline();
+      return;
+    }
 
+    final String lutName = lut.name + "_lut";
+    append("function ").append(size(1)).append(" ").append(lutName).append("(").newline().indent();
+
+    final int inputSize = lut.inputs();
     boolean first = true;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < inputSize; i++)
     {
       append(first ? "  " : ", ");
       first = false;
-      append("input [1:0] ").append("p" + i).newline();
+      append("input ").append(size(1)).append(" p" + i).newline();
     }
     append(");").newline();
 
     append("begin").newline().indent();
 
-    append("case ({p0, p1, p2})").newline();
+    append("case ({");
+    first = true;
+    for (int i = 0; i < inputSize; i++)
+    {
+      append(first ? "" : ", ").append("p" + i);
+      first = false;
+    }
 
-    for (int i = 0; i < 27; i++)
+    append("})").newline();
+
+    for (int i = 0; i < lutSize[inputSize]; i++)
     {
       char trit = lut.lookup.charAt(i);
       if (trit == '@')
@@ -243,7 +264,7 @@ public class AbraToVerilogContext extends AbraBaseContext
         continue;
       }
 
-      appendVector(TritConverter.TRYTE_TRITS[i]).append(": ").append(lutName).append(" = ");
+      appendVector(TritConverter.TRYTE_TRITS[i].substring(0, inputSize)).append(": ").append(lutName).append(" = ");
       appendVector("" + trit).append(";").newline();
     }
 

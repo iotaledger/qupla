@@ -6,6 +6,7 @@ import java.util.Stack;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteMerge;
@@ -36,7 +37,10 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.parser.QuplaModule;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.LutStmt;
+import org.iota.qupla.qupla.statement.UseStmt;
 import org.iota.qupla.qupla.statement.helper.LutEntry;
+
+//TODO fix double generated fullAdd_27
 
 public class QuplaToAbraContext extends QuplaBaseContext
 {
@@ -50,7 +54,6 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
   public QuplaToAbraContext()
   {
-    //TODO pass in AbraModule?
   }
 
   private void addSite(final AbraBaseSite site)
@@ -139,14 +142,20 @@ public class QuplaToAbraContext extends QuplaBaseContext
     {
       expr.eval(this);
       site.size += expr.size;
-      if (expr instanceof ConcatExpr)
+      if (lastSite instanceof AbraSiteKnot)
       {
-        site.inputs.addAll(((AbraSiteKnot) lastSite).inputs);
+        final AbraSiteKnot knot = (AbraSiteKnot) lastSite;
+        if (knot.block.specialType == AbraBaseBlock.TYPE_SLICE)
+        {
+          if (knot.inputs.size() > 1)
+          {
+            site.inputs.addAll(knot.inputs);
+            continue;
+          }
+        }
       }
-      else
-      {
-        site.inputs.add(lastSite);
-      }
+
+      site.inputs.add(lastSite);
     }
 
     site.concat(abraModule);
@@ -198,6 +207,9 @@ public class QuplaToAbraContext extends QuplaBaseContext
   @Override
   public void evalFuncBody(final FuncStmt func)
   {
+    final UseStmt oldUse = BaseExpr.currentUse;
+    BaseExpr.currentUse = func.use;
+
     stack.clear();
 
     branch = abraModule.branches.get(bodies++);
@@ -232,6 +244,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
     branch.outputs.add(lastSite);
 
     branch = null;
+    BaseExpr.currentUse = oldUse;
   }
 
   @Override
@@ -246,7 +259,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
       site.inputs.add(lastSite);
     }
 
-    site.branch(abraModule);
+    site.block = abraModule.branch(site.name);
     if (site.block == null)
     {
       throw new CodeException("Cannot find block: " + site.name);

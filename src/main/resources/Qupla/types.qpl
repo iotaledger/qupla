@@ -28,17 +28,11 @@ type Hash2  [486]
 type Hash4  [972]
 
 // define a convenience type to make code more readable
-// should always be a binary boolean value 0 (false) or 1 (true)
-// should never assume the value -
+// should always be a binary boolean value false or true
 // (note: this convention is not (yet) enforced by Qupla)
 type Bool [Trit]
 
 type Carry [Trit]
-
-type TritCarry {
-  Trit value
-  Carry carry
-}
 
 // here's how to define a named structured trit vector
 // it consists of the concatenation of all sub-vectors

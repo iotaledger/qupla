@@ -1,105 +1,187 @@
-// input trit 1 & 2: amount of neighbors in binary (-- for overflow)
-// input 3: cell state (0 = dead, 1 = alive)
-// output: new amount of neighbors in binary (-- when >3)
-lut binSum {
-  0,0,0 = 0,0  //  0 neighbors
-  0,0,1 = 1,0  //  1 neighbor
-  1,0,0 = 1,0  //  1 neighbor
-  1,0,1 = 0,1  //  2 neighbors
-  0,1,0 = 0,1  //  2 neighbors
-  0,1,1 = 1,1  //  3 neighbors
-  1,1,0 = 1,1  //  3 neighbors
-  1,1,1 = -,-  // >3 neighbors
-  -,-,0 = -,-  // >3 neighbors
-  -,-,1 = -,-  // >3 neighbors
+// calculates a single trit indicating the combined amount of live cells
+// in 2 neighbor cells (0, 1, or 2) (we use - to indicate 2 live cells)
+lut twoCellSum {
+  0,0 = 0  // 0 + 0 = 0
+  1,0 = 1  // 1 + 0 = 1
+  0,1 = 1  // 0 + 1 = 1
+  1,1 = -  // 1 + 1 = 2
 }
 
-// input trit 1 & 2: amount of neighbors in binary (-- when >3)
-// input trit 3: old cell state (0 = dead, 1 = alive)
-// output: new cell state acording to GoL rules
-lut newCellState {
-  0,0,0 = 0  //  0 neighbors + dead  -> stay dead
-  0,0,1 = 0  //  0 neighbors + alive -> starve cell
-  1,0,0 = 0  //  1 neighbor  + dead  -> stay dead
-  1,0,1 = 0  //  1 neighbor  + alive -> starve cell
-  0,1,0 = 0  //  2 neighbors + dead  -> stay dead
-  0,1,1 = 1  //  2 neighbors + alive -> stay alive
-  1,1,0 = 1  //  3 neighbors + dead  -> spawn cell
-  1,1,1 = 1  //  3 neighbors + alive -> stay alive
-  -,-,0 = 0  // >3 neighbors + dead  -> suffocate cell, stay dead
-  -,-,1 = 0  // >3 neighbors + alive -> suffocate cell
+// calculates a single trit indicating whether the combined amount
+// of live cells in 2 pairs of neighbor cells is 0 or 1
+// (any other amount returns null)
+// trit 1 is the result of twoCellSum (first pair)
+// trit 2 and 3 would have been inputs to twoCellSum (second pair) but
+// doing it here saves a lookup (which would be optimized away anyway)
+lut fourCellSum0or1 {
+  0,0,0 = 0  // 0 + 0 + 0 = 0
+  0,0,1 = 1  // 0 + 0 + 1 = 1
+  0,1,0 = 1  // 0 + 1 + 0 = 1
+  1,0,0 = 1  // 1 + 0 + 0 = 1
 }
+
+// calculates a single trit indicating whether the combined amount
+// of live cells in 2 pairs of neighbor cells is 2, 3, or 4
+// (any other amount returns null)
+// trit 1 is the result of twoCellSum (first pair)
+// trit 2 and 3 would have been inputs to twoCellSum (second pair) but
+// doing it here saves a lookup (which would be optimized away anyway)
+lut fourCellSum2or3or4 {
+  0,1,1 = 0  // 0 + 1 + 1 = 2
+  1,1,0 = 0  // 1 + 1 + 0 = 2
+  1,0,1 = 0  // 1 + 0 + 1 = 2
+  -,0,0 = 0  // 2 + 0 + 0 = 2
+  1,1,1 = 1  // 1 + 1 + 1 = 3
+  -,1,0 = 1  // 2 + 1 + 0 = 3
+  -,0,1 = 1  // 2 + 0 + 1 = 3
+  -,1,1 = -  // 2 + 1 + 1 = 4
+}
+
+// The following 3 luts are used to determine the new state based
+// on 2 fourCellSums (8 neighbors). There are 4 ways to combine them:
+// 01_01, 01_234, 234_01, and 234_234. Note that 01_234 and 234_01
+// can be calculted with a single LUT by reversing the input order
+
+lut state01_01 {
+  0,0,0 = 0  // 0 + 0 = 0 // stay dead
+  1,0,0 = 0  // 1 + 0 = 1 // stay dead
+  0,1,0 = 0  // 0 + 1 = 1 // stay dead
+  1,1,0 = 0  // 1 + 1 = 2 // stay dead
+  0,0,1 = 0  // 0 + 0 = 0 // starve
+  1,0,1 = 0  // 1 + 0 = 1 // starve
+  0,1,1 = 0  // 0 + 1 = 1 // starve
+  1,1,1 = 1  // 1 + 1 = 2 // stay alive
+}
+
+lut state01_234 {
+  0,0,0 = 0  // 0 + 2 = 2 // stay dead
+  1,0,0 = 1  // 1 + 2 = 3 // spawn
+  0,1,0 = 1  // 0 + 3 = 3 // spawn
+  1,1,0 = 0  // 1 + 3 = 4 // stay dead
+  0,-,0 = 0  // 0 + 4 = 4 // stay dead
+  1,-,0 = 0  // 1 + 4 = 5 // stay dead
+  0,0,1 = 1  // 0 + 2 = 2 // stay alive
+  1,0,1 = 1  // 1 + 2 = 3 // stay alive
+  0,1,1 = 1  // 0 + 3 = 3 // stay alive
+  1,1,1 = 0  // 1 + 3 = 4 // suffocate
+  0,-,1 = 0  // 0 + 4 = 4 // suffocate
+  1,-,1 = 0  // 1 + 4 = 5 // suffocate
+}
+
+// if both fourCellSums are 2, 3, or 4 the results is always a dead cell
+// there is no need to check the state of the current cell
+lut state234_234 {
+  0,0 = 0  // 2 + 2 = 4 // dead
+  0,1 = 0  // 2 + 3 = 5 // dead
+  0,- = 0  // 2 + 4 = 6 // dead
+  1,0 = 0  // 3 + 2 = 5 // dead
+  1,1 = 0  // 3 + 3 = 6 // dead
+  1,- = 0  // 3 + 4 = 7 // dead
+  -,0 = 0  // 4 + 2 = 6 // dead
+  -,1 = 0  // 4 + 3 = 7 // dead
+  -,- = 0  // 4 + 4 = 8 // dead
+}
+
+// deprecated inputs to golProcessCellOld, which used 8x2 + 1 look-ups
+// which means 9 sequential steps with limited parallelizing
+
+// new version only uses 1x2 + 1x4 + 1x4 lookups and 1 merge
+// which means 4 sequential steps with maximal parallelizing
+
+//// input trit 1 & 2: current binary amount of neighbors (-- when >3)
+//// input trit 3: next neighbor cell state (0 = dead, 1 = alive)
+//// output: new binary amount of neighbors (-- when >3)
+//lut binSum {
+//  0,0,0 = 0,0  //  0 + 0 =  0 neighbors
+//  0,0,1 = 1,0  //  0 + 1 =  1 neighbor
+//  1,0,0 = 1,0  //  1 + 0 =  1 neighbor
+//  1,0,1 = 0,1  //  1 + 1 =  2 neighbors
+//  0,1,0 = 0,1  //  2 + 0 =  2 neighbors
+//  0,1,1 = 1,1  //  2 + 1 =  3 neighbors
+//  1,1,0 = 1,1  //  3 + 0 =  3 neighbors
+//  1,1,1 = -,-  //  3 + 1 = >3 neighbors
+//  -,-,0 = -,-  // >3 + 0 = >3 neighbors
+//  -,-,1 = -,-  // >3 + 1 = >3 neighbors
+//}
+//
+//// input trit 1 & 2: binary amount of neighbors (-- when >3)
+//// input trit 3: old cell state (0 = dead, 1 = alive)
+//// output: new cell state according to GoL rules
+//lut newCellState {
+//  0,0,0 = 0  //  0 neighbors + dead  -> stay dead
+//  0,0,1 = 0  //  0 neighbors + alive -> starve cell
+//  1,0,0 = 0  //  1 neighbor  + dead  -> stay dead
+//  1,0,1 = 0  //  1 neighbor  + alive -> starve cell
+//  0,1,0 = 0  //  2 neighbors + dead  -> stay dead
+//  0,1,1 = 1  //  2 neighbors + alive -> stay alive
+//  1,1,0 = 1  //  3 neighbors + dead  -> spawn cell
+//  1,1,1 = 1  //  3 neighbors + alive -> stay alive
+//  -,-,0 = 0  // >3 neighbors + dead  -> suffocate cell, stay dead
+//  -,-,1 = 0  // >3 neighbors + alive -> suffocate cell
+//}
 
 template gameOfLife<T> {
   type Cell [1]
   type Col [T]
   type Row [T]
-  type Map [Row * Col]
-  type BorderedMap [Row + Map + Row]
+  type Row3 [Row * 3]
+  type Grid [Row * Col]
+  type BorderedGrid [Row + Grid + Row]
   type BorderedRow [Cell + Row + Cell]
+  type BorderedRow2Cell3 [BorderedRow * 2 + 3]
   type NeighborRows [BorderedRow * 3]
 
-  func Map gameOfLife<T> (Map map) {
-    // sandwich map between two dummy zero border rows
+  func Grid gameOfLife<T> (Grid grid) {
+    // sandwich grid between two dummy zero border rows
     borderRow = as<Row>(0)
-    borderedMap = borderRow & map & borderRow
+    borderedGrid = borderRow & grid & borderRow
     
-    // loop over all map rows, rowShifter starts at first position
-    newBorderedMap = golLoopRows<T>(borderedMap, 1)
+    // loop over all grid rows, rowShifter starts at first position
+    newBorderedGrid = golLoopRows<T>(borderedGrid, all<Row>(1))
 
-    // extract new map from tail end
-    return newBorderedMap[BorderedMap - Map : Map]
+    // extract new grid from tail end
+    return newBorderedGrid[BorderedGrid - Grid : Grid]
   }
 
-  func BorderedMap golLoopRows<T> (BorderedMap map, Row rowShifter) {
+  func BorderedGrid golLoopRows<T> (BorderedGrid grid, Row rowShifter) {
     // check if row shifter is done
-    rowShifterIsDone = isZero[sign<Row>(rowShifter)]
-    return rowShifterIsDone ? map : golProcessRows<T>(map, rowShifter)
+    rowShifterIsDone = isZero[rowShifter[0]]
+    return rowShifterIsDone ? grid : golProcessRows<T>(grid, rowShifter)
   }
 
-  func BorderedMap golProcessRows<T> (BorderedMap map, Row rowShifter) {
+  func BorderedGrid golProcessRows<T> (BorderedGrid grid, Row rowShifter) {
     // extract current row and neighbor rows
     // and sandwich them between dummy zero border cells
     borderCell = as<Cell>(0)
-    rows = borderCell & map[Row * 0 : Row] & borderCell
-         & borderCell & map[Row * 1 : Row] & borderCell
-         & borderCell & map[Row * 2 : Row] & borderCell
+    rows = borderCell & grid[Row * 0 : Row] & borderCell
+         & borderCell & grid[Row * 1 : Row] & borderCell
+         & borderCell & grid[Row * 2 : Row] & borderCell
     
     // loop over all row columns, colShifter starts at first position    
-    newRows = golLoopCols<T>(rows, 1)
+    newRows = golLoopCols<T>(rows, all<Col>(1))
 
     // extract new row from tail of newRows
     newRow = newRows[NeighborRows - Row : Row]
 
-    // shift map one row and append new row at end.
+    // shift grid one row and append new row at end.
     // when done iterating (shifter runs out) the
-    // tail end of newMap will hold the new map
-    newMap = map[Row : BorderedMap - Row] & newRow
+    // tail end of newGrid will hold the new grid
+    newGrid = grid[Row : BorderedGrid - Row] & newRow
     
     // one more row iteration done
-    newRowShifter = rshift<Row>(rowShifter)
-    return golLoopRows<T>(newMap, newRowShifter)
+    newRowShifter = lshift<Row>(rowShifter)
+    return golLoopRows<T>(newGrid, newRowShifter)
   }
 
   func NeighborRows golLoopCols<T> (NeighborRows rows, Col colShifter) {
     // check if col shifter is done
-    colShifterIsDone = isZero[sign<Col>(colShifter)]
+    colShifterIsDone = isZero[colShifter[0]]
     return colShifterIsDone ? rows : golProcessCols<T>(rows, colShifter)
   }
 
   func NeighborRows golProcessCols<T> (NeighborRows rows, Col colShifter) {
-    // calculate number of alive neighbours for current cell
-    alive0 = binSum[      0,       0, rows[0 * BorderedRow + 0]]
-    alive1 = binSum[alive0[0], alive0[1], rows[0 * BorderedRow + 1]]
-    alive2 = binSum[alive1[0], alive1[1], rows[0 * BorderedRow + 2]]
-    alive3 = binSum[alive2[0], alive2[1], rows[1 * BorderedRow + 0]]
-    alive5 = binSum[alive3[0], alive3[1], rows[1 * BorderedRow + 2]]
-    alive6 = binSum[alive5[0], alive5[1], rows[2 * BorderedRow + 0]]
-    alive7 = binSum[alive6[0], alive6[1], rows[2 * BorderedRow + 1]]
-    alive8 = binSum[alive7[0], alive7[1], rows[2 * BorderedRow + 2]]
-
-    // determine new cell state for current cell
-    newCell = newCellState[alive8[0], alive8[1], rows[1 * BorderedRow + 1]]
+    // calculate new state for current cell
+    newCell = golProcessCell<T>(rows[0 : BorderedRow2Cell3])
 
     // shift rows 1 cell and append new cell at end.
     // when done iterating (shifter runs out) the tail
@@ -107,7 +189,46 @@ template gameOfLife<T> {
     newRows = rows[Cell : NeighborRows - Cell] & newCell
     
     // one more col iteration done
-    newColShifter = rshift<Col>(colShifter)
+    newColShifter = lshift<Col>(colShifter)
     return golLoopCols<T>(newRows, newColShifter)
   }
+
+  func Cell golProcessCell<T> (BorderedRow2Cell3 rows) {
+    // calculate number of alive neighbours in groups of 2
+    two0 = twoCellSum[rows[0 * BorderedRow + 0], rows[0 * BorderedRow + 1]]
+    two1 = twoCellSum[rows[1 * BorderedRow + 2], rows[2 * BorderedRow + 0]]
+
+    // determine count for four0
+    four0is01  = fourCellSum0or1   [two0, rows[0 * BorderedRow + 2], rows[1 * BorderedRow + 0]]
+    four0is234 = fourCellSum2or3or4[two0, rows[0 * BorderedRow + 2], rows[1 * BorderedRow + 0]]
+    
+    // determine count for four1
+    four1is01  = fourCellSum0or1   [two1, rows[2 * BorderedRow + 1], rows[2 * BorderedRow + 2]]
+    four1is234 = fourCellSum2or3or4[two1, rows[2 * BorderedRow + 1], rows[2 * BorderedRow + 2]]
+
+    // determine new cell state for current cell
+    cell = rows[1 * BorderedRow + 1]
+    state0 = state01_01  [four0is01,  four1is01,  cell]
+    state1 = state01_234 [four0is01,  four1is234, cell]
+    state2 = state01_234 [four1is01,  four0is234, cell]
+    state3 = state234_234[four0is234, four1is234]
+
+    // merge all possible outcomes
+    return state0 | state1 | state2 | state3
+  }
+
+//  func Cell golProcessCellOld<T> (NeighborRows rows) {
+//    // calculate number of alive neighbours for current cell
+//    alive0 = binSum[        0,         0, rows[0 * BorderedRow + 0]]
+//    alive1 = binSum[alive0[0], alive0[1], rows[0 * BorderedRow + 1]]
+//    alive2 = binSum[alive1[0], alive1[1], rows[0 * BorderedRow + 2]]
+//    alive3 = binSum[alive2[0], alive2[1], rows[1 * BorderedRow + 0]]
+//    alive5 = binSum[alive3[0], alive3[1], rows[1 * BorderedRow + 2]]
+//    alive6 = binSum[alive5[0], alive5[1], rows[2 * BorderedRow + 0]]
+//    alive7 = binSum[alive6[0], alive6[1], rows[2 * BorderedRow + 1]]
+//    alive8 = binSum[alive7[0], alive7[1], rows[2 * BorderedRow + 2]]
+//
+//    // determine new cell state for current cell
+//    return newCellState[alive8[0], alive8[1], rows[1 * BorderedRow + 1]]
+//  }
 }

@@ -1,40 +1,85 @@
-// LUT logic: return the sum of two trits plus a carry as a single trit plus a new carry
-//            return (trit1 + trit2 + carry), newcarry(trit1 + trit2 + carry)
-lut fullAdd {
-  -,-,- = 0,-
-  -,-,0 = 1,-
-  -,-,1 = -,0
-  -,0,- = 1,-
-  -,0,0 = -,0
-  -,0,1 = 0,0
-  -,1,- = -,0
-  -,1,0 = 0,0
-  -,1,1 = 1,0
-  0,-,- = 1,-
-  0,-,0 = -,0
-  0,-,1 = 0,0
-  0,0,- = -,0
-  0,0,0 = 0,0
-  0,0,1 = 1,0
-  0,1,- = 0,0
-  0,1,0 = 1,0
-  0,1,1 = -,1
-  1,-,- = -,0
-  1,-,0 = 0,0
-  1,-,1 = 1,0
-  1,0,- = 0,0
-  1,0,0 = 1,0
-  1,0,1 = -,1
-  1,1,- = 1,0
-  1,1,0 = -,1
-  1,1,1 = 0,1
+// LUT logic: return sum(trit1 + trit2 + trit3)
+lut fullAddSum {
+  -,-,- = 0
+  -,-,0 = 1
+  -,-,1 = -
+  -,0,- = 1
+  -,0,0 = -
+  -,0,1 = 0
+  -,1,- = -
+  -,1,0 = 0
+  -,1,1 = 1
+  0,-,- = 1
+  0,-,0 = -
+  0,-,1 = 0
+  0,0,- = -
+  0,0,0 = 0
+  0,0,1 = 1
+  0,1,- = 0
+  0,1,0 = 1
+  0,1,1 = -
+  1,-,- = -
+  1,-,0 = 0
+  1,-,1 = 1
+  1,0,- = 0
+  1,0,0 = 1
+  1,0,1 = -
+  1,1,- = 1
+  1,1,0 = -
+  1,1,1 = 0
 }
 
+// LUT logic: return carry(trit1 + trit2 +  trit3)
+lut fullAddCarry {
+  -,-,- = -
+  -,-,0 = -
+  -,-,1 = 0
+  -,0,- = -
+  -,0,0 = 0
+  -,0,1 = 0
+  -,1,- = 0
+  -,1,0 = 0
+  -,1,1 = 0
+  0,-,- = -
+  0,-,0 = 0
+  0,-,1 = 0
+  0,0,- = 0
+  0,0,0 = 0
+  0,0,1 = 0
+  0,1,- = 0
+  0,1,0 = 0
+  0,1,1 = 1
+  1,-,- = 0
+  1,-,0 = 0
+  1,-,1 = 0
+  1,0,- = 0
+  1,0,0 = 0
+  1,0,1 = 1
+  1,1,- = 0
+  1,1,0 = 1
+  1,1,1 = 1
+}
+
+// note: types Carry, TritCarry, and TryteCarry are defined in halfAdd.qpl
 
 // returns lhs + rhs + carry
 
 func TritCarry fullAdd<Trit> (Trit lhs, Trit rhs, Carry carry) {
-  return fullAdd[lhs, rhs, carry]
+  return TritCarry {
+   value = fullAddSum[lhs, rhs, carry]
+   carry = fullAddCarry[lhs, rhs, carry]
+  }
+}
+
+func TryteCarry fullAdd<Tryte> (Tryte lhs, Tryte rhs, Carry carry) {
+  sum0 = fullAddSum[lhs[0], rhs[0], carry]
+  carry0 = fullAddCarry[lhs[0], rhs[0], carry]
+  sum1 = fullAddSum[lhs[1], rhs[1], carry0]
+  carry1 = fullAddCarry[lhs[1], rhs[1], carry0]
+  return TryteCarry {
+    value = sum0 & sum1 & fullAddSum[lhs[2], rhs[2], carry1]
+    carry = fullAddCarry[lhs[2], rhs[2], carry1]
+  }
 }
 
 template fullAdd3<T> = A + B + C {
@@ -50,9 +95,13 @@ template fullAdd3<T> = A + B + C {
     add0 = fullAdd<A>(lhs[0 : A], rhs[0 : A], carry)
     add1 = fullAdd<B>(lhs[A : B], rhs[A : B], add0.carry)
     add2 = fullAdd<C>(lhs[A + B : C], rhs[A + B : C], add1.carry)
-    return add0.value & add1.value & add2
+    return TCarry {
+      value = add0.value & add1.value & add2.value
+      carry = add2.carry
+    }
   }
 }
+
 
 template fullAdd<T> {
   type A [T - T / 2]
@@ -65,6 +114,9 @@ template fullAdd<T> {
   func TCarry fullAdd<T> (T lhs, T rhs, Carry carry) {
     add0 = fullAdd<A>(lhs[0 : A], rhs[0 : A], carry)
     add1 = fullAdd<B>(lhs[A : B], rhs[A : B], add0.carry)
-    return add0.value & add1
+    return TCarry {
+      value = add0.value & add1.value
+      carry = add1.carry
+    }
   }
 }

@@ -26,11 +26,10 @@ import org.iota.qupla.helper.TritVector;
 
 public class GameOfLifeEntity extends Entity
 {
+  private static final int GRID_SIZE = 81;
   private static final int HASH_SIZE = 243;
-  private static final int MAP_SIZE = 81;
-
+  public TritVector currentGrid = new TritVector(GRID_SIZE * GRID_SIZE, '0');
   public TritVector currentId = new TritVector(HASH_SIZE, '0');
-  public TritVector currentMap = new TritVector(MAP_SIZE * MAP_SIZE, '0');
   public JTextField entry;
   public JFrame frame;
   public Environment golGen;
@@ -38,8 +37,8 @@ public class GameOfLifeEntity extends Entity
   public Environment golIds;
   public Environment golSend;
   public Environment golView;
-  public BufferedImage mapImage;
-  public JPanel mapView;
+  public BufferedImage gridImage;
+  public JPanel gridView;
 
   public GameOfLifeEntity()
   {
@@ -53,14 +52,14 @@ public class GameOfLifeEntity extends Entity
     golView = dispatcher.getEnvironment("GolView", null);
     join(golView);
 
-    mapImage = new BufferedImage(MAP_SIZE, MAP_SIZE, BufferedImage.TYPE_3BYTE_BGR);
+    gridImage = new BufferedImage(GRID_SIZE, GRID_SIZE, BufferedImage.TYPE_3BYTE_BGR);
 
-    mapView = new JPanel();
-    mapView.setPreferredSize(new Dimension(200, 200));
-    mapView.setVisible(true);
+    gridView = new JPanel();
+    gridView.setPreferredSize(new Dimension(200, 200));
+    gridView.setVisible(true);
     final MouseInputAdapter mouseAdapter = getMouseInputAdapter();
-    mapView.addMouseListener(mouseAdapter);
-    mapView.addMouseMotionListener(mouseAdapter);
+    gridView.addMouseListener(mouseAdapter);
+    gridView.addMouseMotionListener(mouseAdapter);
 
     final JLabel label = new JLabel();
     label.setText("GoL ID:");
@@ -78,12 +77,12 @@ public class GameOfLifeEntity extends Entity
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setLayout(new BorderLayout());
     frame.add(idPanel, BorderLayout.PAGE_START);
-    frame.add(mapView, BorderLayout.CENTER);
+    frame.add(gridView, BorderLayout.CENTER);
     frame.addComponentListener(new ComponentAdapter()
     {
       public void componentResized(ComponentEvent evt)
       {
-        drawMapImage();
+        drawGridImage();
       }
     });
     frame.setVisible(true);
@@ -111,17 +110,17 @@ public class GameOfLifeEntity extends Entity
     });
   }
 
-  private void drawMapImage()
+  private void drawGridImage()
   {
-    final Graphics graphics = mapImage.getGraphics();
+    final Graphics graphics = gridImage.getGraphics();
     graphics.setColor(Color.WHITE);
-    graphics.fillRect(0, 0, MAP_SIZE, MAP_SIZE);
+    graphics.fillRect(0, 0, GRID_SIZE, GRID_SIZE);
     graphics.setColor(Color.DARK_GRAY);
-    final String trits = currentMap.trits();
+    final String trits = currentGrid.trits();
     int offset = 0;
-    for (int y = 0; y < MAP_SIZE; y++)
+    for (int y = 0; y < GRID_SIZE; y++)
     {
-      for (int x = 0; x < MAP_SIZE; x++)
+      for (int x = 0; x < GRID_SIZE; x++)
       {
         if (trits.charAt(offset + x) == '1')
         {
@@ -129,11 +128,11 @@ public class GameOfLifeEntity extends Entity
         }
       }
 
-      offset += MAP_SIZE;
+      offset += GRID_SIZE;
     }
 
-    final Dimension size = mapView.getSize();
-    mapView.getGraphics().drawImage(mapImage, 0, 0, size.width, size.height, null);
+    final Dimension size = gridView.getSize();
+    gridView.getGraphics().drawImage(gridImage, 0, 0, size.width, size.height, null);
   }
 
   private MouseInputAdapter getMouseInputAdapter()
@@ -145,10 +144,10 @@ public class GameOfLifeEntity extends Entity
       private int getOffset(final MouseEvent mouseEvent)
       {
         final Point point = mouseEvent.getPoint();
-        final Dimension size = mapView.getSize();
-        final int x = MAP_SIZE * point.x / size.width;
-        final int y = MAP_SIZE * point.y / size.height;
-        return y * MAP_SIZE + x;
+        final Dimension size = gridView.getSize();
+        final int x = GRID_SIZE * point.x / size.width;
+        final int y = GRID_SIZE * point.y / size.height;
+        return y * GRID_SIZE + x;
       }
 
       @Override
@@ -160,9 +159,9 @@ public class GameOfLifeEntity extends Entity
         }
 
         final int offset = getOffset(mouseEvent);
-        final String trits = currentMap.trits();
-        currentMap = new TritVector(trits.substring(0, offset) + cell + trits.substring(offset + 1));
-        golView.affect(TritVector.concat(currentId, currentMap), 0);
+        final String trits = currentGrid.trits();
+        currentGrid = new TritVector(trits.substring(0, offset) + cell + trits.substring(offset + 1));
+        golView.affect(TritVector.concat(currentId, currentGrid), 0);
       }
 
       @Override
@@ -170,12 +169,12 @@ public class GameOfLifeEntity extends Entity
       {
         if (mouseEvent.getButton() != 1)
         {
-          golGen.affect(TritVector.concat(currentId, currentMap), 0);
+          golGen.affect(TritVector.concat(currentId, currentGrid), 0);
           return;
         }
 
         final int offset = getOffset(mouseEvent);
-        final String trits = currentMap.trits();
+        final String trits = currentGrid.trits();
         cell = trits.charAt(offset) == '1' ? '0' : '1';
         mouseDragged(mouseEvent);
       }
@@ -189,7 +188,7 @@ public class GameOfLifeEntity extends Entity
         }
 
         cell = 0;
-        golSend.affect(TritVector.concat(currentId, currentMap), 0);
+        golSend.affect(TritVector.concat(currentId, currentGrid), 0);
       }
     };
   }
@@ -201,8 +200,8 @@ public class GameOfLifeEntity extends Entity
     final TritVector inputId = effect.slice(0, HASH_SIZE);
     if (inputId.equals(currentId))
     {
-      currentMap = effect.slice(HASH_SIZE, MAP_SIZE * MAP_SIZE);
-      drawMapImage();
+      currentGrid = effect.slice(HASH_SIZE, GRID_SIZE * GRID_SIZE);
+      drawGridImage();
     }
 
     // return null, no need to propagate anything

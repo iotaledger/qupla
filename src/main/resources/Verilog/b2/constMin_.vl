@@ -1,0 +1,8 @@
+function [1:0] constMin__lut(
+    input [0:0] a0
+  , input [0:0] a1
+  );
+  begin
+    constMin__lut = { a0 | a1, 1'b0 };
+  end
+endfunction

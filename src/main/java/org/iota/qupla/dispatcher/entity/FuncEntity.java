@@ -2,9 +2,13 @@ package org.iota.qupla.dispatcher.entity;
 
 import java.util.Collection;
 
+import org.iota.qupla.abra.AbraModule;
+import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.context.AbraEvalContext;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.dispatcher.Entity;
 import org.iota.qupla.dispatcher.Environment;
+import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.QuplaEvalContext;
 import org.iota.qupla.qupla.expression.AffectExpr;
@@ -16,6 +20,9 @@ import org.iota.qupla.qupla.statement.TypeStmt;
 
 public class FuncEntity extends Entity
 {
+  public static AbraModule abraModule;
+
+  public AbraBaseBlock block;
   public FuncStmt func;
 
   public FuncEntity(final FuncStmt func, final int limit, final Dispatcher dispatcher)
@@ -64,6 +71,21 @@ public class FuncEntity extends Entity
 
   public TritVector onEffect(final TritVector effect)
   {
+    if (abraModule != null)
+    {
+      if (block == null)
+      {
+        block = abraModule.branch(func.name);
+        if (block == null)
+        {
+          throw new CodeException("Cannot find block: " + func.name);
+        }
+      }
+
+      final AbraEvalContext evalContext = new AbraEvalContext();
+      return evalContext.evalEntity(this, effect);
+    }
+
     final QuplaEvalContext evalContext = new QuplaEvalContext();
     return evalContext.evalEntity(this, effect);
   }

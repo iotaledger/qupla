@@ -10,7 +10,7 @@ template divMod<T> {
   func T2 divMod<T> (T lhs, T rhs) {
     absLhs = abs<T>(lhs)
     absRhs = abs<T>(rhs)
-    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
+    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, all<T>(1))
     quo = quorem.quotient
     rem = quorem.remainder
 
@@ -26,7 +26,7 @@ template divMod<T> {
   func T2 ceilDivMod<T> (T lhs, T rhs) {
     absLhs = abs<T>(lhs)
     absRhs = abs<T>(rhs)
-    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
+    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, all<T>(1))
     quo = quorem.quotient
     rem = quorem.remainder
 
@@ -56,7 +56,7 @@ template divMod<T> {
   func T2 floorDivMod<T> (T lhs, T rhs) {
     absLhs = abs<T>(lhs)
     absRhs = abs<T>(rhs)
-    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
+    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, all<T>(1))
     quo = quorem.quotient
     rem = quorem.remainder
 
@@ -87,7 +87,7 @@ template divMod<T> {
   func T2 roundDivMod<T> (T lhs, T rhs) {
     absLhs = abs<T>(lhs)
     absRhs = abs<T>(rhs)
-    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, 1)
+    quorem = roundDivModLoop<T>(absLhs, 0, absRhs, all<T>(1))
     quo = quorem.quotient
     rem = quorem.remainder
 
@@ -130,15 +130,15 @@ template divMod<T> {
   func T2 roundDivModLoop<T> (T quo, T rem, T div, T shf) {
     quorem = roundDivModPass<T>(quo, rem, div)
 
-    newShf = rshift<T>(shf)
-    zero = isZero[sign<T>(newShf)]
+    newShf = lshift<T>(shf)
+    zero = isZero[newShf[0]]
     quo1 = quorem.quotient
     rem1 = quorem.remainder
     return zero ? quorem : roundDivModLoop<T>(quo1, rem1, div, newShf)
   }
 
   func T2 roundDivModPass<T> (T quo, T rem, T div) {
-    quorem = as<T2>(rshift<T2>(quo & rem))
+    quorem = rshift<T2>(quo & rem)
     quo0 = quorem.quotient
     rem0 = quorem.remainder
     remSign = sign<T>(rem0)

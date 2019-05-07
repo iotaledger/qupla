@@ -11,14 +11,13 @@ lut fullMul {
   1,1 = 1
 }
 
-
 // returns lhs * rhs
 
-func TritCarry fullMul<Trit> (Trit lhs, Trit rhs) {
+func Trit2 fullMul<Trit> (Trit lhs, Trit rhs) {
   return fullMul[lhs, rhs] & 0
 }
 
-func TritCarry fullMulNonZero<Trit> (Trit lhs, Trit rhs) {
+func Trit2 fullMulNonZero<Trit> (Trit lhs, Trit rhs) {
   return fullMul[lhs, rhs] & 0
 }
 

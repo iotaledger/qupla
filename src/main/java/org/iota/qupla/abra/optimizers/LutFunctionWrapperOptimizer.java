@@ -21,9 +21,9 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
   {
     // replace lut wrapper function with direct lut operation
 
-    // must be a function call with max 3 inputs
-    if (!(knot.block instanceof AbraBlockBranch) || knot.inputs.size() > 3)
+    if (knot.size != 1)
     {
+      // knot value must be single trit
       return;
     }
 
@@ -36,10 +36,16 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
       }
     }
 
+    // max 3 1-trit inputs, 1-trit output?
+    if (!knot.block.couldBeLutWrapper())
+    {
+      return;
+    }
+
     final AbraBlockBranch target = (AbraBlockBranch) knot.block;
     if (target.sites.size() != 0 || target.latches.size() != 0)
     {
-      // not an otherwise empty function
+      // too much going on to be a LUT wrapper
       return;
     }
 
@@ -49,15 +55,6 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
       return;
     }
 
-    // all input params must be single trit
-    for (final AbraBaseSite input : target.inputs)
-    {
-      if (input.size != 1)
-      {
-        return;
-      }
-    }
-
     if (target.outputs.get(0).getClass() != AbraSiteKnot.class)
     {
       // definitely not a lut lookup
@@ -65,7 +62,7 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
     }
 
     final AbraSiteKnot output = (AbraSiteKnot) target.outputs.get(0);
-    if (output.inputs.size() > 3 || output.size != 1 || !(output.block instanceof AbraBlockLut))
+    if (!(output.block instanceof AbraBlockLut) || output.inputs.size() != target.inputs.size())
     {
       // not a lut lookup
       return;

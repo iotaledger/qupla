@@ -25,6 +25,7 @@ import org.iota.qupla.qupla.expression.VectorExpr;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 import org.iota.qupla.qupla.statement.FuncStmt;
 import org.iota.qupla.qupla.statement.LutStmt;
+import org.iota.qupla.qupla.statement.UseStmt;
 
 public class QuplaEvalContext extends QuplaBaseContext
 {
@@ -204,6 +205,7 @@ public class QuplaEvalContext extends QuplaBaseContext
     callTrail[callNr++] = (byte) entity.func.funcId;
     callTrail[callNr++] = (byte) (entity.func.funcId >> 8);
     entity.func.eval(this);
+
     // avoid converting vector to string, which is slow
     Qupla.log("     return " + entity.func.returnExpr.typeInfo.toString(value) + " : " + entity.func.returnExpr);
 
@@ -215,18 +217,8 @@ public class QuplaEvalContext extends QuplaBaseContext
   @Override
   public void evalFuncBody(final FuncStmt func)
   {
-    //    if (func.name.startsWith("sqrt"))
-    //    {
-    //      String callSign = func.name;
-    //      boolean first = true;
-    //      for (int i = 0; i <  func.params.size(); i++)
-    //      {
-    //        callSign += first ? "(" : ", ";
-    //        first = false;
-    //        callSign += stack.get(stackFrame + i).toDecimal();
-    //      }
-    //      Qupla.log(callSign + ")");
-    //    }
+    final UseStmt oldUse = BaseExpr.currentUse;
+    BaseExpr.currentUse = func.use;
 
     for (final BaseExpr stateExpr : func.stateExprs)
     {
@@ -239,6 +231,8 @@ public class QuplaEvalContext extends QuplaBaseContext
     }
 
     func.returnExpr.eval(this);
+
+    BaseExpr.currentUse = oldUse;
   }
 
   @Override

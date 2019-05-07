@@ -39,6 +39,19 @@ public class AbraModule
     return lut;
   }
 
+  public AbraBaseBlock branch(final String name)
+  {
+    for (final AbraBaseBlock branch : branches)
+    {
+      if (branch.name.equals(name))
+      {
+        return branch;
+      }
+    }
+
+    return null;
+  }
+
   public void numberBlocks()
   {
     blockNr = 0;
@@ -67,7 +80,7 @@ public class AbraModule
     for (int i = 0; i < branches.size(); i++)
     {
       final AbraBaseBlock branch = branches.get(i);
-      if (branch.size() == 1)
+      if (branch.couldBeLutWrapper())
       {
         branch.optimize(this);
       }
@@ -77,7 +90,7 @@ public class AbraModule
     for (int i = 0; i < branches.size(); i++)
     {
       final AbraBaseBlock branch = branches.get(i);
-      if (branch.size() != 1)
+      if (!branch.couldBeLutWrapper())
       {
         branch.optimize(this);
       }

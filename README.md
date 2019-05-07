@@ -51,7 +51,7 @@ Example of Java compilation and running Qupla on Windows command line after extr
     cd \Qupla\qupla\src\main\java
     "C:\Program Files\Java\jdk1.8.0\bin\javac" -d \Qupla\build org\iota\qupla\Qupla.java
     cd \Qupla\qupla\src\main\resources
-    java -classpath \Qupla\build org.iota.qupla.Qupla Fibonacci "fibonacci2(10)"
+    java -classpath \Qupla\build org.iota.qupla.Qupla Fibonacci "fibonacci2<Int>(10)"
 
 
 
@@ -61,7 +61,7 @@ Example of Java compilation and running Qupla on Mac command line after extracti
     mkdir build
     javac -d $HOME/Qupla/build org/iota/qupla/Qupla.java
     cd $HOME/Qupla/qupla/src/main/resources
-    java -classpath $HOME/Qupla/build org.iota.qupla.Qupla Fibonacci "fibonacci2(10)"
+    java -classpath $HOME/Qupla/build org.iota.qupla.Qupla Fibonacci "fibonacci2<Int>(10)"
 
 
 
@@ -130,7 +130,7 @@ test \<value\> = \<expression\>
     
 
 For more information about the exact syntax of the statements check out the resources/syntax folder
-And of course you can study the example code in resources/Qupla and resources/Examples.
+And of course you can study the example code in resources/Qupla and resources/Examples and others.
 
 More documentation will follow
 
