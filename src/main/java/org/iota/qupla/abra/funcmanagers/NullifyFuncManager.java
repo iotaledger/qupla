@@ -6,12 +6,15 @@ import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.funcmanagers.base.BaseFuncManager;
+import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 
 public class NullifyFuncManager extends BaseFuncManager
 {
-  //private static final String FALSE_TRITS = "-@@0@@1@@-@@0@@1@@-@@0@@1@@"; //when false == '-'
-  private static final String FALSE_TRITS = "@-@@0@@1@@-@@0@@1@@-@@0@@1@"; //when false == '0'
+  private static final boolean FALSE_IS_MIN = TritConverter.BOOL_FALSE == '-';
+  private static final String FALSE_LUT_MIN = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
+  private static final String FALSE_LUT_ZERO = "@-@@0@@1@@-@@0@@1@@-@@0@@1@";
+  private static final String FALSE_TRITS = FALSE_IS_MIN ? FALSE_LUT_MIN : FALSE_LUT_ZERO;
   private static final String TRUE_TRITS = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
   private boolean trueFalse;
 

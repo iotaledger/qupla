@@ -16,6 +16,8 @@ public class ConstSubExpr extends BaseSubExpr
   {
     super(tokenizer);
 
+    expect(tokenizer, Token.TOK_FUNC_OPEN, "'('");
+
     expr = new ConstExpr(tokenizer).optimize();
 
     expect(tokenizer, Token.TOK_FUNC_CLOSE, "')'");

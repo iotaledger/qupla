@@ -18,18 +18,6 @@ public class AbraSiteKnot extends AbraSiteMerge
 
   public AbraBaseBlock block;
 
-  public void branch(final AbraModule module)
-  {
-    for (final AbraBaseBlock branch : module.branches)
-    {
-      if (branch.name.equals(name))
-      {
-        block = branch;
-        break;
-      }
-    }
-  }
-
   public void concat(final AbraModule module)
   {
     block = slicers.find(module, size, 0);

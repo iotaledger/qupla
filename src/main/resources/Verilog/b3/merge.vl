@@ -1,0 +1,15 @@
+reg [0:0] x;
+
+function [1:0] merge__1(
+    input [0:0] a0
+  , input [0:0] a1
+  , input [0:0] a2
+  , input [0:0] b0
+  , input [0:0] b1
+  , input [0:0] b2
+  );
+  begin
+    x = (a0 | a1 | a2) & (b0 | b1 | b2);
+    merge__1 = { a0 | b0, a1 | b1, a2 | b2 };
+  end
+endfunction

@@ -29,7 +29,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
 
   private BaseContext appendVector(final String trits)
   {
-    return verilog.appendVector(this, trits);
+    return append(verilog.vector(trits));
   }
 
   @Override
@@ -91,6 +91,8 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   public void evalConditional(final CondExpr conditional)
   {
     //TODO proper handling of nullify when condition not in [false, true]
+    //     by moving conditional expression out of surrounding expression
+    //     and assigning it to tmp variable that can be checked twice
     conditional.condition.eval(this);
     append(" == ");
     appendVector("" + TritConverter.BOOL_TRUE).append(" ? ");
@@ -111,24 +113,24 @@ public class QuplaToVerilogContext extends QuplaBaseContext
     newline();
 
     final String funcName = func.name;
-    append("function " + size(func.size) + " ").append(funcName).append("(").newline().indent();
+    append("function ").append(size(func.size)).append(" ").append(funcName).append("(").newline().indent();
 
     boolean first = true;
     for (final BaseExpr param : func.params)
     {
       append(first ? "  " : ", ");
       first = false;
-      append("input " + size(param.size) + " ").append(param.name).newline();
+      append("input ").append(size(param.size)).append(" ").append(param.name).newline();
     }
 
     append(");").newline();
 
     for (final BaseExpr assignExpr : func.assignExprs)
     {
-      append("reg " + size(assignExpr.size) + " ").append(assignExpr.name).append(";").newline();
+      append("reg ").append(size(assignExpr.size)).append(" ").append(assignExpr.name).append(";").newline();
     }
 
-    append("reg " + size(func.size) + " ").append(funcName).append("_ret;").newline();
+    append("reg ").append(size(func.size)).append(" ").append(funcName).append("_ret;").newline();
 
     if (func.assignExprs.size() != 0)
     {
@@ -181,14 +183,14 @@ public class QuplaToVerilogContext extends QuplaBaseContext
   public void evalLutDefinition(final LutStmt lut)
   {
     final String lutName = lut.name + "_lut";
-    append("function " + size(lut.size) + " ").append(lutName).append("(").newline().indent();
+    append("function ").append(size(lut.size)).append(" ").append(lutName).append("(").newline().indent();
 
     boolean first = true;
     for (int i = 0; i < lut.inputSize; i++)
     {
       append(first ? "  " : ", ");
       first = false;
-      append("input [1:0] ").append("p" + i).newline();
+      append("input ").append(size(1)).append(" p" + i).newline();
     }
     append(");").newline();
 
@@ -260,9 +262,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
       return;
     }
 
-    final int start = (slice.varSize - slice.start) * 2 - 1;
-    final int end = start - slice.size * 2 + 1;
-    append("[" + start + ":" + end + "]");
+    append(verilog.range(slice.varSize - slice.start, slice.size));
   }
 
   @Override

@@ -32,7 +32,8 @@ public class ConstFactor extends BaseSubExpr
       return;
 
     case Token.TOK_MINUS:
-      negative = true;
+      tokenizer.nextToken();
+      negative = !negative;
       expr = new ConstFactor(tokenizer);
       return;
 

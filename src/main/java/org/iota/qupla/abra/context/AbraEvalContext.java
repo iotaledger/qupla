@@ -15,6 +15,7 @@ import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
+import org.iota.qupla.dispatcher.entity.FuncEntity;
 import org.iota.qupla.helper.StateValue;
 import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
@@ -132,19 +133,6 @@ public class AbraEvalContext extends AbraBaseContext
       }
     }
 
-    //    if (branch.name != null && branch.name.startsWith("sqrt"))
-    //    {
-    //      String callSign = branch.name;
-    //      boolean first = true;
-    //      for (final AbraBaseSite input : branch.inputs)
-    //      {
-    //        callSign += first ? "(" : ", ";
-    //        first = false;
-    //        callSign += stack[input.index].toDecimal();
-    //      }
-    //      Qupla.log(callSign + ")");
-    //    }
-
     // initialize latches with old values
     for (final AbraBaseSite latch : branch.latches)
     {
@@ -193,6 +181,25 @@ public class AbraEvalContext extends AbraBaseContext
     }
 
     return true;
+  }
+
+  public TritVector evalEntity(final FuncEntity entity, final TritVector vector)
+  {
+    // avoid converting vector to string, which is slow
+    Qupla.log("effect " + entity.func.params.get(0).typeInfo.toString(vector) + " : " + entity.func);
+
+    args.clear();
+    args.add(vector);
+
+    callTrail[callNr++] = (byte) entity.block.index;
+    callTrail[callNr++] = (byte) (entity.block.index >> 8);
+    entity.block.eval(this);
+
+    // avoid converting vector to string, which is slow
+    Qupla.log("     return " + entity.func.returnExpr.typeInfo.toString(value) + " : " + entity.func.returnExpr);
+
+    callNr = 0;
+    return value;
   }
 
   @Override
@@ -324,12 +331,7 @@ public class AbraEvalContext extends AbraBaseContext
   @Override
   public void evalParam(final AbraSiteParam param)
   {
-    if (value.size() < param.offset + param.size)
-    {
-      error("Insufficient input trits: " + value);
-    }
-
-    stack[param.index] = value.slice(param.offset, param.size);
+    stack[param.index] = value.slicePadded(param.offset, param.size);
   }
 
   private void initializeLatch(final AbraBaseSite latch)

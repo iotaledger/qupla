@@ -1,0 +1,12 @@
+function [1:0] nullifyTrue__lut(
+    input [0:0] c0
+  , input [0:0] c1
+  , input [0:0] c2
+  , input [0:0] v0
+  , input [0:0] v1
+  , input [0:0] v2
+  );
+  begin
+    nullifyTrue__lut = { c2 & v0, c2 & v1, c2 & v2 };
+  end
+endfunction

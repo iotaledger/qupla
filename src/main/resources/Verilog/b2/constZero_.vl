@@ -1,0 +1,10 @@
+function [1:0] constZero__lut(
+    input [0:0] a0
+  , input [0:0] a1
+  );
+  wire [0:0] x0;
+  begin
+    x0 = a0 | a1;
+    constZero__lut = { x0, x0 };
+  end
+endfunction

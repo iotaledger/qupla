@@ -1,0 +1,8 @@
+function [1:0] isLess_0_lut(
+    input [0:0] a0
+  , input [0:0] a1
+  );
+  begin
+    isLess_0_lut = { a1, a0 & !a1 };
+  end
+endfunction

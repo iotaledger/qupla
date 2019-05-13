@@ -57,6 +57,25 @@ public class AbraBlockBranch extends AbraBaseBlock
   }
 
   @Override
+  public boolean couldBeLutWrapper()
+  {
+    if (size != 1 || inputs.size() > 3)
+    {
+      return false;
+    }
+
+    for (final AbraBaseSite input : inputs)
+    {
+      if (input.size != 1)
+      {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
   public void eval(final AbraBaseContext context)
   {
     context.evalBranch(this);

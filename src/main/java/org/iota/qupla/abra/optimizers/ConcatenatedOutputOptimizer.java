@@ -136,6 +136,7 @@ public class ConcatenatedOutputOptimizer extends BaseOptimizer
       {
         processKnot((AbraSiteKnot) site);
       }
+
       if (site.getClass() == AbraSiteMerge.class)
       {
         processMerge((AbraSiteMerge) site);

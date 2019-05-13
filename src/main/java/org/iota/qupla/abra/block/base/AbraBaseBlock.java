@@ -18,6 +18,11 @@ public abstract class AbraBaseBlock
   public BaseExpr origin;
   public int specialType;
 
+  public boolean couldBeLutWrapper()
+  {
+    return false;
+  }
+
   public abstract void eval(final AbraBaseContext context);
 
   public void markReferences()

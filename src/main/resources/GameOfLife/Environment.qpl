@@ -1,6 +1,6 @@
 // Environment    Published data
 
-// GolView        id/map, ready for display, view should filter for id and display map
+// GolView        id/map, ready for display, view should filter for id and displays map
 
 // GolIds         cmd/id, cmd = - means a view no longer filters for this id
 //                        cmd = 1 means a view now filters for this id
@@ -26,7 +26,7 @@
 //TODO can each view have a separate tangle listener?
 
 type GolSize [Huge]
-type GolMap [GolSize * GolSize]
+type GolGrid [GolSize * GolSize]
 type GolAddress {
   Trit cmd
   Hash id
@@ -35,7 +35,7 @@ type GolAddress {
 
 type GolInfo {
   Hash id
-  GolMap map
+  GolGrid grid
   Hash signature
   Hash address
   Trit cmd
@@ -68,14 +68,14 @@ func GolAddress golAddressIdStore(GolAddress info) {
   } : null
 }
 
-// right click -> send id/map to golGen -> send info to GolSend
+// right click -> send id/grid to golGen -> send info to GolSend
 func GolInfo golGen(GolInfo info) {
   join GolGen
   affect GolSend
 
   return GolInfo {
     id = info.id
-    map = gameOfLife<GolSize>(info.map)
+    grid = gameOfLife<GolSize>(info.grid)
     signature = 0
     address = 0
     cmd = 0
@@ -89,14 +89,14 @@ func GolInfo golHash(GolInfo info) {
 
   return GolInfo {
     id = info.id
-    map = 0
+    grid = 0
     signature = 0
     address = golHash<GolSize>(info.id)
     cmd = 1 // put in store
   }
 }
 
-// mouse up -> send id/map to GolSend -> send info to GolView and golMessage
+// mouse up -> send id/grid to GolSend -> send info to GolView and golMessage
 func GolInfo golSend(GolInfo info) {
   join GolSend
   affect GolView
@@ -104,8 +104,8 @@ func GolInfo golSend(GolInfo info) {
 
   return GolInfo {
     id = info.id
-    map = info.map
-    signature = golSign<GolSize>(info.id, info.map)
+    grid = info.grid
+    signature = golSign<GolSize>(info.id, info.grid)
     address = golHash<GolSize>(info.id)
     cmd = 0
   }
@@ -119,7 +119,7 @@ func GolInfo golStore(GolInfo info) {
   affect GolView
   newInfo = GolInfo {
     id = radixMap<Hash, Hash>(info.cmd, info.address, info.id)
-    map = info.map
+    grid = info.grid
     signature = info.signature
     address = info.address
     cmd = 0
@@ -133,7 +133,7 @@ func GolInfo golStoreValidateId(GolInfo info) {
 }
 
 func GolInfo golStoreVerifySignature(GolInfo info) {
-  signature = golSign<GolSize>(info.id, info.map)
+  signature = golSign<GolSize>(info.id, info.grid)
   same = equal<Hash>(info.signature, signature)
   return same ? info : null
 }

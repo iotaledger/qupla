@@ -16,7 +16,6 @@ import org.iota.qupla.helper.BaseContext;
 
 public abstract class AbraBaseContext extends BaseContext
 {
-
   protected void error(final String text)
   {
     throw new CodeException(text);

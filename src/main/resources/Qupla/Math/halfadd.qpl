@@ -1,21 +1,59 @@
-// LUT logic: return the sum of a trit plus a carry as a single trit plus a new carry
-//            return (trit1 + carry), newcarry(trit1 + carry)
-lut halfAdd {
-  -,- = 1,- // -1 + -1 =  1, carry -1
-  -,0 = -,0 // -1 +  0 = -1, carry  0
-  -,1 = 0,0 // -1 +  1 =  0, carry  0
-  0,- = -,0 //  0 + -1 = -1, carry  0
-  0,0 = 0,0 //  0 +  0 =  0, carry  0
-  0,1 = 1,0 //  0 +  1 =  1, carry  0
-  1,- = 0,0 //  1 + -1 =  0, carry  0
-  1,0 = 1,0 //  1 +  0 =  1, carry  0
-  1,1 = -,1 //  1 +  1 = -1, carry  1
+// LUT logic: return sum(trit1 + trit2)
+lut halfAddSum {
+  -,- = 1 // -1 + -1 =  1, carry -1
+  -,0 = - // -1 +  0 = -1, carry  0
+  -,1 = 0 // -1 +  1 =  0, carry  0
+  0,- = - //  0 + -1 = -1, carry  0
+  0,0 = 0 //  0 +  0 =  0, carry  0
+  0,1 = 1 //  0 +  1 =  1, carry  0
+  1,- = 0 //  1 + -1 =  0, carry  0
+  1,0 = 1 //  1 +  0 =  1, carry  0
+  1,1 = - //  1 +  1 = -1, carry  1
 }
+
+// LUT logic: return carry(trit1 + trit2)
+lut halfAddCarry {
+  -,- = - // -1 + -1 =  1, carry -1
+  -,0 = 0 // -1 +  0 = -1, carry  0
+  -,1 = 0 // -1 +  1 =  0, carry  0
+  0,- = 0 //  0 + -1 = -1, carry  0
+  0,0 = 0 //  0 +  0 =  0, carry  0
+  0,1 = 0 //  0 +  1 =  1, carry  0
+  1,- = 0 //  1 + -1 =  0, carry  0
+  1,0 = 0 //  1 +  0 =  1, carry  0
+  1,1 = 1 //  1 +  1 = -1, carry  1
+}
+
+
+type TritCarry {
+  Trit value
+  Carry carry
+}
+
+type TryteCarry {
+  Tryte value
+  Carry carry
+}
+
 
 // returns val + carry
 
 func TritCarry halfAdd<Trit> (Trit val, Carry carry) {
-  return halfAdd[val, carry]
+  return TritCarry {
+    value = halfAddSum[val, carry]
+    carry = halfAddCarry[val, carry]
+  }
+}
+
+func TryteCarry halfAdd<Tryte> (Tryte val, Carry carry) {
+  sum0 = halfAddSum[val[0], carry]
+  carry0 = halfAddCarry[val[0], carry]
+  sum1 = halfAddSum[val[1], carry0]
+  carry1 = halfAddCarry[val[1], carry0]
+  return TryteCarry {
+    value = sum0 & sum1 & halfAddSum[val[2], carry1]
+    carry = halfAddCarry[val[2], carry1]
+  }
 }
 
 template halfAdd3<T> = A + B + C {
@@ -31,7 +69,10 @@ template halfAdd3<T> = A + B + C {
     add0 = halfAdd<A>(val[0 : A], carry)
     add1 = halfAdd<B>(val[A : B], add0.carry)
     add2 = halfAdd<C>(val[A + B : C], add1.carry)
-    return add0.value & add1.value & add2
+    return TCarry {
+      value = add0.value & add1.value & add2.value
+      carry = add2.carry
+    }
   }
 }
 
@@ -46,6 +87,9 @@ template halfAdd<T> {
   func TCarry halfAdd<T> (T val, Carry carry) {
     add0 = halfAdd<A>(val[0 : A], carry)
     add1 = halfAdd<B>(val[A : B], add0.carry)
-    return add0.value & add1
+   return TCarry {
+      value = add0.value & add1.value
+      carry = add1.carry
+    }
   }
 }

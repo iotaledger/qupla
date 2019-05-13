@@ -14,6 +14,7 @@ import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.exception.ExitException;
 import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
+import org.iota.qupla.helper.Verilog;
 import org.iota.qupla.qupla.context.QuplaEvalContext;
 import org.iota.qupla.qupla.context.QuplaPrintContext;
 import org.iota.qupla.qupla.context.QuplaToAbraContext;
@@ -40,6 +41,8 @@ public class Qupla
   private static ArrayList<BaseExpr> expressions = new ArrayList<>();
   private static final String[] flags = {
       "-abra",
+      "-b2",
+      "-b3",
       "-echo",
       "-eval",
       "-fpga",
@@ -192,6 +195,16 @@ public class Qupla
 
   private static void processOptions()
   {
+    if (options.contains("-b2"))
+    {
+      Verilog.bitEncoding(Verilog.B2_BITS_PER_TRIT);
+    }
+
+    if (options.contains("-b3"))
+    {
+      Verilog.bitEncoding(Verilog.B3_BITS_PER_TRIT);
+    }
+
     // echo back all modules as source
     if (options.contains("-echo"))
     {
@@ -246,6 +259,9 @@ public class Qupla
     log("Run Abra generator");
     quplaToAbraContext = new QuplaToAbraContext();
     quplaToAbraContext.eval(singleModule);
+
+    // run FuncEntities as Abra instead of Qupla
+    FuncEntity.abraModule = quplaToAbraContext.abraModule;
   }
 
   private static void runEchoSource()

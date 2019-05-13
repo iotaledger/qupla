@@ -10,6 +10,8 @@ import org.iota.qupla.qupla.parser.Tokenizer;
 
 public class SliceExpr extends BaseExpr
 {
+  public int fieldSize;
+  public int fieldStart;
   public final ArrayList<BaseExpr> fields = new ArrayList<>();
   public BaseExpr sliceSize;
   public BaseExpr sliceStart;
@@ -22,6 +24,8 @@ public class SliceExpr extends BaseExpr
 
     sliceSize = clone(copy.sliceSize);
     fields.addAll(copy.fields);
+    fieldStart = copy.fieldStart;
+    fieldSize = copy.fieldSize;
     start = copy.start;
     sliceStart = clone(copy.sliceStart);
     varSize = copy.varSize;
@@ -59,28 +63,7 @@ public class SliceExpr extends BaseExpr
   {
     analyzeVar();
 
-    if (sliceStart == null)
-    {
-      return;
-    }
-
-    sliceStart.analyze();
-    if (sliceStart.size < 0 || sliceStart.size >= size)
-    {
-      sliceStart.error("Invalid slice start: " + sliceStart.size);
-    }
-
-    if (sliceSize != null)
-    {
-      sliceSize.analyze();
-      if (sliceStart.size + sliceSize.size > size)
-      {
-        sliceSize.error("Invalid slice size (" + sliceStart.size + "+" + sliceSize.size + ">" + size + ")");
-      }
-    }
-
-    start += sliceStart.size;
-    size = sliceSize == null ? 1 : sliceSize.size;
+    reanalyze();
   }
 
   private void analyzeVar()
@@ -105,6 +88,8 @@ public class SliceExpr extends BaseExpr
         typeInfo = var.typeInfo;
         size = var.size;
         varSize = size;
+        fieldStart = 0;
+        fieldSize = size;
 
         analyzeVarFields(var);
         return;
@@ -149,6 +134,9 @@ public class SliceExpr extends BaseExpr
 
       fieldPath += "." + field;
     }
+
+    fieldStart = start;
+    fieldSize = size;
   }
 
   @Override
@@ -161,5 +149,34 @@ public class SliceExpr extends BaseExpr
   public void eval(final QuplaBaseContext context)
   {
     context.evalSlice(this);
+  }
+
+  public void reanalyze()
+  {
+    if (sliceStart == null)
+    {
+      return;
+    }
+
+    start = fieldStart;
+    size = fieldSize;
+
+    sliceStart.analyze();
+    if (sliceStart.size < 0 || sliceStart.size >= size)
+    {
+      sliceStart.error("Invalid slice start: " + sliceStart.size);
+    }
+
+    if (sliceSize != null)
+    {
+      sliceSize.analyze();
+      if (sliceStart.size + sliceSize.size > size)
+      {
+        sliceSize.error("Invalid slice size (" + sliceStart.size + "+" + sliceSize.size + ">" + size + ")");
+      }
+    }
+
+    start += sliceStart.size;
+    size = sliceSize == null ? 1 : sliceSize.size;
   }
 }
