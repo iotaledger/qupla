@@ -3,6 +3,6 @@ function [1:0] isZero_0_lut(
   , input [0:0] a1
   );
   begin
-    isZero_0_lut = { !a0 | !a1, a0 & a1 };
+    isZero_0_lut = { a0 ^ a1, a0 & a1 };
   end
 endfunction

@@ -224,6 +224,16 @@ public class AbraToVerilogContext extends AbraBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
+    final int inputSize = lut.inputs();
+    //    for (int i = 0; i < lutSize[inputSize]; i++)
+    //    {
+    //      char trit = lut.lookup.charAt(i);
+    //      append("// ");
+    //      final String input = TritConverter.TRYTE_TRITS[i].substring(0, inputSize);
+    //      append(verilog.vector(input).substring(3)).append(": ");
+    //      append(verilog.vector("" + trit).substring(3)).newline();
+    //    }
+
     final String code = verilog.file(lut.name);
     if (code != null)
     {
@@ -234,7 +244,6 @@ public class AbraToVerilogContext extends AbraBaseContext
     final String lutName = lut.name + "_lut";
     append("function ").append(size(1)).append(" ").append(lutName).append("(").newline().indent();
 
-    final int inputSize = lut.inputs();
     boolean first = true;
     for (int i = 0; i < inputSize; i++)
     {

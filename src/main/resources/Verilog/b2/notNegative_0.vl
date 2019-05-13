@@ -1,0 +1,8 @@
+function [1:0] notNegative_0_lut(
+    input [0:0] a0
+  , input [0:0] a1
+  );
+  begin
+    notNegative_0_lut = { a0 & !a1, a1 };
+  end
+endfunction

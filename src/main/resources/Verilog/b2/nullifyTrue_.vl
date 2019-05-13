@@ -6,7 +6,7 @@ function [1:0] nullifyTrue__lut(
   );
   wire [0:0] x0;
   begin
-    x0 = c0 & !c1;
+    x0 = !c0 & c1;
     nullifyTrue__lut = { x0 & v0, x1 & v1 };
   end
 endfunction
