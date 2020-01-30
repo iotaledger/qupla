@@ -56,6 +56,7 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext implements Co
     evalConstant(module, false);
     evalSpecial(module, AbraBaseBlock.TYPE_NULLIFY_TRUE);
     evalSpecial(module, AbraBaseBlock.TYPE_NULLIFY_FALSE);
+    evalSpecial(module, AbraBaseBlock.TYPE_MERGE);
     evalSpecial(module, AbraBaseBlock.TYPE_SLICE);
 
     for (final AbraBlockBranch branch : module.branches)

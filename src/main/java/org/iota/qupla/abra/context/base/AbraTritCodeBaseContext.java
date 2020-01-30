@@ -33,11 +33,6 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     // make sure sites are numbered correctly
     branch.numberSites();
 
-    putInt(branch.inputs.size());
-    putInt(branch.sites.size());
-    putInt(branch.outputs.size());
-    putInt(branch.latches.size());
-
     evalSites(branch.inputs);
     evalSites(branch.sites);
     evalSites(branch.outputs);

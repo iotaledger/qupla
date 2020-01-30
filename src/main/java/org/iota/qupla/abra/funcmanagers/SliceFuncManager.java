@@ -35,7 +35,8 @@ public class SliceFuncManager extends BaseFuncManager
 
     branch.specialType = AbraBaseBlock.TYPE_SLICE;
     branch.offset = start;
-    branch.outputs.add(merge);
+    branch.sites.add(merge);
+    addOutput(merge);
   }
 
   public AbraBlockBranch find(final AbraModule module, final int size, final int start)

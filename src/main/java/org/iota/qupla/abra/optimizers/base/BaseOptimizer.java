@@ -54,49 +54,49 @@ public class BaseOptimizer
   {
   }
 
-  protected void replaceSite(final AbraBaseSite site, final AbraBaseSite replacement)
+  protected void replaceSite(final AbraBaseSite source, final AbraBaseSite target)
   {
-    if (site.hasNullifier())
+    if (source.hasNullifier())
     {
       // extra precaution not to lose info
       return;
     }
 
-    replaceSite(site, replacement, branch.sites);
-    replaceSite(site, replacement, branch.outputs);
-    replaceSite(site, replacement, branch.latches);
+    replaceSite(branch.sites, source, target);
+    replaceSite(branch.outputs, source, target);
+    replaceSite(branch.latches, source, target);
   }
 
-  private void replaceSite(final AbraBaseSite target, final AbraBaseSite replacement, final ArrayList<? extends AbraBaseSite> sites)
+  private void replaceSite(final ArrayList<? extends AbraBaseSite> siteList, final AbraBaseSite source, final AbraBaseSite target)
   {
-    for (final AbraBaseSite next : sites)
+    for (final AbraBaseSite site : siteList)
     {
-      if (next instanceof AbraSiteMerge)
+      if (site instanceof AbraSiteMerge)
       {
-        final AbraSiteMerge merge = (AbraSiteMerge) next;
+        final AbraSiteMerge merge = (AbraSiteMerge) site;
         for (int i = 0; i < merge.inputs.size(); i++)
         {
-          if (merge.inputs.get(i) == target)
+          if (merge.inputs.get(i) == source)
           {
-            target.references--;
-            replacement.references++;
-            merge.inputs.set(i, replacement);
+            source.references--;
+            target.references++;
+            merge.inputs.set(i, target);
           }
         }
       }
 
-      if (next.nullifyFalse == target)
+      if (site.nullifyFalse == source)
       {
-        target.references--;
-        replacement.references++;
-        next.nullifyFalse = replacement;
+        source.references--;
+        target.references++;
+        site.nullifyFalse = target;
       }
 
-      if (next.nullifyTrue == target)
+      if (site.nullifyTrue == source)
       {
-        target.references--;
-        replacement.references++;
-        next.nullifyTrue = replacement;
+        source.references--;
+        target.references++;
+        site.nullifyTrue = target;
       }
     }
   }

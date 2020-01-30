@@ -91,6 +91,10 @@ public class AbraPrintContext extends AbraBaseContext
     case AbraBaseBlock.TYPE_SLICE:
       append(" // S");
       break;
+
+    case AbraBaseBlock.TYPE_MERGE:
+      append(" // M");
+      break;
     }
 
     newline().indent();

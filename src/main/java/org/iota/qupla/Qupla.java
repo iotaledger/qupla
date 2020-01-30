@@ -5,7 +5,15 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.iota.qupla.abra.AbraModule;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.context.AbraConfigContext;
 import org.iota.qupla.abra.context.AbraEvalContext;
+import org.iota.qupla.abra.context.AbraPrintContext;
+import org.iota.qupla.abra.optimizers.DuplicateSiteOptimizer;
+import org.iota.qupla.abra.optimizers.FpgaConfigurationOptimizer;
+import org.iota.qupla.abra.optimizers.MultiLutOptimizer;
+import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.dispatcher.Entity;
 import org.iota.qupla.dispatcher.entity.FuncEntity;
@@ -40,9 +48,10 @@ public class Qupla
   private static Dispatcher dispatcher;
   private static ArrayList<BaseExpr> expressions = new ArrayList<>();
   private static final String[] flags = {
+      "-2b",
+      "-3b",
       "-abra",
-      "-b2",
-      "-b3",
+      "-config",
       "-echo",
       "-eval",
       "-fpga",
@@ -195,14 +204,14 @@ public class Qupla
 
   private static void processOptions()
   {
-    if (options.contains("-b2"))
+    if (options.contains("-2b"))
     {
-      Verilog.bitEncoding(Verilog.B2_BITS_PER_TRIT);
+      Verilog.bitEncoding(Verilog.BITS_2B);
     }
 
-    if (options.contains("-b3"))
+    if (options.contains("-3b"))
     {
-      Verilog.bitEncoding(Verilog.B3_BITS_PER_TRIT);
+      Verilog.bitEncoding(Verilog.BITS_3B);
     }
 
     // echo back all modules as source
@@ -211,7 +220,7 @@ public class Qupla
       runEchoSource();
     }
 
-    // echo back all modules as Abra tritcode
+    // emit all modules as Abra tritcode
     if (options.contains("-abra"))
     {
       runAbraGenerator();
@@ -262,6 +271,59 @@ public class Qupla
 
     // run FuncEntities as Abra instead of Qupla
     FuncEntity.abraModule = quplaToAbraContext.abraModule;
+
+    if (options.contains("-config"))
+    {
+      runAbraToConfig();
+    }
+  }
+
+  private static void runAbraToConfig()
+  {
+    log("Generate Configuration");
+    final AbraModule module = quplaToAbraContext.abraModule;
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      branch.analyzed = false;
+    }
+
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      if (!branch.analyzed)
+      {
+        new FpgaConfigurationOptimizer(module, branch).run();
+      }
+    }
+
+    final AbraPrintContext printer = new AbraPrintContext();
+    printer.fileName = "FpgaAbra.txt";
+    printer.eval(module);
+
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      new DuplicateSiteOptimizer(module, branch).run();
+      new UnreferencedSiteRemover(module, branch).run();
+      new MultiLutOptimizer(module, branch).run();
+      new UnreferencedSiteRemover(module, branch).run();
+    }
+
+    final AbraPrintContext printer2 = new AbraPrintContext();
+    printer2.fileName = "FpgaAbraOpt.txt";
+    printer2.eval(module);
+
+    for (final BaseExpr expr : expressions)
+    {
+      if (expr instanceof FuncExpr)
+      {
+        final FuncExpr funcExpr = (FuncExpr) expr;
+        if (funcExpr.name != null)
+        {
+          final AbraConfigContext config = new AbraConfigContext();
+          config.funcName = funcExpr.name;
+          config.eval(module);
+        }
+      }
+    }
   }
 
   private static void runEchoSource()

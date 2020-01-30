@@ -7,6 +7,21 @@ public class AbraSiteLatch extends AbraBaseSite
 {
   public AbraBaseSite latch;
 
+  public AbraSiteLatch()
+  {
+  }
+
+  public AbraSiteLatch(final AbraSiteLatch copy)
+  {
+    super(copy);
+  }
+
+  @Override
+  public AbraBaseSite clone()
+  {
+    return new AbraSiteLatch(this);
+  }
+
   @Override
   public void eval(final AbraBaseContext context)
   {

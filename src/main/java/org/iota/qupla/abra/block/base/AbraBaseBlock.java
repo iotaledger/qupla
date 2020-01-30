@@ -8,6 +8,7 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 public abstract class AbraBaseBlock
 {
   public static final int TYPE_CONSTANT = 3;
+  public static final int TYPE_MERGE = 5;
   public static final int TYPE_NULLIFY_FALSE = 2;
   public static final int TYPE_NULLIFY_TRUE = 1;
   public static final int TYPE_SLICE = 4;

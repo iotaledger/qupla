@@ -29,7 +29,7 @@ lut fullAddSum {
   1,1,1 = 0
 }
 
-// LUT logic: return carry(trit1 + trit2 +  trit3)
+// LUT logic: return carry(trit1 + trit2 + trit3)
 lut fullAddCarry {
   -,-,- = -
   -,-,0 = -

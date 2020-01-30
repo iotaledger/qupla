@@ -80,6 +80,7 @@ public class AbraWriteDebugInfoContext extends AbraTritCodeBaseContext
   {
     //TODO putInt(typeId) (index of origin.typeInfo)
     putString(site.name);
+    putString(site.varName);
     for (BaseExpr stmt = site.stmt; stmt != null; stmt = stmt.next)
     {
       final String prefix = stmt instanceof AssignExpr ? "" : "return ";

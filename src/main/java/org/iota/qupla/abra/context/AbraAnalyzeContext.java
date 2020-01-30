@@ -14,15 +14,13 @@ import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
+import org.iota.qupla.abra.funcmanagers.ConstFuncManager;
+import org.iota.qupla.abra.funcmanagers.ConstZeroFuncManager;
+import org.iota.qupla.abra.funcmanagers.NullifyFuncManager;
 import org.iota.qupla.helper.TritVector;
 
 public class AbraAnalyzeContext extends AbraBaseContext
 {
-  private static final String constMin = "---------------------------";
-  private static final String constOne = "111111111111111111111111111";
-  private static final String constZero = "000000000000000000000000000";
-  private static final String nullifyFalse = "@-@@0@@1@@-@@0@@1@@-@@0@@1@";
-  private static final String nullifyTrue = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
   private static final boolean sanityCheck = true;
   public int missing;
   public int offset;
@@ -147,6 +145,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     final boolean special = //
         evalBranchSpecialConstant(branch) || //
+            evalBranchSpecialMerge(branch) || //
             evalBranchSpecialNullify(branch) || //
             evalBranchSpecialSlice(branch);
 
@@ -243,9 +242,75 @@ public class AbraAnalyzeContext extends AbraBaseContext
     return true;
   }
 
+  private boolean evalBranchSpecialMerge(final AbraBlockBranch branch)
+  {
+    if ((branch.inputs.size() & 1) == 1 || branch.sites.size() != branch.outputs.size())
+    {
+      return false;
+    }
+
+    for (int i = 0; i < branch.sites.size(); i++)
+    {
+      final AbraBaseSite input1 = branch.inputs.get(i);
+      final AbraBaseSite input2 = branch.inputs.get(i + branch.outputs.size());
+      final AbraBaseSite site = branch.sites.get(i);
+      final AbraBaseSite output = branch.outputs.get(i);
+      if (!(site instanceof AbraSiteMerge) || !(output instanceof AbraSiteMerge))
+      {
+        return false;
+      }
+
+      final AbraSiteMerge out = (AbraSiteMerge) output;
+      if (out.inputs.size() != 1 || out.inputs.get(0) != site)
+      {
+        return false;
+      }
+
+      if (input1.size == 1 && input2.size == 1)
+      {
+        if (site.getClass() != AbraSiteMerge.class)
+        {
+          return false;
+        }
+
+        final AbraSiteMerge merge = (AbraSiteMerge) site;
+        if (merge.inputs.size() != 2 || merge.inputs.get(0) != input1 || merge.inputs.get(1) != input2)
+        {
+          return false;
+        }
+
+        continue;
+      }
+
+      if (!(site instanceof AbraSiteKnot))
+      {
+        return false;
+      }
+
+      if (input1.size != input2.size)
+      {
+        return false;
+      }
+
+      final AbraSiteKnot knot = (AbraSiteKnot) site;
+      if (knot.inputs.size() != 2 || knot.inputs.get(0) != input1 || knot.inputs.get(1) != input2)
+      {
+        return false;
+      }
+
+      if (knot.block.specialType != AbraBaseBlock.TYPE_MERGE)
+      {
+        return false;
+      }
+    }
+
+    branch.specialType = AbraBaseBlock.TYPE_MERGE;
+    return true;
+  }
+
   private boolean evalBranchSpecialNullify(final AbraBlockBranch branch)
   {
-    if (branch.inputs.size() <= 1 || branch.sites.size() != 0)
+    if (branch.inputs.size() <= 1 || branch.sites.size() != branch.outputs.size())
     {
       return false;
     }
@@ -257,27 +322,34 @@ public class AbraAnalyzeContext extends AbraBaseContext
       return false;
     }
 
-    final AbraBaseSite firstOutput = branch.outputs.get(0);
-    if (!(firstOutput instanceof AbraSiteKnot))
+    final AbraBaseSite firstSite = branch.sites.get(0);
+    if (!(firstSite instanceof AbraSiteKnot))
     {
       return false;
     }
 
-    final int type = ((AbraSiteKnot) firstOutput).block.specialType;
+    final int type = ((AbraSiteKnot) firstSite).block.specialType;
     if (type != AbraBaseBlock.TYPE_NULLIFY_FALSE && type != AbraBaseBlock.TYPE_NULLIFY_TRUE)
     {
       return false;
     }
 
-    for (int i = 0; i < branch.outputs.size(); i++)
+    for (int i = 0; i < branch.sites.size(); i++)
     {
+      final AbraBaseSite site = branch.sites.get(i);
       final AbraBaseSite output = branch.outputs.get(i);
-      if (!(output instanceof AbraSiteKnot))
+      if (!(site instanceof AbraSiteKnot) || !(output instanceof AbraSiteMerge))
       {
         return false;
       }
 
-      final AbraSiteKnot knot = (AbraSiteKnot) output;
+      final AbraSiteMerge out = (AbraSiteMerge) output;
+      if (out.inputs.size() != 1 || out.inputs.get(0) != site)
+      {
+        return false;
+      }
+
+      final AbraSiteKnot knot = (AbraSiteKnot) site;
       if (knot.block.specialType != type)
       {
         // must all be same nullify type
@@ -392,34 +464,34 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     lut.analyzed = true;
 
-    if (lut.lookup.equals(constZero))
+    if (lut.lookup.equals(ConstZeroFuncManager.LUT_ZERO))
     {
       lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '0');
       return;
     }
 
-    if (lut.lookup.equals(constMin))
+    if (lut.lookup.equals(ConstFuncManager.LUT_MIN))
     {
       lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '-');
       return;
     }
 
-    if (lut.lookup.equals(constOne))
+    if (lut.lookup.equals(ConstFuncManager.LUT_ONE))
     {
       lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
       lut.constantValue = new TritVector(1, '1');
       return;
     }
 
-    if (lut.lookup.equals(nullifyFalse))
+    if (lut.lookup.equals(NullifyFuncManager.LUT_NULLIFY_FALSE))
     {
       lut.specialType = AbraBaseBlock.TYPE_NULLIFY_FALSE;
       return;
     }
 
-    if (lut.lookup.equals(nullifyTrue))
+    if (lut.lookup.equals(NullifyFuncManager.LUT_NULLIFY_TRUE))
     {
       lut.specialType = AbraBaseBlock.TYPE_NULLIFY_TRUE;
       return;

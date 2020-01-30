@@ -19,6 +19,19 @@ public abstract class AbraBaseSite
   public BaseExpr stmt;
   public String varName; //TODO should be able to remove this
 
+  protected AbraBaseSite()
+  {
+  }
+
+  protected AbraBaseSite(final AbraBaseSite copy)
+  {
+    index = copy.index;
+    isLatch = copy.isLatch;
+    size = copy.size;
+  }
+
+  public abstract AbraBaseSite clone();
+
   public abstract void eval(final AbraBaseContext context);
 
   public void from(final BaseExpr expr)

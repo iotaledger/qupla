@@ -12,10 +12,10 @@ import org.iota.qupla.helper.TritVector;
 public class NullifyFuncManager extends BaseFuncManager
 {
   private static final boolean FALSE_IS_MIN = TritConverter.BOOL_FALSE == '-';
-  private static final String FALSE_LUT_MIN = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
-  private static final String FALSE_LUT_ZERO = "@-@@0@@1@@-@@0@@1@@-@@0@@1@";
-  private static final String FALSE_TRITS = FALSE_IS_MIN ? FALSE_LUT_MIN : FALSE_LUT_ZERO;
-  private static final String TRUE_TRITS = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
+  private static final String LUT_FALSE_IS_MIN = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
+  private static final String LUT_FALSE_IS_ZERO = "@-@@0@@1@@-@@0@@1@@-@@0@@1@";
+  public static final String LUT_NULLIFY_FALSE = FALSE_IS_MIN ? LUT_FALSE_IS_MIN : LUT_FALSE_IS_ZERO;
+  public static final String LUT_NULLIFY_TRUE = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
   private boolean trueFalse;
 
   public NullifyFuncManager(final boolean trueFalse)
@@ -44,7 +44,7 @@ public class NullifyFuncManager extends BaseFuncManager
     manager.instances = instances;
     manager.sorted = sorted;
 
-    final AbraBlockBranch branch = new AbraBlockBranch();
+    branch = new AbraBlockBranch();
     branch.name = funcName + AbraModule.SEPARATOR + inputSize;
     branch.size = inputSize;
 
@@ -59,7 +59,8 @@ public class NullifyFuncManager extends BaseFuncManager
       inputSlice.references++;
       nullify.block = manager.find(module, inputSizes[i]);
       nullify.size = nullify.block.size();
-      branch.outputs.add(nullify);
+      branch.sites.add(nullify);
+      addOutput(nullify);
     }
 
     branch.specialType = trueFalse ? AbraBaseBlock.TYPE_NULLIFY_TRUE : AbraBaseBlock.TYPE_NULLIFY_FALSE;
@@ -70,7 +71,7 @@ public class NullifyFuncManager extends BaseFuncManager
   @Override
   protected void generateLut()
   {
-    lut = module.addLut(funcName + AbraModule.SEPARATOR, trueFalse ? TRUE_TRITS : FALSE_TRITS);
+    lut = module.addLut(funcName + AbraModule.SEPARATOR, trueFalse ? LUT_NULLIFY_TRUE : LUT_NULLIFY_FALSE);
     lut.specialType = trueFalse ? AbraBaseBlock.TYPE_NULLIFY_TRUE : AbraBaseBlock.TYPE_NULLIFY_FALSE;
     lut.constantValue = new TritVector(1, '@');
   }
@@ -79,7 +80,7 @@ public class NullifyFuncManager extends BaseFuncManager
   protected void generateLutFunc(final int inputSize)
   {
     // generate function that use LUTs
-    final AbraBlockBranch branch = new AbraBlockBranch();
+    branch = new AbraBlockBranch();
     branch.name = funcName + AbraModule.SEPARATOR + inputSize;
     branch.size = inputSize;
 
@@ -100,7 +101,8 @@ public class NullifyFuncManager extends BaseFuncManager
 
       knot.block = lut;
       knot.size = knot.block.size();
-      branch.outputs.add(knot);
+      branch.sites.add(knot);
+      addOutput(knot);
     }
 
     branch.specialType = trueFalse ? AbraBaseBlock.TYPE_NULLIFY_TRUE : AbraBaseBlock.TYPE_NULLIFY_FALSE;

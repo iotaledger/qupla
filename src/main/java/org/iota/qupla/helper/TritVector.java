@@ -261,6 +261,7 @@ public class TritVector
     }
 
     // have to count non-null trits
+    result.valueTrits = 0;
     for (int i = 0; i < result.size(); i++)
     {
       if (result.trit(i) != '@')

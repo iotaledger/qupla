@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
-import org.iota.qupla.abra.optimizers.ConcatenatedOutputOptimizer;
 import org.iota.qupla.abra.optimizers.ConcatenationOptimizer;
 import org.iota.qupla.abra.optimizers.DuplicateSiteOptimizer;
 import org.iota.qupla.abra.optimizers.EmptyFunctionOptimizer;
@@ -18,6 +18,7 @@ import org.iota.qupla.abra.optimizers.NullifyOptimizer;
 import org.iota.qupla.abra.optimizers.SingleInputMergeOptimizer;
 import org.iota.qupla.abra.optimizers.SlicedInputOptimizer;
 import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
+import org.iota.qupla.exception.CodeException;
 
 public class AbraBlockBranch extends AbraBaseBlock
 {
@@ -53,6 +54,64 @@ public class AbraBlockBranch extends AbraBaseBlock
     for (final AbraBaseSite site : sites)
     {
       site.references = 0;
+    }
+  }
+
+  public AbraBlockBranch clone()
+  {
+    final AbraBlockBranch branch = new AbraBlockBranch();
+    branch.name = name;
+    branch.size = size;
+    branch.offset = offset;
+
+    final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
+    clone(branchSites, branch.inputs, inputs);
+    clone(branchSites, branch.sites, sites);
+    clone(branchSites, branch.outputs, outputs);
+    clone(branchSites, branch.latches, latches);
+
+    branch.numberSites();
+    cloneInputs(branchSites, branch.sites, sites);
+    cloneInputs(branchSites, branch.outputs, outputs);
+    cloneInputs(branchSites, branch.latches, latches);
+    return branch;
+  }
+
+  private void clone(final ArrayList<AbraBaseSite> branchSites, final ArrayList<AbraBaseSite> newSites, final ArrayList<AbraBaseSite> oldSites)
+  {
+    for (final AbraBaseSite oldSite : oldSites)
+    {
+      try
+      {
+        final AbraBaseSite newSite = oldSite.clone();
+        newSites.add(newSite);
+        branchSites.add(newSite);
+      }
+      catch (final Exception e)
+      {
+        throw new CodeException("Cannot instantiate");
+      }
+    }
+  }
+
+  private void cloneInputs(final ArrayList<AbraBaseSite> branchSites, final ArrayList<AbraBaseSite> newSites, final ArrayList<AbraBaseSite> oldSites)
+  {
+    for (int i = 0; i < oldSites.size(); i++)
+    {
+      final AbraBaseSite oldSite = oldSites.get(i);
+      if (!(oldSite instanceof AbraSiteMerge))
+      {
+        continue;
+      }
+
+      final AbraSiteMerge merge = (AbraSiteMerge) oldSite;
+      final AbraSiteMerge newSite = (AbraSiteMerge) newSites.get(i);
+      for (final AbraBaseSite input : merge.inputs)
+      {
+        final AbraBaseSite newInput = branchSites.get(input.index);
+        newSite.inputs.add(newInput);
+        newInput.references++;
+      }
     }
   }
 
@@ -139,6 +198,20 @@ public class AbraBlockBranch extends AbraBaseBlock
 
     // and finally one last cleanup
     optimizeCleanup(module);
+
+    for (final AbraBaseSite output : outputs)
+    {
+      if (output instanceof AbraSiteMerge)
+      {
+        final AbraSiteMerge merge = (AbraSiteMerge) output;
+        if (merge.inputs.size() == 1)
+        {
+          continue;
+        }
+      }
+
+      throw new CodeException("Output site");
+    }
   }
 
   private void optimizeCleanup(final AbraModule module)
@@ -169,9 +242,6 @@ public class AbraBlockBranch extends AbraBaseBlock
 
     // remove duplicate sites, only need to calculate once
     new DuplicateSiteOptimizer(module, this).run();
-
-    // move concatenated sites from body to outputs
-    new ConcatenatedOutputOptimizer(module, this).run();
 
     // if possible, replace lut calling lut with a single lut that does it all
     new MultiLutOptimizer(module, this).run();

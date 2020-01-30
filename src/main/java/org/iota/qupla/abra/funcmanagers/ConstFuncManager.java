@@ -11,6 +11,8 @@ import org.iota.qupla.helper.TritVector;
 
 public class ConstFuncManager extends BaseFuncManager
 {
+  public static final String LUT_MIN = "---------------------------";
+  public static final String LUT_ONE = "111111111111111111111111111";
   private static AbraBlockLut constMin;
   private static AbraBlockLut constOne;
   private static AbraBlockLut constZero;
@@ -37,11 +39,11 @@ public class ConstFuncManager extends BaseFuncManager
 
     constZero = zeroManager.lut;
 
-    constOne = module.addLut("constOne" + AbraModule.SEPARATOR, "111111111111111111111111111");
+    constOne = module.addLut("constOne" + AbraModule.SEPARATOR, LUT_ONE);
     constOne.specialType = AbraBaseBlock.TYPE_CONSTANT;
     constOne.constantValue = new TritVector(1, '1');
 
-    constMin = module.addLut("constMin" + AbraModule.SEPARATOR, "---------------------------");
+    constMin = module.addLut("constMin" + AbraModule.SEPARATOR, LUT_MIN);
     constMin.specialType = AbraBaseBlock.TYPE_CONSTANT;
     constMin.constantValue = new TritVector(1, '-');
   }
@@ -68,25 +70,19 @@ public class ConstFuncManager extends BaseFuncManager
       branch.sites.add(zeroes);
     }
 
-    final AbraSiteKnot constant = new AbraSiteKnot();
-    constant.size = size;
     for (int i = 0; i < trits.size(); i++)
     {
       final char c = trits.trit(i);
-      constant.inputs.add(c == '0' ? siteZero : c == '1' ? siteOne : siteMin);
+      addOutput(c == '0' ? siteZero : c == '1' ? siteOne : siteMin);
     }
 
     if (zeroes != null)
     {
-      constant.inputs.add(zeroes);
+      addOutput(zeroes);
     }
-
-    constant.concat(module);
 
     branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
     branch.constantValue = value;
-
-    branch.outputs.add(constant);
 
     //TODO if all inputs are body sites and referenced only once then
     //     replace with a sequence of output sites in correct order

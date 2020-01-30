@@ -69,43 +69,28 @@ public class AbraEvalContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
-    if (branch.specialType == AbraBaseBlock.TYPE_CONSTANT)
+    switch (branch.specialType)
     {
+    case AbraBaseBlock.TYPE_CONSTANT:
       value = branch.constantValue;
       return;
-    }
 
-    if (branch.specialType == AbraBaseBlock.TYPE_NULLIFY_TRUE)
-    {
-      if (args.get(0).trit(0) != TritConverter.BOOL_TRUE)
-      {
-        value = branch.constantValue;
-        return;
-      }
-
-      value = args.get(1);
+    case AbraBaseBlock.TYPE_NULLIFY_FALSE:
+      final boolean isFalse = args.get(0).trit(0) == TritConverter.BOOL_FALSE;
+      value = isFalse ? args.get(1) : branch.constantValue;
       return;
-    }
 
-    if (branch.specialType == AbraBaseBlock.TYPE_NULLIFY_FALSE)
-    {
-      if (args.get(0).trit(0) != TritConverter.BOOL_FALSE)
-      {
-        value = branch.constantValue;
-        return;
-      }
+    case AbraBaseBlock.TYPE_NULLIFY_TRUE:
+      final boolean isTrue = args.get(0).trit(0) == TritConverter.BOOL_TRUE;
+      value = isTrue ? args.get(1) : branch.constantValue;
 
-      value = args.get(1);
-      return;
-    }
-
-    if (branch.specialType == AbraBaseBlock.TYPE_SLICE)
-    {
+    case AbraBaseBlock.TYPE_SLICE:
       if (args.size() == 1)
       {
         value = args.get(0).slice(branch.offset, branch.size);
         return;
       }
+      break;
     }
 
     interceptCall(branch);
@@ -232,7 +217,15 @@ public class AbraEvalContext extends AbraBaseContext
 
     callTrail[callNr++] = (byte) knot.index;
 
-    knot.block.eval(this);
+    if (knot.block.specialType == AbraBaseBlock.TYPE_MERGE)
+    {
+      evalMerge(knot);
+    }
+    else
+    {
+      knot.block.eval(this);
+    }
+
     stack[knot.index] = value;
 
     callNr--;

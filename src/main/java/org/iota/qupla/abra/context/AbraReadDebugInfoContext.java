@@ -87,6 +87,7 @@ public class AbraReadDebugInfoContext extends AbraTritCodeBaseContext
   {
     //TODO putInt(typeId) (index of origin.typeInfo)
     site.name = getString();
+    site.varName = getString();
     String stmt = getString();
     if (stmt != null)
     {

@@ -5,6 +5,7 @@ import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.abra.funcmanagers.ConstFuncManager;
+import org.iota.qupla.abra.funcmanagers.MergeFuncManager;
 import org.iota.qupla.abra.funcmanagers.NullifyFuncManager;
 import org.iota.qupla.abra.funcmanagers.SliceFuncManager;
 import org.iota.qupla.helper.TritVector;
@@ -12,11 +13,27 @@ import org.iota.qupla.helper.TritVector;
 public class AbraSiteKnot extends AbraSiteMerge
 {
   public static final ConstFuncManager constants = new ConstFuncManager();
+  public static final MergeFuncManager mergers = new MergeFuncManager();
   public static final NullifyFuncManager nullifyFalse = new NullifyFuncManager(false);
   public static final NullifyFuncManager nullifyTrue = new NullifyFuncManager(true);
   public static final SliceFuncManager slicers = new SliceFuncManager();
-
   public AbraBaseBlock block;
+
+  public AbraSiteKnot()
+  {
+  }
+
+  public AbraSiteKnot(final AbraSiteKnot copy)
+  {
+    super(copy);
+    block = copy.block;
+  }
+
+  @Override
+  public AbraBaseSite clone()
+  {
+    return new AbraSiteKnot(this);
+  }
 
   public void concat(final AbraModule module)
   {
@@ -56,6 +73,12 @@ public class AbraSiteKnot extends AbraSiteMerge
         break;
       }
     }
+  }
+
+  public void merge(final AbraModule module, final int inputSize)
+  {
+    //TODO inputSize is not used?????
+    block = mergers.find(module, size);
   }
 
   public void nullify(final AbraModule module, final boolean trueFalse)

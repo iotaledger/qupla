@@ -49,7 +49,7 @@ func GolAddress golAddress(GolAddress info) {
   return GolAddress {
     cmd = info.cmd
     id = info.id
-    address = golHash<GolSize>(info.id)
+    address = golHash(info.id)
   }
 }
 
@@ -83,7 +83,7 @@ func GolInfo golGen(GolInfo info) {
 }
 
 // type name -> send id to GolHash -> put id/hash in GolStore
-func GolInfo golHash(GolInfo info) {
+func GolInfo golHashId(GolInfo info) {
   join GolHash
   affect GolStore
 
@@ -91,7 +91,7 @@ func GolInfo golHash(GolInfo info) {
     id = info.id
     grid = 0
     signature = 0
-    address = golHash<GolSize>(info.id)
+    address = golHash(info.id)
     cmd = 1 // put in store
   }
 }
@@ -106,7 +106,7 @@ func GolInfo golSend(GolInfo info) {
     id = info.id
     grid = info.grid
     signature = golSign<GolSize>(info.id, info.grid)
-    address = golHash<GolSize>(info.id)
+    address = golHash(info.id)
     cmd = 0
   }
 }

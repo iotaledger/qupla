@@ -9,6 +9,21 @@ public class AbraSiteMerge extends AbraBaseSite
 {
   public ArrayList<AbraBaseSite> inputs = new ArrayList<>();
 
+  public AbraSiteMerge()
+  {
+  }
+
+  public AbraSiteMerge(final AbraSiteMerge copy)
+  {
+    super(copy);
+  }
+
+  @Override
+  public AbraBaseSite clone()
+  {
+    return new AbraSiteMerge(this);
+  }
+
   @Override
   public void eval(final AbraBaseContext context)
   {

@@ -7,6 +7,22 @@ public class AbraSiteParam extends AbraBaseSite
 {
   public int offset;
 
+  public AbraSiteParam()
+  {
+  }
+
+  public AbraSiteParam(final AbraSiteParam copy)
+  {
+    super(copy);
+    offset = copy.offset;
+  }
+
+  @Override
+  public AbraBaseSite clone()
+  {
+    return new AbraSiteParam(this);
+  }
+
   @Override
   public void eval(final AbraBaseContext context)
   {

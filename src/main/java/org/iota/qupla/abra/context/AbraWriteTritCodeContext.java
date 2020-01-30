@@ -45,6 +45,17 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   }
 
   @Override
+  protected void evalBranchSites(final AbraBlockBranch branch)
+  {
+    putInt(branch.inputs.size());
+    putInt(branch.sites.size());
+    putInt(branch.outputs.size());
+    putInt(branch.latches.size());
+
+    super.evalBranchSites(branch);
+  }
+
+  @Override
   public void evalImport(final AbraBlockImport imp)
   {
     //    putTrits(imp.hash);

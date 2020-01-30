@@ -182,23 +182,29 @@ public class QuplaToAbraContext extends QuplaBaseContext
     // is done after nullify position has been optimized
     nullifySite.nullifyTrue = condition;
 
-    // create a site for trueBranch ( | falseBranch)
-    final AbraSiteMerge merge = new AbraSiteMerge();
-    merge.size = conditional.size;
-    merge.inputs.add(trueBranch);
-
-    if (conditional.falseBranch != null)
+    if (conditional.falseBranch == null)
     {
-      conditional.falseBranch.eval(this);
-      final AbraBaseSite falseBranch = lastSite;
-
-      // note that actual insertion of nullifyFalse(condition, ...)
-      // is done after nullify position has been optimized
-      nullifySite.nullifyFalse = condition;
-
-      merge.inputs.add(falseBranch);
+      final AbraSiteMerge merge = new AbraSiteMerge();
+      merge.size = conditional.size;
+      merge.inputs.add(trueBranch);
+      addSite(merge);
+      nullifySite = condition;
+      return;
     }
 
+    conditional.falseBranch.eval(this);
+    final AbraBaseSite falseBranch = lastSite;
+
+    // note that actual insertion of nullifyFalse(condition, ...)
+    // is done after nullify position has been optimized
+    nullifySite.nullifyFalse = condition;
+
+    // create a site for trueBranch ( | falseBranch)
+    final AbraSiteKnot merge = new AbraSiteKnot();
+    merge.size = conditional.size;
+    merge.inputs.add(trueBranch);
+    merge.inputs.add(falseBranch);
+    merge.merge(abraModule, conditional.size);
     addSite(merge);
 
     nullifySite = condition;
@@ -239,9 +245,11 @@ public class QuplaToAbraContext extends QuplaBaseContext
     stmt = func.returnExpr;
     func.returnExpr.eval(this);
 
-    // move last site to outputs
-    branch.sites.remove(branch.sites.size() - 1);
-    branch.outputs.add(lastSite);
+    // last site will be output
+    final AbraSiteMerge ret = new AbraSiteMerge();
+    ret.size = lastSite.size;
+    ret.inputs.add(lastSite);
+    branch.outputs.add(ret);
 
     branch = null;
     BaseExpr.currentUse = oldUse;
@@ -374,29 +382,30 @@ public class QuplaToAbraContext extends QuplaBaseContext
       return;
     }
 
-    final AbraSiteMerge site = new AbraSiteMerge();
+    final AbraSiteKnot site = new AbraSiteKnot();
     site.from(merge);
 
     merge.lhs.eval(this);
-    if (merge.lhs instanceof MergeExpr)
-    {
-      site.inputs.addAll(((AbraSiteMerge) lastSite).inputs);
-    }
-    else
+    //    if (merge.lhs instanceof MergeExpr)
+    //    {
+    //      site.inputs.addAll(((AbraSiteMerge) lastSite).inputs);
+    //    }
+    //    else
     {
       site.inputs.add(lastSite);
     }
 
     merge.rhs.eval(this);
-    if (merge.rhs instanceof MergeExpr)
-    {
-      site.inputs.addAll(((AbraSiteMerge) lastSite).inputs);
-    }
-    else
+    //    if (merge.rhs instanceof MergeExpr)
+    //    {
+    //      site.inputs.addAll(((AbraSiteMerge) lastSite).inputs);
+    //    }
+    //    else
     {
       site.inputs.add(lastSite);
     }
 
+    site.merge(abraModule, merge.size);
     addSite(site);
   }
 
