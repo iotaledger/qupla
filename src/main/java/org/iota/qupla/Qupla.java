@@ -46,7 +46,7 @@ public class Qupla
 {
   public static final ArrayList<String> config = new ArrayList<>();
   private static Dispatcher dispatcher;
-  private static ArrayList<BaseExpr> expressions = new ArrayList<>();
+  private static final ArrayList<BaseExpr> expressions = new ArrayList<>();
   private static final String[] flags = {
       "-2b",
       "-3b",

@@ -120,7 +120,6 @@ public class ConstFuncManager extends BaseFuncManager
     final AbraBaseSite input = branch.inputs.get(0);
 
     final AbraSiteKnot site = new AbraSiteKnot();
-    site.name = tritLut.name;
     site.inputs.add(input);
     if (AbraModule.lutAlways3)
     {

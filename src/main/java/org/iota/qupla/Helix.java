@@ -4,7 +4,7 @@ import java.util.HashSet;
 
 public class Helix
 {
-  private static final String helix[] = {
+  private static final String[] helix = {
       "---  - - -",
       "--0  0 - -",
       "--1  - 1 -",

@@ -3,7 +3,6 @@ package org.iota.qupla.abra.optimizers;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
 
@@ -34,17 +33,17 @@ public class NullifyInserter extends BaseOptimizer
   }
 
   @Override
-  protected void processSite(final AbraSiteMerge site)
+  protected void processKnot(final AbraSiteKnot knot)
   {
-    if (site.nullifyFalse != null)
+    if (knot.nullifyFalse != null)
     {
-      insertNullify(site.nullifyFalse, false);
+      insertNullify(knot.nullifyFalse, false);
       return;
     }
 
-    if (site.nullifyTrue != null)
+    if (knot.nullifyTrue != null)
     {
-      insertNullify(site.nullifyTrue, true);
+      insertNullify(knot.nullifyTrue, true);
     }
   }
 }

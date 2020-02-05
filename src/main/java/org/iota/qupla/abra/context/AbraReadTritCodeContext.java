@@ -9,37 +9,33 @@ import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
-import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.helper.TritConverter;
 
 public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
 {
   public ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
   public final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
-  private int totalSites;
 
   private void check(final boolean condition, final String errorText)
   {
     if (!condition)
     {
-      throw new CodeException(errorText);
+      error(errorText);
     }
   }
 
   @Override
   public void eval(final AbraModule module)
   {
-    module.version = getInt();
-    check(module.version == 0, "Module version should be 0");
+    final int version = getInt();
+    check(module.version == version, "Module version should be " + module.version);
+
+    blocks.addAll(module.luts);
 
     final int luts = getInt();
-    final int branches = getInt();
-    final int imports = getInt();
-
     for (int i = 0; i < luts; i++)
     {
       final AbraBlockLut lut = new AbraBlockLut();
@@ -47,6 +43,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
       blocks.add(lut);
     }
 
+    final int branches = getInt();
     for (int i = 0; i < branches; i++)
     {
       final AbraBlockBranch branch = new AbraBlockBranch();
@@ -54,6 +51,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
       blocks.add(branch);
     }
 
+    final int imports = getInt();
     for (int i = 0; i < imports; i++)
     {
       final AbraBlockImport imp = new AbraBlockImport();
@@ -80,11 +78,9 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   private void evalBranchBuffer(final AbraBlockBranch branch)
   {
     final int inputSites = getInt();
+    final int latchSites = getInt();
     final int bodySites = getInt();
     final int outputSites = getInt();
-    final int latchSites = getInt();
-
-    totalSites = inputSites + bodySites + outputSites + latchSites;
 
     int offset = 0;
     for (int i = 0; i < inputSites; i++)
@@ -97,15 +93,47 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
       branchSites.add(input);
     }
 
-    getBranchSites(bodySites, branch.sites);
-    getBranchSites(outputSites, branch.outputs);
-    getBranchSites(latchSites, branch.latches);
+    for (int i = 0; i < latchSites; i++)
+    {
+      final AbraSiteLatch latch = new AbraSiteLatch();
+      branch.latches.add(latch);
+      latch.eval(this);
+      branchSites.add(latch);
+    }
+
+    for (int i = 0; i < bodySites; i++)
+    {
+      final AbraSiteKnot site = new AbraSiteKnot();
+      branch.sites.add(site);
+      site.eval(this);
+      branchSites.add(site);
+    }
 
     branch.numberSites();
 
-    rewireInputSites(branch.sites);
-    rewireInputSites(branch.outputs);
-    rewireInputSites(branch.latches);
+    for (int i = 0; i < outputSites; i++)
+    {
+      final int outputSite = getInt();
+      check(outputSite < branchSites.size(), "Invalid output site index");
+      final AbraBaseSite output = branchSites.get(outputSite);
+      branch.outputs.add(output);
+      output.references++;
+      branch.size += output.size;
+    }
+
+    for (int i = 0; i < latchSites; i++)
+    {
+      final AbraSiteLatch latch = branch.latches.get(i);
+      final int latchSite = getInt();
+      check(latchSite < branchSites.size(), "Invalid latch site index");
+      if (latchSite != 0)
+      {
+        latch.latchSite = branchSites.get(latchSite);
+        latch.latchSite.references++;
+      }
+    }
+
+    branch.name = "branch" + branch.index;
   }
 
   @Override
@@ -122,21 +150,42 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    getSiteInputs(knot);
-
     final int blockNr = getInt();
     check(blockNr < blocks.size(), "Invalid block number");
     knot.block = blocks.get(blockNr);
+
+    final int inputSites = getInt();
+    for (int i = 0; i < inputSites; i++)
+    {
+      final int inputSite = getInt();
+      check(inputSite < branchSites.size(), "Invalid input site index");
+      final AbraBaseSite input = branchSites.get(inputSite);
+      knot.inputs.add(input);
+      input.references++;
+    }
+
+    if (blockNr == AbraBaseBlock.TYPE_SLICE)
+    {
+      final int start = getInt();
+      knot.size = getInt();
+      knot.slice(start);
+    }
   }
 
   @Override
   public void evalLatch(final AbraSiteLatch latch)
   {
+    latch.size = getInt();
   }
 
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
+    if (lut.index < AbraModule.SPECIAL_LUTS)
+    {
+      return;
+    }
+
     // convert 35 trits to 54-bit long value, which encodes 27 bct trits
     final String trits = getTrits(35);
     long value = TritConverter.toLong(trits);
@@ -152,74 +201,14 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   }
 
   @Override
-  public void evalMerge(final AbraSiteMerge merge)
-  {
-    getSiteInputs(merge);
-  }
-
-  @Override
   public void evalParam(final AbraSiteParam param)
   {
     param.size = getInt();
   }
 
-  private void getBranchSites(final int count, final ArrayList<AbraBaseSite> sites)
+  @Override
+  public String toString()
   {
-    for (int i = 0; i < count; i++)
-    {
-      AbraBaseSite site = null;
-      switch (getTrit())
-      {
-      case '-':
-        site = new AbraSiteKnot();
-        break;
-
-      case '1':
-        site = new AbraSiteMerge();
-        break;
-
-      default:
-        check(false, "Expected site type trit");
-      }
-
-      sites.add(site);
-      site.eval(this);
-      branchSites.add(site);
-    }
-  }
-
-  private void getSiteInputs(final AbraSiteMerge merge)
-  {
-    final int count = getInt();
-    for (int i = 0; i < count; i++)
-    {
-      // use a placeholder that will hold the actual index
-      // we will rewire this later to point to the actual site
-      final AbraSiteParam input = new AbraSiteParam();
-      input.index = getInt();
-      check(input.index < totalSites, "Invalid site index");
-      merge.inputs.add(input);
-    }
-  }
-
-  private void rewireInputSites(final ArrayList<AbraBaseSite> sites)
-  {
-    for (final AbraBaseSite site : sites)
-    {
-      final AbraSiteMerge merge = (AbraSiteMerge) site;
-      for (int i = 0; i < merge.inputs.size(); i++)
-      {
-        final AbraBaseSite input = merge.inputs.get(i);
-        //TODO can refer relative to merge.index here
-        // if (input.index < merge.index)
-        // {
-        //   input.index = merge.index - 1 - input.index;
-        // }
-
-        final AbraBaseSite actualSite = branchSites.get(input.index);
-        merge.inputs.set(i, actualSite);
-        actualSite.references++;
-      }
-    }
+    return toStringRead();
   }
 }

@@ -11,7 +11,6 @@ import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
@@ -54,10 +53,6 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext implements Co
 
     evalConstant(module, true);
     evalConstant(module, false);
-    evalSpecial(module, AbraBaseBlock.TYPE_NULLIFY_TRUE);
-    evalSpecial(module, AbraBaseBlock.TYPE_NULLIFY_FALSE);
-    evalSpecial(module, AbraBaseBlock.TYPE_MERGE);
-    evalSpecial(module, AbraBaseBlock.TYPE_SLICE);
 
     for (final AbraBlockBranch branch : module.branches)
     {
@@ -94,16 +89,6 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext implements Co
     for (final AbraBaseSite site : branch.sites)
     {
       site.eval(this);
-    }
-
-    for (final AbraBaseSite output : branch.outputs)
-    {
-      output.eval(this);
-    }
-
-    for (final AbraBaseSite latch : branch.latches)
-    {
-      latch.eval(this);
     }
 
     output.add(branch);
@@ -145,11 +130,6 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext implements Co
 
   @Override
   public void evalLut(final AbraBlockLut lut)
-  {
-  }
-
-  @Override
-  public void evalMerge(final AbraSiteMerge merge)
   {
   }
 

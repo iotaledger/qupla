@@ -8,7 +8,6 @@ import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
@@ -31,10 +30,19 @@ public class AbraViewTreeContext extends AbraBaseContext
   {
     newline().append("evalBranch: " + branch.name).newline();
     indent();
+
     evalBranchSites(branch.inputs, "input");
-    evalBranchSites(branch.sites, "body");
-    evalBranchSites(branch.outputs, "output");
     evalBranchSites(branch.latches, "latch");
+    evalBranchSites(branch.sites, "body");
+
+    boolean first = true;
+    for (final AbraBaseSite output : branch.outputs)
+    {
+      append(first ? "output sites: " : ", ").append(output.varName());
+      first = false;
+    }
+    newline();
+
     undent();
   }
 
@@ -77,12 +85,6 @@ public class AbraViewTreeContext extends AbraBaseContext
   public void evalLut(final AbraBlockLut lut)
   {
     append("evalLut: " + lut.name).newline();
-  }
-
-  @Override
-  public void evalMerge(final AbraSiteMerge merge)
-  {
-    append("evalMerge: " + merge).newline();
   }
 
   @Override

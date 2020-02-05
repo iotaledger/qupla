@@ -7,7 +7,6 @@ import java.util.HashMap;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 
 public class BaseFuncManager
@@ -29,11 +28,8 @@ public class BaseFuncManager
 
   protected void addOutput(final AbraBaseSite block)
   {
-    final AbraSiteMerge merge = new AbraSiteMerge();
-    merge.inputs.add(block);
+    branch.outputs.add(block);
     block.references++;
-    merge.size = block.size;
-    branch.outputs.add(merge);
   }
 
   protected void createBaseInstances()

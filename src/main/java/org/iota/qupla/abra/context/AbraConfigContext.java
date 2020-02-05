@@ -9,7 +9,6 @@ import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
@@ -87,8 +86,7 @@ public class AbraConfigContext extends AbraBaseContext
     write(branch.outputs.size());
     for (final AbraBaseSite output : branch.outputs)
     {
-      final AbraSiteMerge merge = (AbraSiteMerge) output;
-      write(merge.inputs.get(0).index);
+      write(output.index);
     }
   }
 
@@ -146,17 +144,6 @@ public class AbraConfigContext extends AbraBaseContext
   }
 
   @Override
-  public void evalMerge(final AbraSiteMerge merge)
-  {
-    write(0xffff);
-    write(merge.inputs.size());
-    for (final AbraBaseSite input : merge.inputs)
-    {
-      write(input.index);
-    }
-  }
-
-  @Override
   public void evalParam(final AbraSiteParam param)
   {
     throw new CodeException("Param for config?");
@@ -164,12 +151,12 @@ public class AbraConfigContext extends AbraBaseContext
 
   private void write(final int value)
   {
-    final byte bytes[] = new byte[2];
-    bytes[0] = (byte) value;
-    bytes[1] = (byte) (value >> 8);
     try
     {
-      outputStream.write(bytes);
+      outputStream.write(new byte[] {
+          (byte) value,
+          (byte) (value >> 8)
+      });
     }
     catch (Exception ex)
     {

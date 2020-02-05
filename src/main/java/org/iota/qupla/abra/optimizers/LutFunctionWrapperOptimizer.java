@@ -43,7 +43,7 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
     }
 
     final AbraBlockBranch target = (AbraBlockBranch) knot.block;
-    if (target.sites.size() != 0 || target.latches.size() != 0)
+    if (target.sites.size() != 1 || target.latches.size() != 0)
     {
       // too much going on to be a LUT wrapper
       return;
@@ -55,14 +55,14 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
       return;
     }
 
-    if (target.outputs.get(0).getClass() != AbraSiteKnot.class)
+    final AbraSiteKnot site = target.sites.get(0);
+    if (site != target.outputs.get(0))
     {
       // definitely not a lut lookup
       return;
     }
 
-    final AbraSiteKnot output = (AbraSiteKnot) target.outputs.get(0);
-    if (!(output.block instanceof AbraBlockLut) || output.inputs.size() != target.inputs.size())
+    if (!(site.block instanceof AbraBlockLut) || site.inputs.size() != target.inputs.size())
     {
       // not a lut lookup
       return;
@@ -71,7 +71,7 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
     // well, looks like we have a candidate
     // reroute knot directly to LUT
     final ArrayList<AbraBaseSite> inputs = new ArrayList<>();
-    for (final AbraBaseSite input : output.inputs)
+    for (final AbraBaseSite input : site.inputs)
     {
       final int idx = target.inputs.indexOf(input);
       final AbraBaseSite knotInput = knot.inputs.get(idx);
@@ -85,6 +85,6 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
     }
 
     knot.inputs = inputs;
-    knot.block = output.block;
+    knot.block = site.block;
   }
 }

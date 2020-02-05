@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
+import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
@@ -18,25 +19,27 @@ import org.iota.qupla.abra.optimizers.NullifyOptimizer;
 import org.iota.qupla.abra.optimizers.SingleInputMergeOptimizer;
 import org.iota.qupla.abra.optimizers.SlicedInputOptimizer;
 import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
-import org.iota.qupla.exception.CodeException;
+import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraBlockBranch extends AbraBaseBlock
 {
-  public ArrayList<AbraBaseSite> inputs = new ArrayList<>();
-  public final ArrayList<AbraBaseSite> latches = new ArrayList<>();
+  public BaseExpr finalStmt;
+  public final ArrayList<AbraSiteParam> inputs = new ArrayList<>();
+  public final ArrayList<AbraSiteLatch> latches = new ArrayList<>();
   public int offset;
   public final ArrayList<AbraBaseSite> outputs = new ArrayList<>();
-  public final ArrayList<AbraBaseSite> sites = new ArrayList<>();
+  public final ArrayList<AbraSiteKnot> sites = new ArrayList<>();
   public int size;
 
   public void addInput(final AbraSiteParam inputSite)
   {
     if (inputs.size() != 0)
     {
-      final AbraSiteParam lastInput = (AbraSiteParam) inputs.get(inputs.size() - 1);
+      final AbraSiteParam lastInput = inputs.get(inputs.size() - 1);
       inputSite.offset = lastInput.offset + lastInput.size;
     }
 
+    inputSite.index = inputs.size();
     inputs.add(inputSite);
   }
 
@@ -64,55 +67,55 @@ public class AbraBlockBranch extends AbraBaseBlock
     branch.size = size;
     branch.offset = offset;
 
-    final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
-    clone(branchSites, branch.inputs, inputs);
-    clone(branchSites, branch.sites, sites);
-    clone(branchSites, branch.outputs, outputs);
-    clone(branchSites, branch.latches, latches);
+    for (final AbraSiteParam input : inputs)
+    {
+      branch.inputs.add(new AbraSiteParam(input));
+    }
+
+    for (final AbraSiteLatch latch : latches)
+    {
+      branch.latches.add(new AbraSiteLatch(latch));
+    }
+
+    for (final AbraSiteKnot knot : sites)
+    {
+      branch.sites.add(new AbraSiteKnot(knot));
+    }
 
     branch.numberSites();
-    cloneInputs(branchSites, branch.sites, sites);
-    cloneInputs(branchSites, branch.outputs, outputs);
-    cloneInputs(branchSites, branch.latches, latches);
-    return branch;
-  }
 
-  private void clone(final ArrayList<AbraBaseSite> branchSites, final ArrayList<AbraBaseSite> newSites, final ArrayList<AbraBaseSite> oldSites)
-  {
-    for (final AbraBaseSite oldSite : oldSites)
+    final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
+    branchSites.addAll(branch.inputs);
+    branchSites.addAll(branch.latches);
+    branchSites.addAll(branch.sites);
+
+    for (int i = 0; i < latches.size(); i++)
     {
-      try
-      {
-        final AbraBaseSite newSite = oldSite.clone();
-        newSites.add(newSite);
-        branchSites.add(newSite);
-      }
-      catch (final Exception e)
-      {
-        throw new CodeException("Cannot instantiate");
-      }
+      final AbraSiteLatch src = latches.get(i);
+      final AbraSiteLatch dst = branch.latches.get(i);
+      dst.latchSite = src.latchSite == null ? null : branchSites.get(src.latchSite.index);
     }
-  }
 
-  private void cloneInputs(final ArrayList<AbraBaseSite> branchSites, final ArrayList<AbraBaseSite> newSites, final ArrayList<AbraBaseSite> oldSites)
-  {
-    for (int i = 0; i < oldSites.size(); i++)
+    for (int i = 0; i < sites.size(); i++)
     {
-      final AbraBaseSite oldSite = oldSites.get(i);
-      if (!(oldSite instanceof AbraSiteMerge))
-      {
-        continue;
-      }
-
-      final AbraSiteMerge merge = (AbraSiteMerge) oldSite;
-      final AbraSiteMerge newSite = (AbraSiteMerge) newSites.get(i);
-      for (final AbraBaseSite input : merge.inputs)
+      final AbraSiteKnot src = sites.get(i);
+      final AbraSiteKnot dst = branch.sites.get(i);
+      for (final AbraBaseSite input : src.inputs)
       {
         final AbraBaseSite newInput = branchSites.get(input.index);
-        newSite.inputs.add(newInput);
+        dst.inputs.add(newInput);
         newInput.references++;
       }
     }
+
+    for (final AbraBaseSite output : outputs)
+    {
+      final AbraBaseSite newOutput = branchSites.get(output.index);
+      branch.outputs.add(newOutput);
+      newOutput.references++;
+    }
+
+    return branch;
   }
 
   @Override
@@ -144,14 +147,15 @@ public class AbraBlockBranch extends AbraBaseBlock
   public void markReferences()
   {
     clearReferences(inputs);
-    clearReferences(sites);
-    clearReferences(outputs);
     clearReferences(latches);
+    clearReferences(sites);
 
-    markReferences(inputs);
-    markReferences(sites);
-    markReferences(outputs);
     markReferences(latches);
+    markReferences(sites);
+    for (final AbraBaseSite output : outputs)
+    {
+      output.references++;
+    }
   }
 
   private void markReferences(final ArrayList<? extends AbraBaseSite> sites)
@@ -166,9 +170,8 @@ public class AbraBlockBranch extends AbraBaseBlock
   {
     int siteNr = 0;
     siteNr = numberSites(siteNr, inputs);
-    siteNr = numberSites(siteNr, sites);
-    siteNr = numberSites(siteNr, outputs);
     siteNr = numberSites(siteNr, latches);
+    siteNr = numberSites(siteNr, sites);
   }
 
   private int numberSites(int siteNr, final ArrayList<? extends AbraBaseSite> sites)
@@ -198,20 +201,6 @@ public class AbraBlockBranch extends AbraBaseBlock
 
     // and finally one last cleanup
     optimizeCleanup(module);
-
-    for (final AbraBaseSite output : outputs)
-    {
-      if (output instanceof AbraSiteMerge)
-      {
-        final AbraSiteMerge merge = (AbraSiteMerge) output;
-        if (merge.inputs.size() == 1)
-        {
-          continue;
-        }
-      }
-
-      throw new CodeException("Output site");
-    }
   }
 
   private void optimizeCleanup(final AbraModule module)
@@ -237,9 +226,6 @@ public class AbraBlockBranch extends AbraBaseBlock
     // replace concatenation knot that is passed as input to a knot
     new ConcatenationOptimizer(module, this).run();
 
-    // and remove all unreferenced sites
-    new UnreferencedSiteRemover(module, this).run();
-
     // remove duplicate sites, only need to calculate once
     new DuplicateSiteOptimizer(module, this).run();
 
@@ -261,6 +247,6 @@ public class AbraBlockBranch extends AbraBaseBlock
 
   public int totalSites()
   {
-    return inputs.size() + sites.size() + outputs.size() + latches.size();
+    return inputs.size() + latches.size() + sites.size();
   }
 }

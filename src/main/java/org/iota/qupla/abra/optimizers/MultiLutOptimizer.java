@@ -57,19 +57,19 @@ public class MultiLutOptimizer extends BaseOptimizer
     }
 
     final String lookupTable = new String(lookup);
+    final String lutName = AbraBlockLut.unnamed(lookupTable);
 
-    final AbraSiteKnot tmp = new AbraSiteKnot();
-    tmp.name = AbraBlockLut.unnamed(lookupTable);
-    tmp.lut(module);
+    final AbraSiteKnot knot = new AbraSiteKnot();
+    knot.lut(module, lutName);
 
     // already exists?
-    if (tmp.block != null)
+    if (knot.block != null)
     {
-      return tmp.block;
+      return knot.block;
     }
 
     // new LUT, create it
-    return module.addLut(tmp.name, lookupTable);
+    return module.addLut(lutName, lookupTable);
   }
 
   private char lookupTrit(final AbraSiteKnot lut)
@@ -93,11 +93,22 @@ public class MultiLutOptimizer extends BaseOptimizer
 
   private boolean mergeLuts(final AbraSiteKnot master, final AbraSiteKnot slave)
   {
+    if (master.block.specialType == AbraBaseBlock.TYPE_MERGE || //
+        slave.block.specialType == AbraBaseBlock.TYPE_MERGE)
+    {
+      return false;
+    }
+
     final ArrayList<AbraBaseSite> inputs = new ArrayList<>();
 
     // gather all unique master inputs (omit slave)
     for (final AbraBaseSite input : master.inputs)
     {
+      if (input.size != 1)
+      {
+        return false;
+      }
+
       if (input != slave && !inputs.contains(input))
       {
         inputs.add(input);
@@ -107,6 +118,11 @@ public class MultiLutOptimizer extends BaseOptimizer
     // gather all unique slave inputs
     for (final AbraBaseSite input : slave.inputs)
     {
+      if (input.size != 1)
+      {
+        return false;
+      }
+
       if (!inputs.contains(input))
       {
         inputs.add(input);

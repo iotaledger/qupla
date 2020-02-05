@@ -2,6 +2,7 @@ package org.iota.qupla.abra.block.base;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
+import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 
@@ -22,6 +23,11 @@ public abstract class AbraBaseBlock
   public boolean couldBeLutWrapper()
   {
     return false;
+  }
+
+  protected void error(final String text)
+  {
+    throw new CodeException(text);
   }
 
   public abstract void eval(final AbraBaseContext context);

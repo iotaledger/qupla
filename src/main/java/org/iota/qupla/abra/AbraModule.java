@@ -10,6 +10,7 @@ import org.iota.qupla.abra.block.base.AbraBaseBlock;
 public class AbraModule
 {
   public static final String SEPARATOR = "_";
+  public static final int SPECIAL_LUTS = 5;
   public static final boolean lutAlways3 = false;
   public int blockNr;
   public final ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
@@ -18,14 +19,34 @@ public class AbraModule
   public final ArrayList<AbraBlockLut> luts = new ArrayList<>();
   public int version;
 
+  public AbraModule()
+  {
+    final AbraBlockLut merge = addLut("merge", AbraBlockLut.NULL_LUT);
+    merge.specialType = AbraBaseBlock.TYPE_MERGE;
+
+    final AbraBlockLut nullifyTrue = addLut("nullifyTrue", AbraBlockLut.LUT_NULLIFY_TRUE);
+    nullifyTrue.specialType = AbraBaseBlock.TYPE_NULLIFY_TRUE;
+
+    final AbraBlockLut nullifyFalse = addLut("nullifyFalse", AbraBlockLut.LUT_NULLIFY_FALSE);
+    nullifyFalse.specialType = AbraBaseBlock.TYPE_NULLIFY_FALSE;
+
+    final AbraBlockLut constant = addLut("constant", AbraBlockLut.NULL_LUT);
+    constant.specialType = AbraBaseBlock.TYPE_CONSTANT;
+
+    final AbraBlockLut slice = addLut("slice", AbraBlockLut.NULL_LUT);
+    slice.specialType = AbraBaseBlock.TYPE_SLICE;
+  }
+
   public void addBranch(final AbraBlockBranch branch)
   {
+    branch.index = luts.size() + branches.size();
     branches.add(branch);
     blocks.add(branch);
   }
 
   private void addLut(final AbraBlockLut lut)
   {
+    lut.index = luts.size();
     luts.add(lut);
     blocks.add(lut);
   }
@@ -55,9 +76,9 @@ public class AbraModule
   public void numberBlocks()
   {
     blockNr = 0;
-    numberBlocks(imports);
     numberBlocks(luts);
     numberBlocks(branches);
+    numberBlocks(imports);
   }
 
   public void numberBlocks(final ArrayList<? extends AbraBaseBlock> blocks)

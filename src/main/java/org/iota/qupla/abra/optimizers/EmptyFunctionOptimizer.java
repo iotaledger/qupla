@@ -3,7 +3,6 @@ package org.iota.qupla.abra.optimizers;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
@@ -41,35 +40,23 @@ public class EmptyFunctionOptimizer extends BaseOptimizer
 
     final AbraBaseSite knotInput = knot.inputs.get(0);
 
-    final AbraSiteParam input = (AbraSiteParam) target.inputs.get(0);
+    final AbraSiteParam input = target.inputs.get(0);
     if (input.size != knotInput.size)
     {
       // some slicing going on
       return;
     }
 
-    final AbraSiteMerge output = (AbraSiteMerge) target.outputs.get(0);
-    if (output.getClass() != AbraSiteMerge.class || output.inputs.size() != 1)
-    {
-      // not a single-input merge
-      return;
-    }
-
-    if (output.inputs.get(0) != input)
+    final AbraBaseSite output = target.outputs.get(0);
+    if (output != input)
     {
       // WTF? how is this even possible?
       return;
     }
 
-    if (output.size != knotInput.size)
+    if (knot.block.name != null)
     {
-      // another WTF moment
-      return;
-    }
-
-    if (knot.name != null)
-    {
-      if (knot.name.startsWith("print_") || knot.name.startsWith("break_"))
+      if (knot.block.name.startsWith("print_") || knot.block.name.startsWith("break_"))
       {
         // keep dummy print/break functions, even though they are empty
         return;
@@ -78,5 +65,9 @@ public class EmptyFunctionOptimizer extends BaseOptimizer
 
     // well, looks like we have a candidate
     replaceSite(knot, knotInput);
+    if (knotInput.name == null)
+    {
+      knotInput.name = knot.name;
+    }
   }
 }

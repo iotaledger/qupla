@@ -11,7 +11,6 @@ import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
@@ -51,9 +50,10 @@ public class AbraEvalContext extends AbraBaseContext
       branch.addInputParam(1);
       context.branch = branch;
       context.evalFuncCall(funcExpr);
-      final AbraSiteKnot knot = (AbraSiteKnot) branch.sites.remove(branch.sites.size() - 1);
 
+      final AbraSiteKnot knot = branch.sites.get(branch.sites.size() - 1);
       branch.outputs.add(knot);
+
       args.clear();
       args.add(new TritVector(1, '0'));
       branch.numberSites();
@@ -69,32 +69,6 @@ public class AbraEvalContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
-    switch (branch.specialType)
-    {
-    case AbraBaseBlock.TYPE_CONSTANT:
-      value = branch.constantValue;
-      return;
-
-    case AbraBaseBlock.TYPE_NULLIFY_FALSE:
-      final boolean isFalse = args.get(0).trit(0) == TritConverter.BOOL_FALSE;
-      value = isFalse ? args.get(1) : branch.constantValue;
-      return;
-
-    case AbraBaseBlock.TYPE_NULLIFY_TRUE:
-      final boolean isTrue = args.get(0).trit(0) == TritConverter.BOOL_TRUE;
-      value = isTrue ? args.get(1) : branch.constantValue;
-
-    case AbraBaseBlock.TYPE_SLICE:
-      if (args.size() == 1)
-      {
-        value = args.get(0).slice(branch.offset, branch.size);
-        return;
-      }
-      break;
-    }
-
-    interceptCall(branch);
-
     final TritVector[] oldStack = stack;
     stack = new TritVector[branch.totalSites()];
 
@@ -132,8 +106,7 @@ public class AbraEvalContext extends AbraBaseContext
     TritVector result = null;
     for (final AbraBaseSite output : branch.outputs)
     {
-      output.eval(this);
-      result = TritVector.concat(result, value);
+      result = TritVector.concat(result, stack[output.index]);
     }
 
     // update latches with new values
@@ -217,18 +190,56 @@ public class AbraEvalContext extends AbraBaseContext
 
     callTrail[callNr++] = (byte) knot.index;
 
-    if (knot.block.specialType == AbraBaseBlock.TYPE_MERGE)
-    {
-      evalMerge(knot);
-    }
-    else
-    {
-      knot.block.eval(this);
-    }
+    evalKnotSpecial(knot);
 
     stack[knot.index] = value;
 
     callNr--;
+  }
+
+  private void evalKnotSpecial(final AbraSiteKnot knot)
+  {
+    switch (knot.block.specialType)
+    {
+    case AbraBaseBlock.TYPE_CONSTANT:
+      value = knot.block.constantValue;
+      return;
+
+    case AbraBaseBlock.TYPE_MERGE:
+      evalMerge(knot);
+      return;
+
+    case AbraBaseBlock.TYPE_NULLIFY_FALSE:
+      evalNullify(knot, TritConverter.BOOL_FALSE);
+      return;
+
+    case AbraBaseBlock.TYPE_NULLIFY_TRUE:
+      evalNullify(knot, TritConverter.BOOL_TRUE);
+      return;
+
+    case AbraBaseBlock.TYPE_SLICE:
+      evalSlice(knot);
+      return;
+    }
+
+    if (knot.block.name != null)
+    {
+      if (usePrint && knot.block.name.startsWith("print_"))
+      {
+        value = args.get(0);
+        Qupla.log(value.toString());
+        return;
+      }
+
+      if (useBreak && knot.block.name.startsWith("break_"))
+      {
+        value = args.get(0);
+        Qupla.log(value.toString());
+        return;
+      }
+    }
+
+    knot.block.eval(this);
   }
 
   @Override
@@ -292,21 +303,27 @@ public class AbraEvalContext extends AbraBaseContext
     value = tritNull;
   }
 
-  @Override
-  public void evalMerge(final AbraSiteMerge merge)
+  private void evalMerge(final AbraSiteKnot knot)
   {
-    value = null;
-    for (final AbraBaseSite input : merge.inputs)
+    for (final AbraBaseSite input : knot.inputs)
     {
-      final TritVector mergeValue = stack[input.index];
-      if (mergeValue.isNull())
+      if (input.size != knot.size)
+      {
+        error("Invalid merge input size");
+      }
+    }
+
+    value = null;
+    for (final TritVector arg : args)
+    {
+      if (arg.isNull())
       {
         continue;
       }
 
       if (value == null)
       {
-        value = mergeValue;
+        value = arg;
         continue;
       }
 
@@ -315,16 +332,49 @@ public class AbraEvalContext extends AbraBaseContext
 
     if (value == null)
     {
-      value = new TritVector(merge.size, '@');
+      value = new TritVector(knot.size, '@');
+    }
+  }
+
+  private void evalNullify(final AbraSiteKnot knot, final char selector)
+  {
+    if (args.size() != 2)
+    {
+      error("Nullify needs 2 inputs");
     }
 
-    stack[merge.index] = value;
+    final TritVector flag = args.get(0);
+    if (flag.size() != 1)
+    {
+      error("Nullify flag size is not 1");
+    }
+
+    final TritVector target = args.get(1);
+    if (target.size() != knot.size)
+    {
+      error("Nullify target size mismatch");
+    }
+
+    final boolean select = flag.trit(0) == selector;
+    value = select ? target : new TritVector(knot.size, '@');
   }
 
   @Override
   public void evalParam(final AbraSiteParam param)
   {
     stack[param.index] = value.slicePadded(param.offset, param.size);
+  }
+
+  private void evalSlice(final AbraSiteKnot knot)
+  {
+    value = null;
+    for (final TritVector arg : args)
+    {
+      value = TritVector.concat(value, arg);
+    }
+
+    final AbraBlockBranch branch = (AbraBlockBranch) knot.block;
+    value = value.slice(branch.offset, branch.size);
   }
 
   private void initializeLatch(final AbraBaseSite latch)
@@ -349,22 +399,6 @@ public class AbraEvalContext extends AbraBaseContext
     }
 
     stack[latch.index] = new TritVector(latch.size, '0');
-  }
-
-  private void interceptCall(final AbraBlockBranch branch)
-  {
-    if (branch.name != null)
-    {
-      if (usePrint && branch.name.startsWith("print_"))
-      {
-        Qupla.log(args.get(0).toString());
-      }
-
-      if (useBreak && branch.name.startsWith("break_"))
-      {
-        Qupla.log(args.get(0).toString());
-      }
-    }
   }
 
   private void updateLatch(final AbraBaseSite latch)

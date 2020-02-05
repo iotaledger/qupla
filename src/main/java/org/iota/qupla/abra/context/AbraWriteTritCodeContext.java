@@ -4,9 +4,9 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
@@ -22,7 +22,7 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
 
     putInt(module.version);
 
-    putInt(module.luts.size());
+    putInt(module.luts.size() - AbraModule.SPECIAL_LUTS);
     putInt(module.branches.size());
     putInt(module.imports.size());
 
@@ -48,11 +48,22 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   protected void evalBranchSites(final AbraBlockBranch branch)
   {
     putInt(branch.inputs.size());
+    putInt(branch.latches.size());
     putInt(branch.sites.size());
     putInt(branch.outputs.size());
-    putInt(branch.latches.size());
 
     super.evalBranchSites(branch);
+
+    for (final AbraBaseSite output : branch.outputs)
+    {
+      putInt(output.index);
+    }
+
+    for (final AbraBaseSite latch : branch.latches)
+    {
+      final AbraSiteLatch latch1 = (AbraSiteLatch) latch;
+      putInt(latch1.latchSite == null ? 0 : latch1.latchSite.index);
+    }
   }
 
   @Override
@@ -69,19 +80,43 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    putTrit('-');
-    putSiteInputs(knot);
     putInt(knot.block.index);
+
+    putInt(knot.inputs.size());
+    for (final AbraBaseSite input : knot.inputs)
+    {
+      //TODO can refer relative to merge.index here
+      // if (input.index < knot.index)
+      // {
+      //   putInt(knot.index - 1 - input.index);
+      //   continue;
+      // }
+
+      putInt(input.index);
+    }
+
+    if (knot.block.specialType == AbraBaseBlock.TYPE_SLICE)
+    {
+      final AbraBlockBranch slice = (AbraBlockBranch) knot.block;
+      putInt(slice.offset);
+      putInt(slice.size);
+    }
   }
 
   @Override
   public void evalLatch(final AbraSiteLatch latch)
   {
+    putInt(latch.size);
   }
 
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
+    if (lut.index < AbraModule.SPECIAL_LUTS)
+    {
+      return;
+    }
+
     // encode 27 bct trits as 54-bit long value, and convert to 35 trits
     long value = 0;
     for (int i = 26; i >= 0; i--)
@@ -112,31 +147,14 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   }
 
   @Override
-  public void evalMerge(final AbraSiteMerge merge)
-  {
-    putTrit('1');
-    putSiteInputs(merge);
-  }
-
-  @Override
   public void evalParam(final AbraSiteParam param)
   {
     putInt(param.size);
   }
 
-  private void putSiteInputs(final AbraSiteMerge merge)
+  @Override
+  public String toString()
   {
-    putInt(merge.inputs.size());
-    for (final AbraBaseSite input : merge.inputs)
-    {
-      //TODO can refer relative to merge.index here
-      // if (input.index < merge.index)
-      // {
-      //   putInt(merge.index - 1 - input.index);
-      //   continue;
-      // }
-
-      putInt(input.index);
-    }
+    return toStringWrite();
   }
 }

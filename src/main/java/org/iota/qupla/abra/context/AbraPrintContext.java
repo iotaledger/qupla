@@ -9,7 +9,6 @@ import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
@@ -23,24 +22,15 @@ public class AbraPrintContext extends AbraBaseContext
   public boolean statements = true;
   public String type = "site ";
 
-  private void appendSiteInput(final AbraBaseSite input)
+  private void appendStmt(BaseExpr stmt)
   {
-    append(input.varName == null ? "p" + input.index : input.varName);
-  }
-
-  private void appendSiteInputs(final String braces, final AbraSiteMerge merge)
-  {
-    append(braces.substring(0, 1));
-
-    boolean first = true;
-    for (AbraBaseSite input : merge.inputs)
+    while (stmt != null && statements)
     {
-      append(first ? "" : ", ");
-      first = false;
-      appendSiteInput(input);
+      newline();
+      final String prefix = stmt instanceof AssignExpr || stmt instanceof DummyStmt ? "" : "return ";
+      append(prefix + stmt).newline();
+      stmt = stmt.next;
     }
-
-    append(braces.substring(1, 2));
   }
 
   public void eval(final AbraModule module)
@@ -100,11 +90,21 @@ public class AbraPrintContext extends AbraBaseContext
     newline().indent();
 
     evalBranchSites(branch.inputs, "in ");
-    evalBranchSites(branch.sites, "");
-    evalBranchSites(branch.outputs, "out ");
     evalBranchSites(branch.latches, "latch ");
+    evalBranchSites(branch.sites, "");
 
-    undent();
+    appendStmt(branch.finalStmt);
+    final String size = (branch.size < 10 ? " " : "") + branch.size;
+    append("// 0  [" + size + "] out ");
+    boolean first = true;
+    for (final AbraBaseSite output : branch.outputs)
+    {
+      append(first ? "" : ", ");
+      first = false;
+      append(output.varName());
+    }
+
+    newline().undent();
   }
 
   private void evalBranchSites(final ArrayList<? extends AbraBaseSite> sites, final String type)
@@ -130,9 +130,20 @@ public class AbraPrintContext extends AbraBaseContext
   {
     evalSite(knot);
 
-    append(" = ").append(knot.block.name);
-    final String braces = (knot.block instanceof AbraBlockLut) ? "[]" : "()";
-    appendSiteInputs(braces, knot);
+    final boolean isBranch = knot.block instanceof AbraBlockBranch;
+    final String braces = isBranch ? "()" : knot.block.index == 0 ? "{}" : "[]";
+
+    append(" = ").append(knot.block.name).append(braces.substring(0, 1));
+
+    boolean first = true;
+    for (AbraBaseSite input : knot.inputs)
+    {
+      append(first ? "" : ", ");
+      first = false;
+      append(input.varName());
+    }
+
+    append(braces.substring(1, 2));
   }
 
   @Override
@@ -150,22 +161,6 @@ public class AbraPrintContext extends AbraBaseContext
   }
 
   @Override
-  public void evalMerge(final AbraSiteMerge merge)
-  {
-    evalSite(merge);
-
-    if (merge.inputs.size() == 1)
-    {
-      append(" = ");
-      appendSiteInput(merge.inputs.get(0));
-      return;
-    }
-
-    append(" = merge");
-    appendSiteInputs("{}", merge);
-  }
-
-  @Override
   public void evalParam(final AbraSiteParam param)
   {
     evalSite(param);
@@ -173,12 +168,7 @@ public class AbraPrintContext extends AbraBaseContext
 
   private void evalSite(final AbraBaseSite site)
   {
-    for (BaseExpr stmt = site.stmt; stmt != null && statements; stmt = stmt.next)
-    {
-      newline();
-      final String prefix = stmt instanceof AssignExpr || stmt instanceof DummyStmt ? "" : "return ";
-      append(prefix + stmt).newline();
-    }
+    appendStmt(site.stmt);
 
     String nullifyIndex = " ";
     if (site.nullifyTrue != null)
@@ -191,9 +181,8 @@ public class AbraPrintContext extends AbraBaseContext
       nullifyIndex = "F" + site.nullifyFalse.index;
     }
 
-    final String name = site.varName == null ? "p" + site.index : site.varName;
     final String size = (site.size < 10 ? " " : "") + site.size;
     append("// " + site.references + nullifyIndex);
-    append(" " + "[" + size + "] " + type + name);
+    append(" " + "[" + size + "] " + type + site.varName());
   }
 }

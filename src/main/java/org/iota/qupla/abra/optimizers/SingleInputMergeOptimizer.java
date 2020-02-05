@@ -2,7 +2,8 @@ package org.iota.qupla.abra.optimizers;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
 
 public class SingleInputMergeOptimizer extends BaseOptimizer
@@ -13,12 +14,12 @@ public class SingleInputMergeOptimizer extends BaseOptimizer
   }
 
   @Override
-  protected void processMerge(final AbraSiteMerge merge)
+  protected void processKnot(final AbraSiteKnot knot)
   {
-    if (merge.inputs.size() == 1)
+    if (knot.block.specialType == AbraBaseBlock.TYPE_MERGE && knot.inputs.size() == 1)
     {
-      // this leaves <merge> unreferenced
-      replaceSite(merge, merge.inputs.get(0));
+      // this leaves <knot> unreferenced
+      replaceSite(knot, knot.inputs.get(0));
     }
   }
 }

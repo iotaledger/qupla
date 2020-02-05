@@ -1,8 +1,10 @@
 package org.iota.qupla.abra.optimizers;
 
+import java.util.ArrayList;
+
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
 
@@ -15,23 +17,18 @@ public class NullifyOptimizer extends BaseOptimizer
   }
 
   @Override
-  protected void processSite(final AbraSiteMerge site)
+  protected void processKnot(final AbraSiteKnot knot)
   {
-    if (index == 0 || !site.hasNullifier())
+    if (index == 0 || !knot.hasNullifier())
     {
       // no need to move it up the chain anyway
       return;
     }
 
     // check if all inputs have only a single reference
-    for (final AbraBaseSite input : site.inputs)
+    final ArrayList<AbraSiteKnot> inputs = new ArrayList<>(knot.inputs.size());
+    for (final AbraBaseSite input : knot.inputs)
     {
-      if (input.isLatch)
-      {
-        // don't fuck around with latches
-        return;
-      }
-
       if (input.hasNullifier())
       {
         // cannot force a nullify on something that already has one
@@ -41,46 +38,43 @@ public class NullifyOptimizer extends BaseOptimizer
       //TODO when at least one input has a single reference
       //     insert knots for the inputs that have >1 references
       //     and then move the nullifies there to avoid calling the knot
-      if (input.references != 1 || !(input instanceof AbraSiteMerge))
+      if (input.references != 1 || !(input instanceof AbraSiteKnot))
       {
         // cannot force nullify on something referenced from somewhere else
         // nor on something that isn't a merge or a knot
         return;
       }
+
+      inputs.add((AbraSiteKnot) input);
     }
 
-    // first move those inputs to the nullify point
-    for (final AbraBaseSite input : site.inputs)
-    {
-      branch.sites.remove(input);
-    }
-
-    branch.sites.addAll(index - site.inputs.size(), site.inputs);
+    branch.sites.removeAll(inputs);
+    branch.sites.addAll(index - knot.inputs.size(), inputs);
 
     // move nullifyFalse up the chain??
-    if (site.nullifyFalse != null)
+    if (knot.nullifyFalse != null)
     {
-      for (final AbraBaseSite input : site.inputs)
+      for (final AbraBaseSite input : knot.inputs)
       {
-        input.nullifyFalse = site.nullifyFalse;
-        site.nullifyFalse.references++;
+        input.nullifyFalse = knot.nullifyFalse;
+        knot.nullifyFalse.references++;
       }
 
-      site.nullifyFalse.references--;
-      site.nullifyFalse = null;
+      knot.nullifyFalse.references--;
+      knot.nullifyFalse = null;
     }
 
     // move nullifyTrue up the chain??
-    if (site.nullifyTrue != null)
+    if (knot.nullifyTrue != null)
     {
-      for (final AbraBaseSite input : site.inputs)
+      for (final AbraBaseSite input : knot.inputs)
       {
-        input.nullifyTrue = site.nullifyTrue;
-        site.nullifyTrue.references++;
+        input.nullifyTrue = knot.nullifyTrue;
+        knot.nullifyTrue.references++;
       }
 
-      site.nullifyTrue.references--;
-      site.nullifyTrue = null;
+      knot.nullifyTrue.references--;
+      knot.nullifyTrue = null;
     }
 
     // this could have freed up another optimization possibility,

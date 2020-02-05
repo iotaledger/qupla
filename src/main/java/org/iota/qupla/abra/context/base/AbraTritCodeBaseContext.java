@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
-import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.helper.TritConverter;
 
 public abstract class AbraTritCodeBaseContext extends AbraBaseContext
@@ -34,9 +33,8 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     branch.numberSites();
 
     evalSites(branch.inputs);
-    evalSites(branch.sites);
-    evalSites(branch.outputs);
     evalSites(branch.latches);
+    evalSites(branch.sites);
   }
 
   protected void evalSites(final ArrayList<? extends AbraBaseSite> sites)
@@ -126,7 +124,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
   {
     if (bufferOffset >= buffer.length)
     {
-      throw new CodeException("Buffer overflow in getTrit");
+      error("Buffer overflow in getTrit");
     }
 
     return buffer[bufferOffset++];
@@ -137,7 +135,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     bufferOffset += size;
     if (bufferOffset > buffer.length)
     {
-      throw new CodeException("Buffer overflow in getTrits(" + size + ")");
+      error("Buffer overflow in getTrits(" + size + ")");
     }
 
     return new String(buffer, bufferOffset - size, size);
@@ -240,11 +238,18 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return putTrits(trits);
   }
 
-  @Override
-  public String toString()
+  protected String toStringRead()
   {
     // display 40 trit tail end of buffer
-    final int start = bufferOffset > 40 ? bufferOffset - 40 : 0;
-    return bufferOffset + " " + new String(buffer, start, bufferOffset - start);
+    final int remain = buffer.length - bufferOffset;
+    final int len = remain < 40 ? remain : 40;
+    return bufferOffset + " " + new String(buffer, bufferOffset, len);
+  }
+
+  protected String toStringWrite()
+  {
+    // display 40 trit tail end of buffer
+    final int len = bufferOffset > 40 ? 40 : bufferOffset;
+    return bufferOffset + " " + new String(buffer, bufferOffset - len, len);
   }
 }

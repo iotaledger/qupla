@@ -1,12 +1,11 @@
 package org.iota.qupla.abra.optimizers.base;
 
-import java.util.ArrayList;
-
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.exception.CodeException;
 
 public class BaseOptimizer
 {
@@ -21,36 +20,21 @@ public class BaseOptimizer
     this.branch = branch;
   }
 
+  protected void error(final String text)
+  {
+    throw new CodeException(text);
+  }
+
   private void process()
   {
-    final AbraBaseSite site = branch.sites.get(index);
-    if (site.references == 0)
+    final AbraSiteKnot site = branch.sites.get(index);
+    if (site.references != 0)
     {
-      return;
+      processKnot(site);
     }
-
-    if (site.getClass() == AbraSiteMerge.class)
-    {
-      processMerge((AbraSiteMerge) site);
-    }
-
-    if (site.getClass() == AbraSiteKnot.class)
-    {
-      processKnot((AbraSiteKnot) site);
-    }
-
-    processSite((AbraSiteMerge) site);
   }
 
   protected void processKnot(final AbraSiteKnot knot)
-  {
-  }
-
-  protected void processMerge(final AbraSiteMerge merge)
-  {
-  }
-
-  protected void processSite(final AbraSiteMerge site)
   {
   }
 
@@ -62,26 +46,26 @@ public class BaseOptimizer
       return;
     }
 
-    replaceSite(branch.sites, source, target);
-    replaceSite(branch.outputs, source, target);
-    replaceSite(branch.latches, source, target);
-  }
-
-  private void replaceSite(final ArrayList<? extends AbraBaseSite> siteList, final AbraBaseSite source, final AbraBaseSite target)
-  {
-    for (final AbraBaseSite site : siteList)
+    for (int i = 0; i < branch.latches.size(); i++)
     {
-      if (site instanceof AbraSiteMerge)
+      final AbraSiteLatch latch = branch.latches.get(i);
+      if (latch.latchSite == source)
       {
-        final AbraSiteMerge merge = (AbraSiteMerge) site;
-        for (int i = 0; i < merge.inputs.size(); i++)
+        source.references--;
+        target.references++;
+        latch.latchSite = target;
+      }
+    }
+
+    for (final AbraSiteKnot site : branch.sites)
+    {
+      for (int i = 0; i < site.inputs.size(); i++)
+      {
+        if (site.inputs.get(i) == source)
         {
-          if (merge.inputs.get(i) == source)
-          {
-            source.references--;
-            target.references++;
-            merge.inputs.set(i, target);
-          }
+          source.references--;
+          target.references++;
+          site.inputs.set(i, target);
         }
       }
 
@@ -99,6 +83,17 @@ public class BaseOptimizer
         site.nullifyTrue = target;
       }
     }
+
+    for (int i = 0; i < branch.outputs.size(); i++)
+    {
+      final AbraBaseSite output = branch.outputs.get(i);
+      if (output == source)
+      {
+        source.references--;
+        target.references++;
+        branch.outputs.set(i, target);
+      }
+    }
   }
 
   public void run()
@@ -109,6 +104,7 @@ public class BaseOptimizer
       {
         process();
       }
+
       return;
     }
 

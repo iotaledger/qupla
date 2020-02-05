@@ -140,7 +140,7 @@ public class Verilog
       });
     }
 
-    final int sizes[] = new int[100];
+    final int[] sizes = new int[100];
 
     // go through the remaining ones in sorted order
     final ArrayList<Integer> remaining = new ArrayList<>(mergeFuncs);
