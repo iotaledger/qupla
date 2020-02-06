@@ -6,11 +6,12 @@ import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.helper.TritVector;
 
 public class AbraModule
 {
   public static final String SEPARATOR = "_";
-  public static final int SPECIAL_LUTS = 5;
+  public static final int SPECIAL_LUTS = 8;
   public static final boolean lutAlways3 = false;
   public int blockNr;
   public final ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
@@ -21,20 +22,20 @@ public class AbraModule
 
   public AbraModule()
   {
-    final AbraBlockLut merge = addLut("merge", AbraBlockLut.NULL_LUT);
-    merge.specialType = AbraBaseBlock.TYPE_MERGE;
+    addLut("merge", AbraBlockLut.LUT_NULL, AbraBaseBlock.TYPE_MERGE);
+    addLut("nullifyTrue", AbraBlockLut.LUT_NULLIFY_TRUE, AbraBaseBlock.TYPE_NULLIFY_TRUE);
+    addLut("nullifyFalse", AbraBlockLut.LUT_NULLIFY_FALSE, AbraBaseBlock.TYPE_NULLIFY_FALSE);
+    addLut("slice", AbraBlockLut.LUT_NULL, AbraBaseBlock.TYPE_SLICE);
+    addLut("constNull", AbraBlockLut.LUT_NULL, AbraBaseBlock.TYPE_CONSTANT);
+    addLut("constZero", AbraBlockLut.LUT_ZERO, AbraBaseBlock.TYPE_CONSTANT);
+    addLut("constOne", AbraBlockLut.LUT_ONE, AbraBaseBlock.TYPE_CONSTANT);
+    addLut("constMin", AbraBlockLut.LUT_MIN, AbraBaseBlock.TYPE_CONSTANT);
 
-    final AbraBlockLut nullifyTrue = addLut("nullifyTrue", AbraBlockLut.LUT_NULLIFY_TRUE);
-    nullifyTrue.specialType = AbraBaseBlock.TYPE_NULLIFY_TRUE;
-
-    final AbraBlockLut nullifyFalse = addLut("nullifyFalse", AbraBlockLut.LUT_NULLIFY_FALSE);
-    nullifyFalse.specialType = AbraBaseBlock.TYPE_NULLIFY_FALSE;
-
-    final AbraBlockLut constant = addLut("constant", AbraBlockLut.NULL_LUT);
-    constant.specialType = AbraBaseBlock.TYPE_CONSTANT;
-
-    final AbraBlockLut slice = addLut("slice", AbraBlockLut.NULL_LUT);
-    slice.specialType = AbraBaseBlock.TYPE_SLICE;
+    for (int i = 0; i < 4; i++)
+    {
+      final AbraBlockLut lut = luts.get(AbraBaseBlock.TYPE_CONSTANT + i);
+      lut.constantValue = new TritVector(1, "@01-".charAt(i));
+    }
   }
 
   public void addBranch(final AbraBlockBranch branch)
@@ -58,6 +59,12 @@ public class AbraModule
     lut.lookup = lookup;
     addLut(lut);
     return lut;
+  }
+
+  private void addLut(final String name, final String lookup, final int type)
+  {
+    final AbraBlockLut lut = addLut(name + SEPARATOR, lookup);
+    lut.specialType = type;
   }
 
   public AbraBaseBlock branch(final String name)

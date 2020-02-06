@@ -22,14 +22,14 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
       "-1"
   };
 
-  private static final int[] sizes = new int[300];
+  public static final int[] sizes = new int[300];
 
   public char[] buffer = new char[32];
   public int bufferOffset;
 
   protected void evalBranchSites(final AbraBlockBranch branch)
   {
-    // make sure sites are numbered correctly
+    // make sure sites are numbered correctly+
     branch.numberSites();
 
     evalSites(branch.inputs);
@@ -88,19 +88,35 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
 
   protected int getInt()
   {
+    // see putInt() for encoding algorithm
+    char trit = getTrit();
+    if (trit == '-')
+    {
+      // shortcut, final bit found already
+      // so value can only be zero
+      return 0;
+    }
+
+    // build up the value bit by bit
     int value = 0;
     int mask = 1;
-    for (char trit = getTrit(); trit != '0'; trit = getTrit())
+    for (; trit != '-'; trit = getTrit())
     {
+      // '0' or '1' bit at this position
       if (trit == '1')
       {
         value |= mask;
       }
-
       mask <<= 1;
     }
 
-    return value;
+    // final '1' bit found, encoded as -
+    // add the '1' bit at this position
+    value |= mask;
+
+    // remember that we encoded the incremented value
+    // so we have to decrement to get the actual value
+    return value - 1;
   }
 
   protected String getString()
@@ -160,36 +176,18 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
   {
     sizes[value < 0 ? 299 : value < 298 ? value : 298]++;
 
-    // binary coded trit value
-    int v = value;
-    for (; v != 0; v >>= 1)
+    // The encoding is as follows: we expect only positive integers
+    // Then we make sure there is at least a single '1' bit in the value
+    // We achieve this by incrementing the value so that 0..n becomes 1..n+1
+    // Now we encode starting with least significant bit every bit as 0 or 1,
+    // and the final '1' bit will be encoded as -
+    // All the rest of the bits can now be assumed to be zero
+    for (int v = value + 1; v > 1; v >>= 1)
     {
-      putTrit((v & 1) == 0 ? '-' : '1');
+      putTrit((v & 1) == 1 ? '1' : '0');
     }
 
-    return putTrit('0');
-
-    // here are some possible improvements to reduce size:
-    //    // most-used trit value
-    //    if (value < 2)
-    //    {
-    //      return putTrit(value == 0 ? '0' : '1');
-    //    }
-    //
-    //    putTrit('-');
-    //
-    //    int v = value >> 1;
-    //    if (v != 0)
-    //    {
-    //      v--;
-    //      putTrit((v & 1) == 0 ? '-' : '1');
-    //      for (v >>= 1; v != 0; v >>= 1)
-    //      {
-    //        putTrit((v & 1) == 0 ? '-' : '1');
-    //      }
-    //    }
-    //
-    //    return putTrit('0');
+    return putTrit('-');
   }
 
   protected AbraTritCodeBaseContext putString(final String text)

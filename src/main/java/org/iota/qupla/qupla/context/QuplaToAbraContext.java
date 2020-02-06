@@ -287,7 +287,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
     // note: lut output size can be >1, so we need a lut per output trit
     for (int tritNr = 0; tritNr < lut.size; tritNr++)
     {
-      final char[] lookup = AbraBlockLut.NULL_LUT.toCharArray();
+      final char[] lookup = AbraBlockLut.LUT_NULL.toCharArray();
 
       for (final LutEntry entry : lut.entries)
       {
@@ -439,7 +439,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
     final AbraSiteKnot site = new AbraSiteKnot();
     site.from(vector);
     site.inputs.add(branch.inputs.get(0));
-    site.vector(abraModule, vector.vector);
+    site.vector(vector.vector);
     addSite(site);
   }
 }

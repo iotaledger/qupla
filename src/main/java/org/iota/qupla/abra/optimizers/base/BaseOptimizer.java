@@ -9,10 +9,10 @@ import org.iota.qupla.exception.CodeException;
 
 public class BaseOptimizer
 {
-  public AbraBlockBranch branch;
-  public int index;
-  public AbraModule module;
-  public boolean reverse;
+  protected AbraBlockBranch branch;
+  protected int index;
+  protected AbraModule module;
+  protected boolean reverse;
 
   protected BaseOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {

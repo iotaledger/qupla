@@ -24,7 +24,7 @@ public class MultiLutOptimizer extends BaseOptimizer
   private AbraBaseBlock generateLookupTable(final AbraSiteKnot master, final AbraSiteKnot slave, final ArrayList<AbraBaseSite> inputs)
   {
     // initialize with 27 null trits
-    final char[] lookup = AbraBlockLut.NULL_LUT.toCharArray();
+    final char[] lookup = AbraBlockLut.LUT_NULL.toCharArray();
 
     // powers of 3:              1     3     9    27
     final int lookupSize = "\u0001\u0003\u0009\u001b".charAt(inputs.size());

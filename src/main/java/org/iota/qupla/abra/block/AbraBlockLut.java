@@ -10,10 +10,13 @@ public class AbraBlockLut extends AbraBaseBlock
   private static final boolean FALSE_IS_MIN = TritConverter.BOOL_FALSE == '-';
   private static final String LUT_FALSE_IS_MIN = "-@@0@@1@@-@@0@@1@@-@@0@@1@@";
   private static final String LUT_FALSE_IS_ZERO = "@-@@0@@1@@-@@0@@1@@-@@0@@1@";
+  public static final String LUT_MIN = "---------------------------";
+  public static final String LUT_NULL = "@@@@@@@@@@@@@@@@@@@@@@@@@@@";
   public static final String LUT_NULLIFY_FALSE = FALSE_IS_MIN ? LUT_FALSE_IS_MIN : LUT_FALSE_IS_ZERO;
   public static final String LUT_NULLIFY_TRUE = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
-  public static final String NULL_LUT = "@@@@@@@@@@@@@@@@@@@@@@@@@@@";
-  public String lookup = NULL_LUT;
+  public static final String LUT_ONE = "111111111111111111111111111";
+  public static final String LUT_ZERO = "000000000000000000000000000";
+  public String lookup = LUT_NULL;
 
   public static String unnamed(final String lookupTable)
   {

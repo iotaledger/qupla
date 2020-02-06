@@ -47,22 +47,65 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   @Override
   protected void evalBranchSites(final AbraBlockBranch branch)
   {
-    putInt(branch.inputs.size());
-    putInt(branch.latches.size());
-    putInt(branch.sites.size());
-    putInt(branch.outputs.size());
-
-    super.evalBranchSites(branch);
-
-    for (final AbraBaseSite output : branch.outputs)
+    boolean singleInputTrits = true;
+    for (final AbraSiteParam input : branch.inputs)
     {
-      putInt(output.index);
+      if (input.size != 1)
+      {
+        singleInputTrits = false;
+        break;
+      }
     }
 
-    for (final AbraBaseSite latch : branch.latches)
+    boolean lastOutputSites = true;
+    final int offset = branch.totalSites() - branch.outputs.size();
+    for (int i = 0; i < branch.outputs.size(); i++)
     {
-      final AbraSiteLatch latch1 = (AbraSiteLatch) latch;
-      putInt(latch1.latchSite == null ? 0 : latch1.latchSite.index);
+      final AbraBaseSite output = branch.outputs.get(i);
+      if (output.index != offset + i)
+      {
+        lastOutputSites = false;
+        break;
+      }
+    }
+
+    putInt(singleInputTrits ? 0 : branch.inputs.size());
+    putInt(branch.latches.size());
+    putInt(branch.sites.size());
+    putInt(lastOutputSites ? 0 : branch.outputs.size());
+
+    // make sure sites are numbered correctly+
+    branch.numberSites();
+
+    if (singleInputTrits)
+    {
+      putInt(branch.inputs.size());
+    }
+    else
+    {
+      evalSites(branch.inputs);
+    }
+
+    evalSites(branch.latches);
+
+    evalSites(branch.sites);
+
+    if (lastOutputSites)
+    {
+      putInt(branch.outputs.size());
+    }
+    else
+    {
+      for (final AbraBaseSite output : branch.outputs)
+      {
+        putIndex(branch.totalSites(), output.index);
+      }
+    }
+
+    for (final AbraSiteLatch latch : branch.latches)
+    {
+      final int latchIndex = latch.latchSite == null ? 0 : latch.latchSite.index;
+      putIndex(branch.totalSites(), latchIndex);
     }
   }
 
@@ -85,14 +128,7 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
     putInt(knot.inputs.size());
     for (final AbraBaseSite input : knot.inputs)
     {
-      //TODO can refer relative to merge.index here
-      // if (input.index < knot.index)
-      // {
-      //   putInt(knot.index - 1 - input.index);
-      //   continue;
-      // }
-
-      putInt(input.index);
+      putIndex(knot.index, input.index);
     }
 
     if (knot.block.specialType == AbraBaseBlock.TYPE_SLICE)
@@ -100,6 +136,48 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
       final AbraBlockBranch slice = (AbraBlockBranch) knot.block;
       putInt(slice.offset);
       putInt(slice.size);
+      return;
+    }
+
+    if (knot.block.specialType == AbraBaseBlock.TYPE_CONSTANT)
+    {
+      final AbraBlockBranch constant = (AbraBlockBranch) knot.block;
+      if (constant.constantValue.isZero())
+      {
+        // all zero trits, encode length zero, followed by actual length
+        putInt(0);
+        putInt(constant.size);
+        return;
+      }
+
+      // encode actual length
+      putInt(constant.size);
+
+      final String trits = constant.constantValue.trits();
+      if (constant.size > 5)
+      {
+        // when more than 5 trits, trim off trailing zeroes
+        // and encode remaining length and trits
+        // this optimization uses the fact that most constants are
+        // small values (-1..2) and get zero-extended to larger vectors
+        for (int len = constant.size; len >= 0; len--)
+        {
+          if (trits.charAt(len - 1) != '0')
+          {
+            // encode minimum length necessary and the trits
+            // we can reconstruct because we know the constant size
+            putInt(len);
+            putTrits(trits.substring(0, len));
+            return;
+          }
+        }
+
+        // should never get here because there's at least one non-zero trit
+        error("WTF? BUG!");
+      }
+
+      // just encode the trits
+      putTrits(trits);
     }
   }
 
@@ -150,6 +228,13 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   public void evalParam(final AbraSiteParam param)
   {
     putInt(param.size);
+  }
+
+  private void putIndex(final int sites, final int index)
+  {
+    // turn into relative index
+    // prev site is 0, the one before is 1, etc.
+    putInt(sites - 1 - index);
   }
 
   @Override

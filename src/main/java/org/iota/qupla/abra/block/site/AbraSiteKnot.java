@@ -7,12 +7,10 @@ import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
-import org.iota.qupla.abra.funcmanagers.ConstFuncManager;
 import org.iota.qupla.helper.TritVector;
 
 public class AbraSiteKnot extends AbraBaseSite
 {
-  public static final ConstFuncManager constants = new ConstFuncManager();
   public AbraBaseBlock block;
   public ArrayList<AbraBaseSite> inputs = new ArrayList<>();
 
@@ -47,7 +45,12 @@ public class AbraSiteKnot extends AbraBaseSite
     }
 
     final AbraSiteKnot knot = (AbraSiteKnot) rhs;
-    if (block != knot.block)
+    if (block.index != knot.block.index)
+    {
+      return false;
+    }
+
+    if (block.specialType != 0 && !block.name.equals(knot.block.name))
     {
       return false;
     }
@@ -114,8 +117,29 @@ public class AbraSiteKnot extends AbraBaseSite
     block = slice;
   }
 
-  public void vector(final AbraModule module, final TritVector vector)
+  public void vector(final TritVector vector)
   {
-    block = constants.find(module, vector);
+    final AbraBlockBranch constant = new AbraBlockBranch();
+    constant.specialType = AbraBaseBlock.TYPE_CONSTANT;
+    constant.index = constant.specialType;
+    if (vector.isZero())
+    {
+      constant.name = "constZero_" + size;
+    }
+    else
+    {
+      final String trits = vector.trits().replace('-', 'T');
+      int len = trits.length();
+      while (trits.charAt(len - 1) == '0')
+      {
+        len--;
+      }
+
+      constant.name = "const_" + size + "_" + trits.substring(0, len);
+    }
+
+    constant.size = size;
+    constant.constantValue = vector;
+    block = constant;
   }
 }

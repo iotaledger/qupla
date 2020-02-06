@@ -55,12 +55,7 @@ public abstract class AbraBaseSite
       return false;
     }
 
-    if (size != rhs.size)
-    {
-      return false;
-    }
-
-    return true;
+    return size == rhs.size;
   }
 
   public void markReferences()

@@ -34,10 +34,10 @@ public class AbraEvalContext extends AbraBaseContext
   private static final boolean useBreak = true;
   private static final boolean usePrint = true;
 
-  public final ArrayList<TritVector> args = new ArrayList<>();
-  public int callNr;
-  public final byte[] callTrail = new byte[4096];
-  public TritVector[] stack;
+  private final ArrayList<TritVector> args = new ArrayList<>();
+  private int callNr;
+  private final byte[] callTrail = new byte[4096];
+  private TritVector[] stack;
   public TritVector value;
 
   public void eval(final QuplaToAbraContext context, final BaseExpr expr)
@@ -86,19 +86,18 @@ public class AbraEvalContext extends AbraBaseContext
         return;
       }
 
-      for (final AbraBaseSite input : branch.inputs)
+      for (final AbraSiteParam input : branch.inputs)
       {
         input.eval(this);
       }
     }
 
-    // initialize latches with old values
-    for (final AbraBaseSite latch : branch.latches)
+    for (final AbraSiteLatch latch : branch.latches)
     {
-      initializeLatch(latch);
+      latch.eval(this);
     }
 
-    for (final AbraBaseSite site : branch.sites)
+    for (final AbraSiteKnot site : branch.sites)
     {
       site.eval(this);
     }
@@ -109,10 +108,10 @@ public class AbraEvalContext extends AbraBaseContext
       result = TritVector.concat(result, stack[output.index]);
     }
 
-    // update latches with new values
-    for (final AbraBaseSite latch : branch.latches)
+    // save latch values for future use
+    for (final AbraSiteLatch latch : branch.latches)
     {
-      updateLatch(latch);
+      saveLatch(latch);
     }
 
     stack = oldStack;
@@ -245,6 +244,26 @@ public class AbraEvalContext extends AbraBaseContext
   @Override
   public void evalLatch(final AbraSiteLatch latch)
   {
+    if (latch.references == 0)
+    {
+      return;
+    }
+
+    callTrail[callNr] = (byte) latch.index;
+
+    final StateValue call = new StateValue();
+    call.path = callTrail;
+    call.pathLength = callNr + 1;
+
+    // if state was saved before set latch to that value otherwise set to zero
+    final StateValue stateValue = stateValues.get(call);
+    if (stateValue != null)
+    {
+      stack[latch.index] = stateValue.value;
+      return;
+    }
+
+    stack[latch.index] = new TritVector(latch.size, '0');
   }
 
   @Override
@@ -377,44 +396,14 @@ public class AbraEvalContext extends AbraBaseContext
     value = value.slice(branch.offset, branch.size);
   }
 
-  private void initializeLatch(final AbraBaseSite latch)
+  private void saveLatch(final AbraSiteLatch latch)
   {
-    if (latch.references == 0)
+    if (latch.references == 0 || latch.latchSite == null)
     {
       return;
     }
 
-    callTrail[callNr] = (byte) latch.index;
-
-    final StateValue call = new StateValue();
-    call.path = callTrail;
-    call.pathLength = callNr + 1;
-
-    // if state was saved before set latch to that value otherwise set to zero
-    final StateValue stateValue = stateValues.get(call);
-    if (stateValue != null)
-    {
-      stack[latch.index] = stateValue.value;
-      return;
-    }
-
-    stack[latch.index] = new TritVector(latch.size, '0');
-  }
-
-  private void updateLatch(final AbraBaseSite latch)
-  {
-    if (latch.references == 0)
-    {
-      return;
-    }
-
-    // evaluate latch but do not overwrite its stack value
-    // in case another latch uses this one as well
-    // it should always use the old value
-    final TritVector oldValue = stack[latch.index];
-    latch.eval(this);
-    stack[latch.index] = oldValue;
-
+    value = stack[latch.latchSite.index];
     if (value.isNull())
     {
       // do not overwrite with null trits

@@ -13,11 +13,12 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
 import org.iota.qupla.helper.TritConverter;
+import org.iota.qupla.helper.TritVector;
 
 public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
 {
-  public ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
-  public final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
+  private ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
+  private final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
 
   private void check(final boolean condition, final String errorText)
   {
@@ -78,18 +79,21 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   private void evalBranchBuffer(final AbraBlockBranch branch)
   {
     final int inputSites = getInt();
+    final boolean singleInputTrits = inputSites == 0;
     final int latchSites = getInt();
     final int bodySites = getInt();
     final int outputSites = getInt();
+    final boolean lastOutputSites = outputSites == 0;
 
     int offset = 0;
-    for (int i = 0; i < inputSites; i++)
+    final int inputs = singleInputTrits ? getInt() : inputSites;
+    for (int i = 0; i < inputs; i++)
     {
       final AbraSiteParam input = new AbraSiteParam();
-      branch.inputs.add(input);
-      input.eval(this);
+      input.size = singleInputTrits ? 1 : getInt();
       input.offset = offset;
       offset += input.size;
+      branch.inputs.add(input);
       branchSites.add(input);
     }
 
@@ -111,11 +115,12 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
 
     branch.numberSites();
 
-    for (int i = 0; i < outputSites; i++)
+    final int outputs = lastOutputSites ? getInt() : outputSites;
+    offset = branch.totalSites() - outputs;
+    for (int i = 0; i < outputs; i++)
     {
-      final int outputSite = getInt();
-      check(outputSite < branchSites.size(), "Invalid output site index");
-      final AbraBaseSite output = branchSites.get(outputSite);
+      final int outputIndex = lastOutputSites ? offset + i : getIndex(branch.totalSites());
+      final AbraBaseSite output = branchSites.get(outputIndex);
       branch.outputs.add(output);
       output.references++;
       branch.size += output.size;
@@ -124,11 +129,10 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
     for (int i = 0; i < latchSites; i++)
     {
       final AbraSiteLatch latch = branch.latches.get(i);
-      final int latchSite = getInt();
-      check(latchSite < branchSites.size(), "Invalid latch site index");
-      if (latchSite != 0)
+      final int latchIndex = getIndex(branch.totalSites());
+      if (latchIndex != 0)
       {
-        latch.latchSite = branchSites.get(latchSite);
+        latch.latchSite = branchSites.get(latchIndex);
         latch.latchSite.references++;
       }
     }
@@ -157,9 +161,8 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
     final int inputSites = getInt();
     for (int i = 0; i < inputSites; i++)
     {
-      final int inputSite = getInt();
-      check(inputSite < branchSites.size(), "Invalid input site index");
-      final AbraBaseSite input = branchSites.get(inputSite);
+      final int inputIndex = getIndex(branchSites.size());
+      final AbraBaseSite input = branchSites.get(inputIndex);
       knot.inputs.add(input);
       input.references++;
     }
@@ -169,6 +172,35 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
       final int start = getInt();
       knot.size = getInt();
       knot.slice(start);
+      return;
+    }
+
+    if (blockNr == AbraBaseBlock.TYPE_CONSTANT)
+    {
+      knot.size = getInt();
+      if (knot.size == 0)
+      {
+        // all zero trits, get the actual length
+        knot.size = getInt();
+        final TritVector zeroes = new TritVector(knot.size, '0');
+        knot.vector(zeroes);
+        return;
+      }
+
+      if (knot.size > 5)
+      {
+        // trailing zeroes were trimmed, get remaining trits and reconstruct by padding zeroes
+        final int len = getInt();
+        final TritVector remain = new TritVector(getTrits(len));
+        final TritVector zeroes = new TritVector(knot.size - len, '0');
+        final TritVector vector = TritVector.concat(remain, zeroes);
+        knot.vector(vector);
+        return;
+      }
+
+      // just get the trits
+      final TritVector vector = new TritVector(getTrits(knot.size));
+      knot.vector(vector);
     }
   }
 
@@ -189,7 +221,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
     // convert 35 trits to 54-bit long value, which encodes 27 bct trits
     final String trits = getTrits(35);
     long value = TritConverter.toLong(trits);
-    char buffer[] = new char[27];
+    final char[] buffer = new char[27];
     for (int i = 0; i < 27; i++)
     {
       buffer[i] = "@01-".charAt((int) value & 0x03);
@@ -203,7 +235,13 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalParam(final AbraSiteParam param)
   {
-    param.size = getInt();
+  }
+
+  private int getIndex(final int sites)
+  {
+    final int index = sites - 1 - getInt();
+    check(index < sites, "Invalid site index");
+    return index;
   }
 
   @Override

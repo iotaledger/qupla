@@ -15,7 +15,6 @@ import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
 public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<AbraSiteKnot>
 {
   private final ArrayList<AbraSiteKnot> concats = new ArrayList<>();
-  private boolean elsewhere;
   private final ArrayList<AbraSiteParam> inputs = new ArrayList<>();
   private final ArrayList<AbraSiteKnot> knots = new ArrayList<>();
   private final TreeSet<AbraSiteKnot> slicers = new TreeSet<>(this);
@@ -27,7 +26,6 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
 
   private boolean canSlice(final AbraBaseSite input)
   {
-    elsewhere = false;
     knots.clear();
     slicers.clear();
 
@@ -37,6 +35,7 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
       {
       case AbraBaseBlock.TYPE_CONSTANT:
         continue;
+
       case AbraBaseBlock.TYPE_SLICE:
         if (knot.inputs.size() == 1 && knot.inputs.get(0) == input)
         {
@@ -47,20 +46,16 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
         break;
       }
 
-      if (!elsewhere)
+      for (final AbraBaseSite in : knot.inputs)
       {
-        for (final AbraBaseSite in : knot.inputs)
+        if (in == input)
         {
-          if (in == input)
-          {
-            elsewhere = true;
-            break;
-          }
+          return false;
         }
       }
     }
 
-    if (slicers.size() == 0 || elsewhere)
+    if (slicers.size() == 0)
     {
       // nothing to do
       return false;

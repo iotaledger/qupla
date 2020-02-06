@@ -32,10 +32,10 @@ public class TangleEntity extends Entity
   private static final int minWeightMagnitude = 9;
   public final HashSet<String> addresses = new HashSet<>();
   public Environment golAddress;
-  private final Entity golAddressEntity;
+  private Entity golAddressEntity;
   public Environment golMessage;
   public Environment golStore;
-  public HashMap<TritVector, TritVector> idMap = new HashMap<>();
+  public final HashMap<TritVector, TritVector> idMap = new HashMap<>();
   private IotaAPI iotaAPI;
   public ZMQListener listener;
 

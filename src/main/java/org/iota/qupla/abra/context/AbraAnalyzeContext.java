@@ -13,15 +13,12 @@ import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
-import org.iota.qupla.abra.funcmanagers.ConstFuncManager;
-import org.iota.qupla.abra.funcmanagers.ConstZeroFuncManager;
-import org.iota.qupla.helper.TritVector;
 
 public class AbraAnalyzeContext extends AbraBaseContext
 {
   private static final boolean sanityCheck = true;
-  public int missing;
-  public int offset;
+  private int missing;
+  private int offset;
 
   private void check(final boolean condition)
   {
@@ -72,7 +69,9 @@ public class AbraAnalyzeContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
-    if (branch.analyzed || branch.specialType == AbraBaseBlock.TYPE_SLICE)
+    if (branch.analyzed || //
+        branch.specialType == AbraBaseBlock.TYPE_SLICE || //
+        branch.specialType == AbraBaseBlock.TYPE_CONSTANT)
     {
       return;
     }
@@ -109,8 +108,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
       return;
     }
 
-    evalBranchSpecial(branch);
-
     branch.analyzed = true;
   }
 
@@ -125,82 +122,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
     }
 
     return index;
-  }
-
-  private boolean evalBranchSpecial(final AbraBlockBranch branch)
-  {
-    if (branch.latches.size() != 0)
-    {
-      return false;
-    }
-
-    return evalBranchSpecialConstant(branch);
-  }
-
-  private boolean evalBranchSpecialConstant(final AbraBlockBranch branch)
-  {
-    if (branch.inputs.size() != 1)
-    {
-      // nonzero constant function has 1 input
-      return false;
-    }
-
-    final AbraBaseSite singleTrit = branch.inputs.get(0);
-    if (singleTrit.size != 1)
-    {
-      // input must be a single trit
-      return false;
-    }
-
-    for (final AbraSiteKnot knot : branch.sites)
-    {
-      if (knot.block.specialType != AbraBaseBlock.TYPE_CONSTANT)
-      {
-        return false;
-      }
-
-      // all inputs triggered by input trit
-      for (final AbraBaseSite input : knot.inputs)
-      {
-        if (input != singleTrit)
-        {
-          return false;
-        }
-      }
-    }
-
-    TritVector constant = null;
-    for (final AbraBaseSite site : branch.outputs)
-    {
-      if (!(site instanceof AbraSiteKnot))
-      {
-        return false;
-      }
-
-      final AbraSiteKnot knot = (AbraSiteKnot) site;
-      if (knot.block.specialType != AbraBaseBlock.TYPE_CONSTANT)
-      {
-        return false;
-      }
-
-      // all inputs triggered by input trit
-      for (final AbraBaseSite input : knot.inputs)
-      {
-        if (input != singleTrit)
-        {
-          return false;
-        }
-      }
-
-      constant = TritVector.concat(constant, knot.block.constantValue);
-    }
-
-    //    final String prefix = constant.isZero() ? "constZero" : "const_";
-    //    check(branch.name == null || branch.name.startsWith(prefix));
-
-    branch.constantValue = constant;
-    branch.specialType = AbraBaseBlock.TYPE_CONSTANT;
-    return true;
   }
 
   @Override
@@ -306,7 +227,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
   @Override
   public void evalLatch(final AbraSiteLatch latch)
   {
-    check(latch.references == 0);
   }
 
   @Override
@@ -323,35 +243,20 @@ public class AbraAnalyzeContext extends AbraBaseContext
     {
     case 0:
       ensure(lut.specialType == AbraBaseBlock.TYPE_MERGE);
-      return;
+      break;
 
     case AbraBaseBlock.TYPE_NULLIFY_TRUE:
     case AbraBaseBlock.TYPE_NULLIFY_FALSE:
-    case AbraBaseBlock.TYPE_CONSTANT:
     case AbraBaseBlock.TYPE_SLICE:
       ensure(lut.specialType == lut.index);
-      return;
-    }
+      break;
 
-    if (lut.lookup.equals(ConstZeroFuncManager.LUT_ZERO))
-    {
-      lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
-      lut.constantValue = new TritVector(1, '0');
-      return;
-    }
-
-    if (lut.lookup.equals(ConstFuncManager.LUT_MIN))
-    {
-      lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
-      lut.constantValue = new TritVector(1, '-');
-      return;
-    }
-
-    if (lut.lookup.equals(ConstFuncManager.LUT_ONE))
-    {
-      lut.specialType = AbraBaseBlock.TYPE_CONSTANT;
-      lut.constantValue = new TritVector(1, '1');
-      return;
+    case AbraBaseBlock.TYPE_CONSTANT:
+    case AbraBaseBlock.TYPE_CONSTANT + 1:
+    case AbraBaseBlock.TYPE_CONSTANT + 2:
+    case AbraBaseBlock.TYPE_CONSTANT + 3:
+      ensure(lut.specialType == AbraBaseBlock.TYPE_CONSTANT);
+      break;
     }
   }
 

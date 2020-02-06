@@ -43,13 +43,12 @@ public class AbraBlockBranch extends AbraBaseBlock
     inputs.add(inputSite);
   }
 
-  public AbraSiteParam addInputParam(final int inputSize)
+  public void addInputParam(final int inputSize)
   {
     final AbraSiteParam inputSite = new AbraSiteParam();
     inputSite.size = inputSize;
     inputSite.name = "p" + inputs.size();
     addInput(inputSite);
-    return inputSite;
   }
 
   private void clearReferences(final ArrayList<? extends AbraBaseSite> sites)

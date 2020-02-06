@@ -25,7 +25,7 @@ public class AbraToVerilogContext extends AbraBaseContext
       9,
       27
   };
-  public final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
+  private final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
   private final Verilog verilog = new Verilog();
 
   private BaseContext appendName(final AbraBaseSite site)
@@ -152,6 +152,13 @@ public class AbraToVerilogContext extends AbraBaseContext
     if (knot.block.specialType == AbraBaseBlock.TYPE_SLICE)
     {
       evalKnotSlice(knot);
+      return;
+    }
+
+    if (knot.block.specialType == AbraBaseBlock.TYPE_CONSTANT)
+    {
+      final AbraBlockBranch constant = (AbraBlockBranch) knot.block;
+      appendVector(constant.constantValue.trits());
       return;
     }
 

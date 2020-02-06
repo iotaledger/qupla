@@ -16,7 +16,7 @@ import org.iota.qupla.exception.CodeException;
 
 public class AbraConfigContext extends AbraBaseContext
 {
-  public AbraBlockBranch funcBranch;
+  private AbraBlockBranch funcBranch;
   public String funcName = "add_9";
   private BufferedOutputStream outputStream;
 
@@ -36,7 +36,7 @@ public class AbraConfigContext extends AbraBaseContext
 
     if (funcBranch == null)
     {
-      throw new CodeException("Cannot fing branch: " + funcName);
+      throw new CodeException("Cannot find branch: " + funcName);
     }
 
     // find all LUTs this branch uses

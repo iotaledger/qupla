@@ -8,7 +8,6 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
@@ -51,9 +50,6 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext implements Co
   {
     module.numberBlocks();
 
-    evalConstant(module, true);
-    evalConstant(module, false);
-
     for (final AbraBlockBranch branch : module.branches)
     {
       if (branch.specialType == 0)
@@ -94,21 +90,6 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext implements Co
     output.add(branch);
   }
 
-  private void evalConstant(final AbraModule module, final boolean isZero)
-  {
-    for (final AbraBlockBranch branch : module.branches)
-    {
-      if (branch.specialType == AbraBaseBlock.TYPE_CONSTANT && branch.constantValue.isZero() == isZero)
-      {
-        input.add(branch);
-      }
-    }
-
-    output.addAll(input);
-
-    input.clear();
-  }
-
   @Override
   public void evalImport(final AbraBlockImport imp)
   {
@@ -136,20 +117,5 @@ public class AbraOrderBlockContext extends AbraTritCodeBaseContext implements Co
   @Override
   public void evalParam(final AbraSiteParam param)
   {
-  }
-
-  private void evalSpecial(final AbraModule module, final int specialType)
-  {
-    for (final AbraBlockBranch branch : module.branches)
-    {
-      if (branch.specialType == specialType)
-      {
-        input.add(branch);
-      }
-    }
-
-    output.addAll(input);
-
-    input.clear();
   }
 }

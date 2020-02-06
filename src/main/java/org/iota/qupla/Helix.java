@@ -33,7 +33,7 @@ public class Helix
       "110  1 0 1",
       "111  1 1 1"
   };
-  private static HashSet<String> outputs = new HashSet<>();
+  private static final HashSet<String> outputs = new HashSet<>();
   private static final String trits = "-01";
 
   private static void addOuts(final String outs)

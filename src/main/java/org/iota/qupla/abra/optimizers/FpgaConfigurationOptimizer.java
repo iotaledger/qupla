@@ -70,99 +70,51 @@ public class FpgaConfigurationOptimizer extends BaseOptimizer
     switch (knot.block.specialType)
     {
     case AbraBaseBlock.TYPE_MERGE:
-    {
-      final AbraBaseSite input1 = knot.inputs.get(0);
-      final AbraBaseSite input2 = knot.inputs.get(1);
-      final ArrayList<AbraBaseSite> trits1 = siteTrits.get(input1.index);
-      final ArrayList<AbraBaseSite> trits2 = siteTrits.get(input2.index);
-      final ArrayList<AbraBaseSite> trits = new ArrayList<>();
-      for (int i = 0; i < trits1.size(); i++)
-      {
-        final AbraBaseSite trit1 = trits1.get(i);
-        final AbraBaseSite trit2 = trits2.get(i);
-        final AbraSiteKnot lut = new AbraSiteKnot();
-        lut.size = 1;
-        lut.block = knot.block;
-        lut.inputs.add(trit1);
-        trit1.references++;
-        lut.inputs.add(trit2);
-        trit2.references++;
-
-        trits.add(lut);
-        sites.add(lut);
-      }
-      siteTrits.add(trits);
-    }
-    return;
+      processKnotMerge(knot);
+      return;
 
     case AbraBaseBlock.TYPE_NULLIFY_FALSE:
     case AbraBaseBlock.TYPE_NULLIFY_TRUE:
-    {
-      final AbraBaseSite flag = knot.inputs.get(0);
-      final AbraBaseSite value = knot.inputs.get(1);
-      final ArrayList<AbraBaseSite> flagTrits = siteTrits.get(flag.index);
-      final ArrayList<AbraBaseSite> valueTrits = siteTrits.get(value.index);
-      final AbraBaseSite flagTrit = flagTrits.get(0);
-      final ArrayList<AbraBaseSite> trits = new ArrayList<>();
-      for (int i = 0; i < valueTrits.size(); i++)
-      {
-        final AbraBaseSite valueTrit = valueTrits.get(i);
-        final AbraSiteKnot lut = new AbraSiteKnot();
-        lut.size = 1;
-        lut.block = knot.block;
-        lut.inputs.add(flagTrit);
-        flagTrit.references++;
-        lut.inputs.add(valueTrit);
-        valueTrit.references++;
+      processKnotNullify(knot);
+      return;
 
-        trits.add(lut);
-        sites.add(lut);
-      }
-      siteTrits.add(trits);
-    }
-    return;
+    case AbraBaseBlock.TYPE_CONSTANT:
+      processKnotConstant(knot);
+      return;
+
+    case AbraBaseBlock.TYPE_SLICE:
+      processKnotSlice(knot);
+      return;
     }
 
     if (knot.block instanceof AbraBlockLut)
     {
-      sites.add(processKnotLut(knot));
+      processKnotLut(knot);
       return;
     }
 
-    if (!(knot.block instanceof AbraBlockBranch))
+    if (knot.block instanceof AbraBlockBranch)
     {
-      error("Unknown block");
+      processKnotBranch(knot);
+      return;
     }
 
-    processKnotBranch(knot);
+    error("Unknown block");
   }
 
   private void processKnotBranch(final AbraSiteKnot knot)
   {
+    final AbraBlockBranch block = (AbraBlockBranch) knot.block;
+    if (!block.analyzed)
+    {
+      new FpgaConfigurationOptimizer(module, block).run();
+    }
+
     final ArrayList<AbraBaseSite> params = new ArrayList<>();
     for (final AbraBaseSite input : knot.inputs)
     {
       final ArrayList<AbraBaseSite> trits = siteTrits.get(input.index);
       params.addAll(trits);
-    }
-
-    final AbraBlockBranch block = (AbraBlockBranch) knot.block;
-    if (block.specialType == AbraBaseBlock.TYPE_SLICE)
-    {
-      final ArrayList<AbraBaseSite> trits = new ArrayList<>();
-      for (int i = 0; i < block.size; i++)
-      {
-        final AbraBaseSite param = params.get(block.offset + i);
-        trits.add(param);
-      }
-
-      siteTrits.add(trits);
-      return;
-    }
-
-    if (!block.analyzed)
-    {
-      new FpgaConfigurationOptimizer(module, block).run();
     }
 
     final AbraBlockBranch call = block.clone();
@@ -202,7 +154,29 @@ public class FpgaConfigurationOptimizer extends BaseOptimizer
     siteTrits.add(trits);
   }
 
-  private AbraSiteKnot processKnotLut(final AbraSiteKnot knot)
+  private void processKnotConstant(final AbraSiteKnot knot)
+  {
+    final AbraBaseSite input = knot.inputs.get(0);
+    final ArrayList<AbraBaseSite> inputTrits = siteTrits.get(input.index);
+    final AbraBaseSite inputTrit = inputTrits.get(0);
+    final ArrayList<AbraBaseSite> trits = new ArrayList<>();
+    final String vector = knot.block.constantValue.trits();
+    for (int i = 0; i < vector.length(); i++)
+    {
+      int lutId = AbraBaseBlock.TYPE_CONSTANT + "@01-".indexOf(vector.charAt(i));
+      final AbraSiteKnot lut = new AbraSiteKnot();
+      lut.size = 1;
+      lut.block = module.luts.get(lutId);
+      lut.inputs.add(inputTrit);
+      inputTrit.references++;
+      trits.add(lut);
+      sites.add(lut);
+    }
+
+    siteTrits.add(trits);
+  }
+
+  private void processKnotLut(final AbraSiteKnot knot)
   {
     final AbraSiteKnot lut = new AbraSiteKnot();
     lut.size = 1;
@@ -212,8 +186,79 @@ public class FpgaConfigurationOptimizer extends BaseOptimizer
 
     final ArrayList<AbraBaseSite> trits = new ArrayList<>();
     trits.add(lut);
+    sites.add(lut);
     siteTrits.add(trits);
-    return lut;
+  }
+
+  private void processKnotMerge(final AbraSiteKnot knot)
+  {
+    final AbraBaseSite input1 = knot.inputs.get(0);
+    final AbraBaseSite input2 = knot.inputs.get(1);
+    final ArrayList<AbraBaseSite> trits1 = siteTrits.get(input1.index);
+    final ArrayList<AbraBaseSite> trits2 = siteTrits.get(input2.index);
+    final ArrayList<AbraBaseSite> trits = new ArrayList<>();
+    for (int i = 0; i < trits1.size(); i++)
+    {
+      final AbraBaseSite trit1 = trits1.get(i);
+      final AbraBaseSite trit2 = trits2.get(i);
+      final AbraSiteKnot lut = new AbraSiteKnot();
+      lut.size = 1;
+      lut.block = knot.block;
+      lut.inputs.add(trit1);
+      trit1.references++;
+      lut.inputs.add(trit2);
+      trit2.references++;
+
+      trits.add(lut);
+      sites.add(lut);
+    }
+
+    siteTrits.add(trits);
+  }
+
+  private void processKnotNullify(final AbraSiteKnot knot)
+  {
+    final AbraBaseSite flag = knot.inputs.get(0);
+    final AbraBaseSite value = knot.inputs.get(1);
+    final ArrayList<AbraBaseSite> flagTrits = siteTrits.get(flag.index);
+    final ArrayList<AbraBaseSite> valueTrits = siteTrits.get(value.index);
+    final AbraBaseSite flagTrit = flagTrits.get(0);
+    final ArrayList<AbraBaseSite> trits = new ArrayList<>();
+    for (int i = 0; i < valueTrits.size(); i++)
+    {
+      final AbraBaseSite valueTrit = valueTrits.get(i);
+      final AbraSiteKnot lut = new AbraSiteKnot();
+      lut.size = 1;
+      lut.block = knot.block;
+      lut.inputs.add(flagTrit);
+      flagTrit.references++;
+      lut.inputs.add(valueTrit);
+      valueTrit.references++;
+
+      trits.add(lut);
+      sites.add(lut);
+    }
+    siteTrits.add(trits);
+  }
+
+  private void processKnotSlice(final AbraSiteKnot knot)
+  {
+    final ArrayList<AbraBaseSite> params = new ArrayList<>();
+    for (final AbraBaseSite input : knot.inputs)
+    {
+      final ArrayList<AbraBaseSite> trits = siteTrits.get(input.index);
+      params.addAll(trits);
+    }
+
+    final ArrayList<AbraBaseSite> trits = new ArrayList<>();
+    final AbraBlockBranch block = (AbraBlockBranch) knot.block;
+    for (int i = 0; i < block.size; i++)
+    {
+      final AbraBaseSite param = params.get(block.offset + i);
+      trits.add(param);
+    }
+
+    siteTrits.add(trits);
   }
 
   @Override
