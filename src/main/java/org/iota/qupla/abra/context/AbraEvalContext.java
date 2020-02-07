@@ -26,7 +26,7 @@ public class AbraEvalContext extends AbraBaseContext
 {
   // note: stateValues needs to be static so that state is preserved between invocations
   private static final HashMap<StateValue, StateValue> stateValues = new HashMap<>();
-
+  private static final boolean trace = false;
   private static final TritVector tritMin = new TritVector(1, '-');
   private static final TritVector tritNull = new TritVector(1, '@');
   private static final TritVector tritOne = new TritVector(1, '1');
@@ -66,6 +66,15 @@ public class AbraEvalContext extends AbraBaseContext
     }
   }
 
+  private void log(final AbraBaseSite site)
+  {
+    if (trace)
+    {
+      Qupla.log("" + site);
+      Qupla.log("" + stack[site.index]);
+    }
+  }
+
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
@@ -92,14 +101,21 @@ public class AbraEvalContext extends AbraBaseContext
       }
     }
 
+    for (final AbraSiteParam input : branch.inputs)
+    {
+      log(input);
+    }
+
     for (final AbraSiteLatch latch : branch.latches)
     {
       latch.eval(this);
+      log(latch);
     }
 
     for (final AbraSiteKnot site : branch.sites)
     {
       site.eval(this);
+      log(site);
     }
 
     TritVector result = null;

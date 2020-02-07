@@ -20,14 +20,6 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   private ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
   private final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
 
-  private void check(final boolean condition, final String errorText)
-  {
-    if (!condition)
-    {
-      error(errorText);
-    }
-  }
-
   @Override
   public void eval(final AbraModule module)
   {
@@ -78,16 +70,26 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
 
   private void evalBranchBuffer(final AbraBlockBranch branch)
   {
-    final int inputSites = getInt();
-    final boolean singleInputTrits = inputSites == 0;
+    // zero inputs cannot occur, so we can use that as a special flag
+    // to indicate that every input is a single trit input
+    // the actual amount of inputs follows immediately
+    final int inputs = getInt();
+    final boolean singleInputTrits = inputs == 0;
+    final int inputSites = singleInputTrits ? getInt() : inputs;
+
     final int latchSites = getInt();
     final int bodySites = getInt();
-    final int outputSites = getInt();
-    final boolean lastOutputSites = outputSites == 0;
+
+    // zero outputs cannot occur, so we can use that as a special flag
+    // to indicate that they are a concatenation of the final sites
+    // in the body sites list, which is frequently the case anyway
+    // the actual amount of outputs follows immediately
+    final int outputs = getInt();
+    final boolean lastOutputSites = outputs == 0;
+    final int outputSites = lastOutputSites ? getInt() : outputs;
 
     int offset = 0;
-    final int inputs = singleInputTrits ? getInt() : inputSites;
-    for (int i = 0; i < inputs; i++)
+    for (int i = 0; i < inputSites; i++)
     {
       final AbraSiteParam input = new AbraSiteParam();
       input.size = singleInputTrits ? 1 : getInt();
@@ -115,21 +117,22 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
 
     branch.numberSites();
 
-    final int outputs = lastOutputSites ? getInt() : outputSites;
-    offset = branch.totalSites() - outputs;
-    for (int i = 0; i < outputs; i++)
+    final int totalSites = branch.totalSites();
+    offset = totalSites - outputSites;
+    for (int i = 0; i < outputSites; i++)
     {
-      final int outputIndex = lastOutputSites ? offset + i : getIndex(branch.totalSites());
+      final int outputIndex = lastOutputSites ? offset + i : getIndex(totalSites);
       final AbraBaseSite output = branchSites.get(outputIndex);
       branch.outputs.add(output);
       output.references++;
       branch.size += output.size;
     }
 
+    // for each latch find out which site output it should be updated with
     for (int i = 0; i < latchSites; i++)
     {
       final AbraSiteLatch latch = branch.latches.get(i);
-      final int latchIndex = getIndex(branch.totalSites());
+      final int latchIndex = getIndex(totalSites);
       if (latchIndex != 0)
       {
         latch.latchSite = branchSites.get(latchIndex);
@@ -235,13 +238,6 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalParam(final AbraSiteParam param)
   {
-  }
-
-  private int getIndex(final int sites)
-  {
-    final int index = sites - 1 - getInt();
-    check(index < sites, "Invalid site index");
-    return index;
   }
 
   @Override

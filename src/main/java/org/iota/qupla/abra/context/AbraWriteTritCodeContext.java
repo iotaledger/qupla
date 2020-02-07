@@ -57,6 +57,18 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
       }
     }
 
+    // zero inputs cannot occur, so we can use that as a special flag
+    // to indicate that every input is a single trit input
+    // the actual amount of inputs follows immediately
+    if (singleInputTrits)
+    {
+      putInt(0);
+    }
+    putInt(branch.inputs.size());
+
+    putInt(branch.latches.size());
+    putInt(branch.sites.size());
+
     boolean lastOutputSites = true;
     final int offset = branch.totalSites() - branch.outputs.size();
     for (int i = 0; i < branch.outputs.size(); i++)
@@ -69,32 +81,30 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
       }
     }
 
-    putInt(singleInputTrits ? 0 : branch.inputs.size());
-    putInt(branch.latches.size());
-    putInt(branch.sites.size());
-    putInt(lastOutputSites ? 0 : branch.outputs.size());
+    // zero outputs cannot occur, so we can use that as a special flag
+    // to indicate that they are a concatenation of the final sites
+    // in the body sites list, which is frequently the case anyway
+    // the actual amount of outputs follows immediately
+    if (lastOutputSites)
+    {
+      putInt(0);
+    }
+    putInt(branch.outputs.size());
 
     // make sure sites are numbered correctly+
     branch.numberSites();
 
-    if (singleInputTrits)
-    {
-      putInt(branch.inputs.size());
-    }
-    else
+    // only specify input sizes when there are trit vectors > 1 trit
+    if (!singleInputTrits)
     {
       evalSites(branch.inputs);
     }
 
     evalSites(branch.latches);
-
     evalSites(branch.sites);
 
-    if (lastOutputSites)
-    {
-      putInt(branch.outputs.size());
-    }
-    else
+    // only specify output sites when they are not the final body sites
+    if (!lastOutputSites)
     {
       for (final AbraBaseSite output : branch.outputs)
       {
@@ -102,6 +112,7 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
       }
     }
 
+    // for each latch specify which site output it should be updated with
     for (final AbraSiteLatch latch : branch.latches)
     {
       final int latchIndex = latch.latchSite == null ? 0 : latch.latchSite.index;
@@ -141,43 +152,42 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
 
     if (knot.block.specialType == AbraBaseBlock.TYPE_CONSTANT)
     {
-      final AbraBlockBranch constant = (AbraBlockBranch) knot.block;
-      if (constant.constantValue.isZero())
+      final TritVector constant = knot.block.constantValue;
+      if (constant.isZero())
       {
         // all zero trits, encode length zero, followed by actual length
         putInt(0);
-        putInt(constant.size);
+        putInt(constant.size());
         return;
       }
 
       // encode actual length
-      putInt(constant.size);
+      putInt(constant.size());
 
-      final String trits = constant.constantValue.trits();
-      if (constant.size > 5)
+      final String trits = constant.trits();
+      if (constant.size() <= 5)
       {
-        // when more than 5 trits, trim off trailing zeroes
-        // and encode remaining length and trits
-        // this optimization uses the fact that most constants are
-        // small values (-1..2) and get zero-extended to larger vectors
-        for (int len = constant.size; len >= 0; len--)
-        {
-          if (trits.charAt(len - 1) != '0')
-          {
-            // encode minimum length necessary and the trits
-            // we can reconstruct because we know the constant size
-            putInt(len);
-            putTrits(trits.substring(0, len));
-            return;
-          }
-        }
-
-        // should never get here because there's at least one non-zero trit
-        error("WTF? BUG!");
+        // just encode the trits, nothing to gain from compression
+        putTrits(trits);
+        return;
       }
 
-      // just encode the trits
-      putTrits(trits);
+      // when more than 5 trits, trim off all trailing zeroes
+      // and encode the remaining length and trits
+      // this optimization uses the fact that most constants are
+      // small values (-1..2) and get zero-extended to much larger vectors
+
+      // find final non-zero trit
+      int len = constant.size();
+      while (trits.charAt(len - 1) == '0')
+      {
+        len--;
+      }
+
+      // encode the remaining length and trits
+      // we can reconstruct it because we already know the size
+      putInt(len);
+      putTrits(trits.substring(0, len));
     }
   }
 
@@ -192,6 +202,7 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   {
     if (lut.index < AbraModule.SPECIAL_LUTS)
     {
+      // no need to encode predefined LUTs
       return;
     }
 
@@ -228,13 +239,6 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   public void evalParam(final AbraSiteParam param)
   {
     putInt(param.size);
-  }
-
-  private void putIndex(final int sites, final int index)
-  {
-    // turn into relative index
-    // prev site is 0, the one before is 1, etc.
-    putInt(sites - 1 - index);
   }
 
   @Override

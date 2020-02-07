@@ -64,6 +64,21 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     // some sizes may have been indeterminable for now due to recursion
     resolveRecursions(module);
+
+    // quick sanity check if everything has a size now
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      check(branch.size != 0);
+      for (final AbraSiteKnot knot : branch.sites)
+      {
+        check(knot.size != 0);
+      }
+
+      for (final AbraSiteLatch latch : branch.latches)
+      {
+        check(latch.latchSite == null || latch.latchSite.size == latch.size);
+      }
+    }
   }
 
   @Override
@@ -133,10 +148,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    if (knot.inputs.size() == 0 && knot.references == 0)
-    {
-      return;
-    }
+    check(knot.inputs.size() != 0 && knot.references != 0);
 
     knot.block.eval(this);
     if (knot.block.size() == 0)
@@ -280,7 +292,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
     while (missing != lastMissing)
     {
       // try to resolve missing ones by running another pass
-      // over the ones that have not been done analyzing yet
+      // over the ones that have not finished analyzing yet
       // and see if that results in less missing branch sizes
       lastMissing = missing;
       missing = 0;
@@ -300,18 +312,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
       }
 
       error("Recursion issue detected");
-    }
-
-    // quick sanity check if everything has a size now
-    for (final AbraBlockBranch branch : module.branches)
-    {
-      for (final AbraSiteKnot knot : branch.sites)
-      {
-        if (knot.size == 0 && knot.inputs.size() != 0)
-        {
-          error("WTF?");
-        }
-      }
     }
   }
 }

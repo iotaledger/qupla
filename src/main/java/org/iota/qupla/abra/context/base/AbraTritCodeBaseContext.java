@@ -27,6 +27,14 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
   public char[] buffer = new char[32];
   public int bufferOffset;
 
+  protected void check(final boolean condition, final String errorText)
+  {
+    if (!condition)
+    {
+      error(errorText);
+    }
+  }
+
   protected void evalBranchSites(final AbraBlockBranch branch)
   {
     // make sure sites are numbered correctly+
@@ -86,6 +94,14 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return codePage[codePageNr].charAt(index);
   }
 
+  protected int getIndex(final int sites)
+  {
+    // see putIndex() for encoding algorithm
+    final int index = sites - 1 - getInt();
+    check(index < sites, "Invalid site index");
+    return index;
+  }
+
   protected int getInt()
   {
     // see putInt() for encoding algorithm
@@ -107,6 +123,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
       {
         value |= mask;
       }
+
       mask <<= 1;
     }
 
@@ -138,22 +155,14 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
 
   protected char getTrit()
   {
-    if (bufferOffset >= buffer.length)
-    {
-      error("Buffer overflow in getTrit");
-    }
-
+    check(bufferOffset < buffer.length, "Buffer overflow in getTrit");
     return buffer[bufferOffset++];
   }
 
   protected String getTrits(final int size)
   {
     bufferOffset += size;
-    if (bufferOffset > buffer.length)
-    {
-      error("Buffer overflow in getTrits(" + size + ")");
-    }
-
+    check(bufferOffset <= buffer.length, "Buffer overflow in getTrits");
     return new String(buffer, bufferOffset - size, size);
   }
 
@@ -170,6 +179,16 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     }
 
     return putTrits("--").putInt(c);
+  }
+
+  protected void putIndex(final int sites, final int index)
+  {
+    // encode as a relative index to <sites>, which is the amount
+    // of sites that precedes the current encoding position
+    // previous site becomes 0, the one before becomes 1, etc.
+    // since sites often refer a previous one nearby the encoding location
+    // this favors lower values that can be encoded in less trits
+    putInt(sites - 1 - index);
   }
 
   protected AbraTritCodeBaseContext putInt(final int value)
