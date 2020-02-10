@@ -77,49 +77,42 @@ template fullMul3<T> = P + P + P {
   }
 
   func T2 fullMulNonZero<T> (T lhs, T rhs) {
-    // get lhs digits
-    A = lhs[P * 0 : P]
-    B = lhs[P * 1 : P]
-    C = lhs[P * 2 : P]
-
-    // get rhs digits
-    D = rhs[P * 0 : P]
-    E = rhs[P * 1 : P]
-    F = rhs[P * 2 : P]
-
-    // determine all products
-    AD = fullMul<P>(A, D)
-    AE = fullMul<P>(A, E)
-    AF = fullMul<P>(A, F)
-    BD = fullMul<P>(B, D)
-    BE = fullMul<P>(B, E)
-    BF = fullMul<P>(B, F)
-    CD = fullMul<P>(C, D)
-    CE = fullMul<P>(C, E)
-    CF = fullMul<P>(C, F)
-
     // note: the sum of 2 products can never generate
     //      a carry, but the sum of 3 products can...
 
     // AD
+    A = lhs[P * 0 : P]
+    D = rhs[P * 0 : P]
+    AD = fullMul<P>(A, D)
     tryte0 = AD[P * 0 : P]
     carry0 = AD[P * 1 : P]
 
     // AE0 + BD0 + carry0
+    E = rhs[P * 1 : P]
+    AE = fullMul<P>(A, E)
+    B = lhs[P * 1 : P]
+    BD = fullMul<P>(B, D)
     AEBD = addProduct<P>(AE, BD)
     AEBDc = addCarryToProduct<P>(AEBD.value, carry0, 0)
     tryte1 = AEBDc[P * 0 : P]
     carry1 = AEBDc[P * 1 : P]
 
     // AF00 + BE00 + CD00 + carry1
+    F = rhs[P * 2 : P]
+    AF = fullMul<P>(A, F)
+    BE = fullMul<P>(B, E)
     AFBE = addProduct<P>(AF, BE)
     AFBEc = addCarryToProduct<P>(AFBE.value, carry1, 0)
     // note: adding 3rd product, watch the extra overflow carry trit
+    C = lhs[P * 2 : P]
+    CD = fullMul<P>(C, D)
     AFBEcCD = addProduct<P>(AFBEc, CD)
     tryte2 = AFBEcCD[P * 0 : P]
     carry2 = AFBEcCD[P * 1 : P]
 
     // BF000 + CE000 + carry2
+    BF = fullMul<P>(B, F)
+    CE = fullMul<P>(C, E)
     BFCE = addProduct<P>(BF, CE)
     BFCEc = addCarryToProduct<P>(BFCE.value, carry2, 0)
     tryte3 = BFCEc[P * 0 : P]
@@ -127,6 +120,7 @@ template fullMul3<T> = P + P + P {
 
     // CF0000 + carry3
     // note: this is where the extra overflow carry trit goes
+    CF = fullMul<P>(C, F)
     CFc = addCarryToProduct<P>(CF, carry3, AFBEcCD.carry)
     // tryte4 = CFc[P * 0 : P]
     // tryte5 = CFc[P * 1 : P]

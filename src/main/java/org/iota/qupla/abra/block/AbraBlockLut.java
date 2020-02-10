@@ -16,6 +16,7 @@ public class AbraBlockLut extends AbraBaseBlock
   public static final String LUT_NULLIFY_TRUE = "@@-@@0@@1@@-@@0@@1@@-@@0@@1";
   public static final String LUT_ONE = "111111111111111111111111111";
   public static final String LUT_ZERO = "000000000000000000000000000";
+
   public String lookup = LUT_NULL;
 
   public static String unnamed(final String lookupTable)

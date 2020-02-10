@@ -15,24 +15,23 @@ public class EmptyFunctionOptimizer extends BaseOptimizer
   }
 
   @Override
-  protected void processKnot(final AbraSiteKnot knot)
+  protected void processKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
   {
     // find and disable all function calls that do nothing
 
     // must be a function call that has a single input
-    if (!(knot.block instanceof AbraBlockBranch) || knot.inputs.size() != 1)
+    if (knot.inputs.size() != 1)
     {
       return;
     }
 
-    final AbraBlockBranch target = (AbraBlockBranch) knot.block;
-    if (target.sites.size() != 0 || target.latches.size() != 0)
+    if (block.sites.size() != 0 || block.latches.size() != 0)
     {
       // not an empty function
       return;
     }
 
-    if (target.inputs.size() != 1 || target.outputs.size() != 1)
+    if (block.inputs.size() != 1 || block.outputs.size() != 1)
     {
       // not simply passing the input back to output
       return;
@@ -40,14 +39,14 @@ public class EmptyFunctionOptimizer extends BaseOptimizer
 
     final AbraBaseSite knotInput = knot.inputs.get(0);
 
-    final AbraSiteParam input = target.inputs.get(0);
+    final AbraSiteParam input = block.inputs.get(0);
     if (input.size != knotInput.size)
     {
       // some slicing going on
       return;
     }
 
-    final AbraBaseSite output = target.outputs.get(0);
+    final AbraBaseSite output = block.outputs.get(0);
     if (output != input)
     {
       // WTF? how is this even possible?

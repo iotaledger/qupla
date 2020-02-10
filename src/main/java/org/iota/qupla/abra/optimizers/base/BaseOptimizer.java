@@ -2,6 +2,8 @@ package org.iota.qupla.abra.optimizers.base;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
@@ -25,16 +27,43 @@ public class BaseOptimizer
     throw new CodeException(text);
   }
 
-  private void process()
+  protected void processKnot(final AbraSiteKnot knot)
   {
-    final AbraSiteKnot site = branch.sites.get(index);
-    if (site.references != 0)
+    if (knot.references == 0)
     {
-      processKnot(site);
+      return;
     }
+
+    if (knot.block instanceof AbraBlockSpecial)
+    {
+      processKnotSpecial(knot, (AbraBlockSpecial) knot.block);
+      return;
+    }
+
+    if (knot.block instanceof AbraBlockBranch)
+    {
+      processKnotBranch(knot, (AbraBlockBranch) knot.block);
+      return;
+    }
+
+    if (knot.block instanceof AbraBlockLut)
+    {
+      processKnotLut(knot, (AbraBlockLut) knot.block);
+      return;
+    }
+
+    error("WTF?");
   }
 
-  protected void processKnot(final AbraSiteKnot knot)
+  protected void processKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
+  {
+  }
+
+  protected void processKnotLut(final AbraSiteKnot knot, final AbraBlockLut lut)
+  {
+  }
+
+  protected void processKnotSpecial(final AbraSiteKnot knot, final AbraBlockSpecial block)
   {
   }
 
@@ -102,7 +131,8 @@ public class BaseOptimizer
     {
       for (index = branch.sites.size() - 1; index >= 0; index--)
       {
-        process();
+        final AbraSiteKnot site = branch.sites.get(index);
+        processKnot(site);
       }
 
       return;
@@ -110,7 +140,8 @@ public class BaseOptimizer
 
     for (index = 0; index < branch.sites.size(); index++)
     {
-      process();
+      final AbraSiteKnot site = branch.sites.get(index);
+      processKnot(site);
     }
   }
 }

@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
@@ -31,19 +31,14 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
 
     for (final AbraSiteKnot knot : branch.sites)
     {
-      switch (knot.block.specialType)
+      if (knot.block.index == AbraBlockSpecial.TYPE_SLICE)
       {
-      case AbraBaseBlock.TYPE_CONSTANT:
-        continue;
-
-      case AbraBaseBlock.TYPE_SLICE:
         if (knot.inputs.size() == 1 && knot.inputs.get(0) == input)
         {
           knots.add(knot);
           slicers.add(knot);
           continue;
         }
-        break;
       }
 
       for (final AbraBaseSite in : knot.inputs)
@@ -65,7 +60,7 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
     int prevOffset = 0;
     for (final AbraSiteKnot slicer : slicers)
     {
-      final AbraBlockBranch branch = (AbraBlockBranch) slicer.block;
+      final AbraBlockSpecial branch = (AbraBlockSpecial) slicer.block;
       if (branch.offset < prevOffset)
       {
         // not contiguous
@@ -81,8 +76,8 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
   @Override
   public int compare(final AbraSiteKnot lhs, final AbraSiteKnot rhs)
   {
-    final AbraBlockBranch lhsBranch = (AbraBlockBranch) lhs.block;
-    final AbraBlockBranch rhsBranch = (AbraBlockBranch) rhs.block;
+    final AbraBlockSpecial lhsBranch = (AbraBlockSpecial) lhs.block;
+    final AbraBlockSpecial rhsBranch = (AbraBlockSpecial) rhs.block;
     if (lhsBranch.offset != rhsBranch.offset)
     {
       return lhsBranch.offset < rhsBranch.offset ? -1 : 1;
@@ -102,7 +97,7 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
     int prevOffset = 0;
     for (final AbraSiteKnot slicer : slicers)
     {
-      final AbraBlockBranch branch = (AbraBlockBranch) slicer.block;
+      final AbraBlockSpecial branch = (AbraBlockSpecial) slicer.block;
       if (branch.offset != prevOffset)
       {
         // unused part of input, insert dummy sliced input
@@ -125,7 +120,7 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
 
     for (final AbraSiteKnot knot : knots)
     {
-      final AbraBlockBranch branch = (AbraBlockBranch) knot.block;
+      final AbraBlockSpecial branch = (AbraBlockSpecial) knot.block;
       for (final AbraSiteParam slice : slices)
       {
         if (slice.offset == branch.offset)
@@ -138,7 +133,7 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
 
     final AbraSiteKnot concat = new AbraSiteKnot();
     concat.size = input.size;
-    concat.slice(0);
+    concat.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONCAT, concat.size);
     for (final AbraSiteParam slice : slices)
     {
       concat.inputs.add(slice);
@@ -150,14 +145,14 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
     inputs.addAll(slices);
   }
 
-  private AbraSiteParam makeSlice(final AbraBaseSite input, final int sliceOffset, final int sliceSize)
+  private AbraSiteParam makeSlice(final AbraBaseSite input, final int offset, final int size)
   {
     final AbraSiteParam slice = new AbraSiteParam();
-    slice.offset = sliceOffset;
-    slice.size = sliceSize;
+    slice.offset = offset;
+    slice.size = size;
     if (input.name != null)
     {
-      slice.name = input.name + "_" + sliceSize + "_" + sliceOffset;
+      slice.name = input.name + "_" + size + "_" + offset;
     }
 
     return slice;
@@ -186,18 +181,6 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
       for (final AbraSiteParam input : inputs)
       {
         branch.addInput(input);
-      }
-
-      // any constant knots need to be updated with the new first param
-      final AbraBaseSite constInput = inputs.get(0);
-      for (AbraSiteKnot knot : branch.sites)
-      {
-        if (knot.block.specialType == AbraBaseBlock.TYPE_CONSTANT)
-        {
-          knot.inputs.get(0).references--;
-          knot.inputs.set(0, constInput);
-          constInput.references++;
-        }
       }
 
       branch.sites.addAll(0, concats);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
@@ -19,7 +20,7 @@ public class NullifyOptimizer extends BaseOptimizer
   @Override
   protected void processKnot(final AbraSiteKnot knot)
   {
-    if (index == 0 || !knot.hasNullifier())
+    if (index == 0 || !knot.hasNullifier() || knot.block.index == AbraBlockSpecial.TYPE_CONST)
     {
       // no need to move it up the chain anyway
       return;

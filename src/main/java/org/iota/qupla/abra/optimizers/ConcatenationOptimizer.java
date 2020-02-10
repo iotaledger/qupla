@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
@@ -22,13 +22,19 @@ public class ConcatenationOptimizer extends BaseOptimizer
 
     for (final AbraBaseSite input : inputs)
     {
-      if (!isConcat(input))
+      if (!(input instanceof AbraSiteKnot))
       {
         outputs.add(input);
         continue;
       }
 
       final AbraSiteKnot knot = (AbraSiteKnot) input;
+      if (knot.block.index != AbraBlockSpecial.TYPE_CONCAT)
+      {
+        outputs.add(input);
+        continue;
+      }
+
       knot.references--;
       for (final AbraBaseSite knotInput : knot.inputs)
       {
@@ -41,48 +47,11 @@ public class ConcatenationOptimizer extends BaseOptimizer
     inputs.addAll(outputs);
   }
 
-  private boolean isConcat(final AbraBaseSite output)
-  {
-    if (!(output instanceof AbraSiteKnot))
-    {
-      return false;
-    }
-
-    final AbraSiteKnot knot = (AbraSiteKnot) output;
-    if (knot.block.specialType != AbraBaseBlock.TYPE_SLICE)
-    {
-      return false;
-    }
-
-    final AbraBlockBranch branch = (AbraBlockBranch) knot.block;
-    if (branch.offset != 0)
-    {
-      // slice operation
-      return false;
-    }
-
-    int totalSize = 0;
-    for (final AbraBaseSite input : knot.inputs)
-    {
-      totalSize += input.size;
-    }
-
-    // concat returns everything, if it does not it is a slice operation
-    return totalSize == branch.size;
-  }
-
   @Override
-  protected void processKnot(final AbraSiteKnot knot)
+  protected void processKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
   {
     //TODO this will cause AbraToVerilog to fail because
     //     verilog code expects exact number of parameters
-
-    //    if (knot.block.specialType != 0)
-    //    {
-    //      // do not replace concat parameters to special blocks
-    //      return;
-    //    }
-    //
     //    evalInputs(knot.inputs);
   }
 

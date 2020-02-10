@@ -6,6 +6,7 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
@@ -31,6 +32,24 @@ public class AbraPrintContext extends AbraBaseContext
       append(prefix + stmt).newline();
       stmt = stmt.next;
     }
+  }
+
+  private int depth(final AbraSiteKnot knot)
+  {
+    int maxDepth = 0;
+    for (final AbraBaseSite input : knot.inputs)
+    {
+      if (input instanceof AbraSiteKnot)
+      {
+        final int thisDepth = depth((AbraSiteKnot) input) + 1;
+        if (thisDepth > maxDepth)
+        {
+          maxDepth = thisDepth;
+        }
+      }
+    }
+
+    return maxDepth;
   }
 
   public void eval(final AbraModule module)
@@ -63,31 +82,7 @@ public class AbraPrintContext extends AbraBaseContext
 
     evalBlock(branch);
 
-    append("// branch " + branch.name);
-    switch (branch.specialType)
-    {
-    case AbraBaseBlock.TYPE_CONSTANT:
-      append(" // C");
-      break;
-
-    case AbraBaseBlock.TYPE_NULLIFY_FALSE:
-      append(" // F");
-      break;
-
-    case AbraBaseBlock.TYPE_NULLIFY_TRUE:
-      append(" // T");
-      break;
-
-    case AbraBaseBlock.TYPE_SLICE:
-      append(" // S");
-      break;
-
-    case AbraBaseBlock.TYPE_MERGE:
-      append(" // M");
-      break;
-    }
-
-    newline().indent();
+    append("## branch " + branch.name).newline().indent();
 
     evalBranchSites(branch.inputs, "in ");
     evalBranchSites(branch.latches, "latch ");
@@ -95,7 +90,7 @@ public class AbraPrintContext extends AbraBaseContext
 
     appendStmt(branch.finalStmt);
     final String size = (branch.size < 10 ? " " : "") + branch.size;
-    append("// 0  [" + size + "] out ");
+    append("## 0  [" + size + "] out ");
     boolean first = true;
     for (final AbraBaseSite output : branch.outputs)
     {
@@ -122,16 +117,16 @@ public class AbraPrintContext extends AbraBaseContext
   {
     evalBlock(imp);
 
-    append("// import " + imp.toString());
+    append("## import " + imp.toString());
   }
 
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    evalSite(knot);
+    evalSite(knot, depth(knot));
 
-    final boolean isBranch = knot.block instanceof AbraBlockBranch;
-    final String braces = isBranch ? "()" : knot.block.index == 0 ? "{}" : "[]";
+    final boolean isLut = knot.block instanceof AbraBlockLut;
+    final String braces = isLut ? "[]" : knot.block.index == 0 ? "{}" : "()";
 
     append(" = ").append(knot.block.name).append(braces.substring(0, 1));
 
@@ -149,7 +144,7 @@ public class AbraPrintContext extends AbraBaseContext
   @Override
   public void evalLatch(final AbraSiteLatch latch)
   {
-    evalSite(latch);
+    evalSite(latch, 0);
 
     append(" = latch " + latch.name + "[" + latch.size + "]");
   }
@@ -157,16 +152,16 @@ public class AbraPrintContext extends AbraBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    append("// lut " + lut.lookup + " " + lut.name).newline();
+    append("## lut " + lut.lookup + " " + lut.name).newline();
   }
 
   @Override
   public void evalParam(final AbraSiteParam param)
   {
-    evalSite(param);
+    evalSite(param, 0);
   }
 
-  private void evalSite(final AbraBaseSite site)
+  private void evalSite(final AbraBaseSite site, final int level)
   {
     appendStmt(site.stmt);
 
@@ -181,8 +176,18 @@ public class AbraPrintContext extends AbraBaseContext
       nullifyIndex = "F" + site.nullifyFalse.index;
     }
 
+    for (int i = 0; i < level; i++)
+    {
+      append(i < 10 ? "" + i + i : "##");
+    }
+
     final String size = (site.size < 10 ? " " : "") + site.size;
-    append("// " + site.references + nullifyIndex);
+    append("## " + site.references + nullifyIndex);
     append(" " + "[" + size + "] " + type + site.varName());
+  }
+
+  @Override
+  public void evalSpecial(final AbraBlockSpecial block)
+  {
   }
 }

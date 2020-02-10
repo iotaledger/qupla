@@ -57,15 +57,6 @@ public class UnreferencedSiteRemover extends BaseOptimizer
     branch.sites.remove(index);
   }
 
-  @Override
-  public void run()
-  {
-    for (index = branch.sites.size() - 1; index >= 0; index--)
-    {
-      processKnot(branch.sites.get(index));
-    }
-  }
-
   private void updateReferenceCounts(final AbraSiteKnot site)
   {
     for (final AbraBaseSite input : site.inputs)

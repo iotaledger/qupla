@@ -6,6 +6,7 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
@@ -19,6 +20,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
 {
   private ArrayList<AbraBaseBlock> blocks = new ArrayList<>();
   private final ArrayList<AbraBaseSite> branchSites = new ArrayList<>();
+  private AbraSiteParam constInput;
 
   @Override
   public void eval(final AbraModule module)
@@ -26,8 +28,9 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
     final int version = getInt();
     check(module.version == version, "Module version should be " + module.version);
 
-    blocks.addAll(module.luts);
+    blocks.addAll(module.specials);
 
+    module.luts.clear();
     final int luts = getInt();
     for (int i = 0; i < luts; i++)
     {
@@ -98,6 +101,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
       branch.inputs.add(input);
       branchSites.add(input);
     }
+    constInput = branch.inputs.get(0);
 
     for (int i = 0; i < latchSites; i++)
     {
@@ -161,49 +165,49 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
     check(blockNr < blocks.size(), "Invalid block number");
     knot.block = blocks.get(blockNr);
 
-    final int inputSites = getInt();
-    for (int i = 0; i < inputSites; i++)
-    {
-      final int inputIndex = getIndex(branchSites.size());
-      final AbraBaseSite input = branchSites.get(inputIndex);
-      knot.inputs.add(input);
-      input.references++;
-    }
+    super.evalKnot(knot);
+  }
 
-    if (blockNr == AbraBaseBlock.TYPE_SLICE)
+  @Override
+  protected void evalKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
+  {
+    getInputSites(knot, getInt());
+  }
+
+  @Override
+  protected void evalKnotLut(final AbraSiteKnot knot, final AbraBlockLut block)
+  {
+    getInputSites(knot, block.inputs());
+  }
+
+  @Override
+  protected void evalKnotSpecial(final AbraSiteKnot knot, final AbraBlockSpecial block)
+  {
+    switch (block.index)
     {
+    case AbraBlockSpecial.TYPE_CONST:
+      final TritVector vector = getConst();
+      knot.size = vector.size();
+      knot.block = new AbraBlockSpecial(block.index, knot.size, vector);
+      break;
+
+    case AbraBlockSpecial.TYPE_NULLIFY_FALSE:
+    case AbraBlockSpecial.TYPE_NULLIFY_TRUE:
+      getInputSites(knot, 2);
+      knot.block = new AbraBlockSpecial(block.index);
+      break;
+
+    case AbraBlockSpecial.TYPE_SLICE:
+      getInputSites(knot, getInt());
       final int start = getInt();
       knot.size = getInt();
-      knot.slice(start);
-      return;
-    }
+      knot.block = new AbraBlockSpecial(block.index, knot.size, start);
+      break;
 
-    if (blockNr == AbraBaseBlock.TYPE_CONSTANT)
-    {
-      knot.size = getInt();
-      if (knot.size == 0)
-      {
-        // all zero trits, get the actual length
-        knot.size = getInt();
-        final TritVector zeroes = new TritVector(knot.size, '0');
-        knot.vector(zeroes);
-        return;
-      }
-
-      if (knot.size > 5)
-      {
-        // trailing zeroes were trimmed, get remaining trits and reconstruct by padding zeroes
-        final int len = getInt();
-        final TritVector remain = new TritVector(getTrits(len));
-        final TritVector zeroes = new TritVector(knot.size - len, '0');
-        final TritVector vector = TritVector.concat(remain, zeroes);
-        knot.vector(vector);
-        return;
-      }
-
-      // just get the trits
-      final TritVector vector = new TritVector(getTrits(knot.size));
-      knot.vector(vector);
+    default:
+      getInputSites(knot, getInt());
+      knot.block = new AbraBlockSpecial(block.index);
+      break;
     }
   }
 
@@ -216,11 +220,6 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    if (lut.index < AbraModule.SPECIAL_LUTS)
-    {
-      return;
-    }
-
     // convert 35 trits to 54-bit long value, which encodes 27 bct trits
     final String trits = getTrits(35);
     long value = TritConverter.toLong(trits);
@@ -238,6 +237,45 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalParam(final AbraSiteParam param)
   {
+  }
+
+  @Override
+  public void evalSpecial(final AbraBlockSpecial block)
+  {
+  }
+
+  private TritVector getConst()
+  {
+    int size = getInt();
+    if (size == 0)
+    {
+      // all zero trits, get the actual length
+      size = getInt();
+      return new TritVector(size, '0');
+    }
+
+    if (size <= 5)
+    {
+      // just get the trits
+      return new TritVector(getTrits(size));
+    }
+
+    // trailing zeroes were trimmed, get remaining trits and reconstruct by padding zeroes
+    final int len = getInt();
+    final TritVector remain = new TritVector(getTrits(len));
+    final TritVector zeroes = new TritVector(size - len, '0');
+    return TritVector.concat(remain, zeroes);
+  }
+
+  private void getInputSites(final AbraSiteKnot knot, final int inputSites)
+  {
+    for (int i = 0; i < inputSites; i++)
+    {
+      final int inputIndex = getIndex(branchSites.size());
+      final AbraBaseSite input = branchSites.get(inputIndex);
+      knot.inputs.add(input);
+      input.references++;
+    }
   }
 
   @Override

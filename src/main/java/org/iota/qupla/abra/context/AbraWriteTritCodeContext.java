@@ -4,7 +4,7 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
@@ -22,7 +22,7 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
 
     putInt(module.version);
 
-    putInt(module.luts.size() - AbraModule.SPECIAL_LUTS);
+    putInt(module.luts.size());
     putInt(module.branches.size());
     putInt(module.imports.size());
 
@@ -136,58 +136,47 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   {
     putInt(knot.block.index);
 
+    super.evalKnot(knot);
+  }
+
+  @Override
+  protected void evalKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
+  {
     putInt(knot.inputs.size());
-    for (final AbraBaseSite input : knot.inputs)
+    putInputSites(knot, knot.inputs.size());
+  }
+
+  @Override
+  protected void evalKnotLut(final AbraSiteKnot knot, final AbraBlockLut block)
+  {
+    putInputSites(knot, block.inputs());
+  }
+
+  @Override
+  protected void evalKnotSpecial(final AbraSiteKnot knot, final AbraBlockSpecial block)
+  {
+    switch (block.index)
     {
-      putIndex(knot.index, input.index);
-    }
+    case AbraBlockSpecial.TYPE_CONST:
+      putConst(block.constantValue);
+      break;
 
-    if (knot.block.specialType == AbraBaseBlock.TYPE_SLICE)
-    {
-      final AbraBlockBranch slice = (AbraBlockBranch) knot.block;
-      putInt(slice.offset);
-      putInt(slice.size);
-      return;
-    }
+    case AbraBlockSpecial.TYPE_NULLIFY_FALSE:
+    case AbraBlockSpecial.TYPE_NULLIFY_TRUE:
+      putInputSites(knot, 2);
+      break;
 
-    if (knot.block.specialType == AbraBaseBlock.TYPE_CONSTANT)
-    {
-      final TritVector constant = knot.block.constantValue;
-      if (constant.isZero())
-      {
-        // all zero trits, encode length zero, followed by actual length
-        putInt(0);
-        putInt(constant.size());
-        return;
-      }
+    case AbraBlockSpecial.TYPE_SLICE:
+      putInt(knot.inputs.size());
+      putInputSites(knot, knot.inputs.size());
+      putInt(block.offset);
+      putInt(block.size);
+      break;
 
-      // encode actual length
-      putInt(constant.size());
-
-      final String trits = constant.trits();
-      if (constant.size() <= 5)
-      {
-        // just encode the trits, nothing to gain from compression
-        putTrits(trits);
-        return;
-      }
-
-      // when more than 5 trits, trim off all trailing zeroes
-      // and encode the remaining length and trits
-      // this optimization uses the fact that most constants are
-      // small values (-1..2) and get zero-extended to much larger vectors
-
-      // find final non-zero trit
-      int len = constant.size();
-      while (trits.charAt(len - 1) == '0')
-      {
-        len--;
-      }
-
-      // encode the remaining length and trits
-      // we can reconstruct it because we already know the size
-      putInt(len);
-      putTrits(trits.substring(0, len));
+    default:
+      putInt(knot.inputs.size());
+      putInputSites(knot, knot.inputs.size());
+      break;
     }
   }
 
@@ -200,12 +189,6 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    if (lut.index < AbraModule.SPECIAL_LUTS)
-    {
-      // no need to encode predefined LUTs
-      return;
-    }
-
     // encode 27 bct trits as 54-bit long value, and convert to 35 trits
     long value = 0;
     for (int i = 26; i >= 0; i--)
@@ -239,6 +222,59 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   public void evalParam(final AbraSiteParam param)
   {
     putInt(param.size);
+  }
+
+  @Override
+  public void evalSpecial(final AbraBlockSpecial block)
+  {
+  }
+
+  private void putConst(final TritVector constant)
+  {
+    if (constant.isZero())
+    {
+      // all zero trits, encode length zero, followed by actual length
+      putInt(0);
+      putInt(constant.size());
+      return;
+    }
+
+    // encode actual length
+    putInt(constant.size());
+
+    final String trits = constant.trits();
+    if (constant.size() <= 5)
+    {
+      // just encode the trits, nothing to gain from compression
+      putTrits(trits);
+      return;
+    }
+
+    // when more than 5 trits, trim off all trailing zeroes
+    // and encode the remaining length and trits
+    // this optimization uses the fact that most constants are
+    // small values (-1..2) and get zero-extended to much larger vectors
+
+    // find final non-zero trit
+    int len = trits.length();
+    while (trits.charAt(len - 1) == '0')
+    {
+      len--;
+    }
+
+    // encode the remaining length and trits
+    // we can reconstruct it because we already know the size
+    putInt(len);
+    putTrits(trits.substring(0, len));
+  }
+
+  private void putInputSites(final AbraSiteKnot knot, final int inputs)
+  {
+    for (int i = 0; i < inputs; i++)
+    {
+      final AbraBaseSite input = knot.inputs.get(i);
+      putIndex(knot.index, input.index);
+    }
   }
 
   @Override

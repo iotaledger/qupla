@@ -7,7 +7,7 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
@@ -28,20 +28,15 @@ public class AbraAnalyzeContext extends AbraBaseContext
     }
   }
 
-  private void clearSizes(final ArrayList<? extends AbraBaseSite> sites)
+  private void clearSizes(final ArrayList<AbraBlockBranch> branches)
   {
-    for (final AbraBaseSite site : sites)
-    {
-      site.size = 0;
-    }
-  }
-
-  private void clearSizes(final AbraModule module)
-  {
-    for (final AbraBlockBranch branch : module.branches)
+    for (final AbraBlockBranch branch : branches)
     {
       branch.size = 0;
-      clearSizes(branch.sites);
+      for (final AbraSiteKnot site : branch.sites)
+      {
+        site.size = 0;
+      }
     }
   }
 
@@ -56,8 +51,10 @@ public class AbraAnalyzeContext extends AbraBaseContext
   @Override
   public void eval(final AbraModule module)
   {
-    // we're going to recalculate all sizes
-    clearSizes(module);
+    module.numberBlocks();
+
+    // we're going to recalculate all branch and body site sizes
+    clearSizes(module.branches);
 
     // single pass over everything
     super.eval(module);
@@ -84,9 +81,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
-    if (branch.analyzed || //
-        branch.specialType == AbraBaseBlock.TYPE_SLICE || //
-        branch.specialType == AbraBaseBlock.TYPE_CONSTANT)
+    if (branch.analyzed)
     {
       return;
     }
@@ -116,23 +111,14 @@ public class AbraAnalyzeContext extends AbraBaseContext
     branch.size = size;
     ensure(branch.size != 0);
 
-    if (lastMissing != missing)
-    {
-      // come back later to fill in missing sites
-      branch.analyzed = false;
-      return;
-    }
-
-    branch.analyzed = true;
+    branch.analyzed = lastMissing == missing;
   }
 
   private int evalBranchSites(int index, final ArrayList<? extends AbraBaseSite> sites)
   {
     for (final AbraBaseSite site : sites)
     {
-      check(site.index == index);
       site.index = index++;
-
       site.eval(this);
     }
 
@@ -142,98 +128,112 @@ public class AbraAnalyzeContext extends AbraBaseContext
   @Override
   public void evalImport(final AbraBlockImport imp)
   {
-
   }
 
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    check(knot.inputs.size() != 0 && knot.references != 0);
+    check(knot.references != 0);
 
-    knot.block.eval(this);
     if (knot.block.size() == 0)
     {
+      knot.block.eval(this);
+    }
+
+    super.evalKnot(knot);
+
+    if (knot.size == 0)
+    {
       missing++;
-      return;
     }
+  }
 
-    if (knot.block instanceof AbraBlockBranch)
-    {
-      knot.size = knot.block.size();
-      evalKnotBranch(knot);
-      return;
-    }
+  @Override
+  protected void evalKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
+  {
+    check(knot.inputs.size() > 0);
+    knot.size = block.size;
 
-    if (knot.block.specialType == AbraBaseBlock.TYPE_MERGE)
-    {
-      ensure(knot.inputs.size() <= 3);
+    //TODO analyze more?
+  }
 
-      int size = 0;
-      for (final AbraBaseSite input : knot.inputs)
-      {
-        if (size == 0 && input.size != 0)
-        {
-          size = input.size;
-        }
-
-        ensure(input.size == 0 || input.size == size);
-      }
-
-      if (size == 0)
-      {
-        missing++;
-        return;
-      }
-
-      knot.size = size;
-      return;
-    }
-
-    if (knot.block.specialType == AbraBaseBlock.TYPE_NULLIFY_TRUE || //
-        knot.block.specialType == AbraBaseBlock.TYPE_NULLIFY_FALSE)
-    {
-      ensure(knot.inputs.size() == 2);
-
-      final AbraBaseSite flag = knot.inputs.get(0);
-      if (flag.size == 0)
-      {
-        missing++;
-        return;
-      }
-
-      ensure(flag.size == 1);
-
-      final AbraBaseSite value = knot.inputs.get(1);
-      if (value.size == 0)
-      {
-        missing++;
-        return;
-      }
-
-      knot.size = value.size;
-      return;
-    }
-
-    // knot.block is a lut
-    ensure(knot.inputs.size() <= 3);
+  @Override
+  protected void evalKnotLut(final AbraSiteKnot knot, final AbraBlockLut block)
+  {
+    check(knot.inputs.size() > 0 && knot.inputs.size() <= 3);
 
     for (final AbraBaseSite input : knot.inputs)
     {
-      if (input.size == 0)
-      {
-        missing++;
-        return;
-      }
-
-      ensure(input.size == 1);
+      // either we cannot determine size or else it is 1
+      ensure(input.size <= 1);
     }
 
     knot.size = 1;
   }
 
-  private void evalKnotBranch(final AbraSiteKnot knot)
+  @Override
+  protected void evalKnotSpecial(final AbraSiteKnot knot, final AbraBlockSpecial block)
   {
-    //TODO
+    switch (block.index)
+    {
+    case AbraBlockSpecial.TYPE_CONCAT:
+      check(knot.inputs.size() > 1);
+      int size = 0;
+      for (final AbraBaseSite input : knot.inputs)
+      {
+        if (input.size == 0)
+        {
+          return;
+        }
+
+        size += input.size;
+      }
+      knot.size = size;
+      break;
+
+    case AbraBlockSpecial.TYPE_CONST:
+      check(knot.inputs.size() == 0);
+      knot.size = block.size;
+      break;
+
+    case AbraBlockSpecial.TYPE_SLICE:
+      check(knot.inputs.size() > 0);
+      knot.size = block.size;
+      break;
+
+    case AbraBlockSpecial.TYPE_MERGE:
+      check(knot.inputs.size() == 2);
+
+      size = 0;
+      for (final AbraBaseSite input : knot.inputs)
+      {
+        // all equal sizes, so first non-zero one will do
+        if (size == 0 && input.size != 0)
+        {
+          size = input.size;
+        }
+
+        // either not defined yet or same as other sizes
+        ensure(input.size == 0 || input.size == size);
+      }
+
+      knot.size = size;
+      break;
+
+    case AbraBlockSpecial.TYPE_NULLIFY_FALSE:
+    case AbraBlockSpecial.TYPE_NULLIFY_TRUE:
+      check(knot.inputs.size() == 2);
+      final AbraBaseSite flag = knot.inputs.get(0);
+      final AbraBaseSite value = knot.inputs.get(1);
+      ensure(flag.size <= 1);
+      knot.size = value.size;
+      break;
+    }
+
+    if (block.size == 0)
+    {
+      knot.block = new AbraBlockSpecial(block.index, knot.size);
+    }
   }
 
   @Override
@@ -244,32 +244,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    if (lut.analyzed)
-    {
-      return;
-    }
-
     lut.analyzed = true;
-
-    switch (lut.index)
-    {
-    case 0:
-      ensure(lut.specialType == AbraBaseBlock.TYPE_MERGE);
-      break;
-
-    case AbraBaseBlock.TYPE_NULLIFY_TRUE:
-    case AbraBaseBlock.TYPE_NULLIFY_FALSE:
-    case AbraBaseBlock.TYPE_SLICE:
-      ensure(lut.specialType == lut.index);
-      break;
-
-    case AbraBaseBlock.TYPE_CONSTANT:
-    case AbraBaseBlock.TYPE_CONSTANT + 1:
-    case AbraBaseBlock.TYPE_CONSTANT + 2:
-    case AbraBaseBlock.TYPE_CONSTANT + 3:
-      ensure(lut.specialType == AbraBaseBlock.TYPE_CONSTANT);
-      break;
-    }
   }
 
   @Override
@@ -283,6 +258,12 @@ public class AbraAnalyzeContext extends AbraBaseContext
 
     param.offset = offset;
     offset += param.size;
+  }
+
+  @Override
+  public void evalSpecial(final AbraBlockSpecial block)
+  {
+    block.analyzed = true;
   }
 
   private void resolveRecursions(final AbraModule module)
@@ -310,6 +291,10 @@ public class AbraAnalyzeContext extends AbraBaseContext
           Qupla.log("Unresolved trit vector size in branch: " + branch.name);
         }
       }
+
+      final AbraPrintContext printer = new AbraPrintContext();
+      printer.fileName = "AbraAnalyzed.txt";
+      printer.eval(module);
 
       error("Recursion issue detected");
     }

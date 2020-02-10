@@ -2,6 +2,7 @@ package org.iota.qupla.abra.optimizers;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
@@ -13,37 +14,39 @@ public class NullifyInserter extends BaseOptimizer
     super(module, branch);
   }
 
-  private void insertNullify(final AbraBaseSite condition, final boolean trueFalse)
+  private void insertNullify(final AbraSiteKnot knot, final AbraBaseSite condition, final int type)
   {
-    final AbraBaseSite site = branch.sites.get(index);
-
-    // create a site for nullify<site.size>(conditon, site)
     final AbraSiteKnot nullify = new AbraSiteKnot();
-    nullify.size = site.size;
+    nullify.size = knot.size;
+    nullify.block = new AbraBlockSpecial(type, nullify.size);
     nullify.inputs.add(condition);
-    nullify.nullify(module, trueFalse);
 
-    site.nullifyFalse = null;
-    site.nullifyTrue = null;
+    knot.nullifyFalse = null;
+    knot.nullifyTrue = null;
     branch.sites.add(index + 1, nullify);
 
-    replaceSite(site, nullify);
-    nullify.inputs.add(site);
-    site.references++;
+    replaceSite(knot, nullify);
+    nullify.inputs.add(knot);
+    knot.references++;
   }
 
   @Override
   protected void processKnot(final AbraSiteKnot knot)
   {
+    if (knot.references == 0)
+    {
+      return;
+    }
+
     if (knot.nullifyFalse != null)
     {
-      insertNullify(knot.nullifyFalse, false);
+      insertNullify(knot, knot.nullifyFalse, AbraBlockSpecial.TYPE_NULLIFY_FALSE);
       return;
     }
 
     if (knot.nullifyTrue != null)
     {
-      insertNullify(knot.nullifyTrue, true);
+      insertNullify(knot, knot.nullifyTrue, AbraBlockSpecial.TYPE_NULLIFY_TRUE);
     }
   }
 }

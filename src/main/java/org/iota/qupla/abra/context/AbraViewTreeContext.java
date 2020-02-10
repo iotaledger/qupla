@@ -6,6 +6,7 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
@@ -70,9 +71,21 @@ public class AbraViewTreeContext extends AbraBaseContext
   }
 
   @Override
-  public void evalKnot(final AbraSiteKnot knot)
+  protected void evalKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
   {
-    append("evalKnot: " + knot).newline();
+    append("evalKnotBranch:  " + knot).newline();
+  }
+
+  @Override
+  protected void evalKnotLut(final AbraSiteKnot knot, final AbraBlockLut block)
+  {
+    append("evalKnotLut:     " + knot).newline();
+  }
+
+  @Override
+  protected void evalKnotSpecial(final AbraSiteKnot knot, final AbraBlockSpecial block)
+  {
+    append("evalKnotSpecial: " + knot).newline();
   }
 
   @Override
@@ -91,5 +104,11 @@ public class AbraViewTreeContext extends AbraBaseContext
   public void evalParam(final AbraSiteParam param)
   {
     append("evalParam: " + param).newline();
+  }
+
+  @Override
+  public void evalSpecial(final AbraBlockSpecial block)
+  {
+    append("evalSpecial: " + block.name).newline();
   }
 }

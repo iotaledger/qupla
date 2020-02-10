@@ -4,6 +4,7 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
@@ -82,6 +83,11 @@ public class AbraReadDebugInfoContext extends AbraTritCodeBaseContext
     //TODO putInt(typeId) (index of origin.typeInfo)
     site.name = getString();
     site.stmt = getStmt();
+  }
+
+  @Override
+  public void evalSpecial(final AbraBlockSpecial block)
+  {
   }
 
   private BaseExpr getStmt()

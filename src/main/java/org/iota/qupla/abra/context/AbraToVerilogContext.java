@@ -6,7 +6,7 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
@@ -55,7 +55,7 @@ public class AbraToVerilogContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
-    if (branch.specialType == AbraBaseBlock.TYPE_SLICE)
+    if (branch.index == AbraBlockSpecial.TYPE_SLICE)
     {
       return;
     }
@@ -83,7 +83,7 @@ public class AbraToVerilogContext extends AbraBaseContext
 
     //TODO branch.latches
 
-    for (final AbraBaseSite site : branch.sites)
+    for (final AbraSiteKnot site : branch.sites)
     {
       append("reg ").append(size(site.size)).append(" ");
       appendName(site).append(";").newline();
@@ -96,7 +96,7 @@ public class AbraToVerilogContext extends AbraBaseContext
 
     append("begin").newline().indent();
 
-    for (final AbraBaseSite site : branch.sites)
+    for (final AbraSiteKnot site : branch.sites)
     {
       if (site.references == 0)
       {
@@ -143,35 +143,16 @@ public class AbraToVerilogContext extends AbraBaseContext
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    if (knot.block.specialType == AbraBaseBlock.TYPE_MERGE)
-    {
-      evalMerge(knot);
-      return;
-    }
+  }
 
-    if (knot.block.specialType == AbraBaseBlock.TYPE_SLICE)
-    {
-      evalKnotSlice(knot);
-      return;
-    }
-
-    if (knot.block.specialType == AbraBaseBlock.TYPE_CONSTANT)
-    {
-      final AbraBlockBranch constant = (AbraBlockBranch) knot.block;
-      appendVector(constant.constantValue.trits());
-      return;
-    }
-
+  @Override
+  protected void evalKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
+  {
     append(knot.block.name);
 
-    AbraBlockBranch branch = null;
-    if (knot.block instanceof AbraBlockLut)
+    if (block == null)
     {
       append("_lut");
-    }
-    else
-    {
-      branch = (AbraBlockBranch) knot.block;
     }
 
     boolean first = true;
@@ -182,12 +163,12 @@ public class AbraToVerilogContext extends AbraBaseContext
       appendName(input);
       first = false;
 
-      if (branch == null)
+      if (block == null)
       {
         continue;
       }
 
-      final AbraBaseSite param = branch.inputs.get(i);
+      final AbraBaseSite param = block.inputs.get(i);
       if (input.size > param.size)
       {
         // must take slice
@@ -198,7 +179,70 @@ public class AbraToVerilogContext extends AbraBaseContext
     append(")");
   }
 
-  private void evalKnotSlice(final AbraSiteKnot knot)
+  @Override
+  protected void evalKnotLut(final AbraSiteKnot knot, final AbraBlockLut block)
+  {
+    evalKnotBranch(knot, null);
+  }
+
+  @Override
+  protected void evalKnotSpecial(final AbraSiteKnot knot, final AbraBlockSpecial block)
+  {
+    switch (block.index)
+    {
+    case AbraBlockSpecial.TYPE_CONCAT:
+    case AbraBlockSpecial.TYPE_SLICE:
+      evalKnotSpecialSlice(knot, block);
+      break;
+
+    case AbraBlockSpecial.TYPE_CONST:
+      appendVector(block.constantValue.trits());
+      break;
+
+    case AbraBlockSpecial.TYPE_MERGE:
+      evalKnotSpecialMerge(knot);
+      break;
+
+    case AbraBlockSpecial.TYPE_NULLIFY_FALSE:
+    case AbraBlockSpecial.TYPE_NULLIFY_TRUE:
+      evalKnotSpecialNullify(knot);
+      break;
+    }
+  }
+
+  private void evalKnotSpecialMerge(final AbraSiteKnot merge)
+  {
+    if (merge.inputs.size() == 1)
+    {
+      // single-input merge just returns value
+      final AbraBaseSite input = merge.inputs.get(0);
+      appendName(input);
+      return;
+    }
+
+    verilog.mergeFuncs.add(merge.size);
+
+    for (int i = 0; i < merge.inputs.size() - 1; i++)
+    {
+      final AbraBaseSite input = merge.inputs.get(i);
+      append(verilog.prefix + merge.size + "(");
+      appendName(input).append(", ");
+    }
+
+    final AbraBaseSite input = merge.inputs.get(merge.inputs.size() - 1);
+    appendName(input);
+
+    for (int i = 0; i < merge.inputs.size() - 1; i++)
+    {
+      append(")");
+    }
+  }
+
+  private void evalKnotSpecialNullify(final AbraSiteKnot knot)
+  {
+  }
+
+  private void evalKnotSpecialSlice(final AbraSiteKnot knot, final AbraBlockSpecial block)
   {
     if (knot.inputs.size() > 1)
     {
@@ -220,10 +264,9 @@ public class AbraToVerilogContext extends AbraBaseContext
       append(" }");
     }
 
-    final AbraBlockBranch branch = (AbraBlockBranch) knot.block;
-    if (totalSize > branch.size)
+    if (totalSize > block.size)
     {
-      append(verilog.range(totalSize - branch.offset, branch.size));
+      append(verilog.range(totalSize - block.offset, block.size));
     }
   }
 
@@ -296,36 +339,13 @@ public class AbraToVerilogContext extends AbraBaseContext
     append("endfunction").newline().newline();
   }
 
-  private void evalMerge(final AbraSiteKnot merge)
+  @Override
+  public void evalParam(final AbraSiteParam param)
   {
-    if (merge.inputs.size() == 1)
-    {
-      // single-input merge just returns value
-      final AbraBaseSite input = merge.inputs.get(0);
-      appendName(input);
-      return;
-    }
-
-    verilog.mergeFuncs.add(merge.size);
-
-    for (int i = 0; i < merge.inputs.size() - 1; i++)
-    {
-      final AbraBaseSite input = merge.inputs.get(i);
-      append(verilog.prefix + merge.size + "(");
-      appendName(input).append(", ");
-    }
-
-    final AbraBaseSite input = merge.inputs.get(merge.inputs.size() - 1);
-    appendName(input);
-
-    for (int i = 0; i < merge.inputs.size() - 1; i++)
-    {
-      append(")");
-    }
   }
 
   @Override
-  public void evalParam(final AbraSiteParam param)
+  public void evalSpecial(final AbraBlockSpecial block)
   {
   }
 

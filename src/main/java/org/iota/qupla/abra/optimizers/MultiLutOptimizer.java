@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
@@ -21,7 +21,7 @@ public class MultiLutOptimizer extends BaseOptimizer
     reverse = true;
   }
 
-  private AbraBaseBlock generateLookupTable(final AbraSiteKnot master, final AbraSiteKnot slave, final ArrayList<AbraBaseSite> inputs)
+  private AbraBlockLut generateLookupTable(final AbraSiteKnot master, final AbraSiteKnot slave, final ArrayList<AbraBaseSite> inputs)
   {
     // initialize with 27 null trits
     final char[] lookup = AbraBlockLut.LUT_NULL.toCharArray();
@@ -59,21 +59,18 @@ public class MultiLutOptimizer extends BaseOptimizer
     final String lookupTable = new String(lookup);
     final String lutName = AbraBlockLut.unnamed(lookupTable);
 
-    final AbraSiteKnot knot = new AbraSiteKnot();
-    knot.lut(module, lutName);
-
-    // already exists?
-    if (knot.block != null)
-    {
-      return knot.block;
-    }
-
-    // new LUT, create it
-    return module.addLut(lutName, lookupTable);
+    final AbraBlockLut lut = module.findLut(lutName);
+    return lut != null ? lut : module.addLut(lutName, lookupTable);
   }
 
   private char lookupTrit(final AbraSiteKnot lut)
   {
+    if (lut.block.index == AbraBlockSpecial.TYPE_CONST)
+    {
+      final AbraBlockSpecial block = (AbraBlockSpecial) lut.block;
+      return block.constantValue.trit(0);
+    }
+
     int index = 0;
     int power = 1;
     for (int i = 0; i < lut.inputs.size(); i++)
@@ -93,10 +90,18 @@ public class MultiLutOptimizer extends BaseOptimizer
 
   private boolean mergeLuts(final AbraSiteKnot master, final AbraSiteKnot slave)
   {
-    if (master.block.specialType == AbraBaseBlock.TYPE_MERGE || //
-        slave.block.specialType == AbraBaseBlock.TYPE_MERGE)
+    if (!(slave.block instanceof AbraBlockLut))
     {
-      return false;
+      if (slave.block.index != AbraBlockSpecial.TYPE_CONST)
+      {
+        return false;
+      }
+
+      final AbraBlockSpecial block = (AbraBlockSpecial) slave.block;
+      if (block.size != 1)
+      {
+        return false;
+      }
     }
 
     final ArrayList<AbraBaseSite> inputs = new ArrayList<>();
@@ -127,15 +132,14 @@ public class MultiLutOptimizer extends BaseOptimizer
       {
         inputs.add(input);
       }
+
+      // too many inputs to combine LUTs?
+      if (inputs.size() > 3)
+      {
+        return false;
+      }
     }
 
-    // too many inputs to combine LUTs?
-    if (inputs.size() > 3)
-    {
-      return false;
-    }
-
-    //TODO update block references (not just here)
     // get lookup table for combined LUT
     master.block = generateLookupTable(master, slave, inputs);
 
@@ -164,27 +168,17 @@ public class MultiLutOptimizer extends BaseOptimizer
   }
 
   @Override
-  protected void processKnot(final AbraSiteKnot knot)
+  protected void processKnotLut(final AbraSiteKnot knot, final AbraBlockLut lut)
   {
-    if (!(knot.block instanceof AbraBlockLut))
-    {
-      // nothing to optimize here
-      return;
-    }
-
     // figure out if this LUT refers to another LUT
     for (final AbraBaseSite input : knot.inputs)
     {
-      if (input instanceof AbraSiteKnot)
+      if (input instanceof AbraSiteKnot && mergeLuts(knot, (AbraSiteKnot) input))
       {
-        final AbraSiteKnot inputKnot = (AbraSiteKnot) input;
-        if (inputKnot.block instanceof AbraBlockLut && mergeLuts(knot, inputKnot))
-        {
-          // this could have freed up another optimization possibility,
-          // so we restart the optimization from the end
-          index = branch.sites.size();
-          return;
-        }
+        // this could have freed up another optimization possibility,
+        // so we restart the optimization from the end
+        index = branch.sites.size();
+        return;
       }
     }
   }

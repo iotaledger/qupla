@@ -10,6 +10,7 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.abra.optimizers.ConcatenationOptimizer;
+import org.iota.qupla.abra.optimizers.ConstantTritOptimizer;
 import org.iota.qupla.abra.optimizers.DuplicateSiteOptimizer;
 import org.iota.qupla.abra.optimizers.EmptyFunctionOptimizer;
 import org.iota.qupla.abra.optimizers.LutFunctionWrapperOptimizer;
@@ -26,7 +27,6 @@ public class AbraBlockBranch extends AbraBaseBlock
   public BaseExpr finalStmt;
   public final ArrayList<AbraSiteParam> inputs = new ArrayList<>();
   public final ArrayList<AbraSiteLatch> latches = new ArrayList<>();
-  public int offset;
   public final ArrayList<AbraBaseSite> outputs = new ArrayList<>();
   public final ArrayList<AbraSiteKnot> sites = new ArrayList<>();
   public int size;
@@ -64,7 +64,6 @@ public class AbraBlockBranch extends AbraBaseBlock
     final AbraBlockBranch branch = new AbraBlockBranch();
     branch.name = name;
     branch.size = size;
-    branch.offset = offset;
 
     for (final AbraSiteParam input : inputs)
     {
@@ -183,7 +182,6 @@ public class AbraBlockBranch extends AbraBaseBlock
     return siteNr;
   }
 
-  @Override
   public void optimize(final AbraModule module)
   {
     // first move the nullifies up the chain as far as possible
@@ -192,22 +190,13 @@ public class AbraBlockBranch extends AbraBaseBlock
     // then insert actual nullify operations and rewire accordingly
     new NullifyInserter(module, this).run();
 
-    // remove some obvious nonsense before doing more complex analysis
-    optimizeCleanup(module);
+    // replace all single-input merges with direct references
+    new SingleInputMergeOptimizer(module, this).run();
 
     // run the set of actual optimizations
     optimizePass(module);
 
-    // and finally one last cleanup
-    optimizeCleanup(module);
-  }
-
-  private void optimizeCleanup(final AbraModule module)
-  {
-    // bypass superfluous single-input merges
-    new SingleInputMergeOptimizer(module, this).run();
-
-    // and remove all unreferenced sites
+    // and finally remove all unreferenced sites
     new UnreferencedSiteRemover(module, this).run();
   }
 
@@ -227,6 +216,9 @@ public class AbraBlockBranch extends AbraBaseBlock
 
     // remove duplicate sites, only need to calculate once
     new DuplicateSiteOptimizer(module, this).run();
+
+    // replace single-trit nullifies and constants with LUTs
+    new ConstantTritOptimizer(module, this).run();
 
     // if possible, replace lut calling lut with a single lut that does it all
     new MultiLutOptimizer(module, this).run();

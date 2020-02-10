@@ -7,6 +7,7 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
@@ -18,6 +19,7 @@ public class AbraConfigContext extends AbraBaseContext
 {
   private AbraBlockBranch funcBranch;
   public String funcName = "add_9";
+  private int lutZeroIndex;
   private BufferedOutputStream outputStream;
 
   public void eval(final AbraModule module)
@@ -39,19 +41,23 @@ public class AbraConfigContext extends AbraBaseContext
       throw new CodeException("Cannot find branch: " + funcName);
     }
 
-    // find all LUTs this branch uses
-    for (final AbraBaseSite site : funcBranch.sites)
+    // always include standard luts for consts and nullifies
+    lutZeroIndex = module.luts.get(0).index;
+    for (int i = 0; i < 5; i++)
     {
-      if (site instanceof AbraSiteKnot)
+      module.blocks.add(module.luts.get(i));
+    }
+
+    // find all LUTs this branch uses
+    for (final AbraSiteKnot knot : funcBranch.sites)
+    {
+      if (knot.block instanceof AbraBlockLut && !module.blocks.contains(knot.block))
       {
-        final AbraSiteKnot knot = (AbraSiteKnot) site;
-        if (!module.blocks.contains(knot.block))
-        {
-          module.blocks.add(knot.block);
-        }
+        module.blocks.add(knot.block);
       }
     }
 
+    module.blockNr = module.specials.size();
     module.numberBlocks(module.blocks);
 
     try
@@ -69,6 +75,8 @@ public class AbraConfigContext extends AbraBaseContext
     {
       throw new CodeException("Cannot write to " + funcName + ".qbc");
     }
+
+    module.numberBlocks();
   }
 
   @Override
@@ -78,7 +86,7 @@ public class AbraConfigContext extends AbraBaseContext
     write(branch.inputs.size());
 
     write(branch.sites.size());
-    for (final AbraBaseSite site : branch.sites)
+    for (final AbraSiteKnot site : branch.sites)
     {
       site.eval(this);
     }
@@ -99,6 +107,17 @@ public class AbraConfigContext extends AbraBaseContext
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
+    if (knot.block.index == AbraBlockSpecial.TYPE_CONST)
+    {
+      // route constant trit to constant LUT with site 0 as input
+      final AbraBlockSpecial block = (AbraBlockSpecial) knot.block;
+      final int tritOffset = "01-".indexOf(block.constantValue.trit(0));
+      write(lutZeroIndex + tritOffset);
+      write(1);
+      write(0);
+      return;
+    }
+
     write(knot.block.index);
     write(knot.inputs.size());
     for (final AbraBaseSite input : knot.inputs)
@@ -147,6 +166,11 @@ public class AbraConfigContext extends AbraBaseContext
   public void evalParam(final AbraSiteParam param)
   {
     throw new CodeException("Param for config?");
+  }
+
+  @Override
+  public void evalSpecial(final AbraBlockSpecial block)
+  {
   }
 
   private void write(final int value)

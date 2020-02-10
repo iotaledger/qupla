@@ -17,7 +17,7 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
   }
 
   @Override
-  protected void processKnot(final AbraSiteKnot knot)
+  protected void processKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
   {
     // replace lut wrapper function with direct lut operation
 
@@ -37,32 +37,31 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
     }
 
     // max 3 1-trit inputs, 1-trit output?
-    if (!knot.block.couldBeLutWrapper())
+    if (!block.couldBeLutWrapper())
     {
       return;
     }
 
-    final AbraBlockBranch target = (AbraBlockBranch) knot.block;
-    if (target.sites.size() != 1 || target.latches.size() != 0)
+    if (block.sites.size() != 1 || block.latches.size() != 0)
     {
       // too much going on to be a LUT wrapper
       return;
     }
 
-    if (target.inputs.size() != knot.inputs.size() || target.outputs.size() != 1)
+    if (block.inputs.size() != knot.inputs.size() || block.outputs.size() != 1)
     {
       // not simply passing the inputs to output LUT knot
       return;
     }
 
-    final AbraSiteKnot site = target.sites.get(0);
-    if (site != target.outputs.get(0))
+    final AbraSiteKnot site = block.sites.get(0);
+    if (site != block.outputs.get(0))
     {
       // definitely not a lut lookup
       return;
     }
 
-    if (!(site.block instanceof AbraBlockLut) || site.inputs.size() != target.inputs.size())
+    if (!(site.block instanceof AbraBlockLut) || site.inputs.size() != block.inputs.size())
     {
       // not a lut lookup
       return;
@@ -73,7 +72,7 @@ public class LutFunctionWrapperOptimizer extends BaseOptimizer
     final ArrayList<AbraBaseSite> inputs = new ArrayList<>();
     for (final AbraBaseSite input : site.inputs)
     {
-      final int idx = target.inputs.indexOf(input);
+      final int idx = block.inputs.indexOf(input);
       final AbraBaseSite knotInput = knot.inputs.get(idx);
       inputs.add(knotInput);
       knotInput.references++;

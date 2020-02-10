@@ -6,7 +6,7 @@ import java.util.Stack;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
@@ -143,20 +143,17 @@ public class QuplaToAbraContext extends QuplaBaseContext
       if (lastSite instanceof AbraSiteKnot)
       {
         final AbraSiteKnot knot = (AbraSiteKnot) lastSite;
-        if (knot.block.specialType == AbraBaseBlock.TYPE_SLICE)
+        if (knot.block.index == AbraBlockSpecial.TYPE_CONCAT)
         {
-          if (knot.inputs.size() > 1)
-          {
-            site.inputs.addAll(knot.inputs);
-            continue;
-          }
+          site.inputs.addAll(knot.inputs);
+          continue;
         }
       }
 
       site.inputs.add(lastSite);
     }
 
-    site.slice(0);
+    site.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONCAT, site.size);
     addSite(site);
   }
 
@@ -184,8 +181,8 @@ public class QuplaToAbraContext extends QuplaBaseContext
     {
       final AbraSiteKnot merge = new AbraSiteKnot();
       merge.size = conditional.size;
+      merge.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_MERGE, merge.size);
       merge.inputs.add(trueBranch);
-      merge.merge(abraModule);
       addSite(merge);
       nullifySite = condition;
       return;
@@ -201,9 +198,9 @@ public class QuplaToAbraContext extends QuplaBaseContext
     // create a site for trueBranch ( | falseBranch)
     final AbraSiteKnot merge = new AbraSiteKnot();
     merge.size = conditional.size;
+    merge.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_MERGE, merge.size);
     merge.inputs.add(trueBranch);
     merge.inputs.add(falseBranch);
-    merge.merge(abraModule);
     addSite(merge);
 
     nullifySite = condition;
@@ -348,7 +345,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
         }
       }
 
-      site.lut(abraModule, lookup.name + "_" + i);
+      site.block = abraModule.findLut(lookup.name + "_" + i);
       if (site.block == null)
       {
         throw new CodeException("Cannot find lut: " + lookup.name + "_" + i);
@@ -356,13 +353,13 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
       addSite(site);
 
-      concat.size += 1;
       concat.inputs.add(site);
     }
 
     if (concat.inputs.size() > 1)
     {
-      concat.slice(0);
+      concat.size = concat.inputs.size();
+      concat.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONCAT, concat.size);
       addSite(concat);
     }
   }
@@ -378,6 +375,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
     final AbraSiteKnot site = new AbraSiteKnot();
     site.from(merge);
+    site.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_MERGE, site.size);
 
     merge.lhs.eval(this);
     site.inputs.add(lastSite);
@@ -385,7 +383,6 @@ public class QuplaToAbraContext extends QuplaBaseContext
     merge.rhs.eval(this);
     site.inputs.add(lastSite);
 
-    site.merge(abraModule);
     addSite(site);
   }
 
@@ -399,8 +396,8 @@ public class QuplaToAbraContext extends QuplaBaseContext
       // entire variable, use single-input merge
       final AbraSiteKnot site = new AbraSiteKnot();
       site.from(slice);
+      site.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_MERGE, site.size);
       site.inputs.add(varSite);
-      site.merge(abraModule);
       addSite(site);
       return;
     }
@@ -408,8 +405,8 @@ public class QuplaToAbraContext extends QuplaBaseContext
     // slice of variable, use correct slice function
     final AbraSiteKnot site = new AbraSiteKnot();
     site.from(slice);
+    site.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_SLICE, site.size, slice.start);
     site.inputs.add(varSite);
-    site.slice(slice.start);
     addSite(site);
   }
 
@@ -438,8 +435,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
   {
     final AbraSiteKnot site = new AbraSiteKnot();
     site.from(vector);
-    site.inputs.add(branch.inputs.get(0));
-    site.vector(vector.vector);
+    site.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONST, site.size, vector.vector);
     addSite(site);
   }
 }
