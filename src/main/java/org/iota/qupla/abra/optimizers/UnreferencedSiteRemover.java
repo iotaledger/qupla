@@ -46,7 +46,7 @@ public class UnreferencedSiteRemover extends BaseOptimizer
   @Override
   protected void processKnot(final AbraSiteKnot knot)
   {
-    if (knot.references != 0 || knot.hasNullifier())
+    if (knot.references != 0)
     {
       return;
     }
@@ -57,6 +57,12 @@ public class UnreferencedSiteRemover extends BaseOptimizer
     branch.sites.remove(index);
   }
 
+  @Override
+  public void run()
+  {
+    processKnots();
+  }
+
   private void updateReferenceCounts(final AbraSiteKnot site)
   {
     for (final AbraBaseSite input : site.inputs)
@@ -65,17 +71,5 @@ public class UnreferencedSiteRemover extends BaseOptimizer
     }
 
     site.inputs.clear();
-
-    if (site.nullifyFalse != null)
-    {
-      site.nullifyFalse.references--;
-      site.nullifyFalse = null;
-    }
-
-    if (site.nullifyTrue != null)
-    {
-      site.nullifyTrue.references--;
-      site.nullifyTrue = null;
-    }
   }
 }

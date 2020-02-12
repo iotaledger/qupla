@@ -47,12 +47,29 @@ public class QuplaToAbraContext extends QuplaBaseContext
   private int bodies;
   public AbraBlockBranch branch;
   private AbraBaseSite lastSite;
-  private AbraBaseSite nullifySite;
   private final Stack<AbraBaseSite> stack = new Stack<>();
   private BaseExpr stmt;
 
   public QuplaToAbraContext()
   {
+  }
+
+  private void addNullify(final int nullifyType, final AbraBaseSite condition, final int branchStart)
+  {
+    // we emit code in such a way that values that can be nullified have already
+    // been wrapped into a merge knot, so all we need to do is replace the merge
+    // with the correct nullify and add the condition as the first knot input
+    // we do this for the entire branch region that was just emitted
+    for (int i = branchStart; i < branch.sites.size(); i++)
+    {
+      final AbraSiteKnot knot = branch.sites.get(i);
+      if (knot.block.index == AbraBlockSpecial.TYPE_MERGE && knot.inputs.size() == 1)
+      {
+        knot.block = new AbraBlockSpecial(nullifyType, knot.size);
+        knot.inputs.add(0, condition);
+        condition.references++;
+      }
+    }
   }
 
   private void addSite(final AbraSiteKnot site)
@@ -66,7 +83,6 @@ public class QuplaToAbraContext extends QuplaBaseContext
     site.index = branch.totalSites();
     branch.sites.add(site);
     lastSite = site;
-    nullifySite = site;
   }
 
   @Override
@@ -78,7 +94,9 @@ public class QuplaToAbraContext extends QuplaBaseContext
     abraModule.optimize();
 
     new AbraOrderBlockContext().eval(abraModule);
-    new AbraPrintContext().eval(abraModule);
+
+    new AbraPrintContext("Abra.txt").eval(abraModule);
+
     new AbraToVerilogContext().eval(abraModule);
     new AbraViewTreeContext().eval(abraModule);
 
@@ -100,9 +118,7 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
     new AbraAnalyzeContext().eval(abraModule);
 
-    final AbraPrintContext printer = new AbraPrintContext();
-    printer.fileName = "NewAbra.txt";
-    printer.eval(abraModule);
+    new AbraPrintContext("NewAbra.txt").eval(abraModule);
   }
 
   @Override
@@ -170,40 +186,29 @@ public class QuplaToAbraContext extends QuplaBaseContext
 
     final AbraBaseSite condition = lastSite;
 
+    int branchStart = branch.sites.size();
     conditional.trueBranch.eval(this);
-    final AbraBaseSite trueBranch = lastSite;
-
-    // note that actual insertion of nullifyTrue(condition, ...)
-    // is done after nullify position has been optimized
-    nullifySite.nullifyTrue = condition;
+    final AbraBaseSite nullifyTrue = lastSite;
+    addNullify(AbraBlockSpecial.TYPE_NULLIFY_TRUE, condition, branchStart);
 
     if (conditional.falseBranch == null)
     {
-      final AbraSiteKnot merge = new AbraSiteKnot();
-      merge.size = conditional.size;
-      merge.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_MERGE, merge.size);
-      merge.inputs.add(trueBranch);
-      addSite(merge);
-      nullifySite = condition;
+      wrapInMerge(nullifyTrue);
       return;
     }
 
+    branchStart = branch.sites.size();
     conditional.falseBranch.eval(this);
-    final AbraBaseSite falseBranch = lastSite;
-
-    // note that actual insertion of nullifyFalse(condition, ...)
-    // is done after nullify position has been optimized
-    nullifySite.nullifyFalse = condition;
+    final AbraBaseSite nullifyFalse = lastSite;
+    addNullify(AbraBlockSpecial.TYPE_NULLIFY_FALSE, condition, branchStart);
 
     // create a site for trueBranch ( | falseBranch)
     final AbraSiteKnot merge = new AbraSiteKnot();
     merge.size = conditional.size;
     merge.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_MERGE, merge.size);
-    merge.inputs.add(trueBranch);
-    merge.inputs.add(falseBranch);
+    merge.inputs.add(nullifyTrue);
+    merge.inputs.add(nullifyFalse);
     addSite(merge);
-
-    nullifySite = condition;
   }
 
   @Override
@@ -389,25 +394,20 @@ public class QuplaToAbraContext extends QuplaBaseContext
   @Override
   public void evalSlice(final SliceExpr slice)
   {
+    // wrap the entire input in a merge to help nullification
     final AbraBaseSite varSite = stack.get(slice.stackIndex);
+    wrapInMerge(varSite);
+    lastSite.origin = slice;
 
-    if (slice.sliceStart == null && slice.fields.size() == 0)
+    if (slice.sliceStart != null || slice.fields.size() != 0)
     {
-      // entire variable, use single-input merge
+      // slice of variable, use correct slicer
       final AbraSiteKnot site = new AbraSiteKnot();
-      site.from(slice);
-      site.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_MERGE, site.size);
-      site.inputs.add(varSite);
+      site.size = slice.size;
+      site.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_SLICE, site.size, slice.start);
+      site.inputs.add(lastSite);
       addSite(site);
-      return;
     }
-
-    // slice of variable, use correct slice function
-    final AbraSiteKnot site = new AbraSiteKnot();
-    site.from(slice);
-    site.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_SLICE, site.size, slice.start);
-    site.inputs.add(varSite);
-    addSite(site);
   }
 
   @Override
@@ -437,5 +437,18 @@ public class QuplaToAbraContext extends QuplaBaseContext
     site.from(vector);
     site.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONST, site.size, vector.vector);
     addSite(site);
+
+    // wrap in merge to help nullification
+    wrapInMerge(site);
+  }
+
+  private void wrapInMerge(final AbraBaseSite site)
+  {
+    final AbraSiteKnot merge = new AbraSiteKnot();
+    merge.size = site.size;
+    merge.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_MERGE, merge.size);
+    merge.inputs.add(site);
+    site.references++;
+    addSite(merge);
   }
 }

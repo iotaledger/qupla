@@ -56,10 +56,8 @@ public class ConcatenationOptimizer extends BaseOptimizer
   }
 
   @Override
-  public void run()
+  protected void processOutputs()
   {
-    super.run();
-
     evalInputs(branch.outputs);
   }
 }

@@ -7,12 +7,10 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public abstract class AbraBaseSite
 {
-  public static final AbraPrintContext printer = new AbraPrintContext();
+  public static final AbraPrintContext printer = new AbraPrintContext(null);
 
   public int index;
   public String name;
-  public AbraBaseSite nullifyFalse;
-  public AbraBaseSite nullifyTrue;
   public BaseExpr origin;
   public int references;
   public int size;
@@ -43,11 +41,6 @@ public abstract class AbraBaseSite
     size = expr.size;
   }
 
-  public boolean hasNullifier()
-  {
-    return nullifyFalse != null || nullifyTrue != null;
-  }
-
   public boolean isIdentical(final AbraBaseSite rhs)
   {
     if (getClass() != rhs.getClass())
@@ -60,15 +53,6 @@ public abstract class AbraBaseSite
 
   public void markReferences()
   {
-    if (nullifyFalse != null)
-    {
-      nullifyFalse.references++;
-    }
-
-    if (nullifyTrue != null)
-    {
-      nullifyTrue.references++;
-    }
   }
 
   @Override

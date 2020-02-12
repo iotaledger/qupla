@@ -13,7 +13,6 @@ import org.iota.qupla.abra.context.AbraPrintContext;
 import org.iota.qupla.abra.optimizers.DuplicateSiteOptimizer;
 import org.iota.qupla.abra.optimizers.FpgaConfigurationOptimizer;
 import org.iota.qupla.abra.optimizers.MultiLutOptimizer;
-import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.dispatcher.Entity;
 import org.iota.qupla.dispatcher.entity.FuncEntity;
@@ -295,21 +294,15 @@ public class Qupla
       }
     }
 
-    final AbraPrintContext printer = new AbraPrintContext();
-    printer.fileName = "FpgaAbra.txt";
-    printer.eval(module);
+    new AbraPrintContext("FpgaAbra.txt").eval(module);
 
     for (final AbraBlockBranch branch : module.branches)
     {
-      new DuplicateSiteOptimizer(module, branch).run();
-      new UnreferencedSiteRemover(module, branch).run();
       new MultiLutOptimizer(module, branch).run();
-      new UnreferencedSiteRemover(module, branch).run();
+      new DuplicateSiteOptimizer(module, branch).run();
     }
 
-    final AbraPrintContext printer2 = new AbraPrintContext();
-    printer2.fileName = "FpgaAbraOpt.txt";
-    printer2.eval(module);
+    new AbraPrintContext("FpgaAbraOpt.txt").eval(module);
 
     for (final BaseExpr expr : expressions)
     {

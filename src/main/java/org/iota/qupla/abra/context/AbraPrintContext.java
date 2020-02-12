@@ -19,9 +19,14 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraPrintContext extends AbraBaseContext
 {
-  public String fileName = "Abra.txt";
+  public String fileName;
   public boolean statements = true;
   public String type = "site ";
+
+  public AbraPrintContext(final String fileName)
+  {
+    this.fileName = fileName;
+  }
 
   private void appendStmt(BaseExpr stmt)
   {
@@ -32,6 +37,18 @@ public class AbraPrintContext extends AbraBaseContext
       append(prefix + stmt).newline();
       stmt = stmt.next;
     }
+  }
+
+  @Override
+  protected void appendify(final String text)
+  {
+    if (out == null && string == null)
+    {
+      System.out.print(text);
+      return;
+    }
+
+    super.appendify(text);
   }
 
   private int depth(final AbraSiteKnot knot)
@@ -165,25 +182,13 @@ public class AbraPrintContext extends AbraBaseContext
   {
     appendStmt(site.stmt);
 
-    String nullifyIndex = " ";
-    if (site.nullifyTrue != null)
-    {
-      nullifyIndex = "T" + site.nullifyTrue.index;
-    }
-
-    if (site.nullifyFalse != null)
-    {
-      nullifyIndex = "F" + site.nullifyFalse.index;
-    }
-
     for (int i = 0; i < level; i++)
     {
       append(i < 10 ? "" + i + i : "##");
     }
 
     final String size = (site.size < 10 ? " " : "") + site.size;
-    append("## " + site.references + nullifyIndex);
-    append(" " + "[" + size + "] " + type + site.varName());
+    append("## " + site.references + "  [" + size + "] " + type + site.varName());
   }
 
   @Override

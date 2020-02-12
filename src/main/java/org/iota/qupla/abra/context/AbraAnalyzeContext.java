@@ -68,7 +68,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       check(branch.size != 0);
       for (final AbraSiteKnot knot : branch.sites)
       {
-        check(knot.size != 0);
+        check(knot.size != 0 || knot.references == 0);
       }
 
       for (final AbraSiteLatch latch : branch.latches)
@@ -133,8 +133,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
   @Override
   public void evalKnot(final AbraSiteKnot knot)
   {
-    check(knot.references != 0);
-
     if (knot.block.size() == 0)
     {
       knot.block.eval(this);
@@ -202,7 +200,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
       break;
 
     case AbraBlockSpecial.TYPE_MERGE:
-      check(knot.inputs.size() == 2);
+      check(knot.inputs.size() == 2 || knot.inputs.size() == 1);
 
       size = 0;
       for (final AbraBaseSite input : knot.inputs)
@@ -253,8 +251,6 @@ public class AbraAnalyzeContext extends AbraBaseContext
     check(param.offset == offset);
 
     ensure(param.size > 0);
-    ensure(param.nullifyFalse == null);
-    ensure(param.nullifyTrue == null);
 
     param.offset = offset;
     offset += param.size;
@@ -292,9 +288,7 @@ public class AbraAnalyzeContext extends AbraBaseContext
         }
       }
 
-      final AbraPrintContext printer = new AbraPrintContext();
-      printer.fileName = "AbraAnalyzed.txt";
-      printer.eval(module);
+      new AbraPrintContext("AbraAnalyzed.txt").eval(module);
 
       error("Recursion issue detected");
     }

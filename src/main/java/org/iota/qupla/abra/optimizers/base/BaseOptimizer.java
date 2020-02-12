@@ -7,6 +7,7 @@ import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
 import org.iota.qupla.exception.CodeException;
 
 public class BaseOptimizer
@@ -25,6 +26,10 @@ public class BaseOptimizer
   protected void error(final String text)
   {
     throw new CodeException(text);
+  }
+
+  protected void processInputs()
+  {
   }
 
   protected void processKnot(final AbraSiteKnot knot)
@@ -67,14 +72,32 @@ public class BaseOptimizer
   {
   }
 
-  protected void replaceSite(final AbraBaseSite source, final AbraBaseSite target)
+  protected void processKnots()
   {
-    if (source.hasNullifier())
+    if (reverse)
     {
-      // extra precaution not to lose info
+      for (index = branch.sites.size() - 1; index >= 0; index--)
+      {
+        final AbraSiteKnot site = branch.sites.get(index);
+        processKnot(site);
+      }
+
       return;
     }
 
+    for (index = 0; index < branch.sites.size(); index++)
+    {
+      final AbraSiteKnot site = branch.sites.get(index);
+      processKnot(site);
+    }
+  }
+
+  protected void processOutputs()
+  {
+  }
+
+  protected void replaceSite(final AbraBaseSite source, final AbraBaseSite target)
+  {
     for (int i = 0; i < branch.latches.size(); i++)
     {
       final AbraSiteLatch latch = branch.latches.get(i);
@@ -97,20 +120,6 @@ public class BaseOptimizer
           site.inputs.set(i, target);
         }
       }
-
-      if (site.nullifyFalse == source)
-      {
-        source.references--;
-        target.references++;
-        site.nullifyFalse = target;
-      }
-
-      if (site.nullifyTrue == source)
-      {
-        source.references--;
-        target.references++;
-        site.nullifyTrue = target;
-      }
     }
 
     for (int i = 0; i < branch.outputs.size(); i++)
@@ -127,21 +136,10 @@ public class BaseOptimizer
 
   public void run()
   {
-    if (reverse)
-    {
-      for (index = branch.sites.size() - 1; index >= 0; index--)
-      {
-        final AbraSiteKnot site = branch.sites.get(index);
-        processKnot(site);
-      }
+    processInputs();
+    processKnots();
+    processOutputs();
 
-      return;
-    }
-
-    for (index = 0; index < branch.sites.size(); index++)
-    {
-      final AbraSiteKnot site = branch.sites.get(index);
-      processKnot(site);
-    }
+    new UnreferencedSiteRemover(module, branch).run();
   }
 }

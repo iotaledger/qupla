@@ -33,11 +33,13 @@ public abstract class BaseContext extends Indentable
       if (out != null)
       {
         out.close();
+        out = null;
       }
 
       if (writer != null)
       {
         writer.close();
+        writer = null;
       }
     }
     catch (IOException e)

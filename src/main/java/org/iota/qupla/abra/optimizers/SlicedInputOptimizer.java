@@ -31,6 +31,11 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
 
     for (final AbraSiteKnot knot : branch.sites)
     {
+      if (knot.references == 0)
+      {
+        continue;
+      }
+
       if (knot.block.index == AbraBlockSpecial.TYPE_SLICE)
       {
         if (knot.inputs.size() == 1 && knot.inputs.get(0) == input)
@@ -159,7 +164,7 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
   }
 
   @Override
-  public void run()
+  protected void processInputs()
   {
     for (final AbraSiteParam input : branch.inputs)
     {

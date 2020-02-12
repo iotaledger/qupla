@@ -15,11 +15,9 @@ import org.iota.qupla.abra.optimizers.DuplicateSiteOptimizer;
 import org.iota.qupla.abra.optimizers.EmptyFunctionOptimizer;
 import org.iota.qupla.abra.optimizers.LutFunctionWrapperOptimizer;
 import org.iota.qupla.abra.optimizers.MultiLutOptimizer;
-import org.iota.qupla.abra.optimizers.NullifyInserter;
 import org.iota.qupla.abra.optimizers.NullifyOptimizer;
 import org.iota.qupla.abra.optimizers.SingleInputMergeOptimizer;
 import org.iota.qupla.abra.optimizers.SlicedInputOptimizer;
-import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraBlockBranch extends AbraBaseBlock
@@ -184,44 +182,35 @@ public class AbraBlockBranch extends AbraBaseBlock
 
   public void optimize(final AbraModule module)
   {
-    // first move the nullifies up the chain as far as possible
-    new NullifyOptimizer(module, this).run();
-
-    // then insert actual nullify operations and rewire accordingly
-    new NullifyInserter(module, this).run();
-
-    // replace all single-input merges with direct references
+    // replace all temporary merge wrappers with direct references
     new SingleInputMergeOptimizer(module, this).run();
-
-    // run the set of actual optimizations
-    optimizePass(module);
-
-    // and finally remove all unreferenced sites
-    new UnreferencedSiteRemover(module, this).run();
-  }
-
-  private void optimizePass(final AbraModule module)
-  {
-    // bypass all function calls that do nothing
-    new EmptyFunctionOptimizer(module, this).run();
 
     // pre-slice inputs that will be sliced later on
     new SlicedInputOptimizer(module, this).run();
 
-    // replace lut wrapper function with direct lut operations
-    new LutFunctionWrapperOptimizer(module, this).run();
-
-    // replace concatenation knot that is passed as input to a knot
+    // replace concatenations with direct references
     new ConcatenationOptimizer(module, this).run();
 
-    // remove duplicate sites, only need to calculate once
-    new DuplicateSiteOptimizer(module, this).run();
+    // bypass all function calls that do nothing
+    new EmptyFunctionOptimizer(module, this).run();
+
+    // replace lut wrapper function with direct lut operations
+    new LutFunctionWrapperOptimizer(module, this).run();
 
     // replace single-trit nullifies and constants with LUTs
     new ConstantTritOptimizer(module, this).run();
 
-    // if possible, replace lut calling lut with a single lut that does it all
+    // these next optimizations involve code reordering and LUT folding
+    // leading to harder to follow but highly optimized code
+
+    // move the nullifiers up the chain as far as possible
+    new NullifyOptimizer(module, this).run();
+
+    // fold cascading luts into a single lut that does it all
     new MultiLutOptimizer(module, this).run();
+
+    // remove duplicate sites, only need to calculate once
+    new DuplicateSiteOptimizer(module, this).run();
   }
 
   @Override
