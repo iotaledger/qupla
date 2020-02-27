@@ -80,7 +80,6 @@ public class AbraReadDebugInfoContext extends AbraTritCodeBaseContext
 
   private void evalSite(final AbraBaseSite site)
   {
-    //TODO putInt(typeId) (index of origin.typeInfo)
     site.name = getString();
     site.stmt = getStmt();
   }

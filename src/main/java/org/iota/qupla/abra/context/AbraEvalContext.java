@@ -1,10 +1,14 @@
 package org.iota.qupla.abra.context;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import org.iota.qupla.Qupla;
+import org.iota.qupla.abra.FpgaClient;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
@@ -24,6 +28,7 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraEvalContext extends AbraBaseContext
 {
+  private static FpgaClient client;
   // note: stateValues needs to be static so that state is preserved between invocations
   private static final HashMap<StateValue, StateValue> stateValues = new HashMap<>();
   private static final boolean trace = false;
@@ -69,6 +74,13 @@ public class AbraEvalContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
+    branch.count++;
+
+    if (branch.fpga && evalBranchFpga(branch))
+    {
+      return;
+    }
+
     final TritVector[] oldStack = stack;
     stack = new TritVector[branch.totalSites()];
 
@@ -108,6 +120,62 @@ public class AbraEvalContext extends AbraBaseContext
 
     stack = oldStack;
     value = result;
+  }
+
+  private boolean evalBranchFpga(final AbraBlockBranch branch)
+  {
+    if (client == null)
+    {
+      client = new FpgaClient();
+      try
+      {
+        final byte[] data = Files.readAllBytes(Paths.get(branch.name + ".qbc"));
+        if (client.process('c', data) == null)
+        {
+          branch.fpga = false;
+          return false;
+        }
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace();
+        branch.fpga = false;
+        return false;
+      }
+    }
+
+
+    value = null;
+    for (final TritVector arg : args)
+    {
+      value = TritVector.concat(value, arg);
+    }
+
+    final byte[] input = new byte[value.size()];
+    for (int i = 0; i < input.length; i++)
+    {
+      final char trit = value.trit(i);
+      input[i] = (byte) "@1-0".indexOf(trit);
+    }
+
+    // pass input value to fpga for processing
+    final byte[] output = client.process('d', input);
+    if (output == null)
+    {
+      branch.fpga = false;
+      return false;
+    }
+
+    final char[] result = new char[output.length];
+    for (int i = 0; i < output.length; i++)
+    {
+      final byte trit = output[i];
+      result[i] = "@1-0".charAt(trit);
+    }
+
+    value = new TritVector(new String(result));
+
+    return true;
   }
 
   public TritVector evalEntity(final FuncEntity entity, final TritVector vector)

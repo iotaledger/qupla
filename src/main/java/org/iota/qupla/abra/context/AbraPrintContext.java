@@ -20,6 +20,7 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 public class AbraPrintContext extends AbraBaseContext
 {
   public String fileName;
+  public int[] siteDepth;
   public boolean statements = true;
   public String type = "site ";
 
@@ -53,12 +54,17 @@ public class AbraPrintContext extends AbraBaseContext
 
   private int depth(final AbraSiteKnot knot)
   {
+    if (siteDepth == null)
+    {
+      return 0;
+    }
+
     int maxDepth = 0;
     for (final AbraBaseSite input : knot.inputs)
     {
       if (input instanceof AbraSiteKnot)
       {
-        final int thisDepth = depth((AbraSiteKnot) input) + 1;
+        final int thisDepth = siteDepth[input.index];
         if (thisDepth > maxDepth)
         {
           maxDepth = thisDepth;
@@ -66,7 +72,8 @@ public class AbraPrintContext extends AbraBaseContext
       }
     }
 
-    return maxDepth;
+    siteDepth[knot.index] = maxDepth + 1;
+    return maxDepth + 1;
   }
 
   public void eval(final AbraModule module)
@@ -95,6 +102,7 @@ public class AbraPrintContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
+    siteDepth = new int[branch.totalSites()];
     branch.numberSites();
 
     evalBlock(branch);
@@ -117,6 +125,8 @@ public class AbraPrintContext extends AbraBaseContext
     }
 
     newline().undent();
+
+    siteDepth = null;
   }
 
   private void evalBranchSites(final ArrayList<? extends AbraBaseSite> sites, final String type)

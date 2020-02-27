@@ -22,7 +22,9 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraBlockBranch extends AbraBaseBlock
 {
+  public int count;
   public BaseExpr finalStmt;
+  public boolean fpga;
   public final ArrayList<AbraSiteParam> inputs = new ArrayList<>();
   public final ArrayList<AbraSiteLatch> latches = new ArrayList<>();
   public final ArrayList<AbraBaseSite> outputs = new ArrayList<>();

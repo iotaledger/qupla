@@ -190,6 +190,12 @@ public class Qupla
         evalExpressions();
         waitOneSecond();
         stopDispatcher();
+
+        // for (final AbraBlockBranch branch : quplaToAbraContext.abraModule.branches)
+        // {
+        //   final String count = "         " + branch.count;
+        //   log(count.substring(count.length() - 9) + "   " + branch.name);
+        // }
       }
       catch (final CodeException ex)
       {
@@ -271,6 +277,27 @@ public class Qupla
     // run FuncEntities as Abra instead of Qupla
     FuncEntity.abraModule = quplaToAbraContext.abraModule;
 
+    for (final BaseExpr expr : expressions)
+    {
+      if (expr instanceof FuncExpr)
+      {
+        final FuncExpr funcExpr = (FuncExpr) expr;
+        if (funcExpr.name != null)
+        {
+          for (final AbraBlockBranch branch : FuncEntity.abraModule.branches)
+          {
+            if (branch.name.equals(funcExpr.name))
+            {
+              branch.fpga = true;
+              break;
+            }
+          }
+        }
+      }
+
+      break;
+    }
+
     if (options.contains("-config"))
     {
       runAbraToConfig();
@@ -298,6 +325,7 @@ public class Qupla
 
     for (final AbraBlockBranch branch : module.branches)
     {
+      Qupla.log("Optimizing " + branch.name);
       new MultiLutOptimizer(module, branch).run();
       new DuplicateSiteOptimizer(module, branch).run();
     }

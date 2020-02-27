@@ -112,13 +112,13 @@ public class AbraConfigContext extends AbraBaseContext
       // route constant trit to constant LUT with site 0 as input
       final AbraBlockSpecial block = (AbraBlockSpecial) knot.block;
       final int tritOffset = "01-".indexOf(block.constantValue.trit(0));
-      write(lutZeroIndex + tritOffset);
+      write(tritOffset);
       write(1);
       write(0);
       return;
     }
 
-    write(knot.block.index);
+    write(knot.block.index != 0 ? knot.block.index - lutZeroIndex : 0xffff);
     write(knot.inputs.size());
     for (final AbraBaseSite input : knot.inputs)
     {

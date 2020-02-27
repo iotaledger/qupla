@@ -80,7 +80,7 @@ public class NullifyOptimizer extends BaseOptimizer
       return;
     }
 
-    //TODO handle moving of targetKnot
+    //TODO handle moving of targetKnot when knot comes before constant
     final AbraBaseSite constant = knot.inputs.get(0);
     if (targetKnot.index > constant.index)
     {
