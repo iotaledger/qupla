@@ -2,52 +2,34 @@ package org.iota.qupla.helper;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.iota.qupla.exception.CodeException;
 
 public class TritConverter
 {
-  public static final char BOOL_FALSE = '-';
-  public static final char BOOL_TRUE = '1';
+  public static final String BOOL_FALSE;
+  public static final String BOOL_TRUE;
+  public static final boolean FALSE_IS_MIN = true;
   public static final String TRYTES = "NOPQRSTUVWXYZ9ABCDEFGHIJKLM";
-  public static final String[] TRYTE_TRITS = {
-      "---",
-      "0--",
-      "1--",
-      "-0-",
-      "00-",
-      "10-",
-      "-1-",
-      "01-",
-      "11-",
-      "--0",
-      "0-0",
-      "1-0",
-      "-00",
-      "000",
-      "100",
-      "-10",
-      "010",
-      "110",
-      "--1",
-      "0-1",
-      "1-1",
-      "-01",
-      "001",
-      "101",
-      "-11",
-      "011",
-      "111"
-  };
+  public static final byte[][] TRYTE_TRITS;
   private static final ArrayList<Integer> powerDigits = new ArrayList<>();
   private static final ArrayList<BigInteger> powers = new ArrayList<>();
   private static final BigInteger three = new BigInteger("3");
 
-  public static String fromDecimal(final String decimal)
+  public static byte[] fromDecimal(final String decimal)
   {
-    if (decimal.length() == 1 && decimal.charAt(0) < '2')
+    if (decimal.length() == 1)
     {
-      return decimal;
+      switch (decimal.charAt(0))
+      {
+      case '0':
+        return new byte[] { TritVector.TRIT_ZERO };
+      case '1':
+        return new byte[] { TritVector.TRIT_ONE };
+      case '-':
+        return new byte[] { TritVector.TRIT_MIN };
+      }
     }
 
     // take abs(name)
@@ -55,8 +37,8 @@ public class TritConverter
     final String value = negative ? decimal.substring(1) : decimal;
 
     // convert to unbalanced ternary
-    final char[] buffer = new char[value.length() * 3];
-    final char[] quotient = value.toCharArray();
+    final byte[] buffer = new byte[value.length() * 3];
+    final byte[] quotient = value.getBytes();
     for (int i = 0; i < quotient.length; i++)
     {
       quotient[i] -= '0';
@@ -69,17 +51,17 @@ public class TritConverter
     {
       int vLength = qLength;
       qLength = 0;
-      char digit = quotient[0];
+      byte digit = quotient[0];
       if (digit >= 3 || vLength == 1)
       {
-        quotient[qLength++] = (char) (digit / 3);
+        quotient[qLength++] = (byte) (digit / 3);
         digit %= 3;
       }
 
       for (int index = 1; index < vLength; index++)
       {
-        digit = (char) (digit * 10 + quotient[index]);
-        quotient[qLength++] = (char) (digit / 3);
+        digit = (byte) (digit * 10 + quotient[index]);
+        quotient[qLength++] = (byte) (digit / 3);
         digit %= 3;
       }
 
@@ -94,22 +76,22 @@ public class TritConverter
       switch (buffer[i] + carry)
       {
       case 0:
-        buffer[i] = '0';
+        buffer[i] = TritVector.TRIT_ZERO;
         carry = 0;
         break;
 
       case 1:
-        buffer[i] = negative ? '-' : '1';
+        buffer[i] = negative ? TritVector.TRIT_MIN : TritVector.TRIT_ONE;
         carry = 0;
         break;
 
       case 2:
-        buffer[i] = negative ? '1' : '-';
+        buffer[i] = negative ? TritVector.TRIT_ONE : TritVector.TRIT_MIN;
         carry = 1;
         break;
 
       case 3:
-        buffer[i] = '0';
+        buffer[i] = TritVector.TRIT_ZERO;
         carry = 1;
         break;
       }
@@ -117,13 +99,13 @@ public class TritConverter
 
     if (carry != 0)
     {
-      buffer[bLength++] = negative ? '-' : '1';
+      buffer[bLength++] = negative ? TritVector.TRIT_MIN : TritVector.TRIT_ONE;
     }
 
-    return new String(buffer, 0, bLength);
+    return Arrays.copyOf(buffer, bLength);
   }
 
-  public static String fromFloat(final String value, final int manSize, final int expSize)
+  public static byte[] fromFloat(final String value, final int manSize, final int expSize)
   {
     final int dot = value.indexOf('.');
     if (dot < 0)
@@ -133,21 +115,26 @@ public class TritConverter
       if (value.equals("0"))
       {
         // special case: both mantissa and exponent zero
-        return zeroes(manSize + expSize);
+        final byte[] result = new byte[manSize + expSize];
+        Arrays.fill(result, TritVector.TRIT_ZERO);
+        return result;
       }
 
       // get minimum trit vector that represents integer
-      final String trits = fromDecimal(value);
+      final byte[] trits = fromDecimal(value);
 
       // make sure it fits in the mantissa
-      if (trits.length() > manSize)
+      if (trits.length > manSize)
       {
         throw new CodeException("Mantissa '" + value + "' exceeds " + manSize + " trits");
       }
 
       // shift all significant trits to normalize
-      final String mantissa = zeroes(manSize - trits.length()) + trits;
-      return makeFloat(mantissa, trits.length(), expSize);
+      int zeroes = manSize - trits.length;
+      final byte[] mantissa = new byte[manSize];
+      Arrays.fill(mantissa, 0, zeroes, TritVector.TRIT_ZERO);
+      System.arraycopy(trits, 0, mantissa, zeroes, trits.length);
+      return makeFloat(mantissa, trits.length, expSize);
     }
 
     // handle float constant
@@ -171,14 +158,14 @@ public class TritConverter
     // also: calculate 3 trits per decimal just to be sure
     int exponent = -(manSize + 20 + 3 * decimals);
     final BigInteger ternary = intValue.multiply(getPower(-exponent)).divide(tenPower);
-    final String trits = fromDecimal(ternary.toString());
+    final byte[] trits = fromDecimal(ternary.toString());
 
     // take <manSize> most significant trits
-    final String mantissa = trits.substring(trits.length() - manSize);
-    return makeFloat(mantissa, exponent + trits.length(), expSize);
+    final byte[] mantissa = Arrays.copyOfRange(trits, trits.length - manSize, trits.length);
+    return makeFloat(mantissa, exponent + trits.length, expSize);
   }
 
-  public static String fromLong(final long decimal)
+  public static byte[] fromLong(final long decimal)
   {
     //TODO replace this inefficient lazy-ass code :-P
     return fromDecimal("" + decimal);
@@ -206,29 +193,31 @@ public class TritConverter
     return powers.get(nr);
   }
 
-  private static String makeFloat(final String mantissa, final int exponent, final int expSize)
+  private static byte[] makeFloat(final byte[] mantissa, final int exponent, final int expSize)
   {
-    final String trits = fromLong(exponent);
-
     // make sure exponent fits
-    if (trits.length() > expSize)
+    final byte[] trits = fromLong(exponent);
+    if (trits.length > expSize)
     {
       throw new CodeException("Exponent '" + exponent + "' exceeds " + expSize + " trits");
     }
 
-    return mantissa + trits + zeroes(expSize - trits.length());
+    final byte[] result = Arrays.copyOf(mantissa, mantissa.length + expSize);
+    System.arraycopy(trits, 0, result, mantissa.length, trits.length);
+    Arrays.fill(result, mantissa.length + trits.length, result.length, TritVector.TRIT_ZERO);
+    return result;
   }
 
-  public static BigInteger toDecimal(final String trits)
+  public static BigInteger toDecimal(final byte[] trits)
   {
     BigInteger result = new BigInteger("0");
-    for (int i = 0; i < trits.length(); i++)
+    for (int i = 0; i < trits.length; i++)
     {
-      final char c = trits.charAt(i);
-      if (c != '0')
+      final byte trit = trits[i];
+      if (trit != TritVector.TRIT_ZERO)
       {
         final BigInteger power = getPower(i);
-        result = c == '-' ? result.subtract(power) : result.add(power);
+        result = trit == TritVector.TRIT_MIN ? result.subtract(power) : result.add(power);
       }
     }
 
@@ -236,11 +225,11 @@ public class TritConverter
   }
 
   //TODO expSize is never used???
-  public static String toFloat(final String trits, final int manSize, final int expSize)
+  public static String toFloat(final byte[] trits, final int manSize, final int expSize)
   {
     // find first significant trit
     int significant = 0;
-    while (significant < manSize && trits.charAt(significant) == '0')
+    while (significant < manSize && trits[significant] == TritVector.TRIT_ZERO)
     {
       significant++;
     }
@@ -253,11 +242,12 @@ public class TritConverter
 
     // shift the significant trits of the mantissa to the left to get
     // its integer representation (we will need to correct the exponent)
-    final String mantissa = trits.substring(significant, manSize);
+    final byte[] mantissa = Arrays.copyOfRange(trits, significant, manSize);
     final BigInteger integer = toDecimal(mantissa);
 
     // get exponent and correct with mantissa shift factor
-    int exponent = TritConverter.toInt(trits.substring(manSize)) - mantissa.length();
+    final byte[] exponentTrits = Arrays.copyOfRange(trits, manSize, trits.length);
+    final int exponent = TritConverter.toInt(exponentTrits) - mantissa.length;
     if (exponent == 0)
     {
       // simple case: 3^0 equals 1, just return integer
@@ -310,16 +300,15 @@ public class TritConverter
     return divResult.substring(0, decimal) + "." + fraction;
   }
 
-  public static int toInt(final String trits)
+  public static int toInt(final byte[] trits)
   {
     int result = 0;
     int power = 1;
-    for (int i = 0; i < trits.length(); i++)
+    for (final byte trit : trits)
     {
-      final char trit = trits.charAt(i);
-      if (trit != '0')
+      if (trit != TritVector.TRIT_ZERO)
       {
-        result += trit == '-' ? -power : power;
+        result += trit == TritVector.TRIT_MIN ? -power : power;
       }
 
       power *= 3;
@@ -328,16 +317,15 @@ public class TritConverter
     return result;
   }
 
-  public static long toLong(final String trits)
+  public static long toLong(final byte[] trits)
   {
     long result = 0;
     long power = 1;
-    for (int i = 0; i < trits.length(); i++)
+    for (final byte trit : trits)
     {
-      final char trit = trits.charAt(i);
-      if (trit != '0')
+      if (trit != TritVector.TRIT_ZERO)
       {
-        result += trit == '-' ? -power : power;
+        result += trit == TritVector.TRIT_MIN ? -power : power;
       }
 
       power *= 3;
@@ -373,16 +361,16 @@ public class TritConverter
     for (int i = 0; i < trytes.length(); i++)
     {
       final int index = TRYTES.indexOf(trytes.charAt(i));
-      final String trits = TRYTE_TRITS[index];
+      final byte[] trits = TRYTE_TRITS[index];
       for (int j = 0; j < 3; j++)
       {
-        switch (trits.charAt(j))
+        switch (trits[j])
         {
-        case '1':
+        case TritVector.TRIT_ONE:
           result[offset + j] = 1;
           break;
 
-        case '-':
+        case TritVector.TRIT_MIN:
           result[offset + j] = -1;
           break;
         }
@@ -406,11 +394,11 @@ public class TritConverter
     {
       switch (vector.trit(i))
       {
-      case '1':
+      case TritVector.TRIT_ONE:
         result[i] = 1;
         break;
 
-      case '-':
+      case TritVector.TRIT_MIN:
         result[i] = -1;
         break;
       }
@@ -426,6 +414,25 @@ public class TritConverter
 
   private static String zeroes(final int size)
   {
-    return new TritVector(size, '0').trits();
+    final char[] buffer = new char[size];
+    Arrays.fill(buffer, '0');
+    return new String(buffer);
+  }
+
+  static
+  {
+    BOOL_FALSE = FALSE_IS_MIN ? "-" : "0";
+    BOOL_TRUE = "1";
+
+    TRYTE_TRITS = new byte[27][];
+    for (int i = 0; i < 27; i++)
+    {
+      // make sure each value from -13 to +13 is at least 3 trits long
+      // we achieve this by adding 27, so that each value is 4 trits
+      final byte[] trits = fromLong(27 - 13 + i);
+
+      // take only the first 3 trits
+      TRYTE_TRITS[i] = Arrays.copyOf(trits, 3);
+    }
   }
 }

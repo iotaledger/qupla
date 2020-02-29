@@ -21,7 +21,7 @@ public abstract class VectorExpr extends BaseExpr
   {
     super(tokenizer);
 
-    vector = new TritVector(0, '@');
+    vector = new TritVector(0, TritVector.TRIT_NULL);
 
     name = "";
   }
@@ -62,7 +62,7 @@ public abstract class VectorExpr extends BaseExpr
     size = constTypeInfo.size;
     if (vector.size() < size)
     {
-      vector = TritVector.concat(vector, new TritVector(size - vector.size(), '0'));
+      vector = TritVector.concat(vector, new TritVector(size - vector.size(), TritVector.TRIT_ZERO));
     }
   }
 

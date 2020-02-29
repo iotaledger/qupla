@@ -41,7 +41,7 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
 
     // now copy the temporary buffer length and contents
     putInt(branchTritCode.bufferOffset);
-    putTrits(new String(branchTritCode.buffer, 0, branchTritCode.bufferOffset));
+    putTrits(branchTritCode.buffer, branchTritCode.bufferOffset);
   }
 
   @Override
@@ -190,31 +190,12 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
   public void evalLut(final AbraBlockLut lut)
   {
     // encode 27 bct trits as 54-bit long value, and convert to 35 trits
-    long value = 0;
-    for (int i = 26; i >= 0; i--)
-    {
-      value <<= 2;
-      switch (lut.lookup.charAt(i))
-      {
-      case '0':
-        value += 1;
-        break;
-      case '1':
-        value += 2;
-        break;
-      case '-':
-        value += 3;
-        break;
-      case '@':
-        break;
-      }
-    }
-
-    final String trits = TritConverter.fromLong(value);
+    final long value = lut.toLong();
+    final byte[] trits = TritConverter.fromLong(value);
     putTrits(trits);
-    if (trits.length() < 35)
+    if (trits.length < 35)
     {
-      putTrits(new TritVector(35 - trits.length(), '0').trits());
+      putTrits(new TritVector(35 - trits.length, TritVector.TRIT_ZERO).trits());
     }
   }
 
@@ -242,7 +223,7 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
     // encode actual length
     putInt(constant.size());
 
-    final String trits = constant.trits();
+    final byte[] trits = constant.trits();
     if (constant.size() <= 5)
     {
       // just encode the trits, nothing to gain from compression
@@ -256,8 +237,8 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
     // small values (-1..2) and get zero-extended to much larger vectors
 
     // find final non-zero trit
-    int len = trits.length();
-    while (trits.charAt(len - 1) == '0')
+    int len = trits.length;
+    while (trits[len - 1] == TritVector.TRIT_ZERO)
     {
       len--;
     }
@@ -265,7 +246,7 @@ public class AbraWriteTritCodeContext extends AbraTritCodeBaseContext
     // encode the remaining length and trits
     // we can reconstruct it because we already know the size
     putInt(len);
-    putTrits(trits.substring(0, len));
+    putTrits(trits, len);
   }
 
   private void putInputSites(final AbraSiteKnot knot, final int inputs)

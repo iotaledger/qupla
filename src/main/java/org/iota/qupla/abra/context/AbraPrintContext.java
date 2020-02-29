@@ -59,7 +59,7 @@ public class AbraPrintContext extends AbraBaseContext
       return 0;
     }
 
-    int maxDepth = 0;
+    int maxDepth = -1;
     for (final AbraBaseSite input : knot.inputs)
     {
       if (input instanceof AbraSiteKnot)
@@ -72,8 +72,9 @@ public class AbraPrintContext extends AbraBaseContext
       }
     }
 
-    siteDepth[knot.index] = maxDepth + 1;
-    return maxDepth + 1;
+    maxDepth++;
+    siteDepth[knot.index] = maxDepth;
+    return maxDepth;
   }
 
   public void eval(final AbraModule module)
@@ -179,7 +180,7 @@ public class AbraPrintContext extends AbraBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    append("## lut " + lut.lookup + " " + lut.name).newline();
+    append("## lut " + lut.toTable() + " " + lut.name).newline();
   }
 
   @Override

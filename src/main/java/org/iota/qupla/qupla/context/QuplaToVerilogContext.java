@@ -3,7 +3,6 @@ package org.iota.qupla.qupla.context;
 import java.util.ArrayList;
 
 import org.iota.qupla.helper.BaseContext;
-import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.helper.Verilog;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
@@ -27,7 +26,7 @@ public class QuplaToVerilogContext extends QuplaBaseContext
 {
   private final Verilog verilog = new Verilog();
 
-  private BaseContext appendVector(final String trits)
+  private BaseContext appendVector(final byte[] trits)
   {
     return append(verilog.vector(trits));
   }
@@ -95,12 +94,12 @@ public class QuplaToVerilogContext extends QuplaBaseContext
     //     and assigning it to tmp variable that can be checked twice
     conditional.condition.eval(this);
     append(" == ");
-    appendVector("" + TritConverter.BOOL_TRUE).append(" ? ");
+    appendVector(new byte[] { TritVector.TRIT_TRUE }).append(" ? ");
     conditional.trueBranch.eval(this);
     append(" : ");
     if (conditional.falseBranch == null)
     {
-      appendVector(new TritVector(conditional.size, '@').trits());
+      appendVector(new TritVector(conditional.size, TritVector.TRIT_NULL).trits());
       return;
     }
 
@@ -208,8 +207,8 @@ public class QuplaToVerilogContext extends QuplaBaseContext
 
     for (final LutEntry entry : lut.entries)
     {
-      appendVector(entry.inputs).append(": ").append(lutName).append(" = ");
-      appendVector(entry.outputs).append(";").newline();
+      appendVector(entry.inputs.getBytes()).append(": ").append(lutName).append(" = ");
+      appendVector(entry.outputs.getBytes()).append(";").newline();
     }
 
     append("default: ").append(lutName).append(" = ");

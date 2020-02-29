@@ -579,7 +579,7 @@ public class Qupla
   public static String toString(final TritVector value, final TypeStmt typeInfo)
   {
     final String varName = value.name != null ? value.name + ": " : "";
-    return varName + "(" + typeInfo.toString(value) + ") " + value.trits();
+    return varName + "(" + typeInfo.toString(value) + ") " + new String(value.trits());
   }
 
   private static void waitOneSecond()

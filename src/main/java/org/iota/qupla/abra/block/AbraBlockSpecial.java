@@ -58,14 +58,22 @@ public class AbraBlockSpecial extends AbraBaseBlock
     }
     else
     {
-      final String trits = vector.trits();
-      int len = trits.length();
-      while (trits.charAt(len - 1) == '0')
+      final byte[] trits = vector.trits();
+      int len = trits.length;
+      while (trits[len - 1] == TritVector.TRIT_ZERO)
       {
         len--;
       }
 
-      name += "_" + trits.substring(0, len).replace('-', 'T');
+      for (int i = 0; i < len; i++)
+      {
+        if (trits[i] == TritVector.TRIT_MIN)
+        {
+          trits[i] = 'T';
+        }
+      }
+
+      name += "_" + new String(trits, 0, len);
     }
 
     constantValue = vector;

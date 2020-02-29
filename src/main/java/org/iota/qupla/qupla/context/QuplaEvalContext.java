@@ -9,7 +9,6 @@ import java.util.Stack;
 import org.iota.qupla.Qupla;
 import org.iota.qupla.dispatcher.entity.FuncEntity;
 import org.iota.qupla.helper.StateValue;
-import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
@@ -90,17 +89,17 @@ public class QuplaEvalContext extends QuplaBaseContext
       assign.warning("Partially overwriting state");
 
       // get existing state or all zero default state
-      final TritVector trits = stateValue != null ? stateValue.value : new TritVector(value.size(), '0');
-      final char[] buffer = new char[trits.size()];
+      final TritVector trits = stateValue != null ? stateValue.value : new TritVector(value.size(), TritVector.TRIT_ZERO);
+      final byte[] buffer = new byte[trits.size()];
       for (int i = 0; i < value.size(); i++)
       {
         // only overwrite non-null trits
-        final char trit = value.trit(i);
-        buffer[i] = trit == '@' ? trits.trit(i) : trit;
+        final byte trit = value.trit(i);
+        buffer[i] = trit == TritVector.TRIT_NULL ? trits.trit(i) : trit;
       }
 
       // use the merged result as the value to set the state to
-      value = new TritVector(new String(buffer));
+      value = new TritVector(buffer);
     }
 
     // state already saved?
@@ -170,14 +169,14 @@ public class QuplaEvalContext extends QuplaBaseContext
       return;
     }
 
-    final char trit = value.trit(0);
-    if (trit == TritConverter.BOOL_TRUE)
+    final byte trit = value.trit(0);
+    if (trit == TritVector.TRIT_TRUE)
     {
       conditional.trueBranch.eval(this);
       return;
     }
 
-    if (conditional.falseBranch != null && trit == TritConverter.BOOL_FALSE)
+    if (conditional.falseBranch != null && trit == TritVector.TRIT_FALSE)
     {
       conditional.falseBranch.eval(this);
       return;
@@ -185,7 +184,7 @@ public class QuplaEvalContext extends QuplaBaseContext
 
     // a non-bool condition value will result in a null return value
     // because both nullify calls will return null
-    value = new TritVector(conditional.size, '@');
+    value = new TritVector(conditional.size, TritVector.TRIT_NULL);
   }
 
   public TritVector evalEntity(final FuncEntity entity, final TritVector vector)

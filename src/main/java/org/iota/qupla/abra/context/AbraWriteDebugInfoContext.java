@@ -60,7 +60,7 @@ public class AbraWriteDebugInfoContext extends AbraTritCodeBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    final boolean isUnnamed = lut.name.equals(AbraBlockLut.unnamed(lut.lookup));
+    final boolean isUnnamed = lut.name.equals(lut.unnamed());
     putString(isUnnamed ? null : lut.name);
     putString(lut.origin == null ? null : lut.origin.toString());
   }

@@ -1,6 +1,7 @@
 package org.iota.qupla.qupla.context;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Stack;
 
 import org.iota.qupla.abra.AbraModule;
@@ -21,6 +22,7 @@ import org.iota.qupla.abra.context.AbraViewTreeContext;
 import org.iota.qupla.abra.context.AbraWriteDebugInfoContext;
 import org.iota.qupla.abra.context.AbraWriteTritCodeContext;
 import org.iota.qupla.exception.CodeException;
+import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.base.QuplaBaseContext;
 import org.iota.qupla.qupla.expression.AssignExpr;
 import org.iota.qupla.qupla.expression.ConcatExpr;
@@ -43,6 +45,13 @@ import org.iota.qupla.qupla.statement.helper.LutEntry;
 
 public class QuplaToAbraContext extends QuplaBaseContext
 {
+  private static final byte[] POWER_OF_3 = {
+      1,
+      3,
+      9,
+      27
+  };
+
   public AbraModule abraModule = new AbraModule();
   private int bodies;
   public AbraBlockBranch branch;
@@ -109,11 +118,11 @@ public class QuplaToAbraContext extends QuplaBaseContext
     // we start a new AbraModule from the generated tritcode
     abraModule = new AbraModule();
     final AbraReadTritCodeContext codeReader = new AbraReadTritCodeContext();
-    codeReader.buffer = new String(codeWriter.buffer, 0, codeWriter.bufferOffset).toCharArray();
+    codeReader.buffer = Arrays.copyOf(codeWriter.buffer, codeWriter.bufferOffset);
     codeReader.eval(abraModule);
 
     final AbraReadDebugInfoContext debugReader = new AbraReadDebugInfoContext();
-    debugReader.buffer = new String(debugWriter.buffer, 0, debugWriter.bufferOffset).toCharArray();
+    debugReader.buffer = Arrays.copyOf(debugWriter.buffer, debugWriter.bufferOffset);
     debugReader.eval(abraModule);
 
     new AbraAnalyzeContext().eval(abraModule);
@@ -289,7 +298,8 @@ public class QuplaToAbraContext extends QuplaBaseContext
     // note: lut output size can be >1, so we need a lut per output trit
     for (int tritNr = 0; tritNr < lut.size; tritNr++)
     {
-      final char[] lookup = AbraBlockLut.LUT_NULL.toCharArray();
+      final byte[] lookup = new byte[27];
+      Arrays.fill(lookup, TritVector.TRIT_NULL);
 
       for (final LutEntry entry : lut.entries)
       {
@@ -308,19 +318,29 @@ public class QuplaToAbraContext extends QuplaBaseContext
         }
 
         // set corresponding character
-        lookup[index] = entry.outputs.charAt(tritNr);
+        final char c = entry.outputs.charAt(tritNr);
+        switch (c)
+        {
+        case '0':
+          lookup[index] = TritVector.TRIT_ZERO;
+          break;
+        case '1':
+          lookup[index] = TritVector.TRIT_ONE;
+          break;
+        case '-':
+          lookup[index] = TritVector.TRIT_MIN;
+          break;
+        }
       }
 
-      // powers of 3:              1     3     9    27
-      final int lookupSize = "\u0001\u0003\u0009\u001b".charAt(lut.inputSize);
-
       // repeat the entries across the entire table if necessary
+      final int lookupSize = POWER_OF_3[lut.inputSize];
       for (int offset = lookupSize; offset < 27; offset += lookupSize)
       {
         System.arraycopy(lookup, 0, lookup, offset, lookupSize);
       }
 
-      final AbraBlockLut block = abraModule.addLut(lut.name + "_" + tritNr, new String(lookup));
+      final AbraBlockLut block = abraModule.addLut(lut.name + "_" + tritNr, new AbraBlockLut(lookup));
       block.origin = lut;
     }
   }

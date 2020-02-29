@@ -14,6 +14,7 @@ import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.exception.CodeException;
+import org.iota.qupla.helper.TritVector;
 
 public class AbraConfigContext extends AbraBaseContext
 {
@@ -111,8 +112,8 @@ public class AbraConfigContext extends AbraBaseContext
     {
       // route constant trit to constant LUT with site 0 as input
       final AbraBlockSpecial block = (AbraBlockSpecial) knot.block;
-      final int tritOffset = "01-".indexOf(block.constantValue.trit(0));
-      write(tritOffset);
+      final byte trit = block.constantValue.trit(0);
+      write(AbraModule.constLutIndex(trit));
       write(1);
       write(0);
       return;
@@ -142,22 +143,12 @@ public class AbraConfigContext extends AbraBaseContext
       {
         bytes <<= 2;
         int index = group + i;
-        if (index < lut.lookup.length())
+        if (index < 27)
         {
-          switch (lut.lookup.charAt(index))
-          {
-          case '0':
-            bytes |= 0x03;
-            break;
-          case '1':
-            bytes |= 0x01;
-            break;
-          case '-':
-            bytes |= 0x02;
-            break;
-          }
+          bytes += TritVector.tritToBits(lut.lookup(index));
         }
       }
+
       write(bytes);
     }
   }

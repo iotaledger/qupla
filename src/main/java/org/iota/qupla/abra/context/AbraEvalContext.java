@@ -20,7 +20,6 @@ import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.dispatcher.entity.FuncEntity;
 import org.iota.qupla.helper.StateValue;
-import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
@@ -32,10 +31,10 @@ public class AbraEvalContext extends AbraBaseContext
   // note: stateValues needs to be static so that state is preserved between invocations
   private static final HashMap<StateValue, StateValue> stateValues = new HashMap<>();
   private static final boolean trace = false;
-  private static final TritVector tritMin = new TritVector(1, '-');
-  private static final TritVector tritNull = new TritVector(1, '@');
-  private static final TritVector tritOne = new TritVector(1, '1');
-  private static final TritVector tritZero = new TritVector(1, '0');
+  private static final TritVector tritMin = new TritVector(1, TritVector.TRIT_MIN);
+  private static final TritVector tritNull = new TritVector(1, TritVector.TRIT_NULL);
+  private static final TritVector tritOne = new TritVector(1, TritVector.TRIT_ONE);
+  private static final TritVector tritZero = new TritVector(1, TritVector.TRIT_ZERO);
   private static final boolean useBreak = true;
   private static final boolean usePrint = true;
 
@@ -60,7 +59,7 @@ public class AbraEvalContext extends AbraBaseContext
       branch.outputs.add(knot);
 
       args.clear();
-      args.add(new TritVector(1, '0'));
+      args.add(new TritVector(1, TritVector.TRIT_ZERO));
       branch.numberSites();
       callTrail[callNr++] = (byte) knot.block.index;
       callTrail[callNr++] = (byte) (knot.block.index >> 8);
@@ -138,7 +137,6 @@ public class AbraEvalContext extends AbraBaseContext
       }
       catch (IOException e)
       {
-        e.printStackTrace();
         branch.fpga = false;
         return false;
       }
@@ -151,11 +149,10 @@ public class AbraEvalContext extends AbraBaseContext
       value = TritVector.concat(value, arg);
     }
 
-    final byte[] input = new byte[value.size()];
+    final byte[] input = value.trits();
     for (int i = 0; i < input.length; i++)
     {
-      final char trit = value.trit(i);
-      input[i] = (byte) "@1-0".indexOf(trit);
+      input[i] = TritVector.tritToBits(input[i]);
     }
 
     // pass input value to fpga for processing
@@ -166,15 +163,12 @@ public class AbraEvalContext extends AbraBaseContext
       return false;
     }
 
-    final char[] result = new char[output.length];
     for (int i = 0; i < output.length; i++)
     {
-      final byte trit = output[i];
-      result[i] = "@1-0".charAt(trit);
+      output[i] = TritVector.bitsToTrit(output[i]);
     }
 
-    value = new TritVector(new String(result));
-
+    value = new TritVector(output);
     return true;
   }
 
@@ -219,7 +213,7 @@ public class AbraEvalContext extends AbraBaseContext
 
       if (isAllNull)
       {
-        stack[knot.index] = new TritVector(knot.size, '@');
+        stack[knot.index] = new TritVector(knot.size, TritVector.TRIT_NULL);
         return;
       }
     }
@@ -279,7 +273,7 @@ public class AbraEvalContext extends AbraBaseContext
       return;
     }
 
-    stack[latch.index] = new TritVector(latch.size, '0');
+    stack[latch.index] = new TritVector(latch.size, TritVector.TRIT_ZERO);
   }
 
   @Override
@@ -301,14 +295,14 @@ public class AbraEvalContext extends AbraBaseContext
 
       switch (arg.trit(0))
       {
-      case '-':
+      case TritVector.TRIT_MIN:
         index -= power;
         break;
 
-      case '0':
+      case TritVector.TRIT_ZERO:
         break;
 
-      case '1':
+      case TritVector.TRIT_ONE:
         index += power;
         break;
 
@@ -320,17 +314,17 @@ public class AbraEvalContext extends AbraBaseContext
       power *= 3;
     }
 
-    switch (lut.lookup.charAt(index))
+    switch (lut.lookup(index))
     {
-    case '0':
+    case TritVector.TRIT_ZERO:
       value = tritZero;
       return;
 
-    case '1':
+    case TritVector.TRIT_ONE:
       value = tritOne;
       return;
 
-    case '-':
+    case TritVector.TRIT_MIN:
       value = tritMin;
       return;
     }
@@ -363,11 +357,11 @@ public class AbraEvalContext extends AbraBaseContext
       break;
 
     case AbraBlockSpecial.TYPE_NULLIFY_FALSE:
-      evalSpecialNullify(block, TritConverter.BOOL_FALSE);
+      evalSpecialNullify(block, TritVector.TRIT_FALSE);
       break;
 
     case AbraBlockSpecial.TYPE_NULLIFY_TRUE:
-      evalSpecialNullify(block, TritConverter.BOOL_TRUE);
+      evalSpecialNullify(block, TritVector.TRIT_TRUE);
       break;
     }
   }
@@ -408,7 +402,7 @@ public class AbraEvalContext extends AbraBaseContext
     }
   }
 
-  private void evalSpecialNullify(final AbraBlockSpecial block, final char selector)
+  private void evalSpecialNullify(final AbraBlockSpecial block, final byte selector)
   {
     if (args.size() != 2)
     {
@@ -436,7 +430,7 @@ public class AbraEvalContext extends AbraBaseContext
 
     if (block.constantValue == null)
     {
-      block.constantValue = new TritVector(block.size, '@');
+      block.constantValue = new TritVector(block.size, TritVector.TRIT_NULL);
     }
 
     value = block.constantValue;
@@ -535,14 +529,14 @@ public class AbraEvalContext extends AbraBaseContext
       }
 
       // merge values by skipping null trits
-      final char[] buffer = new char[value.size()];
+      final byte[] buffer = new byte[value.size()];
       for (int i = 0; i < value.size(); i++)
       {
-        final char trit = value.trit(i);
-        buffer[i] = trit == '@' ? stateValue.value.trit(i) : trit;
+        final byte trit = value.trit(i);
+        buffer[i] = trit == TritVector.TRIT_NULL ? stateValue.value.trit(i) : trit;
       }
 
-      stateValue.value = new TritVector(new String(buffer));
+      stateValue.value = new TritVector(buffer);
       return;
     }
 
@@ -557,7 +551,21 @@ public class AbraEvalContext extends AbraBaseContext
 
     // save state, but replace nulls with zeroes
     call.path = Arrays.copyOf(callTrail, callNr + 1);
-    call.value = value.isValue() ? value : new TritVector(value.trits().replace('@', '0'));
+    call.value = value;
+    if (!value.isValue())
+    {
+      final byte[] trits = value.trits();
+      for (int i = 0; i < trits.length; i++)
+      {
+        if (trits[i] == TritVector.TRIT_NULL)
+        {
+          trits[i] = TritVector.TRIT_ZERO;
+        }
+      }
+
+      value = new TritVector(trits);
+    }
+
     stateValues.put(call, call);
   }
 
@@ -574,7 +582,9 @@ public class AbraEvalContext extends AbraBaseContext
         {
           in += first ? "(" : ", ";
           first = false;
-          in += stack[input.index].trit(0);
+          final byte trit = stack[input.index].trit(0);
+          final byte bits = TritVector.tritToBits(trit);
+          in += "@1-0".charAt(bits);
         }
         in += ")";
       }

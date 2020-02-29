@@ -12,6 +12,7 @@ import jota.model.Transfer;
 import jota.pow.pearldiver.PearlDiverLocalPoW;
 import jota.utils.Converter;
 import jota.utils.TrytesConverter;
+import org.iota.qupla.helper.TritVector;
 
 public class TangleInterface
 {
@@ -40,10 +41,7 @@ public class TangleInterface
   {
     int[] headerTrits = Converter.fromValue(contentLength);
     int[] paddedHeaderTrits = new int[MESSAGE_PACKET_HEADER_LENGTH * 3];
-    for (int i = 0; i < headerTrits.length; i++)
-    {
-      paddedHeaderTrits[i] = headerTrits[i];
-    }
+    System.arraycopy(headerTrits, 0, paddedHeaderTrits, 0, headerTrits.length);
     return Converter.trytes(paddedHeaderTrits);
   }
 
@@ -101,25 +99,27 @@ public class TangleInterface
     return new String(address);
   }
 
-  public static String tritsToTrytes(String tritString)
+  public static String tritsToTrytes(final String tritString)
   {
     int[] trits = new int[tritString.length() + (3 - tritString.length() % 3) % 3];
     for (int i = 0; i < tritString.length(); i++)
     {
       char c = tritString.charAt(i);
-      trits[i] = c == '-' ? -1 : c == '1' ? 1 : 0;
+      trits[i] = c == TritVector.TRIT_MIN ? -1 : c == TritVector.TRIT_ONE ? 1 : 0;
     }
+
     return Converter.trytes(trits);
   }
 
-  public static String trytesToTrits(String trytes)
+  public static String trytesToTrits(final String trytes)
   {
     int[] trits = Converter.trits(trytes);
-    char[] tritChars = new char[trits.length];
+    byte[] tritChars = new byte[trits.length];
     for (int i = 0; i < trits.length; i++)
     {
-      tritChars[i] = trits[i] == 1 ? '1' : trits[i] == -1 ? '-' : '0';
+      tritChars[i] = trits[i] == 1 ? TritVector.TRIT_ONE : trits[i] == -1 ? TritVector.TRIT_MIN : TritVector.TRIT_ZERO;
     }
+
     return new String(tritChars);
   }
 

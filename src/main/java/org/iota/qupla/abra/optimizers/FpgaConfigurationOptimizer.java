@@ -36,9 +36,9 @@ public class FpgaConfigurationOptimizer extends BaseOptimizer
 
     merger = module.specials.get(AbraBlockSpecial.TYPE_MERGE);
 
-    consts.add(new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONST, 1, new TritVector(1, '0')));
-    consts.add(new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONST, 1, new TritVector(1, '1')));
-    consts.add(new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONST, 1, new TritVector(1, '-')));
+    consts.add(new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONST, 1, new TritVector(1, TritVector.TRIT_ZERO)));
+    consts.add(new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONST, 1, new TritVector(1, TritVector.TRIT_ONE)));
+    consts.add(new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONST, 1, new TritVector(1, TritVector.TRIT_MIN)));
 
     nullTrue = module.luts.get(3);
     nullFalse = module.luts.get(4);
@@ -132,10 +132,10 @@ public class FpgaConfigurationOptimizer extends BaseOptimizer
   private void processKnotConstant(final AbraSiteKnot knot, final AbraBlockSpecial block)
   {
     final ArrayList<AbraBaseSite> trits = new ArrayList<>();
-    final String vector = block.constantValue.trits();
-    for (int i = 0; i < vector.length(); i++)
+    final byte[] vector = block.constantValue.trits();
+    for (final byte trit : vector)
     {
-      int lutId = "01-".indexOf(vector.charAt(i));
+      final int lutId = AbraModule.constLutIndex(trit);
       final AbraSiteKnot lut = new AbraSiteKnot();
       lut.size = 1;
       lut.block = consts.get(lutId);

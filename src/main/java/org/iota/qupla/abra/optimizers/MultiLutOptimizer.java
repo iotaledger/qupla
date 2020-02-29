@@ -1,6 +1,7 @@
 package org.iota.qupla.abra.optimizers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.iota.qupla.abra.AbraModule;
@@ -10,10 +11,23 @@ import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+import org.iota.qupla.helper.TritVector;
 
 public class MultiLutOptimizer extends BaseOptimizer
 {
-  private final HashMap<AbraBaseSite, Character> values = new HashMap<>();
+  private static final byte[] POWER_OF_3 = {
+      1,
+      3,
+      9,
+      27
+  };
+  private static final byte[] TRIT = {
+      TritVector.TRIT_MIN,
+      TritVector.TRIT_ZERO,
+      TritVector.TRIT_ONE
+  };
+
+  private final HashMap<AbraBaseSite, Byte> values = new HashMap<>();
 
   public MultiLutOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {
@@ -24,22 +38,21 @@ public class MultiLutOptimizer extends BaseOptimizer
   private AbraBlockLut generateLookupTable(final AbraSiteKnot master, final AbraSiteKnot slave, final ArrayList<AbraBaseSite> inputs)
   {
     // initialize with 27 null trits
-    final char[] lookup = AbraBlockLut.LUT_NULL.toCharArray();
+    final byte[] lookup = new byte[27];
+    Arrays.fill(lookup, TritVector.TRIT_NULL);
 
-    // powers of 3:              1     3     9    27
-    final int lookupSize = "\u0001\u0003\u0009\u001b".charAt(inputs.size());
-
+    final int lookupSize = POWER_OF_3[inputs.size()];
     for (int v = 0; v < lookupSize; v++)
     {
       int value = v;
       for (int i = 0; i < inputs.size(); i++)
       {
-        values.put(inputs.get(i), "-01".charAt(value % 3));
+        values.put(inputs.get(i), TRIT[value % 3]);
         value /= 3;
       }
 
-      final char slaveTrit = lookupTrit(slave);
-      if (slaveTrit == '@')
+      final byte slaveTrit = lookupTrit(slave);
+      if (slaveTrit == TritVector.TRIT_NULL)
       {
         // null value, no need to continue
         continue;
@@ -56,14 +69,14 @@ public class MultiLutOptimizer extends BaseOptimizer
       System.arraycopy(lookup, 0, lookup, offset, lookupSize);
     }
 
-    final String lookupTable = new String(lookup);
-    final String lutName = AbraBlockLut.unnamed(lookupTable);
+    final AbraBlockLut newLut = new AbraBlockLut(lookup);
+    final String lutName = newLut.unnamed();
 
     final AbraBlockLut lut = module.findLut(lutName);
-    return lut != null ? lut : module.addLut(lutName, lookupTable);
+    return lut != null ? lut : module.addLut(lutName, newLut);
   }
 
-  private char lookupTrit(final AbraSiteKnot lut)
+  private byte lookupTrit(final AbraSiteKnot lut)
   {
     if (lut.block.index == AbraBlockSpecial.TYPE_CONST)
     {
@@ -75,17 +88,17 @@ public class MultiLutOptimizer extends BaseOptimizer
     int power = 1;
     for (int i = 0; i < lut.inputs.size(); i++)
     {
-      final char trit = values.get(lut.inputs.get(i));
-      if (trit != '-')
+      final byte trit = values.get(lut.inputs.get(i));
+      if (trit != TritVector.TRIT_MIN)
       {
-        index += trit == '1' ? power * 2 : power;
+        index += trit == TritVector.TRIT_ONE ? power * 2 : power;
       }
 
       power *= 3;
     }
 
     // look up the trit in the lut lookup table
-    return ((AbraBlockLut) lut.block).lookup.charAt(index);
+    return ((AbraBlockLut) lut.block).lookup(index);
   }
 
   private boolean mergeLuts(final AbraSiteKnot master, final AbraSiteKnot slave)

@@ -88,11 +88,11 @@ public class TangleEntity extends Entity
 
     switch (cmd.trit(0))
     {
-    case '-':
+    case TritVector.TRIT_MIN:
       listener.unsubscribe(address.toTrytes());
       break;
 
-    case '1':
+    case TritVector.TRIT_ONE:
       listener.subscribe(address.toTrytes());
       onSubscribe(address, id);
       break;
@@ -170,11 +170,11 @@ public class TangleEntity extends Entity
     final Transaction tx0 = transactions.get(0);
     final Transaction tx1 = transactions.get(1);
 
-    final TritVector id = new TritVector(HASH_SIZE, '0');
+    final TritVector id = new TritVector(HASH_SIZE, TritVector.TRIT_ZERO);
     final TritVector map = TritVector.fromTrytes(tx0.getSignatureFragments());
     final TritVector signature = TritVector.fromTrytes(tx1.getSignatureFragments().substring(0, 81));
     final TritVector address = TritVector.fromTrytes(addressTrytes);
-    final TritVector cmd = new TritVector(1, '0');
+    final TritVector cmd = new TritVector(1, TritVector.TRIT_ZERO);
     final TritVector message = TritVector.concat(TritVector.concat(TritVector.concat(TritVector.concat(id, map), signature), address), cmd);
     golStore.affect(message, 0);
   }

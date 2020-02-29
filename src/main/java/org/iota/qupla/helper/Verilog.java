@@ -16,20 +16,20 @@ public class Verilog
   public static final int BITS_3B = 3;
   private static final String[] ENC_2B = {
       "00",
+      "01",
       "10",
-      "11",
-      "01"
+      "11"
   };
   private static final String[] ENC_3B = {
       "000",
+      "001",
       "100",
-      "010",
-      "001"
+      "010"
   };
-  private static final int ENC_NEG = 1;
+  private static final int ENC_NEG = 2;
   private static final int ENC_NULL = 0;
-  private static final int ENC_POS = 3;
-  private static final int ENC_ZERO = 2;
+  private static final int ENC_POS = 1;
+  private static final int ENC_ZERO = 3;
   private static String[] encoding = ENC_2B;
   private static int encodingBits = BITS_2B;
   public final ArrayList<Integer> addedFuncs = new ArrayList<>();
@@ -194,25 +194,25 @@ public class Verilog
     return "[" + (trits * encodingBits - 1) + ":0]";
   }
 
-  public String vector(final String trits)
+  public String vector(final byte[] trits)
   {
     StringBuilder result = new StringBuilder();
-    final int size = trits.length() * encodingBits;
+    final int size = trits.length * encodingBits;
     result.append(size).append("'b");
-    for (int i = 0; i < trits.length(); i++)
+    for (final byte trit : trits)
     {
-      switch (trits.charAt(i))
+      switch (trit)
       {
-      case '@':
+      case TritVector.TRIT_NULL:
         result.append(encoding[ENC_NULL]);
         break;
-      case '-':
+      case TritVector.TRIT_MIN:
         result.append(encoding[ENC_NEG]);
         break;
-      case '0':
+      case TritVector.TRIT_ZERO:
         result.append(encoding[ENC_ZERO]);
         break;
-      case '1':
+      case TritVector.TRIT_ONE:
         result.append(encoding[ENC_POS]);
         break;
       }

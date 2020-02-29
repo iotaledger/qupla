@@ -108,7 +108,7 @@ public class TypeStmt extends BaseExpr
     {
       if (size > 81)
       {
-        return value.trits();
+        return new String(value.trits());
       }
 
       return value.toDecimal();

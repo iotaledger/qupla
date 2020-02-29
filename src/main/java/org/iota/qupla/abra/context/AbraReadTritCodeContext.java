@@ -66,7 +66,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   public void evalBranch(final AbraBlockBranch branch)
   {
     final AbraReadTritCodeContext branchTritCode = new AbraReadTritCodeContext();
-    branchTritCode.buffer = getTrits(getInt()).toCharArray();
+    branchTritCode.buffer = getTrits(getInt());
     branchTritCode.blocks = blocks;
     branchTritCode.evalBranchBuffer(branch);
   }
@@ -221,17 +221,9 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
   public void evalLut(final AbraBlockLut lut)
   {
     // convert 35 trits to 54-bit long value, which encodes 27 bct trits
-    final String trits = getTrits(35);
+    final byte[] trits = getTrits(35);
     long value = TritConverter.toLong(trits);
-    final char[] buffer = new char[27];
-    for (int i = 0; i < 27; i++)
-    {
-      buffer[i] = "@01-".charAt((int) value & 0x03);
-      value >>= 2;
-    }
-
-    lut.lookup = new String(buffer);
-    lut.name = AbraBlockLut.unnamed(lut.lookup);
+    lut.fromLong(value);
   }
 
   @Override
@@ -251,7 +243,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
     {
       // all zero trits, get the actual length
       size = getInt();
-      return new TritVector(size, '0');
+      return new TritVector(size, TritVector.TRIT_ZERO);
     }
 
     if (size <= 5)
@@ -263,7 +255,7 @@ public class AbraReadTritCodeContext extends AbraTritCodeBaseContext
     // trailing zeroes were trimmed, get remaining trits and reconstruct by padding zeroes
     final int len = getInt();
     final TritVector remain = new TritVector(getTrits(len));
-    final TritVector zeroes = new TritVector(size - len, '0');
+    final TritVector zeroes = new TritVector(size - len, TritVector.TRIT_ZERO);
     return TritVector.concat(remain, zeroes);
   }
 

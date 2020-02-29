@@ -1,6 +1,7 @@
 package org.iota.qupla.abra.context;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
@@ -14,6 +15,7 @@ import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.helper.BaseContext;
 import org.iota.qupla.helper.TritConverter;
+import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.helper.Verilog;
 
 //TODO correct handling of merge and nullify (implement nullify functions)
@@ -34,7 +36,7 @@ public class AbraToVerilogContext extends AbraBaseContext
     return this;
   }
 
-  private BaseContext appendVector(final String trits)
+  private BaseContext appendVector(final byte[] trits)
   {
     append(verilog.vector(trits));
     return this;
@@ -281,7 +283,7 @@ public class AbraToVerilogContext extends AbraBaseContext
     final int inputSize = lut.inputs();
     //    for (int i = 0; i < lutSize[inputSize]; i++)
     //    {
-    //      char trit = lut.lookup.charAt(i);
+    //      byte trit = lut.lookup(i);
     //      append("// ");
     //      final String input = TritConverter.TRYTE_TRITS[i].substring(0, inputSize);
     //      append(verilog.vector(input).substring(3)).append(": ");
@@ -321,18 +323,18 @@ public class AbraToVerilogContext extends AbraBaseContext
 
     for (int i = 0; i < lutSize[inputSize]; i++)
     {
-      char trit = lut.lookup.charAt(i);
-      if (trit == '@')
+      final byte trit = lut.lookup(i);
+      if (trit == TritVector.TRIT_NULL)
       {
         continue;
       }
 
-      appendVector(TritConverter.TRYTE_TRITS[i].substring(0, inputSize)).append(": ").append(lutName).append(" = ");
-      appendVector("" + trit).append(";").newline();
+      appendVector(Arrays.copyOf(TritConverter.TRYTE_TRITS[i], inputSize)).append(": ").append(lutName).append(" = ");
+      appendVector(new byte[] { trit }).append(";").newline();
     }
 
     append("default: ").append(lutName).append(" = ");
-    appendVector("@").append(";").newline();
+    appendVector(new byte[] { TritVector.TRIT_NULL }).append(";").newline();
     append("endcase").newline().undent();
 
     append("end").newline().undent();

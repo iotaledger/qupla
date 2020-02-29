@@ -62,7 +62,7 @@ public class AbraReadDebugInfoContext extends AbraTritCodeBaseContext
     lut.name = getString();
     if (lut.name == null)
     {
-      lut.name = AbraBlockLut.unnamed(lut.lookup);
+      lut.name = lut.unnamed();
     }
 
     final String stmt = getString();

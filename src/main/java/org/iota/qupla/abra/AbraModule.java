@@ -7,6 +7,7 @@ import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
 import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.helper.TritVector;
 
 public class AbraModule
 {
@@ -29,11 +30,16 @@ public class AbraModule
       blocks.add(block);
     }
 
-    addLut("constZero_", AbraBlockLut.LUT_ZERO);
-    addLut("constOne_", AbraBlockLut.LUT_ONE);
-    addLut("constMin_", AbraBlockLut.LUT_MIN);
-    addLut("nullifyTrue_", AbraBlockLut.LUT_NULLIFY_TRUE);
-    addLut("nullifyFalse_", AbraBlockLut.LUT_NULLIFY_FALSE);
+    addLut("constZero_", new AbraBlockLut(TritVector.TRIT_ZERO));
+    addLut("constOne_", new AbraBlockLut(TritVector.TRIT_ONE));
+    addLut("constMin_", new AbraBlockLut(TritVector.TRIT_MIN));
+    addLut("nullifyTrue_", new AbraBlockLut(AbraBlockLut.LUT_NULLIFY_TRUE));
+    addLut("nullifyFalse_", new AbraBlockLut(AbraBlockLut.LUT_NULLIFY_FALSE));
+  }
+
+  public static int constLutIndex(final byte trit)
+  {
+    return trit == TritVector.TRIT_ZERO ? 0 : trit == TritVector.TRIT_ONE ? 1 : 2;
   }
 
   public void addBranch(final AbraBlockBranch branch)
@@ -43,12 +49,10 @@ public class AbraModule
     blocks.add(branch);
   }
 
-  public AbraBlockLut addLut(final String name, final String lookup)
+  public AbraBlockLut addLut(final String name, final AbraBlockLut lut)
   {
-    final AbraBlockLut lut = new AbraBlockLut();
     lut.index = blocks.size();
     lut.name = name;
-    lut.lookup = lookup;
     luts.add(lut);
     blocks.add(lut);
     return lut;

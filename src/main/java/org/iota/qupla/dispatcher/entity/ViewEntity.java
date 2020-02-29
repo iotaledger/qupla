@@ -39,7 +39,7 @@ public class ViewEntity extends Entity
 
     input = new ViewModel(env.typeInfo);
     input.edit = true;
-    input.vectors.add(new TritVector(env.typeInfo.size, '0'));
+    input.vectors.add(new TritVector(env.typeInfo.size, TritVector.TRIT_ZERO));
 
     final JTable inTable = new JTable(input);
     updateWidths(inTable, input);

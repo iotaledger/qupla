@@ -1,10 +1,12 @@
 package org.iota.qupla.abra.context.base;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.helper.TritConverter;
+import org.iota.qupla.helper.TritVector;
 
 public abstract class AbraTritCodeBaseContext extends AbraBaseContext
 {
@@ -15,16 +17,16 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
       "0123456789_$,=+-*/%&|^?:;@#",
       "[]{}()<>!~`'\"\\\r\n\t"
   };
-  private static final String[] codePageId = {
-      "0",
-      "1",
-      "-0",
-      "-1"
+  private static final byte[][] codePageId = {
+      new TritVector("0").trits(),
+      new TritVector("1").trits(),
+      new TritVector("-0").trits(),
+      new TritVector("-1").trits()
   };
 
   public static final int[] sizes = new int[300];
 
-  public char[] buffer = new char[32];
+  public byte[] buffer = new byte[32];
   public int bufferOffset;
 
   protected void check(final boolean condition, final String errorText)
@@ -57,19 +59,19 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
   {
     switch (getTrit())
     {
-    case '0':
+    case TritVector.TRIT_ZERO:
       return getChar(0);
 
-    case '1':
+    case TritVector.TRIT_ONE:
       return getChar(1);
     }
 
     switch (getTrit())
     {
-    case '0':
+    case TritVector.TRIT_ZERO:
       return getChar(2);
 
-    case '1':
+    case TritVector.TRIT_ONE:
       return getChar(3);
     }
 
@@ -82,10 +84,10 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     int power = 1;
     for (int i = 0; i < 3; i++)
     {
-      final char trit = getTrit();
-      if (trit != '0')
+      final byte trit = getTrit();
+      if (trit != TritVector.TRIT_ZERO)
       {
-        index += trit == '-' ? -power : power;
+        index += trit == TritVector.TRIT_MIN ? -power : power;
       }
 
       power *= 3;
@@ -105,8 +107,8 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
   protected int getInt()
   {
     // see putInt() for encoding algorithm
-    char trit = getTrit();
-    if (trit == '-')
+    byte trit = getTrit();
+    if (trit == TritVector.TRIT_MIN)
     {
       // shortcut, final bit found already
       // so value can only be zero
@@ -116,10 +118,10 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     // build up the value bit by bit
     int value = 0;
     int mask = 1;
-    for (; trit != '-'; trit = getTrit())
+    for (; trit != TritVector.TRIT_MIN; trit = getTrit())
     {
       // '0' or '1' bit at this position
-      if (trit == '1')
+      if (trit == TritVector.TRIT_ONE)
       {
         value |= mask;
       }
@@ -138,7 +140,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
 
   protected String getString()
   {
-    if (getTrit() == '0')
+    if (getTrit() == TritVector.TRIT_ZERO)
     {
       return null;
     }
@@ -153,17 +155,17 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return new String(buffer);
   }
 
-  protected char getTrit()
+  protected byte getTrit()
   {
     check(bufferOffset < buffer.length, "Buffer overflow in getTrit");
     return buffer[bufferOffset++];
   }
 
-  protected String getTrits(final int size)
+  protected byte[] getTrits(final int size)
   {
     bufferOffset += size;
     check(bufferOffset <= buffer.length, "Buffer overflow in getTrits");
-    return new String(buffer, bufferOffset - size, size);
+    return Arrays.copyOfRange(buffer, bufferOffset - size, bufferOffset);
   }
 
   protected AbraTritCodeBaseContext putChar(final char c)
@@ -178,7 +180,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
       }
     }
 
-    return putTrits("--").putInt(c);
+    return putTrit(TritVector.TRIT_MIN).putTrit(TritVector.TRIT_MIN).putInt(c);
   }
 
   protected void putIndex(final int sites, final int index)
@@ -203,20 +205,20 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     // All the rest of the bits can now be assumed to be zero
     for (int v = value + 1; v > 1; v >>= 1)
     {
-      putTrit((v & 1) == 1 ? '1' : '0');
+      putTrit((v & 1) == 1 ? TritVector.TRIT_ONE : TritVector.TRIT_ZERO);
     }
 
-    return putTrit('-');
+    return putTrit(TritVector.TRIT_MIN);
   }
 
   protected AbraTritCodeBaseContext putString(final String text)
   {
     if (text == null)
     {
-      return putTrit('0');
+      return putTrit(TritVector.TRIT_ZERO);
     }
 
-    putTrit('1');
+    putTrit(TritVector.TRIT_ONE);
     putInt(text.length());
     for (int i = 0; i < text.length(); i++)
     {
@@ -226,7 +228,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return this;
   }
 
-  protected AbraTritCodeBaseContext putTrit(final char trit)
+  protected AbraTritCodeBaseContext putTrit(final byte trit)
   {
     if (bufferOffset < buffer.length)
     {
@@ -235,24 +237,33 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     }
 
     // expand buffer
-    return putTrits("" + trit);
+    return putTrits(new byte[] { trit });
   }
 
-  protected AbraTritCodeBaseContext putTrits(final String trits)
+  protected AbraTritCodeBaseContext putTrits(final byte[] trits)
   {
-    if (bufferOffset + trits.length() <= buffer.length)
+    return putTrits(trits, trits.length);
+  }
+
+  protected AbraTritCodeBaseContext putTrits(final byte[] trits, final int length)
+  {
+    if (bufferOffset + length > buffer.length)
     {
-      final char[] copy = trits.toCharArray();
-      System.arraycopy(copy, 0, buffer, bufferOffset, copy.length);
-      bufferOffset += copy.length;
-      return this;
+      int bytes = buffer.length * 2;
+      while (bufferOffset + length > bytes)
+      {
+        bytes *= 2;
+      }
+
+      // double buffer size and try again
+      final byte[] old = buffer;
+      buffer = new byte[bytes];
+      System.arraycopy(old, 0, buffer, 0, bufferOffset);
     }
 
-    // double buffer size and try again
-    final char[] old = buffer;
-    buffer = new char[old.length * 2];
-    System.arraycopy(old, 0, buffer, 0, bufferOffset);
-    return putTrits(trits);
+    System.arraycopy(trits, 0, buffer, bufferOffset, length);
+    bufferOffset += length;
+    return this;
   }
 
   protected String toStringRead()

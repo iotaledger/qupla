@@ -45,11 +45,11 @@ public class LutEntry extends BaseExpr
     {
     case Token.TOK_LITERAL_FALSE:
       tokenizer.nextToken();
-      return "" + TritConverter.BOOL_FALSE;
+      return TritConverter.BOOL_FALSE;
 
     case Token.TOK_LITERAL_TRUE:
       tokenizer.nextToken();
-      return "" + TritConverter.BOOL_TRUE;
+      return TritConverter.BOOL_TRUE;
 
     case Token.TOK_MINUS:
       tokenizer.nextToken();

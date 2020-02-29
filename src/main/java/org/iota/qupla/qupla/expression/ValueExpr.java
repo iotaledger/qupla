@@ -30,12 +30,12 @@ public class ValueExpr extends VectorExpr
       return;
 
     case Token.TOK_LITERAL_FALSE:
-      name = "" + TritConverter.BOOL_FALSE;
+      name = TritConverter.BOOL_FALSE;
       tokenizer.nextToken();
       return;
 
     case Token.TOK_LITERAL_TRUE:
-      name = "" + TritConverter.BOOL_TRUE;
+      name = TritConverter.BOOL_TRUE;
       tokenizer.nextToken();
       return;
 
@@ -89,7 +89,7 @@ public class ValueExpr extends VectorExpr
       size = constTypeInfo.size;
       if (vector.size() < size)
       {
-        vector = TritVector.concat(vector, new TritVector(size - vector.size(), '0'));
+        vector = TritVector.concat(vector, new TritVector(size - vector.size(), TritVector.TRIT_ZERO));
       }
     }
   }
