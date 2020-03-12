@@ -746,7 +746,7 @@ public class QuplaToYAMLContext extends QuplaBaseContext
     indent();
     append("value: " + "'" + vectorExpr.name + "'");
     newline();
-    append("trits: " + "'" + vectorExpr.vector.trits() + "'");
+    append("trits: " + "'" + new String(vectorExpr.vector.trits()) + "'");
     newline();
     // not necessary
     append("trytes: " + "'" + vectorExpr.vector.toTrytes() + "'");

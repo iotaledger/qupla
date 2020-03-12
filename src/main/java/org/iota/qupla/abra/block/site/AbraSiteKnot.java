@@ -1,26 +1,31 @@
 package org.iota.qupla.abra.block.site;
 
-import org.iota.qupla.abra.AbraModule;
+import java.util.ArrayList;
+
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.base.AbraBaseBlock;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
-import org.iota.qupla.abra.funcmanagers.ConstFuncManager;
-import org.iota.qupla.abra.funcmanagers.NullifyFuncManager;
-import org.iota.qupla.abra.funcmanagers.SliceFuncManager;
-import org.iota.qupla.helper.TritVector;
 
-public class AbraSiteKnot extends AbraSiteMerge
+public class AbraSiteKnot extends AbraBaseSite
 {
-  public static final ConstFuncManager constants = new ConstFuncManager();
-  public static final NullifyFuncManager nullifyFalse = new NullifyFuncManager(false);
-  public static final NullifyFuncManager nullifyTrue = new NullifyFuncManager(true);
-  public static final SliceFuncManager slicers = new SliceFuncManager();
-
   public AbraBaseBlock block;
+  public ArrayList<AbraBaseSite> inputs = new ArrayList<>();
 
-  public void concat(final AbraModule module)
+  public AbraSiteKnot()
   {
-    block = slicers.find(module, size, 0);
+  }
+
+  public AbraSiteKnot(final AbraSiteKnot copy)
+  {
+    super(copy);
+    block = copy.block;
+  }
+
+  @Override
+  public AbraBaseSite clone()
+  {
+    return new AbraSiteKnot(this);
   }
 
   @Override
@@ -38,40 +43,40 @@ public class AbraSiteKnot extends AbraSiteMerge
     }
 
     final AbraSiteKnot knot = (AbraSiteKnot) rhs;
-    if (block != knot.block)
+    if (block.index != knot.block.index)
     {
       return false;
+    }
+
+    if (block instanceof AbraBlockSpecial && !block.name.equals(knot.block.name))
+    {
+      return false;
+    }
+
+    if (inputs.size() != knot.inputs.size())
+    {
+      return false;
+    }
+
+    for (int i = 0; i < inputs.size(); i++)
+    {
+      if (inputs.get(i) != knot.inputs.get(i))
+      {
+        return false;
+      }
     }
 
     return true;
   }
 
-  public void lut(final AbraModule module)
+  @Override
+  public void markReferences()
   {
-    for (final AbraBaseBlock lut : module.luts)
+    super.markReferences();
+
+    for (final AbraBaseSite input : inputs)
     {
-      if (lut.name.equals(name))
-      {
-        block = lut;
-        break;
-      }
+      input.references++;
     }
-  }
-
-  public void nullify(final AbraModule module, final boolean trueFalse)
-  {
-    final NullifyFuncManager nullify = trueFalse ? nullifyTrue : nullifyFalse;
-    block = nullify.find(module, size);
-  }
-
-  public void slice(final AbraModule module, final int inputSize, final int start)
-  {
-    //TODO inputSize is not used?????
-    block = slicers.find(module, size, start);
-  }
-
-  public void vector(final AbraModule module, final TritVector vector)
-  {
-    block = constants.find(module, vector);
   }
 }

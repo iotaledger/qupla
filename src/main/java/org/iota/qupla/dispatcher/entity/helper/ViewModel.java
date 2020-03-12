@@ -61,7 +61,7 @@ public class ViewModel extends AbstractTableModel
 
     if (col == columns - 1)
     {
-      return vector.trits();
+      return new String(vector.trits());
     }
 
     if (typeInfo.isFloat || typeInfo.struct == null)

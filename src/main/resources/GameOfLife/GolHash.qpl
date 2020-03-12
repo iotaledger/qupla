@@ -1,17 +1,16 @@
 import Curl
 
-template golHash<T> {
+func Hash golHash (Hash id) {
+  curl = curlAbsorb(0, id, 27)
+  result = curlSqueeze(curl, 27)
+  return result.hash
+}
+
+template golSign<T> {
   type Col [T]
   type Row [T]
   type Grid [Row * Col]
   type Hashes [Grid / Hash]
-
-  func Hash golHash<T> (Hash id) {
-    curl = curlAbsorb(0, id, 27)
-    result = curlSqueeze(curl, 27)
-    return result.hash
-  }
-
   func Hash golSign<T>(Hash id, Grid grid) {
     curl = curlAbsorb(0, id, 27)
     result = curlSqueeze(curl, 27)

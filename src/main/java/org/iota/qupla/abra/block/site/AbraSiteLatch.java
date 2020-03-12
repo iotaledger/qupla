@@ -5,7 +5,22 @@ import org.iota.qupla.abra.context.base.AbraBaseContext;
 
 public class AbraSiteLatch extends AbraBaseSite
 {
-  public AbraBaseSite latch;
+  public AbraBaseSite latchSite;
+
+  public AbraSiteLatch()
+  {
+  }
+
+  public AbraSiteLatch(final AbraSiteLatch copy)
+  {
+    super(copy);
+  }
+
+  @Override
+  public AbraBaseSite clone()
+  {
+    return new AbraSiteLatch(this);
+  }
 
   @Override
   public void eval(final AbraBaseContext context)
@@ -17,5 +32,16 @@ public class AbraSiteLatch extends AbraBaseSite
   public boolean isIdentical(final AbraBaseSite rhs)
   {
     return false;
+  }
+
+  @Override
+  public void markReferences()
+  {
+    super.markReferences();
+
+    if (latchSite != null)
+    {
+      latchSite.references++;
+    }
   }
 }

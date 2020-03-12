@@ -51,7 +51,7 @@ public class StateExpr extends BaseExpr
     size = stateType.size;
     typeInfo = stateType.typeInfo;
 
-    zero = new TritVector(size, '0');
+    zero = new TritVector(size, TritVector.TRIT_ZERO);
 
     scope.add(this);
   }

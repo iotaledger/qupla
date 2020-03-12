@@ -4,7 +4,7 @@ public class TritVectorBuffer
 {
   private static final int INITIAL_SIZE = 27;
 
-  public char[] buffer;
+  public byte[] buffer;
   public int used;
 
   public TritVectorBuffer(final int size)
@@ -15,7 +15,7 @@ public class TritVectorBuffer
       newSize *= 3;
     }
 
-    buffer = new char[newSize];
+    buffer = new byte[newSize];
     used = size;
   }
 
@@ -29,7 +29,7 @@ public class TritVectorBuffer
         newSize *= 3;
       }
 
-      final char[] newBuffer = new char[newSize];
+      final byte[] newBuffer = new byte[newSize];
       System.arraycopy(buffer, 0, newBuffer, 0, used);
 
       buffer = newBuffer;

@@ -12,26 +12,26 @@ import org.iota.qupla.exception.CodeException;
 
 public class Verilog
 {
-  public static final int B2_BITS_PER_TRIT = 2;
-  private static final String[] B2_ENCODING = {
+  public static final int BITS_2B = 2;
+  public static final int BITS_3B = 3;
+  private static final String[] ENC_2B = {
       "00",
+      "01",
       "10",
-      "11",
-      "01"
+      "11"
   };
-  public static final int B3_BITS_PER_TRIT = 3;
-  private static final String[] B3_ENCODING = {
+  private static final String[] ENC_3B = {
       "000",
+      "001",
       "100",
-      "010",
-      "001"
+      "010"
   };
-  private static final int ENC_NEG = 1;
+  private static final int ENC_NEG = 2;
   private static final int ENC_NULL = 0;
-  private static final int ENC_POS = 3;
-  private static final int ENC_ZERO = 2;
-  private static int bitsPerTrit = B2_BITS_PER_TRIT;
-  private static String[] encoding = B2_ENCODING;
+  private static final int ENC_POS = 1;
+  private static final int ENC_ZERO = 3;
+  private static String[] encoding = ENC_2B;
+  private static int encodingBits = BITS_2B;
   public final ArrayList<Integer> addedFuncs = new ArrayList<>();
   public final HashSet<Integer> mergeFuncs = new HashSet<>();
   public final String prefix = "merge__";
@@ -40,21 +40,21 @@ public class Verilog
   {
     switch (bits)
     {
-    case B2_BITS_PER_TRIT:
-      bitsPerTrit = B2_BITS_PER_TRIT;
-      encoding = B2_ENCODING;
+    case BITS_2B:
+      encodingBits = BITS_2B;
+      encoding = ENC_2B;
       break;
 
-    case B3_BITS_PER_TRIT:
-      bitsPerTrit = B3_BITS_PER_TRIT;
-      encoding = B3_ENCODING;
+    case BITS_3B:
+      encodingBits = BITS_3B;
+      encoding = ENC_3B;
       break;
     }
   }
 
   public String file(final String name)
   {
-    final String mergeFile = "Verilog/b" + bitsPerTrit + "/" + name + ".vl";
+    final String mergeFile = "Verilog/b" + encodingBits + "/" + name + ".vl";
     try
     {
       return new String(Files.readAllBytes(Paths.get(mergeFile)));
@@ -140,7 +140,7 @@ public class Verilog
       });
     }
 
-    final int sizes[] = new int[100];
+    final int[] sizes = new int[100];
 
     // go through the remaining ones in sorted order
     final ArrayList<Integer> remaining = new ArrayList<>(mergeFuncs);
@@ -184,35 +184,35 @@ public class Verilog
 
   public String range(final int from, final int trits)
   {
-    final int start = from * bitsPerTrit - 1;
-    final int end = start - trits * bitsPerTrit + 1;
+    final int start = from * encodingBits - 1;
+    final int end = start - trits * encodingBits + 1;
     return "[" + start + ":" + end + "]";
   }
 
   public String size(final int trits)
   {
-    return "[" + (trits * bitsPerTrit - 1) + ":0]";
+    return "[" + (trits * encodingBits - 1) + ":0]";
   }
 
-  public String vector(final String trits)
+  public String vector(final byte[] trits)
   {
     StringBuilder result = new StringBuilder();
-    final int size = trits.length() * bitsPerTrit;
+    final int size = trits.length * encodingBits;
     result.append(size).append("'b");
-    for (int i = 0; i < trits.length(); i++)
+    for (final byte trit : trits)
     {
-      switch (trits.charAt(i))
+      switch (trit)
       {
-      case '@':
+      case TritVector.TRIT_NULL:
         result.append(encoding[ENC_NULL]);
         break;
-      case '-':
+      case TritVector.TRIT_MIN:
         result.append(encoding[ENC_NEG]);
         break;
-      case '0':
+      case TritVector.TRIT_ZERO:
         result.append(encoding[ENC_ZERO]);
         break;
-      case '1':
+      case TritVector.TRIT_ONE:
         result.append(encoding[ENC_POS]);
         break;
       }

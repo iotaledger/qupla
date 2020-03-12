@@ -4,9 +4,9 @@ import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraTritCodeBaseContext;
@@ -35,6 +35,7 @@ public class AbraWriteDebugInfoContext extends AbraTritCodeBaseContext
     putString(branch.name);
     putString(branch.origin == null ? null : branch.origin.toString());
     evalBranchSites(branch);
+    putStmt(branch.finalStmt);
   }
 
   @Override
@@ -59,15 +60,9 @@ public class AbraWriteDebugInfoContext extends AbraTritCodeBaseContext
   @Override
   public void evalLut(final AbraBlockLut lut)
   {
-    final boolean isUnnamed = lut.name.equals(AbraBlockLut.unnamed(lut.lookup));
+    final boolean isUnnamed = lut.name.equals(lut.unnamed());
     putString(isUnnamed ? null : lut.name);
     putString(lut.origin == null ? null : lut.origin.toString());
-  }
-
-  @Override
-  public void evalMerge(final AbraSiteMerge merge)
-  {
-    evalSite(merge);
   }
 
   @Override
@@ -78,14 +73,30 @@ public class AbraWriteDebugInfoContext extends AbraTritCodeBaseContext
 
   private void evalSite(final AbraBaseSite site)
   {
-    //TODO putInt(typeId) (index of origin.typeInfo)
     putString(site.name);
-    for (BaseExpr stmt = site.stmt; stmt != null; stmt = stmt.next)
+    putStmt(site.stmt);
+  }
+
+  @Override
+  public void evalSpecial(final AbraBlockSpecial block)
+  {
+  }
+
+  private void putStmt(BaseExpr stmt)
+  {
+    while (stmt != null)
     {
       final String prefix = stmt instanceof AssignExpr ? "" : "return ";
       putString(prefix + stmt);
+      stmt = stmt.next;
     }
 
     putString(null);
+  }
+
+  @Override
+  public String toString()
+  {
+    return toStringWrite();
   }
 }

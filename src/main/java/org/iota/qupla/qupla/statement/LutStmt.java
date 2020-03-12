@@ -59,10 +59,10 @@ public class LutStmt extends BaseExpr
     for (int i = 0; i < value.size(); i++)
     {
       index *= 3;
-      final char trit = value.trit(i);
-      if (trit != '-')
+      final byte trit = value.trit(i);
+      if (trit != TritVector.TRIT_MIN)
       {
-        index += trit == '0' ? 1 : 2;
+        index += trit == TritVector.TRIT_ZERO ? 1 : 2;
       }
     }
 
@@ -99,7 +99,7 @@ public class LutStmt extends BaseExpr
       lookup[lutIndex] = new TritVector(entry.outputs);
     }
 
-    undefined = new TritVector(size, '@');
+    undefined = new TritVector(size, TritVector.TRIT_NULL);
   }
 
   @Override

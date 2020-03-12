@@ -1,0 +1,47 @@
+//import Qupla
+//
+//type E [Tiny]
+//type Pair [E*2]
+//type size [E*8]
+//
+////terminal values for pairs
+//func Pair sorting<Pair>(Bool up, Pair a) {
+//	return mul<Bool>(isLess[cmp<E>(a[0:E], a[E:E])], up) ? a[0:E] & a[E:E] : a[E:E] & a[0:E]
+//}
+//
+//func Pair merge<Pair>(Bool up, Pair a) {
+//	return mul<Bool>(isLess[cmp<E>(a[0:E], a[E:E])], up) ? a[0:E] & a[E:E] : a[E:E] & a[0:E]
+//}
+//
+//func Pair compare<Pair> (Bool up, Pair a) {
+//	return mul<Bool>(isLess[cmp<E>(a[0:E], a[E:E])], up) ? a[0:E] & a[E:E] : a[E:E] & a[0:E]
+//}
+//
+//template compare<L> {
+//	type Half [L / 2]
+//	type Q [L - 2*E]
+//
+//	func L compare<L>(Bool up, L a) {
+//		c = isLess[cmp<E>(a[0:E], a[Half:E])]
+//		r = compare<Q>(up, a[E:Half - E] & a[Half+E: Half - E])
+//		return mul<Bool>(c,up) ? a[0:E] & r[0:Half - E] & a[Half:E] & r[Half - E: Half - E] :
+//			a[Half:E] & r[0:Half - E] & a[0:E] & r[Half - E: Half - E]
+//	}
+//}
+//
+//template sorting<L> {
+//	type Half [L / 2]
+//	type Q [L-2*E]
+//	func L merge<L> (Bool up, L a) {
+//		b = compare<L>(up, a)
+//		return merge<Half>(up, b[0:Half]) & merge<Half>(up, b[Half:Half])
+//	}
+//
+//	func L sorting<L> (Bool up, L a) {
+//		return merge<L>(up, sorting<Half>(1, a[0:Half]) & sorting<Half>(-1, a[Half:Half]))
+//	}
+//
+//	func size tt1<L> (Bool up) {
+//		return sub<size>((as<Tiny>(1) & as<Tiny>(2) & as<Tiny>(3) & as<Tiny>(4) & as<Tiny>(5) & as<Tiny>(6) & as<Tiny>(7) & as<Tiny>(8)), sorting<size>(up, as<Tiny>(4) & as<Tiny>(6) & as<Tiny>(8) & as<Tiny>(1) & as<Tiny>(2) & as<Tiny>(3) & as<Tiny>(7) & as<Tiny>(5)))
+//	}
+//}

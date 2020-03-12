@@ -1,11 +1,12 @@
 package org.iota.qupla.abra.context.base;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
-import org.iota.qupla.exception.CodeException;
 import org.iota.qupla.helper.TritConverter;
+import org.iota.qupla.helper.TritVector;
 
 public abstract class AbraTritCodeBaseContext extends AbraBaseContext
 {
@@ -16,32 +17,34 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
       "0123456789_$,=+-*/%&|^?:;@#",
       "[]{}()<>!~`'\"\\\r\n\t"
   };
-  private static final String[] codePageId = {
-      "0",
-      "1",
-      "-0",
-      "-1"
+  private static final byte[][] codePageId = {
+      new TritVector("0").trits(),
+      new TritVector("1").trits(),
+      new TritVector("-0").trits(),
+      new TritVector("-1").trits()
   };
 
-  private static final int[] sizes = new int[300];
+  public static final int[] sizes = new int[300];
 
-  public char[] buffer = new char[32];
+  public byte[] buffer = new byte[32];
   public int bufferOffset;
+
+  protected void check(final boolean condition, final String errorText)
+  {
+    if (!condition)
+    {
+      error(errorText);
+    }
+  }
 
   protected void evalBranchSites(final AbraBlockBranch branch)
   {
-    // make sure sites are numbered correctly
+    // make sure sites are numbered correctly+
     branch.numberSites();
 
-    putInt(branch.inputs.size());
-    putInt(branch.sites.size());
-    putInt(branch.outputs.size());
-    putInt(branch.latches.size());
-
     evalSites(branch.inputs);
-    evalSites(branch.sites);
-    evalSites(branch.outputs);
     evalSites(branch.latches);
+    evalSites(branch.sites);
   }
 
   protected void evalSites(final ArrayList<? extends AbraBaseSite> sites)
@@ -56,19 +59,19 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
   {
     switch (getTrit())
     {
-    case '0':
+    case TritVector.TRIT_ZERO:
       return getChar(0);
 
-    case '1':
+    case TritVector.TRIT_ONE:
       return getChar(1);
     }
 
     switch (getTrit())
     {
-    case '0':
+    case TritVector.TRIT_ZERO:
       return getChar(2);
 
-    case '1':
+    case TritVector.TRIT_ONE:
       return getChar(3);
     }
 
@@ -81,10 +84,10 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     int power = 1;
     for (int i = 0; i < 3; i++)
     {
-      final char trit = getTrit();
-      if (trit != '0')
+      final byte trit = getTrit();
+      if (trit != TritVector.TRIT_ZERO)
       {
-        index += trit == '-' ? -power : power;
+        index += trit == TritVector.TRIT_MIN ? -power : power;
       }
 
       power *= 3;
@@ -93,13 +96,32 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return codePage[codePageNr].charAt(index);
   }
 
+  protected int getIndex(final int sites)
+  {
+    // see putIndex() for encoding algorithm
+    final int index = sites - 1 - getInt();
+    check(index < sites, "Invalid site index");
+    return index;
+  }
+
   protected int getInt()
   {
+    // see putInt() for encoding algorithm
+    byte trit = getTrit();
+    if (trit == TritVector.TRIT_MIN)
+    {
+      // shortcut, final bit found already
+      // so value can only be zero
+      return 0;
+    }
+
+    // build up the value bit by bit
     int value = 0;
     int mask = 1;
-    for (char trit = getTrit(); trit != '0'; trit = getTrit())
+    for (; trit != TritVector.TRIT_MIN; trit = getTrit())
     {
-      if (trit == '1')
+      // '0' or '1' bit at this position
+      if (trit == TritVector.TRIT_ONE)
       {
         value |= mask;
       }
@@ -107,12 +129,18 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
       mask <<= 1;
     }
 
-    return value;
+    // final '1' bit found, encoded as -
+    // add the '1' bit at this position
+    value |= mask;
+
+    // remember that we encoded the incremented value
+    // so we have to decrement to get the actual value
+    return value - 1;
   }
 
   protected String getString()
   {
-    if (getTrit() == '0')
+    if (getTrit() == TritVector.TRIT_ZERO)
     {
       return null;
     }
@@ -127,25 +155,17 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return new String(buffer);
   }
 
-  protected char getTrit()
+  protected byte getTrit()
   {
-    if (bufferOffset >= buffer.length)
-    {
-      throw new CodeException("Buffer overflow in getTrit");
-    }
-
+    check(bufferOffset < buffer.length, "Buffer overflow in getTrit");
     return buffer[bufferOffset++];
   }
 
-  protected String getTrits(final int size)
+  protected byte[] getTrits(final int size)
   {
     bufferOffset += size;
-    if (bufferOffset > buffer.length)
-    {
-      throw new CodeException("Buffer overflow in getTrits(" + size + ")");
-    }
-
-    return new String(buffer, bufferOffset - size, size);
+    check(bufferOffset <= buffer.length, "Buffer overflow in getTrits");
+    return Arrays.copyOfRange(buffer, bufferOffset - size, bufferOffset);
   }
 
   protected AbraTritCodeBaseContext putChar(final char c)
@@ -160,53 +180,45 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
       }
     }
 
-    return putTrits("--").putInt(c);
+    return putTrit(TritVector.TRIT_MIN).putTrit(TritVector.TRIT_MIN).putInt(c);
+  }
+
+  protected void putIndex(final int sites, final int index)
+  {
+    // encode as a relative index to <sites>, which is the amount
+    // of sites that precedes the current encoding position
+    // previous site becomes 0, the one before becomes 1, etc.
+    // since sites often refer a previous one nearby the encoding location
+    // this favors lower values that can be encoded in less trits
+    putInt(sites - 1 - index);
   }
 
   protected AbraTritCodeBaseContext putInt(final int value)
   {
     sizes[value < 0 ? 299 : value < 298 ? value : 298]++;
 
-    // binary coded trit value
-    int v = value;
-    for (; v != 0; v >>= 1)
+    // The encoding is as follows: we expect only positive integers
+    // Then we make sure there is at least a single '1' bit in the value
+    // We achieve this by incrementing the value so that 0..n becomes 1..n+1
+    // Now we encode starting with least significant bit every bit as 0 or 1,
+    // and the final '1' bit will be encoded as -
+    // All the rest of the bits can now be assumed to be zero
+    for (int v = value + 1; v > 1; v >>= 1)
     {
-      putTrit((v & 1) == 0 ? '-' : '1');
+      putTrit((v & 1) == 1 ? TritVector.TRIT_ONE : TritVector.TRIT_ZERO);
     }
 
-    return putTrit('0');
-
-    // here are some possible improvements to reduce size:
-    //    // most-used trit value
-    //    if (value < 2)
-    //    {
-    //      return putTrit(value == 0 ? '0' : '1');
-    //    }
-    //
-    //    putTrit('-');
-    //
-    //    int v = value >> 1;
-    //    if (v != 0)
-    //    {
-    //      v--;
-    //      putTrit((v & 1) == 0 ? '-' : '1');
-    //      for (v >>= 1; v != 0; v >>= 1)
-    //      {
-    //        putTrit((v & 1) == 0 ? '-' : '1');
-    //      }
-    //    }
-    //
-    //    return putTrit('0');
+    return putTrit(TritVector.TRIT_MIN);
   }
 
   protected AbraTritCodeBaseContext putString(final String text)
   {
     if (text == null)
     {
-      return putTrit('0');
+      return putTrit(TritVector.TRIT_ZERO);
     }
 
-    putTrit('1');
+    putTrit(TritVector.TRIT_ONE);
     putInt(text.length());
     for (int i = 0; i < text.length(); i++)
     {
@@ -216,7 +228,7 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     return this;
   }
 
-  protected AbraTritCodeBaseContext putTrit(final char trit)
+  protected AbraTritCodeBaseContext putTrit(final byte trit)
   {
     if (bufferOffset < buffer.length)
     {
@@ -225,31 +237,47 @@ public abstract class AbraTritCodeBaseContext extends AbraBaseContext
     }
 
     // expand buffer
-    return putTrits("" + trit);
+    return putTrits(new byte[] { trit });
   }
 
-  protected AbraTritCodeBaseContext putTrits(final String trits)
+  protected AbraTritCodeBaseContext putTrits(final byte[] trits)
   {
-    if (bufferOffset + trits.length() <= buffer.length)
+    return putTrits(trits, trits.length);
+  }
+
+  protected AbraTritCodeBaseContext putTrits(final byte[] trits, final int length)
+  {
+    if (bufferOffset + length > buffer.length)
     {
-      final char[] copy = trits.toCharArray();
-      System.arraycopy(copy, 0, buffer, bufferOffset, copy.length);
-      bufferOffset += copy.length;
-      return this;
+      int bytes = buffer.length * 2;
+      while (bufferOffset + length > bytes)
+      {
+        bytes *= 2;
+      }
+
+      // double buffer size and try again
+      final byte[] old = buffer;
+      buffer = new byte[bytes];
+      System.arraycopy(old, 0, buffer, 0, bufferOffset);
     }
 
-    // double buffer size and try again
-    final char[] old = buffer;
-    buffer = new char[old.length * 2];
-    System.arraycopy(old, 0, buffer, 0, bufferOffset);
-    return putTrits(trits);
+    System.arraycopy(trits, 0, buffer, bufferOffset, length);
+    bufferOffset += length;
+    return this;
   }
 
-  @Override
-  public String toString()
+  protected String toStringRead()
   {
     // display 40 trit tail end of buffer
-    final int start = bufferOffset > 40 ? bufferOffset - 40 : 0;
-    return bufferOffset + " " + new String(buffer, start, bufferOffset - start);
+    final int remain = buffer.length - bufferOffset;
+    final int len = remain < 40 ? remain : 40;
+    return bufferOffset + " " + new String(buffer, bufferOffset, len);
+  }
+
+  protected String toStringWrite()
+  {
+    // display 40 trit tail end of buffer
+    final int len = bufferOffset > 40 ? 40 : bufferOffset;
+    return bufferOffset + " " + new String(buffer, bufferOffset - len, len);
   }
 }

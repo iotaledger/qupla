@@ -5,7 +5,14 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.iota.qupla.abra.AbraModule;
+import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.context.AbraConfigContext;
 import org.iota.qupla.abra.context.AbraEvalContext;
+import org.iota.qupla.abra.context.AbraPrintContext;
+import org.iota.qupla.abra.optimizers.DuplicateSiteOptimizer;
+import org.iota.qupla.abra.optimizers.FpgaConfigurationOptimizer;
+import org.iota.qupla.abra.optimizers.MultiLutOptimizer;
 import org.iota.qupla.dispatcher.Dispatcher;
 import org.iota.qupla.dispatcher.Entity;
 import org.iota.qupla.dispatcher.entity.FuncEntity;
@@ -38,11 +45,12 @@ public class Qupla
 {
   public static final ArrayList<String> config = new ArrayList<>();
   private static Dispatcher dispatcher;
-  private static ArrayList<BaseExpr> expressions = new ArrayList<>();
+  private static final ArrayList<BaseExpr> expressions = new ArrayList<>();
   private static final String[] flags = {
+      "-2b",
+      "-3b",
       "-abra",
-      "-b2",
-      "-b3",
+      "-config",
       "-echo",
       "-eval",
       "-fpga",
@@ -182,6 +190,12 @@ public class Qupla
         evalExpressions();
         waitOneSecond();
         stopDispatcher();
+
+        // for (final AbraBlockBranch branch : quplaToAbraContext.abraModule.branches)
+        // {
+        //   final String count = "         " + branch.count;
+        //   log(count.substring(count.length() - 9) + "   " + branch.name);
+        // }
       }
       catch (final CodeException ex)
       {
@@ -195,14 +209,14 @@ public class Qupla
 
   private static void processOptions()
   {
-    if (options.contains("-b2"))
+    if (options.contains("-2b"))
     {
-      Verilog.bitEncoding(Verilog.B2_BITS_PER_TRIT);
+      Verilog.bitEncoding(Verilog.BITS_2B);
     }
 
-    if (options.contains("-b3"))
+    if (options.contains("-3b"))
     {
-      Verilog.bitEncoding(Verilog.B3_BITS_PER_TRIT);
+      Verilog.bitEncoding(Verilog.BITS_3B);
     }
 
     // echo back all modules as source
@@ -211,7 +225,7 @@ public class Qupla
       runEchoSource();
     }
 
-    // echo back all modules as Abra tritcode
+    // emit all modules as Abra tritcode
     if (options.contains("-abra"))
     {
       runAbraGenerator();
@@ -262,6 +276,75 @@ public class Qupla
 
     // run FuncEntities as Abra instead of Qupla
     FuncEntity.abraModule = quplaToAbraContext.abraModule;
+
+    for (final BaseExpr expr : expressions)
+    {
+      if (expr instanceof FuncExpr)
+      {
+        final FuncExpr funcExpr = (FuncExpr) expr;
+        if (funcExpr.name != null)
+        {
+          for (final AbraBlockBranch branch : FuncEntity.abraModule.branches)
+          {
+            if (branch.name.equals(funcExpr.name))
+            {
+              branch.fpga = true;
+              break;
+            }
+          }
+        }
+      }
+
+      break;
+    }
+
+    if (options.contains("-config"))
+    {
+      runAbraToConfig();
+    }
+  }
+
+  private static void runAbraToConfig()
+  {
+    log("Generate Configuration");
+    final AbraModule module = quplaToAbraContext.abraModule;
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      branch.analyzed = false;
+    }
+
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      if (!branch.analyzed)
+      {
+        new FpgaConfigurationOptimizer(module, branch).run();
+      }
+    }
+
+    new AbraPrintContext("FpgaAbra.txt").eval(module);
+
+    for (final AbraBlockBranch branch : module.branches)
+    {
+      Qupla.log("Optimizing " + branch.name);
+      new MultiLutOptimizer(module, branch).run();
+      new DuplicateSiteOptimizer(module, branch).run();
+    }
+
+    new AbraPrintContext("FpgaAbraOpt.txt").eval(module);
+
+    for (final BaseExpr expr : expressions)
+    {
+      if (expr instanceof FuncExpr)
+      {
+        final FuncExpr funcExpr = (FuncExpr) expr;
+        if (funcExpr.name != null)
+        {
+          final AbraConfigContext config = new AbraConfigContext();
+          config.funcName = funcExpr.name;
+          config.eval(module);
+        }
+      }
+    }
   }
 
   private static void runEchoSource()
@@ -496,7 +579,7 @@ public class Qupla
   public static String toString(final TritVector value, final TypeStmt typeInfo)
   {
     final String varName = value.name != null ? value.name + ": " : "";
-    return varName + "(" + typeInfo.toString(value) + ") " + value.trits();
+    return varName + "(" + typeInfo.toString(value) + ") " + new String(value.trits());
   }
 
   private static void waitOneSecond()

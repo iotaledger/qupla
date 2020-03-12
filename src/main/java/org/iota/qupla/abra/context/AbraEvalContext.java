@@ -1,23 +1,25 @@
 package org.iota.qupla.abra.context;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import org.iota.qupla.Qupla;
+import org.iota.qupla.abra.FpgaClient;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
 import org.iota.qupla.abra.block.AbraBlockLut;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.context.base.AbraBaseContext;
 import org.iota.qupla.dispatcher.entity.FuncEntity;
 import org.iota.qupla.helper.StateValue;
-import org.iota.qupla.helper.TritConverter;
 import org.iota.qupla.helper.TritVector;
 import org.iota.qupla.qupla.context.QuplaToAbraContext;
 import org.iota.qupla.qupla.expression.FuncExpr;
@@ -25,20 +27,21 @@ import org.iota.qupla.qupla.expression.base.BaseExpr;
 
 public class AbraEvalContext extends AbraBaseContext
 {
+  private static FpgaClient client;
   // note: stateValues needs to be static so that state is preserved between invocations
   private static final HashMap<StateValue, StateValue> stateValues = new HashMap<>();
-
-  private static final TritVector tritMin = new TritVector(1, '-');
-  private static final TritVector tritNull = new TritVector(1, '@');
-  private static final TritVector tritOne = new TritVector(1, '1');
-  private static final TritVector tritZero = new TritVector(1, '0');
+  private static final boolean trace = false;
+  private static final TritVector tritMin = new TritVector(1, TritVector.TRIT_MIN);
+  private static final TritVector tritNull = new TritVector(1, TritVector.TRIT_NULL);
+  private static final TritVector tritOne = new TritVector(1, TritVector.TRIT_ONE);
+  private static final TritVector tritZero = new TritVector(1, TritVector.TRIT_ZERO);
   private static final boolean useBreak = true;
   private static final boolean usePrint = true;
 
-  public final ArrayList<TritVector> args = new ArrayList<>();
-  public int callNr;
-  public final byte[] callTrail = new byte[4096];
-  public TritVector[] stack;
+  private final ArrayList<TritVector> args = new ArrayList<>();
+  private int callNr;
+  private final byte[] callTrail = new byte[4096];
+  private TritVector[] stack;
   public TritVector value;
 
   public void eval(final QuplaToAbraContext context, final BaseExpr expr)
@@ -51,11 +54,12 @@ public class AbraEvalContext extends AbraBaseContext
       branch.addInputParam(1);
       context.branch = branch;
       context.evalFuncCall(funcExpr);
-      final AbraSiteKnot knot = (AbraSiteKnot) branch.sites.remove(branch.sites.size() - 1);
 
+      final AbraSiteKnot knot = branch.sites.get(branch.sites.size() - 1);
       branch.outputs.add(knot);
+
       args.clear();
-      args.add(new TritVector(1, '0'));
+      args.add(new TritVector(1, TritVector.TRIT_ZERO));
       branch.numberSites();
       callTrail[callNr++] = (byte) knot.block.index;
       callTrail[callNr++] = (byte) (knot.block.index >> 8);
@@ -69,117 +73,102 @@ public class AbraEvalContext extends AbraBaseContext
   @Override
   public void evalBranch(final AbraBlockBranch branch)
   {
-    if (branch.specialType == AbraBaseBlock.TYPE_CONSTANT)
+    branch.count++;
+
+    if (branch.fpga && evalBranchFpga(branch))
     {
-      value = branch.constantValue;
       return;
     }
-
-    if (branch.specialType == AbraBaseBlock.TYPE_NULLIFY_TRUE)
-    {
-      if (args.get(0).trit(0) != TritConverter.BOOL_TRUE)
-      {
-        value = branch.constantValue;
-        return;
-      }
-
-      value = args.get(1);
-      return;
-    }
-
-    if (branch.specialType == AbraBaseBlock.TYPE_NULLIFY_FALSE)
-    {
-      if (args.get(0).trit(0) != TritConverter.BOOL_FALSE)
-      {
-        value = branch.constantValue;
-        return;
-      }
-
-      value = args.get(1);
-      return;
-    }
-
-    if (branch.specialType == AbraBaseBlock.TYPE_SLICE)
-    {
-      if (args.size() == 1)
-      {
-        value = args.get(0).slice(branch.offset, branch.size);
-        return;
-      }
-    }
-
-    interceptCall(branch);
 
     final TritVector[] oldStack = stack;
     stack = new TritVector[branch.totalSites()];
 
-    if (!evalBranchInputsMatch(branch))
+    if (!inputArgsMoveToStack(branch))
     {
-      value = null;
-      for (final TritVector arg : args)
-      {
-        value = TritVector.concat(value, arg);
-      }
-
-      if (branch.specialType == AbraBaseBlock.TYPE_SLICE)
-      {
-        stack = oldStack;
-        return;
-      }
-
-      for (final AbraBaseSite input : branch.inputs)
-      {
-        input.eval(this);
-      }
+      inputArgsSliceToStack(branch);
     }
 
-    // initialize latches with old values
-    for (final AbraBaseSite latch : branch.latches)
+    for (final AbraSiteParam input : branch.inputs)
     {
-      initializeLatch(latch);
+      trace(input);
     }
 
-    for (final AbraBaseSite site : branch.sites)
+    for (final AbraSiteLatch latch : branch.latches)
+    {
+      latch.eval(this);
+      trace(latch);
+    }
+
+    for (final AbraSiteKnot site : branch.sites)
     {
       site.eval(this);
+      trace(site);
     }
 
     TritVector result = null;
     for (final AbraBaseSite output : branch.outputs)
     {
-      output.eval(this);
-      result = TritVector.concat(result, value);
+      result = TritVector.concat(result, stack[output.index]);
     }
 
-    // update latches with new values
-    for (final AbraBaseSite latch : branch.latches)
+    // save latch values for next time
+    for (final AbraSiteLatch latch : branch.latches)
     {
-      updateLatch(latch);
+      saveLatch(latch);
     }
 
     stack = oldStack;
     value = result;
   }
 
-  private boolean evalBranchInputsMatch(final AbraBlockBranch branch)
+  private boolean evalBranchFpga(final AbraBlockBranch branch)
   {
-    if (args.size() != branch.inputs.size())
+    if (client == null)
     {
+      client = new FpgaClient();
+      try
+      {
+        final byte[] data = Files.readAllBytes(Paths.get(branch.name + ".qbc"));
+        if (client.process('c', data) == null)
+        {
+          branch.fpga = false;
+          return false;
+        }
+      }
+      catch (IOException e)
+      {
+        branch.fpga = false;
+        return false;
+      }
+    }
+
+
+    value = null;
+    for (final TritVector arg : args)
+    {
+      value = TritVector.concat(value, arg);
+    }
+
+    final byte[] input = value.trits();
+    for (int i = 0; i < input.length; i++)
+    {
+      input[i] = TritVector.tritToBits(input[i]);
+    }
+
+    // pass input value to fpga for processing
+    final byte[] output = client.process('d', input);
+    if (output == null)
+    {
+      branch.fpga = false;
       return false;
     }
 
-    for (int i = 0; i < args.size(); i++)
+    for (int i = 0; i < output.length; i++)
     {
-      final TritVector arg = args.get(i);
-      final AbraBaseSite input = branch.inputs.get(i);
-      if (arg.size() != input.size)
-      {
-        return false;
-      }
-
-      stack[input.index] = arg;
+      output[i] = TritVector.bitsToTrit(output[i]);
     }
 
+    value = new TritVector(output);
     return true;
   }
 
@@ -211,18 +200,22 @@ public class AbraEvalContext extends AbraBaseContext
   public void evalKnot(final AbraSiteKnot knot)
   {
     args.clear();
-    boolean isAllNull = true;
-    for (final AbraBaseSite input : knot.inputs)
-    {
-      final TritVector arg = stack[input.index];
-      isAllNull = isAllNull && arg.isNull();
-      args.add(arg);
-    }
 
-    if (isAllNull)
+    if (knot.inputs.size() != 0)
     {
-      stack[knot.index] = new TritVector(knot.size, '@');
-      return;
+      boolean isAllNull = true;
+      for (final AbraBaseSite input : knot.inputs)
+      {
+        final TritVector arg = stack[input.index];
+        isAllNull = isAllNull && arg.isNull();
+        args.add(arg);
+      }
+
+      if (isAllNull)
+      {
+        stack[knot.index] = new TritVector(knot.size, TritVector.TRIT_NULL);
+        return;
+      }
     }
 
     if (callNr == 4000)
@@ -232,7 +225,27 @@ public class AbraEvalContext extends AbraBaseContext
 
     callTrail[callNr++] = (byte) knot.index;
 
+    if (knot.block.name != null)
+    {
+      if (usePrint && knot.block.name.startsWith("print_"))
+      {
+        value = args.get(0);
+        stack[knot.index] = value;
+        Qupla.log(value.toString());
+        return;
+      }
+
+      if (useBreak && knot.block.name.startsWith("break_"))
+      {
+        value = args.get(0);
+        stack[knot.index] = value;
+        Qupla.log(value.toString());
+        return;
+      }
+    }
+
     knot.block.eval(this);
+
     stack[knot.index] = value;
 
     callNr--;
@@ -241,6 +254,26 @@ public class AbraEvalContext extends AbraBaseContext
   @Override
   public void evalLatch(final AbraSiteLatch latch)
   {
+    if (latch.references == 0)
+    {
+      return;
+    }
+
+    callTrail[callNr] = (byte) latch.index;
+
+    final StateValue call = new StateValue();
+    call.path = callTrail;
+    call.pathLength = callNr + 1;
+
+    // if state was saved before set latch to that value otherwise set to zero
+    final StateValue stateValue = stateValues.get(call);
+    if (stateValue != null)
+    {
+      stack[latch.index] = stateValue.value;
+      return;
+    }
+
+    stack[latch.index] = new TritVector(latch.size, TritVector.TRIT_ZERO);
   }
 
   @Override
@@ -262,14 +295,14 @@ public class AbraEvalContext extends AbraBaseContext
 
       switch (arg.trit(0))
       {
-      case '-':
+      case TritVector.TRIT_MIN:
         index -= power;
         break;
 
-      case '0':
+      case TritVector.TRIT_ZERO:
         break;
 
-      case '1':
+      case TritVector.TRIT_ONE:
         index += power;
         break;
 
@@ -281,17 +314,17 @@ public class AbraEvalContext extends AbraBaseContext
       power *= 3;
     }
 
-    switch (lut.lookup.charAt(index))
+    switch (lut.lookup(index))
     {
-    case '0':
+    case TritVector.TRIT_ZERO:
       value = tritZero;
       return;
 
-    case '1':
+    case TritVector.TRIT_ONE:
       value = tritOne;
       return;
 
-    case '-':
+    case TritVector.TRIT_MIN:
       value = tritMin;
       return;
     }
@@ -300,20 +333,62 @@ public class AbraEvalContext extends AbraBaseContext
   }
 
   @Override
-  public void evalMerge(final AbraSiteMerge merge)
+  public void evalParam(final AbraSiteParam param)
   {
-    value = null;
-    for (final AbraBaseSite input : merge.inputs)
+    stack[param.index] = value.slicePadded(param.offset, param.size);
+  }
+
+  @Override
+  public void evalSpecial(final AbraBlockSpecial block)
+  {
+    switch (block.index)
     {
-      final TritVector mergeValue = stack[input.index];
-      if (mergeValue.isNull())
+    case AbraBlockSpecial.TYPE_CONCAT:
+    case AbraBlockSpecial.TYPE_SLICE:
+      evalSpecialSlice(block);
+      break;
+
+    case AbraBlockSpecial.TYPE_CONST:
+      value = block.constantValue;
+      break;
+
+    case AbraBlockSpecial.TYPE_MERGE:
+      evalSpecialMerge(block);
+      break;
+
+    case AbraBlockSpecial.TYPE_NULLIFY_FALSE:
+      evalSpecialNullify(block, TritVector.TRIT_FALSE);
+      break;
+
+    case AbraBlockSpecial.TYPE_NULLIFY_TRUE:
+      evalSpecialNullify(block, TritVector.TRIT_TRUE);
+      break;
+    }
+  }
+
+  private void evalSpecialMerge(final AbraBlockSpecial block)
+  {
+    if (args.size() > 3)
+    {
+      error("Merge needs 1-3 inputs");
+    }
+
+    value = null;
+    for (final TritVector arg : args)
+    {
+      if (arg.size() != block.size)
+      {
+        error("Merge input size mismatch");
+      }
+
+      if (arg.isNull())
       {
         continue;
       }
 
       if (value == null)
       {
-        value = mergeValue;
+        value = arg;
         continue;
       }
 
@@ -322,72 +397,107 @@ public class AbraEvalContext extends AbraBaseContext
 
     if (value == null)
     {
-      value = new TritVector(merge.size, '@');
+      // all null args, just pass first arg
+      value = args.get(0);
+    }
+  }
+
+  private void evalSpecialNullify(final AbraBlockSpecial block, final byte selector)
+  {
+    if (args.size() != 2)
+    {
+      error("Nullify needs 2 inputs");
     }
 
-    stack[merge.index] = value;
-  }
-
-  @Override
-  public void evalParam(final AbraSiteParam param)
-  {
-    stack[param.index] = value.slicePadded(param.offset, param.size);
-  }
-
-  private void initializeLatch(final AbraBaseSite latch)
-  {
-    if (latch.references == 0)
+    final TritVector flag = args.get(0);
+    if (flag.size() != 1)
     {
+      error("Nullify flag size is not 1");
+    }
+
+    final TritVector target = args.get(1);
+    if (target.size() != block.size)
+    {
+      error("Nullify target size mismatch");
+    }
+
+    final boolean select = flag.trit(0) == selector;
+    if (select)
+    {
+      value = target;
       return;
     }
 
-    callTrail[callNr] = (byte) latch.index;
-
-    final StateValue call = new StateValue();
-    call.path = callTrail;
-    call.pathLength = callNr + 1;
-
-    // if state was saved before set latch to that value otherwise set to zero
-    final StateValue stateValue = stateValues.get(call);
-    if (stateValue != null)
+    if (block.constantValue == null)
     {
-      stack[latch.index] = stateValue.value;
-      return;
+      block.constantValue = new TritVector(block.size, TritVector.TRIT_NULL);
     }
 
-    stack[latch.index] = new TritVector(latch.size, '0');
+    value = block.constantValue;
   }
 
-  private void interceptCall(final AbraBlockBranch branch)
+  private void evalSpecialSlice(final AbraBlockSpecial block)
   {
-    if (branch.name != null)
+    value = null;
+    for (final TritVector arg : args)
     {
-      if (usePrint && branch.name.startsWith("print_"))
+      value = TritVector.concat(value, arg);
+    }
+
+    if (value.size() < block.offset + block.size)
+    {
+      error("Slice input size is too short");
+    }
+
+    value = value.slice(block.offset, block.size);
+  }
+
+  private boolean inputArgsMoveToStack(final AbraBlockBranch branch)
+  {
+    if (args.size() != branch.inputs.size())
+    {
+      return false;
+    }
+
+    for (int i = 0; i < args.size(); i++)
+    {
+      final TritVector arg = args.get(i);
+      final AbraBaseSite input = branch.inputs.get(i);
+      if (arg.size() != input.size)
       {
-        Qupla.log(args.get(0).toString());
+        return false;
       }
 
-      if (useBreak && branch.name.startsWith("break_"))
-      {
-        Qupla.log(args.get(0).toString());
-      }
+      stack[input.index] = arg;
+    }
+
+    return true;
+  }
+
+  private void inputArgsSliceToStack(final AbraBlockBranch branch)
+  {
+    // turn args into a single concatenated trit vector
+    value = null;
+    for (final TritVector arg : args)
+    {
+      value = TritVector.concat(value, arg);
+    }
+
+    // let inputs extract their correct arg fragments to the stack
+    for (final AbraSiteParam input : branch.inputs)
+    {
+      input.eval(this);
     }
   }
 
-  private void updateLatch(final AbraBaseSite latch)
+  private void saveLatch(final AbraSiteLatch latch)
   {
-    if (latch.references == 0)
+    if (latch.references == 0 || latch.latchSite == null)
     {
       return;
     }
 
-    // evaluate latch but do not overwrite its stack value
-    // in case another latch uses this one as well
-    // it should always use the old value
-    final TritVector oldValue = stack[latch.index];
-    latch.eval(this);
-    stack[latch.index] = oldValue;
-
+    value = stack[latch.latchSite.index];
     if (value.isNull())
     {
       // do not overwrite with null trits
@@ -419,14 +529,14 @@ public class AbraEvalContext extends AbraBaseContext
       }
 
       // merge values by skipping null trits
-      final char[] buffer = new char[value.size()];
+      final byte[] buffer = new byte[value.size()];
       for (int i = 0; i < value.size(); i++)
       {
-        final char trit = value.trit(i);
-        buffer[i] = trit == '@' ? stateValue.value.trit(i) : trit;
+        final byte trit = value.trit(i);
+        buffer[i] = trit == TritVector.TRIT_NULL ? stateValue.value.trit(i) : trit;
       }
 
-      stateValue.value = new TritVector(new String(buffer));
+      stateValue.value = new TritVector(buffer);
       return;
     }
 
@@ -441,7 +551,45 @@ public class AbraEvalContext extends AbraBaseContext
 
     // save state, but replace nulls with zeroes
     call.path = Arrays.copyOf(callTrail, callNr + 1);
-    call.value = value.isValue() ? value : new TritVector(value.trits().replace('@', '0'));
+    call.value = value;
+    if (!value.isValue())
+    {
+      final byte[] trits = value.trits();
+      for (int i = 0; i < trits.length; i++)
+      {
+        if (trits[i] == TritVector.TRIT_NULL)
+        {
+          trits[i] = TritVector.TRIT_ZERO;
+        }
+      }
+
+      value = new TritVector(trits);
+    }
+
     stateValues.put(call, call);
+  }
+
+  private void trace(final AbraBaseSite site)
+  {
+    if (trace)
+    {
+      String in = " ";
+      if (site instanceof AbraSiteKnot)
+      {
+        final AbraSiteKnot knot = (AbraSiteKnot) site;
+        boolean first = true;
+        for (final AbraBaseSite input : knot.inputs)
+        {
+          in += first ? "(" : ", ";
+          first = false;
+          final byte trit = stack[input.index].trit(0);
+          final byte bits = TritVector.tritToBits(trit);
+          in += "@1-0".charAt(bits);
+        }
+        in += ")";
+      }
+      Qupla.log("" + site);
+      Qupla.log(stack[site.index] + in);
+    }
   }
 }

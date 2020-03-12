@@ -6,113 +6,55 @@ import java.util.TreeSet;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
-import org.iota.qupla.abra.block.base.AbraBaseBlock;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
 import org.iota.qupla.abra.block.site.AbraSiteParam;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
 
-public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<AbraBlockBranch>
+public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<AbraSiteKnot>
 {
-  private final ArrayList<AbraSiteKnot> constants = new ArrayList<>();
-  private final ArrayList<AbraBaseSite> inputs = new ArrayList<>();
+  private final ArrayList<AbraSiteKnot> concats = new ArrayList<>();
+  private final ArrayList<AbraSiteParam> inputs = new ArrayList<>();
   private final ArrayList<AbraSiteKnot> knots = new ArrayList<>();
-  private final TreeSet<AbraBlockBranch> slicers = new TreeSet<>(this);
+  private final TreeSet<AbraSiteKnot> slicers = new TreeSet<>(this);
 
   public SlicedInputOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {
     super(module, branch);
   }
 
-  private boolean canSlice(final AbraBaseSite input, final ArrayList<AbraBaseSite> sites)
+  private boolean canSlice(final AbraBaseSite input)
   {
-    for (final AbraBaseSite site : sites)
+    knots.clear();
+    slicers.clear();
+
+    for (final AbraSiteKnot knot : branch.sites)
     {
-      if (!(site instanceof AbraSiteMerge))
+      if (knot.references == 0)
       {
         continue;
       }
 
-      final AbraSiteMerge merge = (AbraSiteMerge) site;
-      if (!merge.inputs.contains(input))
+      if (knot.block.index == AbraBlockSpecial.TYPE_SLICE)
       {
-        // input not used in this site
-        continue;
-      }
-
-      if (!(merge instanceof AbraSiteKnot))
-      {
-        // used in merge, cannot pre-slice
-        return false;
-      }
-
-      final AbraSiteKnot knot = (AbraSiteKnot) merge;
-      if (knot.block.specialType != AbraBaseBlock.TYPE_SLICE)
-      {
-        if (knot.block.specialType == AbraBaseBlock.TYPE_CONSTANT)
+        if (knot.inputs.size() == 1 && knot.inputs.get(0) == input)
         {
-          // special case, will need to update input for constant
-          constants.add(knot);
+          knots.add(knot);
+          slicers.add(knot);
           continue;
         }
-
-        // used in knot that is not slicer, cannot pre-slice
-        return false;
       }
 
-      if (knot.inputs.size() != 1)
+      for (final AbraBaseSite in : knot.inputs)
       {
-        // not a slicer but a concatenator
-        return false;
+        if (in == input)
+        {
+          return false;
+        }
       }
-
-      knots.add(knot);
-      slicers.add((AbraBlockBranch) knot.block);
     }
 
-    return true;
-  }
-
-  @Override
-  public int compare(final AbraBlockBranch lhs, final AbraBlockBranch rhs)
-  {
-    if (lhs.offset != rhs.offset)
-    {
-      return lhs.offset < rhs.offset ? -1 : 1;
-    }
-
-    if (lhs.size != rhs.size)
-    {
-      return lhs.size < rhs.size ? -1 : 1;
-    }
-
-    if (lhs.index != rhs.index)
-    {
-      return lhs.index < rhs.index ? -1 : 1;
-    }
-
-    return 0;
-  }
-
-  private AbraSiteParam makeSlice(final AbraBaseSite input, final int sliceOffset, final int sliceSize)
-  {
-    final AbraSiteParam slice = new AbraSiteParam();
-    slice.size = sliceSize;
-    if (input.name != null)
-    {
-      slice.name = input.name + "_" + sliceSize + "_" + sliceOffset;
-    }
-
-    if (input.varName != null)
-    {
-      slice.varName = input.varName + "_" + sliceSize + "_" + sliceOffset;
-    }
-    return slice;
-  }
-
-  private boolean preSlice(final AbraBaseSite input)
-  {
     if (slicers.size() == 0)
     {
       // nothing to do
@@ -121,85 +63,132 @@ public class SlicedInputOptimizer extends BaseOptimizer implements Comparator<Ab
 
     // check that no slices overlap
     int prevOffset = 0;
-    for (final AbraBlockBranch slicer : slicers)
+    for (final AbraSiteKnot slicer : slicers)
     {
-      if (slicer.offset < prevOffset)
+      final AbraBlockSpecial branch = (AbraBlockSpecial) slicer.block;
+      if (branch.offset < prevOffset)
       {
-        // overlappping slices
+        // not contiguous
         return false;
       }
 
-      prevOffset = slicer.offset + slicer.size;
-    }
-
-    final ArrayList<AbraBlockBranch> slicers = new ArrayList<>(this.slicers);
-    final ArrayList<AbraSiteParam> slices = new ArrayList<>();
-    prevOffset = 0;
-    for (final AbraBlockBranch slicer : slicers)
-    {
-      if (slicer.offset != prevOffset)
-      {
-        // unused part of input, insert dummy sliced input
-        final AbraSiteParam slice = makeSlice(input, prevOffset, slicer.offset - prevOffset);
-        inputs.add(slice);
-      }
-
-      // create corresponding sliced input
-      final AbraSiteParam slice = makeSlice(input, slicer.offset, slicer.size);
-      slices.add(slice);
-      inputs.add(slice);
-      prevOffset = slicer.offset + slicer.size;
-    }
-
-    if (input.size != prevOffset)
-    {
-      // unused final part of input, insert dummy sliced input
-      final AbraSiteParam slice = makeSlice(input, prevOffset, input.size - prevOffset);
-      inputs.add(slice);
-    }
-
-    for (final AbraSiteKnot knot : knots)
-    {
-      final int slicerIndex = slicers.indexOf((AbraBlockBranch) knot.block);
-      replaceSite(knot, slices.get(slicerIndex));
+      prevOffset = branch.offset + branch.size;
     }
 
     return true;
   }
 
   @Override
-  public void run()
+  public int compare(final AbraSiteKnot lhs, final AbraSiteKnot rhs)
   {
-    for (index = 0; index < branch.inputs.size(); index++)
+    final AbraBlockSpecial lhsBranch = (AbraBlockSpecial) lhs.block;
+    final AbraBlockSpecial rhsBranch = (AbraBlockSpecial) rhs.block;
+    if (lhsBranch.offset != rhsBranch.offset)
     {
-      final AbraBaseSite input = branch.inputs.get(index);
-      knots.clear();
-      slicers.clear();
-      if (canSlice(input, branch.sites) && //
-          canSlice(input, branch.outputs) && //
-          canSlice(input, branch.latches) && //
-          preSlice(input))
+      return lhsBranch.offset < rhsBranch.offset ? -1 : 1;
+    }
+
+    if (lhsBranch.size != rhsBranch.size)
+    {
+      return lhsBranch.size < rhsBranch.size ? -1 : 1;
+    }
+
+    return 0;
+  }
+
+  private void doSlice(final AbraSiteParam input)
+  {
+    final ArrayList<AbraSiteParam> slices = new ArrayList<>();
+    int prevOffset = 0;
+    for (final AbraSiteKnot slicer : slicers)
+    {
+      final AbraBlockSpecial branch = (AbraBlockSpecial) slicer.block;
+      if (branch.offset != prevOffset)
       {
+        // unused part of input, insert dummy sliced input
+        final AbraSiteParam slice = makeSlice(input, prevOffset, branch.offset - prevOffset);
+        slices.add(slice);
+      }
+
+      // create corresponding sliced input
+      final AbraSiteParam slice = makeSlice(input, branch.offset, branch.size);
+      slices.add(slice);
+      prevOffset = branch.offset + branch.size;
+    }
+
+    if (input.size != prevOffset)
+    {
+      // unused final part of input, insert dummy sliced input
+      final AbraSiteParam slice = makeSlice(input, prevOffset, input.size - prevOffset);
+      slices.add(slice);
+    }
+
+    for (final AbraSiteKnot knot : knots)
+    {
+      final AbraBlockSpecial branch = (AbraBlockSpecial) knot.block;
+      for (final AbraSiteParam slice : slices)
+      {
+        if (slice.offset == branch.offset)
+        {
+          replaceSite(knot, slice);
+          break;
+        }
+      }
+    }
+
+    final AbraSiteKnot concat = new AbraSiteKnot();
+    concat.size = input.size;
+    concat.block = new AbraBlockSpecial(AbraBlockSpecial.TYPE_CONCAT, concat.size);
+    for (final AbraSiteParam slice : slices)
+    {
+      concat.inputs.add(slice);
+      slice.references++;
+    }
+
+    replaceSite(input, concat);
+    concats.add(concat);
+    inputs.addAll(slices);
+  }
+
+  private AbraSiteParam makeSlice(final AbraBaseSite input, final int offset, final int size)
+  {
+    final AbraSiteParam slice = new AbraSiteParam();
+    slice.offset = offset;
+    slice.size = size;
+    if (input.name != null)
+    {
+      slice.name = input.name + "_" + size + "_" + offset;
+    }
+
+    return slice;
+  }
+
+  @Override
+  protected void processInputs()
+  {
+    for (final AbraSiteParam input : branch.inputs)
+    {
+      if (!canSlice(input))
+      {
+        // keep this one
+        inputs.add(input);
         continue;
       }
 
-      inputs.add(input);
+      doSlice(input);
     }
 
-    // did we pre-slice anything?
-    if (inputs.size() != branch.inputs.size())
+    // did we slice anything?
+    if (concats.size() != 0)
     {
-      branch.inputs = inputs;
-
-      // any constant knots need to replace the old first param
-      // with the new first param as their input
-      final AbraBaseSite constInput = inputs.get(0);
-      for (final AbraSiteKnot constant : constants)
+      // this makes sure that the offsets are updated correctly
+      branch.inputs.clear();
+      for (final AbraSiteParam input : inputs)
       {
-        constant.inputs.clear();
-        constant.inputs.add(constInput);
-        constInput.references++;
+        branch.addInput(input);
       }
+
+      branch.sites.addAll(0, concats);
     }
   }
 }

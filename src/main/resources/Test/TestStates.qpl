@@ -1,0 +1,20 @@
+import Qupla
+
+template teststates<T>{
+    func Bool leaf<T> (T x){
+        state T v
+        d1 = print<T>(v)
+        d2 = print<T>(x)
+        v = x
+        return equal<T>(d1, d2)
+    }
+
+    func Bool leaf3<T> (T x){
+        t1 = leaf<T>(as<T>(1))
+        t2 = leaf<T>(as<T>(2))
+        t3 = leaf<T>(as<T>(3))
+        return or3[t1, t2, t3]
+    }
+}
+
+eval leaf3<Tiny>(100)

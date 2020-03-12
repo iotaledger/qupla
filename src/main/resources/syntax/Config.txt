@@ -1,0 +1,166 @@
+Config layout:
+
+uint16_t nrOfLuts
+<nrOfLuts> lut definitions (27 2b-encoded trits) stored in 8 bytes each (64 bits, last 10 bits unused)
+uint16_t nrOfBlocks
+<nrOfBlock> block definitions
+
+
+Block definition:
+uint16_t nrOfBlockInputTrits (these are all single trits, there are no trit vectors in the binary config file)
+uint16_t nrOfSites
+<nrOfSites> site definitions
+uint16_t nrOfBlockOutputTrits
+<nrOfOutputTrits> output indexes
+
+Site definition:
+uint16_t lutIndex
+uint16_t nrOfInputs
+<nrOfInputs> input indexes
+
+A merge site is indicated by a lutIndex value of 0xffff.
+This allows us to have a single way of defining sites yet still differentiate between lookup and merge sites.
+
+Input/output indexes start counting at the block input trits 0 .. nrOfBlockInputTrits-1
+Each following site definition becomes the next index after that
+So input/output indexes either refer to a block input trit or a site
+
+
+
+struct LutDef
+{
+  uint8_t values[8];
+};
+
+struct SiteDef
+{
+  uint16_t lutIndex;
+  uint16_t nrOfInputs;
+  uint16_t * inputIndexes;
+};
+
+struct BlockDef
+{
+  uint16_t nrOfBlockInputTrits;
+  uint16_t nrOfSites;
+  struct SiteDef * siteDefs;
+  uint16_t nrOfBlockOutputTrits;
+  uint16_t * outputIndexes;
+};
+
+struct Layout
+{
+  uint16_t nrOfLuts;
+  struct LutDef * lutDefs;
+  uint16_t nrOfBlocks;
+  struct BlockDef * blockDefs;
+};
+
+
+uint8_t * readBytes(uint8_t * cfg, void * target, uint16_t count)
+{
+  memcpy(target, cfg, count);
+  return cfg + count;
+}
+
+Layout * readLayout(uint8_t * cfg)
+{
+  struct Layout * layout = malloc(sizeof(Layout));
+  cfg = readBytes(cfg, &layout->nrOfLuts, sizeof(uint16_t));
+  layout->lutDefs = malloc(sizeof(LutDef) * layout->nrOfLuts);
+  cfg = readBytes(cfg, layout->lutDefs, sizeof(LutDef) * layout->nrOfLuts);
+  cfg = readBytes(cfg, &layout->nrOfBlocks, sizeof(uint16_t));
+  layout->blockDefs = malloc(sizeof(BlockDef) * layout->nrOfBlocks);
+  for (int b = 0; b < layout->nrOfBlocks; b++)
+  {
+    struct BlockDef * block = &layout->blockDefs[b];
+    cfg = readBytes(cfg, &block->nrOfBlockInputTrits, sizeof(uint16_t));
+    cfg = readBytes(cfg, &block->nrOfSites, sizeof(uint16_t));
+    block->siteDefs = malloc(sizeof(SiteDef) * block->nrOfSites);
+    for (int s = 0; s < block->nrOfSites; s++)
+    {
+      struct SiteDef * site = &block->siteDefs[s];
+      cfg = readBytes(cfg, &site->lutIndex, sizeof(uint16_t));
+      cfg = readBytes(cfg, &site->nrOfInputs, sizeof(uint16_t));
+      site->inputIndexes = malloc(sizeof(uint16_t) * site->nrOfInputs);
+      cfg = readBytes(cfg, site->inputIndexes, sizeof(uint16_t) * site->nrOfInputs);
+    }
+    cfg = readBytes(cfg, &block->nrOfBlockOutputTrits, sizeof(uint16_t));
+    block->outputIndexes = malloc(sizeof(uint16_t) * block->nrOfBlockOutputTrits);
+    cfg = readBytes(cfg, block->outputIndexes, sizeof(uint16_t) * block->nrOfBlockOutputTrits);
+  }
+}
+
+
+bool verifyLayout(uint8_t * cfg, uint32_t size)
+{
+  struct Layout layout;
+  
+  if (size < sizeof(uint16_t)) return false;
+  cfg = readBytes(cfg, &layout.nrOfLuts, sizeof(uint16_t));
+  size -= sizeof(uint16_t);
+  
+  if (size < layout.nrOfLuts * sizeof(LutDef)) return false;
+  cfg += layout.nrOfLuts * sizeof(LutDef); // skip LUT data
+  size -= layout.nrOfLuts * sizeof(LutDef);
+  
+  if (size < sizeof(uint16_t)) return false;
+  cfg = readBytes(cfg, &layout.nrOfBlocks, sizeof(uint16_t));
+  size -= sizeof(uint16_t);
+
+  for (int b = 0; b < layout.nrOfBlocks; b++)
+  {
+    struct BlockDef block;
+    
+    if (size < sizeof(uint16_t)) return false;
+    cfg = readBytes(cfg, &block.nrOfBlockInputTrits, sizeof(uint16_t));
+    size -= sizeof(uint16_t);
+    
+    if (size < sizeof(uint16_t)) return false;
+    cfg = readBytes(cfg, &block.nrOfSites, sizeof(uint16_t));
+    size -= sizeof(uint16_t);
+    
+    uint16_t totalSites = block.nrOfBlockInputTrits + block.nrOfSites;
+    
+    for (int s = 0; s < block.nrOfSites; s++)
+    {
+      struct SiteDef site;
+      
+      if (size < sizeof(uint16_t)) return false;
+      cfg = readBytes(cfg, &site.lutIndex, sizeof(uint16_t));
+      size -= sizeof(uint16_t);
+      
+      if (site.lutIndex != 0xffff && site.lutIndex >= layout.nrOfLuts) return false;
+
+      if (size < sizeof(uint16_t)) return false;
+      cfg = readBytes(cfg, &site.nrOfInputs, sizeof(uint16_t));
+      size -= sizeof(uint16_t);
+
+      for (int i = 0; i < site.inputIndexes; i++)
+      {
+        uint16_t inputIndex;
+        if (size < sizeof(uint16_t)) return false;
+        cfg = readBytes(cfg, &inputIndex, sizeof(uint16_t));
+        size -= sizeof(uint16_t);
+        
+        if (inputIndex >= totalSites) return false;
+      }
+    }
+    
+    if (size < sizeof(uint16_t)) return false;
+    cfg = readBytes(cfg, &block.nrOfBlockOutputTrits, sizeof(uint16_t));
+    size -= sizeof(uint16_t);
+
+    for (int o = 0; o < block.nrOfBlockOutputTrits; o++)
+    {
+      uint16_t outputIndex;
+      if (size < sizeof(uint16_t)) return false;
+      cfg = readBytes(cfg, &outputIndex, sizeof(uint16_t));
+      size -= sizeof(uint16_t);
+      
+      if (outputIndex >= totalSites) return false;
+    }
+  }
+  
+  return size == 0;
+}

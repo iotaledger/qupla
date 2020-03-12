@@ -1,19 +1,21 @@
 package org.iota.qupla.abra.optimizers.base;
 
-import java.util.ArrayList;
-
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
+import org.iota.qupla.abra.block.AbraBlockLut;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
 import org.iota.qupla.abra.block.site.AbraSiteKnot;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.AbraSiteLatch;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
+import org.iota.qupla.abra.optimizers.UnreferencedSiteRemover;
+import org.iota.qupla.exception.CodeException;
 
 public class BaseOptimizer
 {
-  public AbraBlockBranch branch;
-  public int index;
-  public AbraModule module;
-  public boolean reverse;
+  protected AbraBlockBranch branch;
+  protected int index;
+  protected AbraModule module;
+  protected boolean reverse;
 
   protected BaseOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {
@@ -21,100 +23,123 @@ public class BaseOptimizer
     this.branch = branch;
   }
 
-  private void process()
+  protected void error(final String text)
   {
-    final AbraBaseSite site = branch.sites.get(index);
-    if (site.references == 0)
-    {
-      return;
-    }
+    throw new CodeException(text);
+  }
 
-    if (site.getClass() == AbraSiteMerge.class)
-    {
-      processMerge((AbraSiteMerge) site);
-    }
-
-    if (site.getClass() == AbraSiteKnot.class)
-    {
-      processKnot((AbraSiteKnot) site);
-    }
-
-    processSite((AbraSiteMerge) site);
+  protected void processInputs()
+  {
   }
 
   protected void processKnot(final AbraSiteKnot knot)
   {
-  }
-
-  protected void processMerge(final AbraSiteMerge merge)
-  {
-  }
-
-  protected void processSite(final AbraSiteMerge site)
-  {
-  }
-
-  protected void replaceSite(final AbraBaseSite site, final AbraBaseSite replacement)
-  {
-    if (site.hasNullifier())
+    if (knot.references == 0)
     {
-      // extra precaution not to lose info
       return;
     }
 
-    replaceSite(site, replacement, branch.sites);
-    replaceSite(site, replacement, branch.outputs);
-    replaceSite(site, replacement, branch.latches);
+    if (knot.block instanceof AbraBlockSpecial)
+    {
+      processKnotSpecial(knot, (AbraBlockSpecial) knot.block);
+      return;
+    }
+
+    if (knot.block instanceof AbraBlockBranch)
+    {
+      processKnotBranch(knot, (AbraBlockBranch) knot.block);
+      return;
+    }
+
+    if (knot.block instanceof AbraBlockLut)
+    {
+      processKnotLut(knot, (AbraBlockLut) knot.block);
+      return;
+    }
+
+    error("WTF?");
   }
 
-  private void replaceSite(final AbraBaseSite target, final AbraBaseSite replacement, final ArrayList<? extends AbraBaseSite> sites)
+  protected void processKnotBranch(final AbraSiteKnot knot, final AbraBlockBranch block)
   {
-    for (final AbraBaseSite next : sites)
+  }
+
+  protected void processKnotLut(final AbraSiteKnot knot, final AbraBlockLut lut)
+  {
+  }
+
+  protected void processKnotSpecial(final AbraSiteKnot knot, final AbraBlockSpecial block)
+  {
+  }
+
+  protected void processKnots()
+  {
+    if (reverse)
     {
-      if (next instanceof AbraSiteMerge)
+      for (index = branch.sites.size() - 1; index >= 0; index--)
       {
-        final AbraSiteMerge merge = (AbraSiteMerge) next;
-        for (int i = 0; i < merge.inputs.size(); i++)
+        final AbraSiteKnot site = branch.sites.get(index);
+        processKnot(site);
+      }
+
+      return;
+    }
+
+    for (index = 0; index < branch.sites.size(); index++)
+    {
+      final AbraSiteKnot site = branch.sites.get(index);
+      processKnot(site);
+    }
+  }
+
+  protected void processOutputs()
+  {
+  }
+
+  protected void replaceSite(final AbraBaseSite source, final AbraBaseSite target)
+  {
+    for (int i = 0; i < branch.latches.size(); i++)
+    {
+      final AbraSiteLatch latch = branch.latches.get(i);
+      if (latch.latchSite == source)
+      {
+        source.references--;
+        target.references++;
+        latch.latchSite = target;
+      }
+    }
+
+    for (final AbraSiteKnot site : branch.sites)
+    {
+      for (int i = 0; i < site.inputs.size(); i++)
+      {
+        if (site.inputs.get(i) == source)
         {
-          if (merge.inputs.get(i) == target)
-          {
-            target.references--;
-            replacement.references++;
-            merge.inputs.set(i, replacement);
-          }
+          source.references--;
+          target.references++;
+          site.inputs.set(i, target);
         }
       }
+    }
 
-      if (next.nullifyFalse == target)
+    for (int i = 0; i < branch.outputs.size(); i++)
+    {
+      final AbraBaseSite output = branch.outputs.get(i);
+      if (output == source)
       {
-        target.references--;
-        replacement.references++;
-        next.nullifyFalse = replacement;
-      }
-
-      if (next.nullifyTrue == target)
-      {
-        target.references--;
-        replacement.references++;
-        next.nullifyTrue = replacement;
+        source.references--;
+        target.references++;
+        branch.outputs.set(i, target);
       }
     }
   }
 
   public void run()
   {
-    if (reverse)
-    {
-      for (index = branch.sites.size() - 1; index >= 0; index--)
-      {
-        process();
-      }
-      return;
-    }
+    processInputs();
+    processKnots();
+    processOutputs();
 
-    for (index = 0; index < branch.sites.size(); index++)
-    {
-      process();
-    }
+    new UnreferencedSiteRemover(module, branch).run();
   }
 }

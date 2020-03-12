@@ -2,8 +2,7 @@ package org.iota.qupla.abra.optimizers;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
-import org.iota.qupla.abra.block.site.AbraSiteLatch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
 import org.iota.qupla.qupla.expression.base.BaseExpr;
@@ -23,51 +22,48 @@ public class UnreferencedSiteRemover extends BaseOptimizer
       return;
     }
 
-    // link statement(s) to next body site or to first output site
-    final boolean useBody = index + 1 < branch.sites.size();
-    final AbraBaseSite site = useBody ? branch.sites.get(index + 1) : branch.outputs.get(0);
+    // find last statement in chain
     BaseExpr last = stmt;
     while (last.next != null)
     {
       last = last.next;
     }
 
-    last.next = site.stmt;
-    site.stmt = stmt;
+    if (index + 1 < branch.sites.size())
+    {
+      // link statement(s) to next body site
+      final AbraBaseSite site = branch.sites.get(index + 1);
+      last.next = site.stmt;
+      site.stmt = stmt;
+      return;
+    }
+
+    // link statement(s) to outputs
+    last.next = branch.finalStmt;
+    branch.finalStmt = stmt;
   }
 
   @Override
-  protected void processSite(final AbraSiteMerge site)
+  protected void processKnot(final AbraSiteKnot knot)
   {
-    if (site.references != 0 || site.hasNullifier())
+    if (knot.references != 0)
     {
       return;
     }
 
-    updateReferenceCounts(site);
+    updateReferenceCounts(knot);
 
-    moveSiteStmtToNextSite(site.stmt);
+    moveSiteStmtToNextSite(knot.stmt);
     branch.sites.remove(index);
   }
 
   @Override
   public void run()
   {
-    for (index = branch.sites.size() - 1; index >= 0; index--)
-    {
-      processSite((AbraSiteMerge) branch.sites.get(index));
-    }
-
-    for (index = branch.latches.size() - 1; index >= 0; index--)
-    {
-      if (branch.latches.get(index) instanceof AbraSiteLatch)
-      {
-        branch.latches.remove(index);
-      }
-    }
+    processKnots();
   }
 
-  private void updateReferenceCounts(final AbraSiteMerge site)
+  private void updateReferenceCounts(final AbraSiteKnot site)
   {
     for (final AbraBaseSite input : site.inputs)
     {
@@ -75,17 +71,5 @@ public class UnreferencedSiteRemover extends BaseOptimizer
     }
 
     site.inputs.clear();
-
-    if (site.nullifyFalse != null)
-    {
-      site.nullifyFalse.references--;
-      site.nullifyFalse = null;
-    }
-
-    if (site.nullifyTrue != null)
-    {
-      site.nullifyTrue.references--;
-      site.nullifyTrue = null;
-    }
   }
 }

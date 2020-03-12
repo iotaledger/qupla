@@ -28,8 +28,8 @@ public class GameOfLifeEntity extends Entity
 {
   private static final int GRID_SIZE = 81;
   private static final int HASH_SIZE = 243;
-  public TritVector currentGrid = new TritVector(GRID_SIZE * GRID_SIZE, '0');
-  public TritVector currentId = new TritVector(HASH_SIZE, '0');
+  public TritVector currentGrid = new TritVector(GRID_SIZE * GRID_SIZE, TritVector.TRIT_ZERO);
+  public TritVector currentId = new TritVector(HASH_SIZE, TritVector.TRIT_ZERO);
   public JTextField entry;
   public JFrame frame;
   public Environment golGen;
@@ -116,13 +116,13 @@ public class GameOfLifeEntity extends Entity
     graphics.setColor(Color.WHITE);
     graphics.fillRect(0, 0, GRID_SIZE, GRID_SIZE);
     graphics.setColor(Color.DARK_GRAY);
-    final String trits = currentGrid.trits();
+    final byte[] trits = currentGrid.trits();
     int offset = 0;
     for (int y = 0; y < GRID_SIZE; y++)
     {
       for (int x = 0; x < GRID_SIZE; x++)
       {
-        if (trits.charAt(offset + x) == '1')
+        if (trits[offset + x] == '1')
         {
           graphics.drawRect(x, y, 0, 0);
         }
@@ -159,8 +159,9 @@ public class GameOfLifeEntity extends Entity
         }
 
         final int offset = getOffset(mouseEvent);
-        final String trits = currentGrid.trits();
-        currentGrid = new TritVector(trits.substring(0, offset) + cell + trits.substring(offset + 1));
+        final byte[] trits = currentGrid.trits();
+        trits[offset] = (byte) cell;
+        currentGrid = new TritVector(trits);
         golView.affect(TritVector.concat(currentId, currentGrid), 0);
       }
 
@@ -174,8 +175,7 @@ public class GameOfLifeEntity extends Entity
         }
 
         final int offset = getOffset(mouseEvent);
-        final String trits = currentGrid.trits();
-        cell = trits.charAt(offset) == '1' ? '0' : '1';
+        cell = currentGrid.trit(offset) == '1' ? '0' : '1';
         mouseDragged(mouseEvent);
       }
 
@@ -222,7 +222,7 @@ public class GameOfLifeEntity extends Entity
     // remove previous id
     if (!currentId.isZero())
     {
-      golIds.affect(TritVector.concat(new TritVector(1, '-'), currentId), 0);
+      golIds.affect(TritVector.concat(new TritVector(1, TritVector.TRIT_MIN), currentId), 0);
     }
 
     // make new id
@@ -231,7 +231,7 @@ public class GameOfLifeEntity extends Entity
     // save new id
     if (!currentId.isZero())
     {
-      golIds.affect(TritVector.concat(new TritVector(1, '1'), currentId), 0);
+      golIds.affect(TritVector.concat(new TritVector(1, TritVector.TRIT_ONE), currentId), 0);
     }
   }
 }

@@ -1,0 +1,42 @@
+// tests Entity-Environment-Effect processing by the Qubic Dispatcher
+
+// note that it is common sense to create specific functions when you
+// want to use them in combination with environments and have them wrap
+// the more generic, reusable functions. This keeps the generic functions
+// 'clean' and also will allow you to have a more specific structured trit
+// vector as input that provides more info you can filter on, like an
+// invocation id which would allow you to discern between return values
+// from a shared environment so that you only process results that were
+// intended for you
+
+type Dummy [9]
+// note that we have two environments: 'first' and 'second'
+
+// this function will be called from the top level
+// it affects environment 'first', which means that its result
+// will be posted as an affect to that environment
+func Dummy firstOne (Dummy val) {
+  affect first
+  return val
+}
+
+// this function joins environment 'first', which means it will get sent
+// the effects posted to this environment by firstOne() in the next wave
+// it also affects environment 'second', which means that its result
+// will be posted as an affect to that environment
+func Dummy nextOne (Dummy val) {
+  join first
+  affect second
+  return val
+}
+
+// finally, this function joins environment 'second',  which means it will get sent
+// the effects posted to this environment by nextOne() in the next wave
+// since it does not affect any environments processing will stop after this wave
+func Dummy lastOne (Dummy val) {
+  join second
+  return val
+}
+
+eval firstOne(12)
+eval firstOne(13)

@@ -2,89 +2,89 @@ package org.iota.qupla.abra.optimizers;
 
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
-import org.iota.qupla.abra.block.site.AbraSiteMerge;
+import org.iota.qupla.abra.block.AbraBlockSpecial;
+import org.iota.qupla.abra.block.site.AbraSiteKnot;
 import org.iota.qupla.abra.block.site.base.AbraBaseSite;
 import org.iota.qupla.abra.optimizers.base.BaseOptimizer;
+
+//TODO split multi-referenced knots into clones that each have only one reference
+//     to give NullifyOptimizer maximal optimization possibilities
 
 public class NullifyOptimizer extends BaseOptimizer
 {
   public NullifyOptimizer(final AbraModule module, final AbraBlockBranch branch)
   {
     super(module, branch);
-    reverse = true;
+    branch.numberSites();
   }
 
-  @Override
-  protected void processSite(final AbraSiteMerge site)
+  private boolean isNullify(final AbraSiteKnot knot)
   {
-    if (index == 0 || !site.hasNullifier())
+    return knot.block.index == AbraBlockSpecial.TYPE_NULLIFY_TRUE || //
+        knot.block.index == AbraBlockSpecial.TYPE_NULLIFY_FALSE;
+  }
+
+  protected void moveNullify(final AbraSiteKnot nullify, final AbraSiteKnot knot)
+  {
+    final AbraBaseSite constant = nullify.inputs.get(0);
+    for (int i = knot.inputs.size() - 1; i >= 0; i--)
     {
-      // no need to move it up the chain anyway
-      return;
+      final AbraBaseSite input = knot.inputs.get(i);
+      final AbraSiteKnot newNullify = new AbraSiteKnot();
+      newNullify.size = input.size;
+      newNullify.block = new AbraBlockSpecial(nullify.block.index, newNullify.size);
+      newNullify.inputs.add(constant);
+      constant.references++;
+      newNullify.inputs.add(input);
+      knot.inputs.set(i, newNullify);
+      newNullify.references++;
+      branch.sites.add(knot.index - branch.sites.get(0).index, newNullify);
     }
 
-    // check if all inputs have only a single reference
-    for (final AbraBaseSite input : site.inputs)
-    {
-      if (input.isLatch)
-      {
-        // don't fuck around with latches
-        return;
-      }
-
-      if (input.hasNullifier())
-      {
-        // cannot force a nullify on something that already has one
-        return;
-      }
-
-      //TODO when at least one input has a single reference
-      //     insert knots for the inputs that have >1 references
-      //     and then move the nullifies there to avoid calling the knot
-      if (input.references != 1 || !(input instanceof AbraSiteMerge))
-      {
-        // cannot force nullify on something referenced from somewhere else
-        // nor on something that isn't a merge or a knot
-        return;
-      }
-    }
-
-    // first move those inputs to the nullify point
-    for (final AbraBaseSite input : site.inputs)
-    {
-      branch.sites.remove(input);
-    }
-
-    branch.sites.addAll(index - site.inputs.size(), site.inputs);
-
-    // move nullifyFalse up the chain??
-    if (site.nullifyFalse != null)
-    {
-      for (final AbraBaseSite input : site.inputs)
-      {
-        input.nullifyFalse = site.nullifyFalse;
-        site.nullifyFalse.references++;
-      }
-
-      site.nullifyFalse.references--;
-      site.nullifyFalse = null;
-    }
-
-    // move nullifyTrue up the chain??
-    if (site.nullifyTrue != null)
-    {
-      for (final AbraBaseSite input : site.inputs)
-      {
-        input.nullifyTrue = site.nullifyTrue;
-        site.nullifyTrue.references++;
-      }
-
-      site.nullifyTrue.references--;
-      site.nullifyTrue = null;
-    }
+    replaceSite(nullify, knot);
 
     // this could have freed up another optimization possibility,
     // so we restart the optimization from the end
-    index = branch.sites.size();
+    index = 0;
+    branch.numberSites();
+  }
+
+  @Override
+  protected void processKnotSpecial(final AbraSiteKnot knot, final AbraBlockSpecial block)
+  {
+    if (!isNullify(knot))
+    {
+      // only process nullifiers
+      return;
+    }
+
+    final AbraBaseSite target = knot.inputs.get(1);
+    if (!(target instanceof AbraSiteKnot))
+    {
+      // only move nullifier when it targets a knot
+      return;
+    }
+
+    final AbraSiteKnot targetKnot = (AbraSiteKnot) target;
+    //if (isNullify(targetKnot) || targetKnot.block.index == AbraBlockSpecial.TYPE_CONST)
+    if (targetKnot.block instanceof AbraBlockSpecial)
+    {
+      // cannot move when nullifier, const, or merge
+      //TODO handle concat, slice
+      return;
+    }
+
+    if (targetKnot.references != 1)
+    {
+      // cannot nullify something that is used elsewhere
+      return;
+    }
+
+    //TODO handle moving of targetKnot when knot comes before constant
+    final AbraBaseSite constant = knot.inputs.get(0);
+    if (targetKnot.index > constant.index)
+    {
+      moveNullify(knot, targetKnot);
+    }
   }
 }

@@ -1,0 +1,4 @@
+func Trit TestCond (Trit in)
+{
+  return isZero[in] ? 0 : isOne[in] ? 1 : -
+}
