@@ -71,12 +71,6 @@ template fullMul3<T> = P + P + P {
   }
 
   func T2 fullMul<T> (T lhs, T rhs) {
-    lhsZero = isZero[sign<T>(lhs)]
-    rhsZero = isZero[sign<T>(rhs)]
-    return or[lhsZero, rhsZero] ? 0 : fullMulNonZero<T>(lhs, rhs)
-  }
-
-  func T2 fullMulNonZero<T> (T lhs, T rhs) {
     // note: the sum of 2 products can never generate
     //      a carry, but the sum of 3 products can...
 
@@ -151,14 +145,8 @@ template fullMul<T> = P + P {
   type P3 [P * 3]
 
   func T2 fullMul<T> (T lhs, T rhs) {
-    lhsZero = isZero[sign<T>(lhs)]
-    rhsZero = isZero[sign<T>(rhs)]
-    return or[lhsZero, rhsZero] ? 0 : fullMulNonZero<T>(lhs, rhs)
-  }
-
-  func T2 fullMulNonZero<T> (T lhs, T rhs) {
     zero = as<P>(0)
-    product = fullMulNonZero<P3>(lhs & zero, rhs & zero)
+    product = fullMul<P3>(lhs & zero, rhs & zero)
     return product[0 : T2]
   }
 }

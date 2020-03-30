@@ -155,9 +155,10 @@ public class Qupla
           {
             if (!options.contains(arg))
             {
-              log("Unrecognized argument:" + arg);
+              log("Unrecognized option:" + arg);
             }
 
+            // just ignore the option
             continue;
           }
 

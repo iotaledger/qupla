@@ -11,38 +11,63 @@ The goal of Qupla is twofold:
 This repository will provide:
 * Qupla source code parser
 * Qupla interpreter
-* Qupla to Abra tritcode translator (mostly done)
+* Qupla to Abra tritcode translator
 * Qupla Debug Info tritcode generator
-* Qupla JIT compilation (TBD)
-* Qupla Verilog generator (mostly done)
-* Qupla to YAML translator (mostly done, thanks lunfardo)
-* Abra tritcode interpreter
-* Abra tritcode Verilog generator (mostly done)
+* Qupla JIT compilation (to be re-added, needs fixing first)
+* Qupla Verilog generator (outdated)
+* Qupla to YAML translator (outdated)
+* Abra tritcode emulator
+* Abra tritcode Verilog generator (outdated)
 
 Set the working folder while running to the resources folder for now.
-Or move the resources folder somewhere else so you can add your own Qupla project modules and set the working folder to that location
+Or move the resources folder somewhere else so you can add your own Qupla project
+modules and set the working folder to that location
 
-Command line expects names of project module(s) to be loaded.
+The command line contains a mix of command line arguments that can be options,
+module names, and expressions. Options begin with a dash. Undefined options will
+be ignored. Any argument that contains an open parenthesis '(' will be processed
+as an expression. Anything else is interpreted as a module name and should match
+a folder name in the working folder that contains the Qupla files for that module.
 
-Current command line flags
+Current command line options
 
--abra  Emits Qupla/Abra tritcode transformation as commented Qupla source text in resources/Abra.txt
+- -2b  
+  Use 2b trit encoding when emitting Verilog code (default)
 
--echo  Echoes back the current code tree as Qupla source
+- -3b  
+  Use 3b trit encoding when emitting Verilog code
 
--eval  Runs all eval statements
+- -abra  
+  Generate Abra tritcode from the compiled Qupla source code. The Abra tritcode will
+  also be written as an Abra psuedo-code source text file in Abra.txt
 
--fpga  Emits Verilog HDL for further compiling to FPGA as resources/Verilog.txt (requires -trit)
+- -config  
+  Generates a configuration file that can be loaded into an FPGA for the first
+  function that is passed as an expression.
+  
+- -echo  
+  Echoes back the current code tree as a single Qupla source code text file in Qupla.txt
 
--math  Special test flag to verify results of specific math functions
+- -eval  
+  Runs all eval statements
 
--test  Runs all test statements (unit tests)
+- -fpga  
+  Emits Verilog HDL for further synthesis to FPGA in Verilog.txt (requires -trit)
 
--tree  Generates a textual representation of the Qupla code tree
+- -math  
+  Special test flag to exercise specific math functions and verify their results
 
--view  Start QCM viewers for every environment
+- -test  
+  Runs all module test statements (unit tests)
 
--yaml  Generate YAML from Qupla into resources/Qupla.yml
+- -tree  
+  Generates a textual representation of the Qupla code tree in QuplaTree.txt
+
+- -view  
+  Start QCM viewers for every environment in the Supervisor to be able to track effects
+
+- -yaml  
+  Generate YAML from the compiled Qupla source code to Qupla.yml
 
 
 Example of Java compilation and running Qupla on Windows command line after extracting sources into \Qupla folder:
@@ -65,7 +90,7 @@ Example of Java compilation and running Qupla on Mac command line after extracti
 
 
 
-Qupla statements are grouped in logical source files within a folder whose name specifies the module name these source files belong to.
+Qupla statements are grouped in logical source files within a folder whose name specifies the module that these source files belong to.
 Within a module folder all Qupla source files are first parsed and loaded recursively into one big code tree.
 The parse phase will only do lexical parsing and syntax checks.
 All statements in the module source files are gathered in no particular order and grouped together by statement type.
@@ -79,7 +104,7 @@ import \<module\>
     <module> is the name of the folder that contains the imported module source files
     Note that only a single import statement is necessary within a module due to
     the gathering of all sources within a module into a single code tree.
-    Duplicate imports will be ignored anyway.
+    Duplicate imports will be ignored.
     When imported modules define identical entity names any definition within the current module
     takes precedence. Explicit entity name resolution can be achieved by explicityly providing
     the desired module name.
@@ -112,7 +137,7 @@ use \<templatename\> ...
     
 eval \<expression\>
 
-    Will execute <expression> and print the result at the console. Activated through -eval flag.
+    Will execute <expression> and print the result at the console. Activated through -eval option.
     This supports quick debugging of new Qupla code, especially while running the parser
     in the Java debugger.
     Eval statements will not be included in the final tritcode as they are purely intended
@@ -121,11 +146,11 @@ eval \<expression\>
     
 test \<value\> = \<expression\>
 
-    Built-in unit tests for functions. Activated through -test flag
+    Built-in unit tests for functions. Activated through -test option.
     Will execute <expression> and verify that the result equals <value>.
     Will generate a runtime error if <value> does not match the result.
     Test statements will not be included in the final tritcode as they are purely intended
-    for debugging purposes.
+    for unit testing purposes.
     See Examples/Factorial for examples of such statements.
     
 

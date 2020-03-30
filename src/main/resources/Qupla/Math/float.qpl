@@ -114,13 +114,14 @@ template float<T> = M + E {
   }
 
   func T floatMul<T> (T lhs, T rhs) {
+    // check for zero is necessary or else normalize will get into an endless loop
     lhsZero = isZero[sign<M>(lhs.mantissa)]
     rhsZero = isZero[sign<M>(rhs.mantissa)]
     return or[lhsZero, rhsZero] ? 0 : floatMulNonZero<T>(lhs, rhs)
   }
 
   func T floatMulNonZero<T> (T lhs, T rhs) {
-    product = fullMulNonZero<M>(lhs.mantissa, rhs.mantissa)
+    product = fullMul<M>(lhs.mantissa, rhs.mantissa)
     sum = add<E>(lhs.exponent, rhs.exponent)
     return floatMulNormalize<T>(product, sum)
   }
