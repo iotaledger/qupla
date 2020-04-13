@@ -73,20 +73,25 @@ Current command line options
 
 Example of Java compilation and running Qupla on Windows command line after extracting sources into \Qupla folder:
 
+    md \Qupla
+    cd \Qupla
+    git clone https://github.com/iotaledger/qupla.git .
     md \Qupla\build
-    cd \Qupla\qupla\src\main\java
+    cd \Qupla\src\main\java
     "C:\Program Files\Java\jdk1.8.0\bin\javac" -d \Qupla\build org\iota\qupla\Qupla.java
-    cd \Qupla\qupla\src\main\resources
+    cd \Qupla\src\main\resources
     java -classpath \Qupla\build org.iota.qupla.Qupla Fibonacci "fibonacci2<Int>(10)"
 
 
 
 Example of Java compilation and running Qupla on Mac command line after extracting sources into $HOME/Qupla folder:
 
+    md $HOME/Qupla
     cd $HOME/Qupla
+    git clone https://github.com/iotaledger/qupla.git .
     mkdir build
     javac -d $HOME/Qupla/build org/iota/qupla/Qupla.java
-    cd $HOME/Qupla/qupla/src/main/resources
+    cd $HOME/Qupla/src/main/resources
     java -classpath $HOME/Qupla/build org.iota.qupla.Qupla Fibonacci "fibonacci2<Int>(10)"
 
 
