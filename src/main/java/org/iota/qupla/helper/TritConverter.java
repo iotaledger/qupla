@@ -334,6 +334,35 @@ public class TritConverter
     return result;
   }
 
+//  public static long tritsToLong(final byte[] trits)
+//  {
+//    long result = 0;
+//    long power = 1;
+//    for (int i = 0; i < trits.length; i++)
+//    {
+//      final byte trit = trits[i];
+//      if (trit != TritVector.TRIT_ZERO)
+//      {
+//        result += trit == TritVector.TRIT_MIN ? -powers[i] : powers[i];
+//      }
+//    }
+//
+//    return result;
+//  }
+//
+//  public static long trytesToLong(final byte[] trytes)
+//  {
+//    long result = 0;
+//    long power = 1;
+//    for (int i = 0; i < trytes.length; i++)
+//    {
+//      final byte tryte = trytes[i];
+//      result += precomputed[i][tryte];
+//    }
+//
+//    return result;
+//  }
+
   public static String tritsToTrytes(final int[] trits)
   {
     final int size = trits.length / 3;

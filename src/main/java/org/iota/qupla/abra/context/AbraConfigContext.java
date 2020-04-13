@@ -3,6 +3,7 @@ package org.iota.qupla.abra.context;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 
+import org.iota.qupla.Qupla;
 import org.iota.qupla.abra.AbraModule;
 import org.iota.qupla.abra.block.AbraBlockBranch;
 import org.iota.qupla.abra.block.AbraBlockImport;
@@ -71,6 +72,11 @@ public class AbraConfigContext extends AbraBaseContext
       evalBranch(funcBranch);
 
       outputStream.close();
+
+      if (funcBranch.sites.size() > 512)
+      {
+        Qupla.log("WARNING: Requested function is too large to fit on the FPGA!!!");
+      }
     }
     catch (final Exception ex)
     {
