@@ -43,7 +43,8 @@ Current command line options
 
 - -config  
   Generates a configuration file that can be loaded into an FPGA for the first
-  function that is passed as an expression.
+  function that is passed as an expression. Make sure to heed any warning about
+  the requested function being too large to fit on the FPGA!
   
 - -echo  
   Echoes back the current code tree as a single Qupla source code text file in Qupla.txt

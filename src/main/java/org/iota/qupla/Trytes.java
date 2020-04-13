@@ -1,50 +1,27 @@
 package org.iota.qupla;
 
+import java.math.BigInteger;
+
 public class Trytes {
     private static final Trytes[] powersOf2 = new Trytes[384];
 
-    private int length;
-    public short[] trytes = new short[82]; // 82 to not have to check for overflows when carry happens
-    private long[] quads = new long[20]; // Java specific, to hold converted copy of first 80 bytes
+    private long[] quads = new long[21];
 
     static {
-        // calculate the first 384 powers of 2 in trinary, encoded as trytes
+        // calculate the first 384 powers of 2 in trinary, encoded as base-27 trytes
+        final short[] trytes = new short[84]; // round 81 up to multiple of 4
+        trytes[0] = 1;
+        for (int i = 0; i < 384; i++) {
+            powersOf2[i] = new Trytes();
+            powersOf2[i].trytesToQuads(trytes);
 
-        Trytes prev = new Trytes();
-        prev.length = 1;
-        prev.trytes[0] = 1;
-        prev.quads[0] = 1;
-        powersOf2[0] = prev;
-
-        for (int i = 1; i < 384; i++) {
-            final Trytes next = new Trytes();
-
-            // add double the value of the previous one
-            for (int j = 0; j < prev.length; j++) {
-                int value = (prev.trytes[j] << 1) + next.trytes[j];
-                if (value >= 27) {
-                    value -= 27;
-                    next.trytes[j + 1]++;
-                }
-
-                next.trytes[j] = (short) value;
+            // double the current power of 2 to get the next power of 2
+            int carry = 0;
+            for (int j = 0; j < 81; j++) {
+                int value = trytes[j] * 2 + carry;
+                carry = value / 27;
+                trytes[j] = (short) (value % 27);
             }
-
-            // length is same as previous one except when carry happened
-            next.length = prev.length;
-            if (next.trytes[next.length] > 0) {
-                next.length++;
-            }
-
-            // wrap bytes into longs for future quadruple addition
-            // (specific to Java because a tryte array cannot be accessed as a long array through casting)
-            next.trytesToQuads();
-
-            // pre-calculate index of last used quad
-            prev.length = prev.length < 77 ? ((prev.length + 3) >> 2) - 1 : 19;
-
-            powersOf2[i] = next;
-            prev = next;
         }
     }
 
@@ -55,7 +32,7 @@ public class Trytes {
 
         // make sure 384-bit input value is positive
         // note: input value has MSB first
-        final boolean negative = (hash[0] & 0x80) != 0;
+        final boolean negative = hash[0] < 0;
         if (negative) {
             // negate 48-byte value, starting at LSB
             int carry = 1;
@@ -66,19 +43,19 @@ public class Trytes {
             }
         }
 
-        final Trytes result = new Trytes();
+        final Trytes sum = new Trytes();
         int bitNr = 0;
         // walk from lSB to MSB
         for (int i = 47; i >= 0; i--) {
             // take next byte and add the corresponding 8 powers of 2 without carry between trytes
-            // note that this will not overflow a tryte (max is 384 * 26 == 9984),
-            // or become negative, and even has room to spare for carry-over
+            // note that this will not overflow a tryte (max possible value is only 384 * 26 == 9984),
+            // or become negative, and even has room to spare for future carry-over
             byte bits = hash[i];
-            for (int b = 0; b < 8; b++) {
+            for (int j = 0; j < 8; j++) {
                 // only add power of 2 when bit is 1
                 if ((bits & 1) != 0) {
                     // add precalculated 2^bitNr to result using quadruple addition
-                    result.addPower(bitNr);
+                    sum.addPower(powersOf2[bitNr].quads);
                 }
 
                 // go for next bit and power of 2
@@ -87,80 +64,46 @@ public class Trytes {
             }
         }
 
-        // unwrap trytes from longs after quadruple additions
-        // (specific to Java because a short array cannot be accessed as a long array through casting)
-        result.quadsToTrytes();
+        // unwrap tryte shorts from longs after quadruple additions
+        final short[] trytes = sum.quadsToTrytes();
 
         final byte[] bytes = new byte[81];
 
-        // handle carry between trytes after all power of 2 additions that were
-        // guaranteed to have no carry between trytes and to be positive numbers
-        int tryte = result.trytes[0];
+        // handle accumulated carry between trytes after all power of 2 additions
+        // in the same loop convert from unbalanced to balanced base-27
+        // and also negate the result value when necessary
+       int carry = 0;
         for (int i = 0; i < 81; i++) {
-            // add overflow to next tryte
-            int next = result.trytes[i + 1] + tryte / 27;
-
-            // keep tryte without overflow
-            tryte %= 27;
-
-            // convert unbalanced ternary tryte to balanced ternary
-            if (tryte > 13) {
-                tryte -= 27;
-                next++;
-            }
+            int value = trytes[i] + carry + 13;
+            carry = value / 27;
+            int tryte = value % 27 - 13;
 
             // if we negated the binary input data we need to negate the ternary result
             bytes[i] = (byte) (negative ? -tryte : tryte);
-
-            tryte = next;
         }
 
         // clear trit 243
         final int v = bytes[80];
         bytes[80] = (byte) (v < -4 ? v + 9 : v > 4 ? v - 9 : v);
 
-        // conversion is now complete, next step would be to convert the result
-        // to the type you need, be it tryte String, tryte bytes, or trit bytes
         return bytes;
     }
 
-    private void addPower(final int exponent) {
-        // treat the tryte array as a 64-bit long integer array
-        // thereby doing quadruple adds (4 trytes in a single add)
-
-        final Trytes power = powersOf2[exponent];
-
-        // note that in Java we have to copy between tryte and long arrays and vice versa
-        // at strategic points in the code before doing this
-        // languages that support proper casting could use the following C equivalent instead
-        // uint64_t * lhs = (uit64_t *) &trytes[0];
-        // uint64_t * rhs = (uit64_t *) &power.trytes[0];
-        final long[] lhs = quads;
-        final long[] rhs = power.quads;
-
-        // 20x quadruple add, handles 80 trytes
+    private void addPower(final long[] rhs) {
+        // 21x quadruple add, handles 84 trytes
         // this loop can be 100% parallelized on hardware
         // maybe even unroll loop for a percent extra oomph?
-
-        // strangely enough limiting additions to the non-zero ones
-        // by using power.length instead of 19
-        // decreases the speed of the algorithm in Java, YMMV
-        for (int i = 19; i >= 0; i--) {
-            lhs[i] += rhs[i];
+        for (int i = 20; i >= 0; i--) {
+            quads[i] += rhs[i];
         }
-
-        // handle final single tryte
-        trytes[80] += power.trytes[80];
     }
 
-    private void quadsToTrytes() {
-        // convert 64-bit long integer array to the equivalent tryte array
+    private short[] quadsToTrytes() {
+        // convert 64-bit long integer array to the equivalent tryte short array
 
-        // note that this is Java specific
-        // languages that support proper casting can remove this function
-
+        final short[] trytes = new short[84];
         int i = 0;
-        while (i < 80) {
+        while (i < 81) {
             long value = quads[i >> 2];
             trytes[i++] = (short) value;
             value >>= 16;
@@ -169,26 +112,41 @@ public class Trytes {
             trytes[i++] = (short) value;
             trytes[i++] = (short) (value >> 16);
         }
+
+        return trytes;
     }
 
-    private void trytesToQuads() {
-        // convert tryte array to the equivalent 64-bit long integer array
-
-        // note that this is Java specific
-        // languages that support proper casting can remove this function
-
-        for (int i = 0; i < 80; i += 4) {
-            long value = trytes[i + 3] << 16;
-            value += trytes[i + 2];
+    private void trytesToQuads(final short[] trytes) {
+        // convert tryte short array to the equivalent 64-bit long integer array
+        // shift them in in reverse so we can shift them out in correct order
+        int i = 83;
+        while (i >= 0) {
+            long value = trytes[i--] << 16;
+            value += trytes[i--];
             value <<= 16;
-            value += trytes[i + 1];
+            value += trytes[i--];
             value <<= 16;
-            quads[i >> 2] = value + trytes[i];
+            quads[i >> 2] = value + trytes[i--];
         }
     }
 
     @Override
     public String toString() {
-        return length + ": " + quads[0];
+        final short[] trytes = quadsToTrytes();
+        final BigInteger b27 = new BigInteger("27");
+
+        // find last nonzero tryte
+        int last = 80;
+        while (last > 0 && trytes[last] == 0) {
+            last--;
+        }
+
+        // construct big integer representing this value
+        BigInteger big = new BigInteger("0");
+        for (int i = last; i >= 0; i--) {
+            big = big.multiply(b27).add(new BigInteger("" + trytes[i]));
+        }
+
+        return big.toString();
     }
 }
